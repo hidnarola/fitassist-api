@@ -1,8 +1,6 @@
 var jwt = require('jsonwebtoken');
 var config = require('../config');
 module.exports = function (req, res, next) {
-    //need to by pass auth verification for OTP related calls
-
     console.log("\n=================================================================");
     console.log("Request Headers", req.headers);
     console.log("-----------------------------------------------------------------");
@@ -14,7 +12,7 @@ module.exports = function (req, res, next) {
             if (err) {
                 return res.status(config.UNAUTHORIZED).json({message: err.message});
             } else {
-                req.userInfo = decoded;
+                req.decoded = decoded;
                 next();
             }
         });
