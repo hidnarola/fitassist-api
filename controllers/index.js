@@ -376,6 +376,242 @@ router.post('/login', function (req, res, next) {
     }
 });
 
+router.get('/friends', function (req, res, next) {
+    res.json({
+        friends: [
+            {
+                firstName: 'Sonal',
+                lastName: 'Maniya',
+                username: 'sonu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '360',
+            },
+            {
+                firstName: 'Rizwan',
+                lastName: 'Khan',
+                username: 'riz',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '180',
+            },
+            {
+                firstName: 'Nisha',
+                lastName: 'Chavda',
+                username: 'nishu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '90',
+            },
+            {
+                firstName: 'Bhoomi',
+                lastName: 'Limbachiya',
+                username: 'bhoomi',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '45',
+            },
+            {
+                firstName: 'Uchita',
+                lastName: 'Pal',
+                username: 'uchi',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '30',
+            },
+            {
+                firstName: 'Mitali',
+                lastName: 'Gondanliya',
+                username: 'mittu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '450',
+            },
+            {
+                firstName: 'Asmita',
+                lastName: 'Kalena',
+                username: 'asu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '1',
+            },
+            {
+                firstName: 'Disha',
+                lastName: '',
+                username: 'dishu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '0',
+            },
+            {
+                firstName: 'Soyeb',
+                lastName: 'Mansuri',
+                username: 'soye',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '12',
+            },
+            {
+                firstName: 'Sagar',
+                lastName: 'Parmar',
+                username: 'sagu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '0',
+            },
+            {
+                firstName: 'Sagar',
+                lastName: 'Kayesht',
+                username: 'seggy',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '155',
+            },
+            {
+                firstName: 'Mital',
+                lastName: 'Limbachiya',
+                username: 'mitu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '80',
+            },
+            {
+                firstName: 'Shravani',
+                lastName: 'Patil',
+                username: 'shav',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '77',
+            },
+            {
+                firstName: 'Rashmi',
+                lastName: '',
+                username: 'rassu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '78',
+            },
+            {
+                firstName: 'Bhumi',
+                lastName: '',
+                username: 'bhumi',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '11',
+            },
+            {
+                firstName: 'Charmi',
+                lastName: '',
+                username: 'charu',
+                profileImage: '/assets/img/profileImages/img-07.jpg',
+                mutualFriendsCount: '1',
+            },
+        ]
+    });
+});
+
+router.get('/profile/photos', function (req, res, next) {
+    res.json({
+        progressPhotos: [
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                logDate: 'Current'
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                logDate: 'Oct 21st'
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                logDate: 'Sep 3rd'
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                logDate: 'Aug 18th'
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                logDate: 'Beginning'
+            },
+        ],
+        galleryPhotos: [
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+            {
+                image: '/assets/img/profileImages/img-07.jpg',
+                caption: ''
+            },
+        ]
+    });
+});
+
 router.post('/post_name', function (req, res, next) {
     console.log(req.body);
 
