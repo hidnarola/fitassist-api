@@ -65,10 +65,21 @@ user_helper.update_user_by_id = async (user_id, user_object) => {
         if (!user) {
             return { "status": 2, "message": "Record has not updated" };
         } else {
-            return { "status": 1, "message": "Record has been updated", "user":user };
+            return { "status": 1, "message": "Record has been updated", "user": user };
         }
     } catch (err) {
-        return {"status": 0, "message":"Error occured while updating user", "error":err}
+        return { "status": 0, "message": "Error occured while updating user", "error": err }
+    }
+};
+
+user_helper.insert_user = async (user_object) => {
+    let user = new User(user_object)
+    try {
+        let newUser = await user.save();
+        return {"user":newUser};
+
+    } catch (err) {
+        return {"err":err};
     }
 };
 
