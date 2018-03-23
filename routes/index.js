@@ -3,10 +3,12 @@ var router = express.Router();
 var config = require('../config');
 var user = require('../models/users');
 var jwt = require('jsonwebtoken');
+var moment = require('moment');
 
 var user_helper = require('./../helpers/user_helper');
 var common_helper = require('./../helpers/common_helper');
 var admin_helper = require('./../helpers/admin_helper');
+var measurement_helper = require('./../helpers/measurement_helper');
 
 var logger = config.logger;
 
@@ -108,7 +110,6 @@ router.post('/user_login', async (req, res) => {
     res.status(config.BAD_REQUEST).json({ message: errors });
   }
 });
-
 
 /**
  * @api {post} /admin_login Admin Login
@@ -301,7 +302,43 @@ router.post('/user_signup', async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
-    
+    let data = req.body;
+    var user_obj = {
+      "firstName" : req.body.first_name,
+      "lastName":  req.body.last_name,
+      "email": req.body.email,
+      "username": req.body.username,
+      "password": req.body.password,
+      "gender": req.body.gender,
+      "date_of_birth": req.body.date_of_birth,
+      "goal":[req.body.goal]
+    };
+
+    var user_data = await user_helper.insert_user(user_obj);
+
+    if(user_data.status == 0){
+      logger.trace("Error occured while inserting user - User Signup API");
+      logger.debug("Error = ",user_data.error);
+      res.status(config.INTERNAL_SERVER_ERROR).json(user_data);
+    } else {
+      logger.trace("User has been inserted");
+      var measurement_obj = {
+        'userId': user_data.user._id,
+        'logDate':moment(),
+        'height':req.body.height,
+        'weight':req.body.weight
+      };
+  
+      let measurement_data = await measurement_helper.insert_measurement(measurement_obj);
+
+      var excercise_preference = {
+        'workout_intensity': req.body.workout_intensity,
+        'experience_level': req.body.experience_level,
+        'workout_location': req.body.workout_location
+      }
+
+      let excercise_preference_data = await measurement_helper.insert_measurement(measurement_obj);
+    }
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.BAD_REQUEST).json({ message: errors });
