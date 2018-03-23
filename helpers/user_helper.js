@@ -12,7 +12,7 @@ var user_helper = {};
  */
 user_helper.get_user_by_id = async (user_id) => {
     try {
-        var user = await User.findOne({ "_id": { "$eq": college_id } });
+        var user = await User.findOne({ "_id": { "$eq": user_id } });
         if (user) {
             return { "status": 1, "message": "User details found", "user": user };
         } else {
