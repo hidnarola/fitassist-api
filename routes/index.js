@@ -9,6 +9,7 @@ var user_helper = require('./../helpers/user_helper');
 var common_helper = require('./../helpers/common_helper');
 var admin_helper = require('./../helpers/admin_helper');
 var measurement_helper = require('./../helpers/measurement_helper');
+var exercise_preference_helper = require('./../helpers/exercise_preference_helper');
 
 var logger = config.logger;
 
@@ -220,13 +221,13 @@ router.post('/admin_login', async (req, res) => {
  * @apiParam {String} email Email address
  * @apiParam {String} password Password
  * @apiParam {String} gender Gender of the user. Value can be either male, female or transgender
- * @apiParam {String} date_of_birth Date of birth. Value ISO date in string format
+ * @apiParam {String} [date_of_birth] Date of birth. Value ISO date in string format
  * @apiParam {Number} height Height of the user in inch
  * @apiParam {Number} weight Weight of the user in KG
  * @apiParam {String} goal User's goal. Value can be from 'Gain Muscle','Gain Flexibility','Lose Fat','Gain Strength','Gain Power','Increase Endurance'
  * @apiParam {Number} workout_intensity Workout intensity of user (Between 0 to 100)
  * @apiParam {Number} experience_level Experience level of user (Between 0 to 100)
- * @apiParam {Number} workput_location Workout location of user. Value must be either home or gym
+ * @apiParam {Number} workout_location Workout location of user. Value must be either home or gym
  * 
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -265,10 +266,10 @@ router.post('/user_signup', async (req, res) => {
           },
           errorMessage: "Gender is required",
       },
-      'date_of_birth': {
-        notEmpty: true,
-        errorMessage: "Birth date is required"
-      },
+      // 'date_of_birth': {
+      //   notEmpty: true,
+      //   errorMessage: "Birth date is required"
+      // },
       'height': {
           notEmpty: true,
           errorMessage: "Height is required"
@@ -328,16 +329,19 @@ router.post('/user_signup', async (req, res) => {
         'height':req.body.height,
         'weight':req.body.weight
       };
-  
       let measurement_data = await measurement_helper.insert_measurement(measurement_obj);
+      logger.trace("User's measurement has been inserted");
 
       var excercise_preference = {
-        'workout_intensity': req.body.workout_intensity,
-        'experience_level': req.body.experience_level,
-        'workout_location': req.body.workout_location
-      }
+        'userId': user_data.user._id,
+        'workoutIntensity': req.body.workout_intensity,
+        'experienceLevel': req.body.experience_level,
+        'workoutLocation': req.body.workout_location
+      };
+      let excercise_preference_data = await exercise_preference_helper.insert_prefernece(excercise_preference);
+      logger.trace("User's exercise preference has been inserted");
 
-      let excercise_preference_data = await measurement_helper.insert_measurement(measurement_obj);
+      res.status(config.OK_STATUS).json({"status":1,"message":"User registered successfully"});
     }
   } else {
     logger.error("Validation Error = ", errors);
