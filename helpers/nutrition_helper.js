@@ -21,6 +21,19 @@ nutrition_helper.get_all_nutrition = async () => {
     }
 }
 
+nutrition_helper.get_nutrition_by_id = async (nutrition_id) => {
+    try {
+        let resp = await Nutrition.findOne({ _id: nutrition_id });
+        if (!resp) {
+            return { "status": 2, "message": "Nutrition not found" };
+        } else {
+            return { "status": 1, "message": "Nutrition found", "nutrition":resp };
+        }
+    } catch(err){
+        return {"status":0,"error":err};
+    }
+}
+
 /*
  * insert_nutrition is used to insert into nutrition collection
  * 

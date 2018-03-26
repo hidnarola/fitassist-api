@@ -29,6 +29,28 @@ router.get('/', async (req, res) => {
 });
 
 /**
+ * @api {get} /admin/nutrition/:nutrition_id Nutrition - Get by ID
+ * @apiName Nutrition - Get by ID
+ * @apiGroup Admin
+ * 
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * 
+ * @apiSuccess (Success 200) {Array} nutrition nutrition's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get('/:nutrition_id', async (req, res) => {
+    logger.trace("Get nutrition by ID API called : ",req.params.nutrition_id);
+    var resp_data = await nutrition_helper.get_nutrition_by_id(req.params.nutrition_id);
+    if(resp_data.status == 0){
+        logger.error("Error occured while fetching nutrition = ",resp_data)
+        res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+        logger.trace("Nutrition got successfully = ",resp_data);
+        res.status(config.OK_STATUS).json(resp_data);
+    }
+});
+
+/**
  * @api {post} /admin/nutrition Nutrition Add
  * @apiName Nutrition Add
  * @apiGroup Admin
