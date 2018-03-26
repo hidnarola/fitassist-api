@@ -4,42 +4,42 @@ var router = express.Router();
 var config = require('../../config');
 var logger = config.logger;
 
-var nutrition_helper = require('../../helpers/nutrition_helper');
+var equipment_category_helper = require('../../helpers/equipment_category_helper');
 
 /**
- * @api {get} / Nutrition - Get all
- * @apiName Nutrition - Get all
+ * @api {get} / Equipment category - Get all
+ * @apiName Equipment category - Get all
  * @apiGroup Admin
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
- * @apiSuccess (Success 200) {Array} nutritions Array of nutrition's document
+ * @apiSuccess (Success 200) {Array} equipment_categories Array of equipment's categories document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get('/', async (req, res) => {
-    logger.trace("Get all nutrition API called");
-    var resp_data = await nutrition_helper.get_all_nutrition();
+    logger.trace("Get all equipment_category API called");
+    var resp_data = await equipment_category_helper.get_all_equipment_category();
     if(resp_data.status == 0){
-        logger.error("Error occured while fetching nutrition = ",resp_data)
+        logger.error("Error occured while fetching equipment_category = ",resp_data)
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     } else {
-        logger.trace("Nutrition got successfully = ",resp_data);
+        logger.trace("Equipment category got successfully = ",resp_data);
         res.status(config.OK_STATUS).json(resp_data);
     }
 });
 
 /**
- * @api {post} /admin/nutrition Nutrition Add
- * @apiName Nutrition Add
+ * @api {post} /admin/equipment_category Equipment category Add
+ * @apiName Equipment category Add
  * @apiGroup Admin
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
- * @apiParam {String} name Name of nutrition
- * @apiParam {String} [description] Description of nutrition
+ * @apiParam {String} name Name of equipment category
+ * @apiParam {String} [description] Description of equipment category
  * 
- * @apiSuccess (Success 200) {JSON} nutrition Nutrition details
+ * @apiSuccess (Success 200) {JSON} equipment_category Equipment category details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post('/', async (req, res) => {
@@ -53,17 +53,17 @@ router.post('/', async (req, res) => {
     req.checkBody(schema);
     var errors = req.validationErrors();
     if (!errors) {
-        var nutrition_obj = {
+        var equipment_category_obj = {
             "name": req.body.name,
             "description": (req.body.description) ? req.body.description : null
         };
 
-        let nutrition_data = await nutrition_helper.insert_nutrition(nutrition_obj);
-        if (nutrition_data.status === 0) {
-            logger.error("Error while inserting nutrition = ", nutrition_data);
-            res.status(config.BAD_REQUEST).json({ nutrition_data });
+        let equipment_category_data = await equipment_category_helper.insert_equipment_category(equipment_category_obj);
+        if (equipment_category_data.status === 0) {
+            logger.error("Error while inserting equipment_category = ", equipment_category_data);
+            res.status(config.BAD_REQUEST).json({ equipment_category_data });
         } else {
-            res.status(config.OK_STATUS).json(nutrition_data);
+            res.status(config.OK_STATUS).json(equipment_category_data);
         }
     } else {
         logger.error("Validation Error = ", errors);
@@ -72,20 +72,20 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {put} /nutrition/:nutrition_id Nutrition Update
- * @apiName Nutrition Update
+ * @api {put} /equipment_category/:equipment_category_id Equipment category Update
+ * @apiName Equipment category Update
  * @apiGroup Admin
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
- * @apiParam {String} name Nutrition name
- * @apiParam {String} description Nutrition descruption
+ * @apiParam {String} name Equipment category name
+ * @apiParam {String} description Equipment category description
  * 
- * @apiSuccess (Success 200) {JSON} nutrition Nutrition details
+ * @apiSuccess (Success 200) {JSON} equipment_category Equipment category details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put('/:nutrition_id', async (req, res) => {
+router.put('/:equipment_category_id', async (req, res) => {
     var schema = {
         "name": {
             notEmpty: true,
@@ -96,20 +96,20 @@ router.put('/:nutrition_id', async (req, res) => {
     req.checkBody(schema);
     var errors = req.validationErrors();
     if (!errors) {
-        var nutrition_obj = {
+        var equipment_category_obj = {
             "name": req.body.name,
         };
 
         if (req.body.description) {
-            nutrition_obj.description = req.body.description;
+            equipment_category_obj.description = req.body.description;
         }
 
-        let nutrition_data = await nutrition_helper.update_nutrition_by_id(req.params.nutrition_id, nutrition_obj);
-        if (nutrition_data.status === 0) {
-            logger.error("Error while updating nutrition = ", nutrition_data);
-            res.status(config.BAD_REQUEST).json({ nutrition_data });
+        let equipment_category_data = await equipment_category_helper.update_equipment_category_by_id(req.params.equipment_category_id, equipment_category_obj);
+        if (equipment_category_data.status === 0) {
+            logger.error("Error while updating equipment_category = ", equipment_category_data);
+            res.status(config.BAD_REQUEST).json({ equipment_category_data });
         } else {
-            res.status(config.OK_STATUS).json(nutrition_data);
+            res.status(config.OK_STATUS).json(equipment_category_data);
         }
     } else {
         logger.error("Validation Error = ", errors);
@@ -127,11 +127,11 @@ router.put('/:nutrition_id', async (req, res) => {
             if (req.body.is_active && req.body.is_active != null) {
                 obj.is_active = req.body.is_active;
             }
-            nutrition_helper.update_nutrition_by_id(req.body.id, obj, function (resp) {
+            equipment_category_helper.update_equipment_category_by_id(req.body.id, obj, function (resp) {
                 if (resp.status == 0) {
                     res.status(config.INTERNAL_SERVER_ERROR).json({ "error": resp.err });
                 } else {
-                    res.status(config.OK_STATUS).json({ "message": "Nutrition has been updated successfully" });
+                    res.status(config.OK_STATUS).json({ "message": "Equipment category has been updated successfully" });
                 }
             });
         } else {
@@ -145,8 +145,8 @@ router.put('/:nutrition_id', async (req, res) => {
 });
 
 /**
- * @api {delete} /nutrition/:nutrition_id Nutrition Delete
- * @apiName Nutrition Delete 
+ * @api {delete} /equipment_category/:equipment_category_id Equipment category Delete
+ * @apiName Equipment category Delete 
  * @apiGroup Admin
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -154,14 +154,14 @@ router.put('/:nutrition_id', async (req, res) => {
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete('/:nutrition_id', async (req, res) => {
-    logger.trace("Delete Nutrition API - Id = ", req.query.id);
-    let nutrition_data = await nutrition_helper.delete_nutrition_by_id(req.params.nutrition_id);
+router.delete('/:equipment_category_id', async (req, res) => {
+    logger.trace("Delete equipment category API - Id = ", req.query.id);
+    let equipment_category_data = await equipment_category_helper.delete_equipment_category_by_id(req.params.equipment_category_id);
 
-    if (nutrition_data.status === 0) {
-        res.status(config.INTERNAL_SERVER_ERROR).json(nutrition_data);
+    if (equipment_category_data.status === 0) {
+        res.status(config.INTERNAL_SERVER_ERROR).json(equipment_category_data);
     } else {
-        res.status(config.OK_STATUS).json(nutrition_data);
+        res.status(config.OK_STATUS).json(equipment_category_data);
     }
 });
 
