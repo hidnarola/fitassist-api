@@ -7,7 +7,7 @@ var logger = config.logger;
 var nutrition_helper = require('../../helpers/nutrition_helper');
 
 /**
- * @api {get} / Nutrition - Get all
+ * @api {get} /admin/nutrition Nutrition - Get all
  * @apiName Nutrition - Get all
  * @apiGroup Admin
  * 
@@ -72,7 +72,7 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {put} /nutrition/:nutrition_id Nutrition Update
+ * @api {put} /admin/nutrition/:nutrition_id Nutrition Update
  * @apiName Nutrition Update
  * @apiGroup Admin
  * 
@@ -145,7 +145,7 @@ router.put('/:nutrition_id', async (req, res) => {
 });
 
 /**
- * @api {delete} /nutrition/:nutrition_id Nutrition Delete
+ * @api {delete} /admin/nutrition/:nutrition_id Nutrition Delete
  * @apiName Nutrition Delete 
  * @apiGroup Admin
  * 

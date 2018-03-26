@@ -7,7 +7,7 @@ var logger = config.logger;
 var equipment_category_helper = require('../../helpers/equipment_category_helper');
 
 /**
- * @api {get} / Equipment category - Get all
+ * @api {get} /admin/equipment_category Equipment category - Get all
  * @apiName Equipment category - Get all
  * @apiGroup Admin
  * 
@@ -72,7 +72,7 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {put} /equipment_category/:equipment_category_id Equipment category Update
+ * @api {put} /admin/equipment_category/:equipment_category_id Equipment category Update
  * @apiName Equipment category Update
  * @apiGroup Admin
  * 
@@ -145,7 +145,7 @@ router.put('/:equipment_category_id', async (req, res) => {
 });
 
 /**
- * @api {delete} /equipment_category/:equipment_category_id Equipment category Delete
+ * @api {delete} /admin/equipment_category/:equipment_category_id Equipment category Delete
  * @apiName Equipment category Delete 
  * @apiGroup Admin
  * 

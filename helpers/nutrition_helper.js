@@ -12,7 +12,7 @@ nutrition_helper.get_all_nutrition = async () => {
     try {
         var nutrition = await Nutrition.find();
         if (nutrition) {
-            return { "status": 1, "message": "Nutrition's details found", "nutrition": nutrition };
+            return { "status": 1, "message": "Nutrition's details found", "nutritions": nutrition };
         } else {
             return { "status": 2, "message": "No nutrition available" };
         }
