@@ -406,3 +406,15 @@
 [2018-03-27T12:15:21.347] [TRACE] development - image has been uploaded. Image name =  equipment_1522133121297.png
 [2018-03-27T12:15:38.364] [TRACE] development - image has been uploaded. Image name =  equipment_1522133138264.png
 [2018-03-27T12:15:48.564] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:46:13.223] [TRACE] development - Get all equipment API called
+[2018-03-27T12:46:13.235] [TRACE] development - Equipments got successfully =  { status: 1,
+  message: 'Equipments found',
+  equipments: 
+   [ { status: true,
+       createdAt: '2018-03-27T06:34:40.427Z',
+       modifiedAt: '2018-03-27T06:34:40.427Z',
+       _id: '5ab9e6003e44a31c604a8571',
+       name: 'amit',
+       description: 'demo amit',
+       category_id: '5ab9d739f25abc2940429b01',
+       image: 'upload/equipment/equipment_1522133138264.png' } ] }
