@@ -1,4 +1,4 @@
-import { Mongoose } from 'mongoose';
+//import { Mongoose } from 'mongoose';
 
 //Require Mongoose
 var mongoose = require('mongoose');
@@ -10,7 +10,7 @@ var EquipmentSchema = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: false },
     image: { type: String },
-    status: { type: Boolean },
+    status: { type: Boolean, default: true },
     category_id : {type: mongoose.Schema.Types.ObjectId, ref: "equipment_category", required: true},
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }

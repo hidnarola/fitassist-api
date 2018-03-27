@@ -1,5 +1,7 @@
 var express = require('express');
 var path = require('path');
+var fs = require('fs');
+
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -18,6 +20,7 @@ var dbConnect = require('./database/mongoDbConnection');
 var socket = require('./socket/socketServer');
 
 var app = express();
+app.use(fileUpload());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -101,7 +104,7 @@ if (cluster.isMaster) {
   }
 } else {
   var server = app.listen((config.node_port || 3000), function () {
-    console.log('Listening on port ' + (config.node_port || 3000) + '...');
+    //console.log('Listening on port ' + (config.node_port || 3000) + '...');
   });
   socket.socketStartUp(server);
 }
