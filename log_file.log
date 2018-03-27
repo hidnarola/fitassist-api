@@ -1,0 +1,420 @@
+[2018-03-26T17:06:07.575] [TRACE] development - Get all nutrition API called
+[2018-03-26T17:06:07.586] [TRACE] development - Nutrition got successfully =  { status: 1,
+  message: 'Nutrition\'s details found',
+  nutritions: [] }
+[2018-03-26T17:06:36.314] [TRACE] development - Get all nutrition API called
+[2018-03-26T17:06:36.316] [TRACE] development - Nutrition got successfully =  { status: 1,
+  message: 'Nutrition\'s details found',
+  nutritions: [] }
+[2018-03-27T09:13:51.992] [TRACE] development - Get all nutrition API called
+[2018-03-27T09:14:09.742] [TRACE] development - API - User signup called
+[2018-03-27T09:14:09.742] [DEBUG] development - req.body =  { first_name: 'Virendra',
+  last_name: 'Patel',
+  username: 'VPA',
+  email: 'vpa@narola.email',
+  password: 'narola21',
+  gender: 'male',
+  height: 66,
+  weight: 77,
+  goal: 'Lose Fat',
+  workout_intensity: 62,
+  experience_level: 50,
+  workout_location: 'gym' }
+[2018-03-27T09:15:39.623] [TRACE] development - API - Admin login called
+[2018-03-27T09:15:39.623] [DEBUG] development - req.body =  { email: 'ar@narola.email', password: 'narola21' }
+[2018-03-27T09:15:39.624] [TRACE] development - Valid request of login
+[2018-03-27T09:15:39.625] [TRACE] development - Checking for user availability
+[2018-03-27T09:16:05.880] [TRACE] development - Get all nutrition API called
+[2018-03-27T09:16:23.972] [TRACE] development - Get all nutrition API called
+[2018-03-27T09:18:17.210] [TRACE] development - API - User login called
+[2018-03-27T09:18:17.211] [DEBUG] development - req.body =  { email: 'sb@narola.email', password: 'narola21' }
+[2018-03-27T09:18:17.212] [TRACE] development - Valid request of login
+[2018-03-27T09:18:17.212] [TRACE] development - Checking for user availability
+[2018-03-27T09:18:41.003] [TRACE] development - API - User login called
+[2018-03-27T09:18:41.005] [DEBUG] development - req.body =  { email: 'sb@narola.email', password: 'narola21' }
+[2018-03-27T09:18:41.006] [TRACE] development - Valid request of login
+[2018-03-27T09:18:41.006] [TRACE] development - Checking for user availability
+[2018-03-27T09:18:53.241] [TRACE] development - API - User signup called
+[2018-03-27T09:18:53.242] [DEBUG] development - req.body =  { first_name: 'Virendra',
+  last_name: 'Patel',
+  username: 'VPA',
+  email: 'vpa@narola.email',
+  password: 'narola21',
+  gender: 'male',
+  height: 66,
+  weight: 77,
+  goal: 'Lose Fat',
+  workout_intensity: 62,
+  experience_level: 50,
+  workout_location: 'gym' }
+[2018-03-27T10:10:40.996] [TRACE] development - Get all equipment_category API called
+[2018-03-27T10:10:41.005] [TRACE] development - Equipment category got successfully =  { status: 1,
+  message: 'Equipment\'s category details found',
+  equipment_categories: [] }
+[2018-03-27T10:29:43.137] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:30:23.325] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:30:34.851] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:30:48.699] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:31:55.738] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:10.726] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:22.830] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:28.349] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:30.378] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:31.902] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:44.299] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:33:04.433] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:33:31.318] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:33:33.187] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:33:34.041] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:38:18.424] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:39:07.633] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:39:48.380] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:41:46.230] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:44:24.132] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:01.242] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:02.939] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:03.961] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:04.753] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:09.933] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:51.746] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:53.370] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:54.228] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:05.341] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:29.921] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:31.038] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:31.755] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:32.401] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:32.898] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:36.664] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:47:48.408] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:01:16.044] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' } ]
+[2018-03-27T11:01:29.058] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' } ]
+[2018-03-27T11:01:35.700] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' } ]
+[2018-03-27T11:12:59.236] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:13:26.787] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:13:44.039] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:14:24.123] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:15:07.648] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:15:25.780] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:15:40.469] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:16:00.654] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:16:25.986] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:17:18.095] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:17:46.951] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:18:09.267] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:18:48.650] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:18:48.673] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: category_id: Cast to ObjectID failed for value "1" at path "category_id"',
+     name: 'ValidationError' } }
+[2018-03-27T11:19:36.839] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:19:36.852] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: category_id: Cast to ObjectID failed for value "1" at path "category_id"',
+     name: 'ValidationError' } }
+[2018-03-27T11:20:17.429] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:20:51.841] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:20:55.271] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:20:56.126] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:20:56.875] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:21:47.312] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:22:05.589] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:22:13.342] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:22:14.863] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:22:15.589] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:22:16.286] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:22:45.909] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:23:14.238] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:23:57.146] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:24:36.982] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:25:03.929] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:25:03.948] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { name: [Object], category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: name: Path `name` is required., category_id: Path `category_id` is required.',
+     name: 'ValidationError' } }
+[2018-03-27T11:25:23.236] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:25:23.238] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { name: [Object], category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: name: Path `name` is required., category_id: Path `category_id` is required.',
+     name: 'ValidationError' } }
+[2018-03-27T11:25:33.651] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:25:33.652] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { name: [Object], category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: name: Path `name` is required., category_id: Path `category_id` is required.',
+     name: 'ValidationError' } }
+[2018-03-27T11:25:59.008] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:25:59.021] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { name: [Object], category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: name: Path `name` is required., category_id: Path `category_id` is required.',
+     name: 'ValidationError' } }
+[2018-03-27T11:26:00.868] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:26:00.869] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { name: [Object], category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: name: Path `name` is required., category_id: Path `category_id` is required.',
+     name: 'ValidationError' } }
+[2018-03-27T11:26:01.637] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:26:01.639] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { name: [Object], category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: name: Path `name` is required., category_id: Path `category_id` is required.',
+     name: 'ValidationError' } }
+[2018-03-27T11:26:40.597] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:26:40.626] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { name: [Object], category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: name: Path `name` is required., category_id: Path `category_id` is required.',
+     name: 'ValidationError' } }
+[2018-03-27T11:27:05.720] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:27:05.732] [ERROR] development - Error while inserting equipment_category =  { status: 0,
+  message: 'Error occured while inserting equipment',
+  error: 
+   { errors: { name: [Object], category_id: [Object] },
+     _message: 'equipments validation failed',
+     message: 'equipments validation failed: name: Path `name` is required., category_id: Path `category_id` is required.',
+     name: 'ValidationError' } }
+[2018-03-27T11:27:20.909] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:29:27.323] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'description',
+    msg: 'Description is required' } ]
+[2018-03-27T11:29:36.899] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:29:39.467] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:29:41.759] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'description',
+    msg: 'Description is required' } ]
+[2018-03-27T11:29:45.147] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:33:06.747] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:34:56.454] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:38:04.823] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:38:57.916] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:39:32.201] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:39:56.595] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:42:26.886] [TRACE] development - image has been uploaded. Image name =  eqipment_1522131146872.png
+[2018-03-27T11:43:15.467] [TRACE] development - image has been uploaded. Image name =  eqipment_1522131195445.png
+[2018-03-27T11:44:03.975] [TRACE] development - image has been uploaded. Image name =  eqipment_1522131243962.png
+[2018-03-27T11:44:43.177] [TRACE] development - image has been uploaded. Image name =  eqipment_1522131283165.png
+[2018-03-27T11:45:15.424] [TRACE] development - image has been uploaded. Image name =  eqipment_1522131315407.png
+[2018-03-27T11:45:49.258] [TRACE] development - image has been uploaded. Image name =  eqipment_1522131349180.png
+[2018-03-27T11:46:11.349] [TRACE] development - image has been uploaded. Image name =  equipment_1522131371307.png
+[2018-03-27T11:46:57.586] [TRACE] development - image has been uploaded. Image name =  equipment_1522131417567.png
+[2018-03-27T11:47:14.857] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' } ]
+[2018-03-27T11:47:17.933] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:47:20.228] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:47:22.390] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:47:25.833] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T11:47:28.234] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'description',
+    msg: 'Description is required' } ]
+[2018-03-27T11:47:30.118] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:48:26.865] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:48:45.737] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:49:08.746] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T11:49:11.388] [TRACE] development - image has been uploaded. Image name =  equipment_1522131551377.png
+[2018-03-27T11:49:34.488] [ERROR] development - Image format is invalid
+[2018-03-27T11:50:50.417] [TRACE] development - image has been uploaded. Image name =  equipment_1522131650409.png
+[2018-03-27T12:03:00.915] [TRACE] development - image has been uploaded. Image name =  equipment_1522132380887.png
+[2018-03-27T12:03:56.748] [TRACE] development - image has been uploaded. Image name =  equipment_1522132436740.png
+[2018-03-27T12:04:40.442] [TRACE] development - image has been uploaded. Image name =  equipment_1522132480421.png
+[2018-03-27T12:05:26.916] [TRACE] development - image has been uploaded. Image name =  equipment_1522132526912.png
+[2018-03-27T12:06:01.360] [TRACE] development - image has been uploaded. Image name =  equipment_1522132561356.png
+[2018-03-27T12:07:49.036] [TRACE] development - image has been uploaded. Image name =  equipment_1522132669000.png
+[2018-03-27T12:08:25.734] [TRACE] development - image has been uploaded. Image name =  equipment_1522132705695.png
+[2018-03-27T12:09:14.889] [TRACE] development - image has been uploaded. Image name =  equipment_1522132754856.png
+[2018-03-27T12:09:15.838] [TRACE] development - image has been uploaded. Image name =  equipment_1522132755824.png
+[2018-03-27T12:09:16.745] [TRACE] development - image has been uploaded. Image name =  equipment_1522132756736.png
+[2018-03-27T12:09:50.944] [TRACE] development - image has been uploaded. Image name =  equipment_1522132790846.png
+[2018-03-27T12:10:10.738] [TRACE] development - image has been uploaded. Image name =  equipment_1522132810710.png
+[2018-03-27T12:10:15.886] [TRACE] development - image has been uploaded. Image name =  equipment_1522132815833.png
+[2018-03-27T12:10:46.997] [TRACE] development - image has been uploaded. Image name =  equipment_1522132846969.png
+[2018-03-27T12:11:00.731] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:11:35.470] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:11:59.959] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:12:06.931] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:12:41.909] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:13:05.300] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:13:17.369] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:13:20.653] [TRACE] development - image has been uploaded. Image name =  equipment_1522133000644.png
+[2018-03-27T12:13:35.966] [TRACE] development - image has been uploaded. Image name =  equipment_1522133015932.png
+[2018-03-27T12:13:39.851] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:13:41.412] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:13:47.185] [TRACE] development - image has been uploaded. Image name =  equipment_1522133027169.png
+[2018-03-27T12:13:59.040] [TRACE] development - image has been uploaded. Image name =  equipment_1522133039024.png
+[2018-03-27T12:14:30.080] [TRACE] development - image has been uploaded. Image name =  equipment_1522133069994.png
+[2018-03-27T12:14:54.084] [TRACE] development - image has been uploaded. Image name =  equipment_1522133094056.png
+[2018-03-27T12:15:02.989] [TRACE] development - image has been uploaded. Image name =  equipment_1522133102978.png
+[2018-03-27T12:15:04.979] [TRACE] development - image has been uploaded. Image name =  equipment_1522133104973.png
+[2018-03-27T12:15:06.298] [TRACE] development - image has been uploaded. Image name =  equipment_1522133106272.png
+[2018-03-27T12:15:21.347] [TRACE] development - image has been uploaded. Image name =  equipment_1522133121297.png
+[2018-03-27T12:15:38.364] [TRACE] development - image has been uploaded. Image name =  equipment_1522133138264.png
+[2018-03-27T12:15:48.564] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T12:46:13.223] [TRACE] development - Get all equipment API called
+[2018-03-27T12:46:13.235] [TRACE] development - Equipments got successfully =  { status: 1,
+  message: 'Equipments found',
+  equipments: 
+   [ { status: true,
+       createdAt: '2018-03-27T06:34:40.427Z',
+       modifiedAt: '2018-03-27T06:34:40.427Z',
+       _id: '5ab9e6003e44a31c604a8571',
+       name: 'amit',
+       description: 'demo amit',
+       category_id: '5ab9d739f25abc2940429b01',
+       image: 'upload/equipment/equipment_1522133138264.png' } ] }
