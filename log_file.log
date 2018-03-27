@@ -1,0 +1,128 @@
+[2018-03-26T17:06:07.575] [TRACE] development - Get all nutrition API called
+[2018-03-26T17:06:07.586] [TRACE] development - Nutrition got successfully =  { status: 1,
+  message: 'Nutrition\'s details found',
+  nutritions: [] }
+[2018-03-26T17:06:36.314] [TRACE] development - Get all nutrition API called
+[2018-03-26T17:06:36.316] [TRACE] development - Nutrition got successfully =  { status: 1,
+  message: 'Nutrition\'s details found',
+  nutritions: [] }
+[2018-03-27T09:13:51.992] [TRACE] development - Get all nutrition API called
+[2018-03-27T09:14:09.742] [TRACE] development - API - User signup called
+[2018-03-27T09:14:09.742] [DEBUG] development - req.body =  { first_name: 'Virendra',
+  last_name: 'Patel',
+  username: 'VPA',
+  email: 'vpa@narola.email',
+  password: 'narola21',
+  gender: 'male',
+  height: 66,
+  weight: 77,
+  goal: 'Lose Fat',
+  workout_intensity: 62,
+  experience_level: 50,
+  workout_location: 'gym' }
+[2018-03-27T09:15:39.623] [TRACE] development - API - Admin login called
+[2018-03-27T09:15:39.623] [DEBUG] development - req.body =  { email: 'ar@narola.email', password: 'narola21' }
+[2018-03-27T09:15:39.624] [TRACE] development - Valid request of login
+[2018-03-27T09:15:39.625] [TRACE] development - Checking for user availability
+[2018-03-27T09:16:05.880] [TRACE] development - Get all nutrition API called
+[2018-03-27T09:16:23.972] [TRACE] development - Get all nutrition API called
+[2018-03-27T09:18:17.210] [TRACE] development - API - User login called
+[2018-03-27T09:18:17.211] [DEBUG] development - req.body =  { email: 'sb@narola.email', password: 'narola21' }
+[2018-03-27T09:18:17.212] [TRACE] development - Valid request of login
+[2018-03-27T09:18:17.212] [TRACE] development - Checking for user availability
+[2018-03-27T09:18:41.003] [TRACE] development - API - User login called
+[2018-03-27T09:18:41.005] [DEBUG] development - req.body =  { email: 'sb@narola.email', password: 'narola21' }
+[2018-03-27T09:18:41.006] [TRACE] development - Valid request of login
+[2018-03-27T09:18:41.006] [TRACE] development - Checking for user availability
+[2018-03-27T09:18:53.241] [TRACE] development - API - User signup called
+[2018-03-27T09:18:53.242] [DEBUG] development - req.body =  { first_name: 'Virendra',
+  last_name: 'Patel',
+  username: 'VPA',
+  email: 'vpa@narola.email',
+  password: 'narola21',
+  gender: 'male',
+  height: 66,
+  weight: 77,
+  goal: 'Lose Fat',
+  workout_intensity: 62,
+  experience_level: 50,
+  workout_location: 'gym' }
+[2018-03-27T10:10:40.996] [TRACE] development - Get all equipment_category API called
+[2018-03-27T10:10:41.005] [TRACE] development - Equipment category got successfully =  { status: 1,
+  message: 'Equipment\'s category details found',
+  equipment_categories: [] }
+[2018-03-27T10:29:43.137] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:30:23.325] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:30:34.851] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:30:48.699] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:31:55.738] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:10.726] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:22.830] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:28.349] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:30.378] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:31.902] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body', param: 'image', msg: 'Image is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-27T10:32:44.299] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:33:04.433] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:33:31.318] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:33:33.187] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:33:34.041] [ERROR] development - Validation Error =  [ { location: 'body', param: 'image', msg: 'Image is required' } ]
+[2018-03-27T10:38:18.424] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:39:07.633] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:39:48.380] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:41:46.230] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:44:24.132] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:01.242] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:02.939] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:03.961] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:04.753] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:09.933] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:51.746] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:53.370] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:45:54.228] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:05.341] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:29.921] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:31.038] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:31.755] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:32.401] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:32.898] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-27T10:46:36.664] [INFO] development - Image not available to upload. Executing next instruction

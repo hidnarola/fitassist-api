@@ -32,6 +32,8 @@ equipment_helper.get_all_equipment = async () => {
  * @developed by "ar"
  */
 equipment_helper.insert_equipment = async (equipment_object) => {
+    console.log(equipment_object);
+    return ;
     let equipment = new Equipment(equipment_object);
     try {
         let equipment_data = await equipment.save();

@@ -348,4 +348,5 @@ router.post('/user_signup', async (req, res) => {
     res.status(config.BAD_REQUEST).json({ message: errors });
   }
 });
+
 module.exports = router;
