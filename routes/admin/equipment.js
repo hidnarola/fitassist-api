@@ -33,39 +33,42 @@ router.get("/", async (req, res) => {
   });
 
   /**
- * @api {get} /admin/equipment/equipment_id Equipment - Get equipment by ID
- * @apiName Equipment - Get all
+ * @api {get} /admin/equipment/equipment_id Equipment - Get by ID
+ * @apiName Equipment - Get equipment by ID
  * @apiGroup Admin
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
- * @apiSuccess (Success 200) {Array} equipments Array of equipments document
+ * * @apiParam {String} equipment_id ID of equipment
+
+ * @apiSuccess (Success 200) {Array} equipments Array of equipment document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/", async (req, res) => {
-    logger.trace("Get all equipment API called");
-    var resp_data = await equipment_helper.get_all_equipment();
-    if (resp_data.status == 0) {
-      logger.error("Error occured while fetching equipment = ", resp_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-      logger.trace("Equipments got successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    }
-  });
+router.get("/:equipment_id", async (req, res) => {
+  equipment_id = req.params.equipment_id;
+  logger.trace("Get all equipment API called");
+  var resp_data = await equipment_helper.get_equipment_id(equipment_id);
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching equipment = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Equipments got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
 
 /**
- * @api {post} /admin/equipment Equipment category Add
- * @apiName Equipment category Add
+ * @api {post} /admin/equipment Equipment Add
+ * @apiName Equipment Equipment Add
  * @apiGroup Admin
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
- * @apiParam {String} name Name of equipment category
- * @apiParam {String} [description] Description of equipment category
+ * @apiParam {String} name Name of equipment Equipment
+ * @apiParam {String} [description] Description of equipment
+ * @apiParam {file} [equipment_img] Equipment image
  *
- * @apiSuccess (Success 200) {JSON} equipment Equipment category details
+ * @apiSuccess (Success 200) {JSON} equipment Equipment details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
@@ -123,7 +126,7 @@ router.post("/", async (req, res) => {
             }
         } else {
             logger.info("Image not available to upload. Executing next instruction");
-            res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
         }
         equipment_obj.image='upload/equipment/' + filename;
         
@@ -143,17 +146,18 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/equipment/:equipment_id Equipment category Update
- * @apiName Equipment category Update
+ * @api {put} /admin/equipment/:equipment_id Equipment Update
+ * @apiName Equipment Update
  * @apiGroup Admin
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
- * @apiParam {String} name Equipment category name
- * @apiParam {String} description Equipment category description
- *
- * @apiSuccess (Success 200) {JSON} equipment Equipment category details
+ * @apiParam {String} name Name of equipment Equipment
+ * @apiParam {String} [description] Description of equipment
+ * @apiParam {file} [equipment_img] Equipment image
+ * @apiParam {String} category_id Equipment's Category id
+ * @apiSuccess (Success 200) {JSON} equipment Equipment details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:equipment_id", async (req, res) => {

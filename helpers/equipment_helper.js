@@ -21,6 +21,27 @@ equipment_helper.get_all_equipment = async () => {
     }
 }
 
+
+/*
+ * get_equipment_id is used to fetch equipment by ID
+ * 
+ * @return  status 0 - If any internal error occured while fetching equipment data, with error
+ *          status 1 - If equipment data found, with equipment object
+ *          status 2 - If equipment not found, with appropriate message
+ */
+equipment_helper.get_equipment_id = async (id) => {
+    try {
+        var equipment = await Equipment.find({_id:id});
+        if (equipment) {
+            return { "status": 1, "message": "Equipments found", "equipments": equipment };
+        } else {
+            return { "status": 2, "message": "No equipment available" };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while finding equipment", "error": err }
+    }
+}
+
 /*
  * insert_equipment is used to insert into equipment collection
  * 
