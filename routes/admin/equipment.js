@@ -1,4 +1,8 @@
 var express = require("express");
+var fs = require("fs");
+var path = require("path");
+
+
 var router = express.Router();
 
 var config = require("../../config");
@@ -45,83 +49,77 @@ router.get -
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
-  var schema = {
-    name: {
-      notEmpty: true,
-      errorMessage: "Name is required"
-    },
-    description: {
-      notEmpty: false,
-      errorMessage: "Description is required"
-    },
-    image: {
-      notEmpty: true,
-      errorMessage: "Image is required"
-    },
-    category_id: {
-      notEmpty: true,
-      errorMessage: "Category is required"
-    }
-  };
-
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-  if (!errors) {
-    var equipment_obj = 
-    {
-      name: req.body.name,
-      description: req.body.description ? req.body.description : null,
-      category_id:req.body.category_id,
-      image:"imagename"
+    var schema = {
+        "name": {
+            notEmpty: true,
+            errorMessage: "Name is required"
+        },
+        "description": {
+            notEmpty: true,
+            errorMessage: "Description is required"
+        },
+        "category_id": {
+            notEmpty: true,
+            errorMessage: "Category is required"
+        }
     };
     
-    return res.send(equipment_obj);
+    req.checkBody(schema);
+    var errors = req.validationErrors();
+    if (!errors) {
+        //console.log("Data = ",req.body);
+        //console.log("Files = ",req.files);
+        var equipment_obj = {
+            "name": req.body.name,
+            "description": (req.body.description) ? req.body.description : null,
+            "category_id":req.body.category_id
+        };
 
-    // image upload
+        //image upload
+        var filename;
+        if (req.files && req.files['equipment_img']) {
+            var file = req.files['equipment_img'];
+            var dir = "./uploads/equipment";
+            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-    if (req.files && req.files['equipment_img']) {
-        var file = req.files['equipment_img'];
-        var dir = "./uploads/equipment_img";
-        var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-        if (mimetype.indexOf(file.mimetype) != -1) {
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir);
-            }
-            extention = path.extname(file.name);
-            filename = "equipment_" + new Date().getTime() + extention;
-            file.mv(dir + '/' + filename, function (err) {
-                if (err) {
-                    logger.error("There was an issue in uploading image");
-                    //callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
-                } else {
-                    logger.trace("image has been uploaded. Image name = ", filename);
-                    //callback(null, filename);
+            if (mimetype.indexOf(file.mimetype) != -1) {
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir);
                 }
-            });
+                extention = path.extname(file.name);
+                filename = "equipment_" + new Date().getTime() + extention;
+                file.mv(dir + '/' + filename, function (err) {
+                    if (err) {
+                        logger.error("There was an issue in uploading image");
+                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
+                    } else {
+                        logger.trace("image has been uploaded. Image name = ", filename);
+                        //return res.send(200, "null");
+                    }
+                });
+            } else {
+                logger.error("Image format is invalid");
+                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+            }
         } else {
-            logger.error("Image format is invalid");
-            //callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+            logger.info("Image not available to upload. Executing next instruction");
+            res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+        }
+        equipment_obj.image='upload/equipment/' + filename;
+        
+        //End image upload
+        
+        let equipment_data = await equipment_helper.insert_equipment(equipment_obj);
+        if (equipment_data.status === 0) {
+            logger.error("Error while inserting equipment = ", equipment_data);
+            res.status(config.BAD_REQUEST).json({ equipment_data });
+        } else {
+            res.status(config.OK_STATUS).json(equipment_data);
         }
     } else {
-        logger.info("Image not available to upload. Executing next instruction");
-        //callback(null, null);
+        logger.error("Validation Error = ", errors);
+        res.status(config.BAD_REQUEST).json({ message: errors });
     }
-
-    //end of image upload
-   
-    
-    let equipment_data = await equipment_helper.insert_equipment(equipment_obj);
-    if (equipment_data.status === 0) {
-      logger.error("Error while inserting equipment = ", equipment_data);
-      res.status(config.BAD_REQUEST).json({ equipment_data });
-    } else {
-      res.status(config.OK_STATUS).json(equipment_data);
-    }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
-  }
 });
 
 /**
@@ -139,69 +137,81 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:equipment_id", async (req, res) => {
-  var schema = {
-    name: {
-      notEmpty: true,
-      errorMessage: "Name is required"
-    }
-  };
-
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-  if (!errors) {
-    var equipment_obj = {
-      name: req.body.name
+    
+    var schema = {
+        "name": {
+            notEmpty: true,
+            errorMessage: "Name is required"
+        },
+        "description": {
+            notEmpty: true,
+            errorMessage: "Description is required"
+        },
+        "category_id": {
+            notEmpty: true,
+            errorMessage: "Category is required"
+        }
     };
 
-    if (req.body.description) {
-      equipment_obj.description = req.body.description;
-    }
+    req.checkBody(schema);
+    var errors = req.validationErrors();
+    if (!errors) {
+        var equipment_obj = {
+            "name": req.body.name,
+            "description": (req.body.description) ? req.body.description : null,
+            "category_id":req.body.category_id
+        };
 
-    let equipment_data = await equipment_helper.update_equipment_by_id(
-      req.params.equipment_id,
-      equipment_obj
-    );
-    if (equipment_data.status === 0) {
-      logger.error("Error while updating equipment = ", equipment_data);
-      res.status(config.BAD_REQUEST).json({ equipment_data });
-    } else {
-      res.status(config.OK_STATUS).json(equipment_data);
-    }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
-  }
+// Image upload
+        var filename;
+        if (req.files && req.files['equipment_img']) {
+            var file = req.files['equipment_img'];
+            var dir = "./uploads/equipment";
+            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-  req.checkBody(schema);
-  req.getValidationResult().then(function(result) {
-    if (result.isEmpty()) {
-      var obj = {
-        question: req.body.question,
-        answer: req.body.answer,
-        category_id: req.body.category_id
-      };
-      if (req.body.is_active && req.body.is_active != null) {
-        obj.is_active = req.body.is_active;
-      }
-      equipment_helper.update_equipment_by_id(req.body.id, obj, function(resp) {
-        if (resp.status == 0) {
-          res.status(config.INTERNAL_SERVER_ERROR).json({ error: resp.err });
+            if (mimetype.indexOf(file.mimetype) != -1) {
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir);
+                }
+                extention = path.extname(file.name);
+                filename = "equipment_" + new Date().getTime() + extention;
+                file.mv(dir + '/' + filename, function (err) {
+                    if (err) {
+                        logger.error("There was an issue in uploading image");
+                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
+                    } else {
+                        logger.trace("image has been uploaded. Image name = ", filename);
+                        //return res.send(200, "null");
+                    }
+                });
+            } else {
+                logger.error("Image format is invalid");
+                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+            }
         } else {
-          res
-            .status(config.OK_STATUS)
-            .json({
-              message: "Equipment category has been updated successfully"
-            });
+            logger.info("Image not available to upload. Executing next instruction");
+            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
         }
-      });
+       
+        //End image upload
+        if(filename)
+        {
+            equipment_obj.image='upload/equipment/' + filename;
+        }
+
+        console.log(equipment_obj);
+        let equipment_data = await equipment_helper.update_equipment_by_id(req.params.equipment_id, equipment_obj);
+        if (equipment_data.status === 0) {
+            logger.error("Error while updating equipment = ", equipment_data);
+            res.status(config.BAD_REQUEST).json({ equipment_data });
+        } else {
+            res.status(config.OK_STATUS).json(equipment_data);
+        }
     } else {
-      var result = {
-        message: "Validation Error",
-        error: result.array()
-      };
-      res.status(config.VALIDATION_FAILURE_STATUS).json(result);
+        logger.error("Validation Error = ", errors);
+        res.status(config.BAD_REQUEST).json({ message: errors });
     }
-  });
+
 });
 
 /**
