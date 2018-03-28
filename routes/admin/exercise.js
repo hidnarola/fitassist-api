@@ -8,68 +8,68 @@ var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
 
-var equipment_helper = require("../../helpers/equipment_helper");
+var exercise_helper = require("../../helpers/exercise_helper");
 
 /**
- * @api {get} /admin/equipment Equipment - Get all
- * @apiName Equipment - Get all
+ * @api {get} /admin/exercise Exercise - Get all
+ * @apiName Exercise - Get all
  * @apiGroup Admin
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
- * @apiSuccess (Success 200) {Array} equipments Array of equipments document
+ * @apiSuccess (Success 200) {Array} Exercise Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-    logger.trace("Get all equipment API called");
-    var resp_data = await equipment_helper.get_all_equipment();
+    logger.trace("Get all exercise API called");
+    var resp_data = await exercise_helper.get_all_exercise();
     if (resp_data.status == 0) {
-      logger.error("Error occured while fetching equipment = ", resp_data);
+      logger.error("Error occured while fetching exercise = ", resp_data);
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     } else {
-      logger.trace("Equipments got successfully = ", resp_data);
+      logger.trace("Exercises got successfully = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
     }
   });
 
 /**
- * @api {get} /admin/equipment/equipment_id Equipment - Get by ID
- * @apiName Equipment - Get equipment by ID
+ * @api {get} /admin/exercise/exercise_id Exercise - Get by ID
+ * @apiName Exercise - Get Exercise by ID
  * @apiGroup Admin
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * * @apiParam {String} equipment_id ID of equipment
+ * * @apiParam {String} exercise_id ID of Exercise
 
- * @apiSuccess (Success 200) {Array} equipments Array of equipment document
+ * @apiSuccess (Success 200) {Array} Exercises Array of Exercise document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:equipment_id", async (req, res) => {
-  equipment_id = req.params.equipment_id;
+router.get("/:exercise_id", async (req, res) => {
+    exercise_id = req.params.exercise_id;
   logger.trace("Get all equipment API called");
-  var resp_data = await equipment_helper.get_equipment_id(equipment_id);
+  var resp_data = await exercise_helper.get_exercise_id(exercise_id);
   if (resp_data.status == 0) {
-    logger.error("Error occured while fetching equipment = ", resp_data);
+    logger.error("Error occured while fetching exercise = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.trace("Equipments got successfully = ", resp_data);
+    logger.trace("Exercises got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
 /**
- * @api {post} /admin/equipment Equipment Add
- * @apiName Equipment Equipment Add
+ * @api {post} /admin/exercise Exercise Add
+ * @apiName Exercise Exercise Add
  * @apiGroup Admin
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} category_id Equipment's Category id
- * @apiParam {String} name Name of equipment Equipment
- * @apiParam {String} name Name of equipment Equipment
- * @apiParam {String} [description] Description of equipment
- * @apiParam {file} [equipment_img] Equipment image
+ * @apiParam {String} category_id Exercise's Category id
+ * @apiParam {String} name Name of Exercise
+ * @apiParam {String} name Name of Exercise
+ * @apiParam {String} [description] Description of Exercise
+ * @apiParam {file} [equipment_img] Exercise image
  *
- * @apiSuccess (Success 200) {JSON} equipment Equipment details
+ * @apiSuccess (Success 200) {JSON} exercise Exercise details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
@@ -129,7 +129,7 @@ router.post("/", async (req, res) => {
             logger.info("Image not available to upload. Executing next instruction");
             //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
         }
-        equipment_obj.image='uploads/equipment/' + filename;
+        equipment_obj.image='upload/equipment/' + filename;
         
         //End image upload
         
@@ -147,18 +147,17 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/equipment/:equipment_id Equipment Update
- * @apiName Equipment Update
+ * @api {put} /admin/exercise Exercise - Update
+ * @apiName Exercise - Update
  * @apiGroup Admin
  *
- * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
- * @apiParam {String} name Name of equipment Equipment
- * @apiParam {String} [description] Description of equipment
- * @apiParam {file} [equipment_img] Equipment image
- * @apiParam {String} category_id Equipment's Category id
- * @apiSuccess (Success 200) {JSON} equipment Equipment details
+ * @apiParam {String} category_id Exercise's Category id
+ * @apiParam {String} name Name of Exercise
+ * @apiParam {String} name Name of Exercise
+ * @apiParam {String} [description] Description of Exercise
+ * @apiParam {file} [equipment_img] Exercise image
+ * @apiSuccess (Success 200) {Array} Exercise Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:equipment_id", async (req, res) => {
@@ -243,8 +242,8 @@ router.put("/:equipment_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/equipment/:equipment_id Equipment Delete
- * @apiName Equipment Delete
+ * @api {delete} /admin/exercise/:exercise_id Exercise Delete
+ * @apiName Exercise Delete
  * @apiGroup Admin
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -252,16 +251,16 @@ router.put("/:equipment_id", async (req, res) => {
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/:equipment_id", async (req, res) => {
-  logger.trace("Delete equipment API - Id = ", req.query.id);
-  let equipment_data = await equipment_helper.delete_equipment_by_id(
-    req.params.equipment_id
+router.delete("/:exercise_id", async (req, res) => {
+  logger.trace("Delete Exercise API - Id = ", req.query.id);
+  let exercise_data = await exercise_helper.delete_exercise_by_id(
+    req.params.exercise_id
   );
 
-  if (equipment_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
+  if (exercise_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
   } else {
-    res.status(config.OK_STATUS).json(equipment_data);
+    res.status(config.OK_STATUS).json(exercise_data);
   }
 });
 
