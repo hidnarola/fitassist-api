@@ -17,7 +17,7 @@ var exercise_helper = require("../../helpers/exercise_helper");
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
- * @apiSuccess (Success 200) {Array} Exercises Array of Exercises document
+ * @apiSuccess (Success 200) {Array} exercises Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
@@ -40,7 +40,7 @@ router.get("/", async (req, res) => {
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * * @apiParam {String} exercise_id ID of Exercise
 
- * @apiSuccess (Success 200) {Array} Exercises Array of Exercise document
+ * @apiSuccess (Success 200) {Array} exercise Array of Exercise document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:exercise_id", async (req, res) => {
@@ -82,7 +82,8 @@ router.get("/:exercise_id", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
-    
+    console.log(req.files);
+    return res.send(req.files);
     var schema = {
         "name": {
             notEmpty: true,
@@ -165,6 +166,7 @@ router.post("/", async (req, res) => {
 
                     // assuming openFiles is an array of file names
                     async.eachSeries(files, function(file, loop_callback) {
+                        var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
                         if (mimetype.indexOf(file.mimetype) != -1) {
                             if (!fs.existsSync(dir)) {
                                 fs.mkdirSync(dir);
@@ -234,7 +236,7 @@ router.post("/", async (req, res) => {
  * @apiParam {String} name Name of Exercise
  * @apiParam {String} [description] Description of Exercise
  * @apiParam {file} [equipment_img] Exercise image
- * @apiSuccess (Success 200) {Array} Exercise Array of Exercises document
+ * @apiSuccess (Success 200) {Array} exercise Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:exercise_id", async (req, res) => {
@@ -385,7 +387,7 @@ router.put("/:exercise_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:exercise_id", async (req, res) => {
-    return res.send(req.params.exercise_id);
+
   logger.trace("Delete Exercise API - Id = ", req.query.id);
   let exercise_data = await exercise_helper.delete_exercise_by_id(
     req.params.exercise_id

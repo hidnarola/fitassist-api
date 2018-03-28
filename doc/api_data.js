@@ -1087,7 +1087,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "Exercises",
+            "field": "exercise",
             "description": "<p>Array of Exercise document</p>"
           }
         ]
@@ -1136,7 +1136,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "Exercises",
+            "field": "exercises",
             "description": "<p>Array of Exercises document</p>"
           }
         ]
@@ -1219,7 +1219,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "Exercise",
+            "field": "exercise",
             "description": "<p>Array of Exercises document</p>"
           }
         ]
