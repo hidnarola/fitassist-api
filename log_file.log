@@ -1344,3 +1344,787 @@
      description: 'demo amit',
      category_id: '5ab9d739f25abc2940429b01',
      image: 'upload/equipment/equipment_1522133138264.png' } }
+[2018-03-28T15:25:42.536] [TRACE] development - Get all exercise API called
+[2018-03-28T15:25:42.551] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:51:18.432Z',
+       modifiedAt: '2018-03-28T08:51:18.432Z',
+       _id: '5abb57866abdfa1d30eeb02a',
+       name: 'amit',
+       description: 'amit desc',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:52:23.454Z',
+       modifiedAt: '2018-03-28T08:52:23.454Z',
+       _id: '5abb57c73e708221646f757e',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:53:18.083Z',
+       modifiedAt: '2018-03-28T08:53:18.083Z',
+       _id: '5abb57fe3e708221646f7580',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:54:50.060Z',
+       modifiedAt: '2018-03-28T08:54:50.060Z',
+       _id: '5abb585a3e708221646f7582',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' } ] }
+[2018-03-28T15:26:20.966] [TRACE] development - Get all exercise API called
+[2018-03-28T15:26:20.991] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:51:18.432Z',
+       modifiedAt: '2018-03-28T08:51:18.432Z',
+       _id: '5abb57866abdfa1d30eeb02a',
+       name: 'amit',
+       description: 'amit desc',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:52:23.454Z',
+       modifiedAt: '2018-03-28T08:52:23.454Z',
+       _id: '5abb57c73e708221646f757e',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:53:18.083Z',
+       modifiedAt: '2018-03-28T08:53:18.083Z',
+       _id: '5abb57fe3e708221646f7580',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:54:50.060Z',
+       modifiedAt: '2018-03-28T08:54:50.060Z',
+       _id: '5abb585a3e708221646f7582',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' } ] }
+[2018-03-28T15:26:23.540] [TRACE] development - Get all exercise API called
+[2018-03-28T15:26:23.543] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:51:18.432Z',
+       modifiedAt: '2018-03-28T08:51:18.432Z',
+       _id: '5abb57866abdfa1d30eeb02a',
+       name: 'amit',
+       description: 'amit desc',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:52:23.454Z',
+       modifiedAt: '2018-03-28T08:52:23.454Z',
+       _id: '5abb57c73e708221646f757e',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:53:18.083Z',
+       modifiedAt: '2018-03-28T08:53:18.083Z',
+       _id: '5abb57fe3e708221646f7580',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:54:50.060Z',
+       modifiedAt: '2018-03-28T08:54:50.060Z',
+       _id: '5abb585a3e708221646f7582',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' } ] }
+[2018-03-28T15:30:06.832] [TRACE] development - image has been uploaded. Image name =  exercise_1522231206815.png
+[2018-03-28T15:30:06.834] [TRACE] development - image has been uploaded. Image name =  exercise_1522231206815.png
+[2018-03-28T15:30:06.834] [TRACE] development - image has been uploaded. Image name =  exercise_1522231206815.png
+[2018-03-28T15:30:21.728] [TRACE] development - image has been uploaded. Image name =  exercise_1522231221704.png
+[2018-03-28T15:30:21.737] [TRACE] development - image has been uploaded. Image name =  exercise_1522231221704.png
+[2018-03-28T15:30:21.740] [TRACE] development - image has been uploaded. Image name =  exercise_1522231221704.png
+[2018-03-28T15:32:11.077] [TRACE] development - image has been uploaded. Image name =  exercise_1522231331042.png
+[2018-03-28T15:32:11.082] [TRACE] development - image has been uploaded. Image name =  exercise_1522231331042.png
+[2018-03-28T15:32:11.084] [TRACE] development - image has been uploaded. Image name =  exercise_1522231331042.png
+[2018-03-28T15:32:37.665] [TRACE] development - image has been uploaded. Image name =  exercise_1522231357573.png
+[2018-03-28T15:32:37.672] [TRACE] development - image has been uploaded. Image name =  exercise_1522231357573.png
+[2018-03-28T15:32:37.675] [TRACE] development - image has been uploaded. Image name =  exercise_1522231357573.png
+[2018-03-28T15:32:58.905] [TRACE] development - image has been uploaded. Image name =  exercise_1522231378887.png
+[2018-03-28T15:32:58.921] [TRACE] development - image has been uploaded. Image name =  exercise_1522231378887.png
+[2018-03-28T15:32:58.921] [TRACE] development - image has been uploaded. Image name =  exercise_1522231378887.png
+[2018-03-28T15:34:02.136] [TRACE] development - image has been uploaded. Image name =  exercise_1522231442104.png
+[2018-03-28T15:34:02.148] [TRACE] development - image has been uploaded. Image name =  exercise_1522231442104.png
+[2018-03-28T15:34:02.149] [TRACE] development - image has been uploaded. Image name =  exercise_1522231442104.png
+[2018-03-28T15:34:38.748] [TRACE] development - image has been uploaded. Image name =  exercise_1522231478731.png
+[2018-03-28T15:34:38.756] [TRACE] development - image has been uploaded. Image name =  exercise_1522231478731.png
+[2018-03-28T15:34:38.757] [TRACE] development - image has been uploaded. Image name =  exercise_1522231478731.png
+[2018-03-28T15:34:58.996] [TRACE] development - image has been uploaded. Image name =  exercise_1522231498980.png
+[2018-03-28T15:34:59.014] [TRACE] development - image has been uploaded. Image name =  exercise_1522231498980.png
+[2018-03-28T15:34:59.017] [TRACE] development - image has been uploaded. Image name =  exercise_1522231498980.png
+[2018-03-28T15:35:37.887] [TRACE] development - image has been uploaded. Image name =  exercise_1522231537869.png
+[2018-03-28T15:35:37.888] [TRACE] development - image has been uploaded. Image name =  exercise_1522231537869.png
+[2018-03-28T15:35:37.888] [TRACE] development - image has been uploaded. Image name =  exercise_1522231537869.png
+[2018-03-28T15:36:26.693] [TRACE] development - image has been uploaded. Image name =  exercise_1522231586627.png
+[2018-03-28T15:36:26.694] [TRACE] development - image has been uploaded. Image name =  exercise_1522231586627.png
+[2018-03-28T15:36:26.696] [TRACE] development - image has been uploaded. Image name =  exercise_1522231586627.png
+[2018-03-28T15:36:41.079] [TRACE] development - image has been uploaded. Image name =  exercise_1522231601057.png
+[2018-03-28T15:36:41.080] [TRACE] development - image has been uploaded. Image name =  exercise_1522231601057.png
+[2018-03-28T15:36:41.081] [TRACE] development - image has been uploaded. Image name =  exercise_1522231601057.png
+[2018-03-28T15:37:08.407] [TRACE] development - image has been uploaded. Image name =  exercise_1522231628372.png
+[2018-03-28T15:38:07.591] [TRACE] development - image has been uploaded. Image name =  exercise_1522231687545.png
+[2018-03-28T15:38:07.602] [TRACE] development - image has been uploaded. Image name =  exercise_1522231687545.png
+[2018-03-28T15:38:07.621] [TRACE] development - image has been uploaded. Image name =  exercise_1522231687545.png
+[2018-03-28T15:38:50.249] [TRACE] development - image has been uploaded. Image name =  exercise_1522231730234.png
+[2018-03-28T15:38:50.250] [TRACE] development - image has been uploaded. Image name =  exercise_1522231730234.png
+[2018-03-28T15:38:50.251] [TRACE] development - image has been uploaded. Image name =  exercise_1522231730234.png
+[2018-03-28T15:39:14.357] [TRACE] development - image has been uploaded. Image name =  exercise_1522231754252.png
+[2018-03-28T15:39:14.358] [TRACE] development - image has been uploaded. Image name =  exercise_1522231754252.png
+[2018-03-28T15:39:14.358] [TRACE] development - image has been uploaded. Image name =  exercise_1522231754252.png
+[2018-03-28T15:39:50.617] [TRACE] development - image has been uploaded. Image name =  exercise_1522231790600.png
+[2018-03-28T15:39:50.625] [TRACE] development - image has been uploaded. Image name =  exercise_1522231790600.png
+[2018-03-28T15:39:50.626] [TRACE] development - image has been uploaded. Image name =  exercise_1522231790600.png
+[2018-03-28T15:40:44.770] [TRACE] development - image has been uploaded. Image name =  exercise_1522231844745.png
+[2018-03-28T15:40:44.771] [TRACE] development - image has been uploaded. Image name =  exercise_1522231844745.png
+[2018-03-28T15:40:44.771] [TRACE] development - image has been uploaded. Image name =  exercise_1522231844745.png
+[2018-03-28T15:41:41.752] [TRACE] development - image has been uploaded. Image name =  exercise_1522231901736.png
+[2018-03-28T15:41:41.753] [TRACE] development - image has been uploaded. Image name =  exercise_1522231901736.png
+[2018-03-28T15:41:41.754] [TRACE] development - image has been uploaded. Image name =  exercise_1522231901736.png
+[2018-03-28T15:49:17.702] [TRACE] development - image has been uploaded. Image name =  exercise_1522232357684.png
+[2018-03-28T15:49:17.705] [TRACE] development - image has been uploaded. Image name =  exercise_1522232357684.png
+[2018-03-28T15:49:17.711] [TRACE] development - image has been uploaded. Image name =  exercise_1522232357684.png
+[2018-03-28T16:03:47.744] [TRACE] development - image has been uploaded. Image name =  exercise_1522233227739.png
+[2018-03-28T16:03:49.944] [TRACE] development - image has been uploaded. Image name =  exercise_1522233229917.png
+[2018-03-28T16:03:51.240] [TRACE] development - image has been uploaded. Image name =  exercise_1522233231222.png
+[2018-03-28T16:04:10.334] [TRACE] development - image has been uploaded. Image name =  exercise_1522233250296.png
+[2018-03-28T16:04:12.364] [TRACE] development - image has been uploaded. Image name =  exercise_1522233252329.png
+[2018-03-28T16:04:31.933] [TRACE] development - image has been uploaded. Image name =  exercise_1522233271926.png
+[2018-03-28T16:07:18.531] [TRACE] development - image has been uploaded. Image name =  exercise_1522233438523.png
+[2018-03-28T16:07:18.541] [TRACE] development - image has been uploaded. Image name =  exercise_1522233438538.png
+[2018-03-28T16:07:18.545] [TRACE] development - image has been uploaded. Image name =  exercise_1522233438542.png
+[2018-03-28T16:14:14.949] [TRACE] development - image has been uploaded. Image name =  exercise_1522233854928.png
+[2018-03-28T16:14:14.959] [TRACE] development - image has been uploaded. Image name =  exercise_1522233854952.png
+[2018-03-28T16:14:14.964] [TRACE] development - image has been uploaded. Image name =  exercise_1522233854959.png
+[2018-03-28T16:14:32.723] [TRACE] development - image has been uploaded. Image name =  exercise_1522233872718.png
+[2018-03-28T16:14:32.728] [TRACE] development - image has been uploaded. Image name =  exercise_1522233872724.png
+[2018-03-28T16:14:32.731] [TRACE] development - image has been uploaded. Image name =  exercise_1522233872728.png
+[2018-03-28T16:15:02.529] [TRACE] development - image has been uploaded. Image name =  exercise_1522233902506.png
+[2018-03-28T16:15:02.540] [TRACE] development - image has been uploaded. Image name =  exercise_1522233902530.png
+[2018-03-28T16:15:02.542] [TRACE] development - image has been uploaded. Image name =  exercise_1522233902540.png
+[2018-03-28T16:15:55.349] [TRACE] development - image has been uploaded. Image name =  exercise_1522233955333.png
+[2018-03-28T16:15:55.353] [TRACE] development - image has been uploaded. Image name =  exercise_1522233955350.png
+[2018-03-28T16:15:55.356] [TRACE] development - image has been uploaded. Image name =  exercise_1522233955353.png
+[2018-03-28T16:16:34.139] [TRACE] development - image has been uploaded. Image name =  exercise_1522233994118.png
+[2018-03-28T16:16:34.142] [TRACE] development - image has been uploaded. Image name =  exercise_1522233994139.jpg
+[2018-03-28T16:16:34.145] [TRACE] development - image has been uploaded. Image name =  exercise_1522233994142.png
+[2018-03-28T16:16:34.146] [TRACE] development - image has been uploaded. Image name =  exercise_1522233994145.png
+[2018-03-28T16:16:34.148] [TRACE] development - image has been uploaded. Image name =  exercise_1522233994147.png
+[2018-03-28T16:16:34.150] [TRACE] development - image has been uploaded. Image name =  exercise_1522233994149.png
+[2018-03-28T16:16:34.153] [TRACE] development - image has been uploaded. Image name =  exercise_1522233994151.png
+[2018-03-28T16:16:34.155] [TRACE] development - image has been uploaded. Image name =  exercise_1522233994153.png
+[2018-03-28T16:19:35.181] [TRACE] development - Get all equipment API called
+[2018-03-28T16:19:35.191] [TRACE] development - Equipments got successfully =  { status: 1,
+  message: 'Equipment found',
+  equipment: 
+   { status: true,
+     createdAt: '2018-03-27T08:45:02.281Z',
+     modifiedAt: '2018-03-27T08:45:02.281Z',
+     _id: '5aba048e961e1a1b08b2337f',
+     name: 'amit',
+     description: 'demo amit',
+     category_id: '5ab9d739f25abc2940429b01',
+     image: 'upload/equipment/undefined' } }
+[2018-03-28T16:21:31.713] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'mainMuscleGroup',
+    msg: 'mainMuscleGroup is required' },
+  { location: 'body',
+    param: 'detailedMuscleGroup',
+    msg: 'detailedMuscleGroup is required' },
+  { location: 'body', param: 'type', msg: 'type\t is required' },
+  { location: 'body',
+    param: 'equipments',
+    msg: 'equipments is required' },
+  { location: 'body',
+    param: 'difficltyLevel',
+    msg: 'difficltyLevel is required' } ]
+[2018-03-28T16:22:58.154] [TRACE] development - image has been uploaded. Image name =  exercise_1522234378138.png
+[2018-03-28T16:22:58.158] [TRACE] development - image has been uploaded. Image name =  exercise_1522234378154.jpg
+[2018-03-28T16:22:58.163] [TRACE] development - image has been uploaded. Image name =  exercise_1522234378158.png
+[2018-03-28T16:22:58.166] [TRACE] development - image has been uploaded. Image name =  exercise_1522234378163.png
+[2018-03-28T16:22:58.168] [TRACE] development - image has been uploaded. Image name =  exercise_1522234378166.png
+[2018-03-28T16:22:58.170] [TRACE] development - image has been uploaded. Image name =  exercise_1522234378168.png
+[2018-03-28T16:22:58.172] [TRACE] development - image has been uploaded. Image name =  exercise_1522234378170.png
+[2018-03-28T16:22:58.175] [TRACE] development - image has been uploaded. Image name =  exercise_1522234378173.png
+[2018-03-28T16:23:12.869] [TRACE] development - image has been uploaded. Image name =  exercise_1522234392848.png
+[2018-03-28T16:23:12.878] [TRACE] development - image has been uploaded. Image name =  exercise_1522234392871.jpg
+[2018-03-28T16:23:12.885] [TRACE] development - image has been uploaded. Image name =  exercise_1522234392878.png
+[2018-03-28T16:23:12.889] [TRACE] development - image has been uploaded. Image name =  exercise_1522234392885.png
+[2018-03-28T16:23:12.893] [TRACE] development - image has been uploaded. Image name =  exercise_1522234392890.png
+[2018-03-28T16:23:12.895] [TRACE] development - image has been uploaded. Image name =  exercise_1522234392893.png
+[2018-03-28T16:23:12.898] [TRACE] development - image has been uploaded. Image name =  exercise_1522234392895.png
+[2018-03-28T16:23:12.900] [TRACE] development - image has been uploaded. Image name =  exercise_1522234392898.png
+[2018-03-28T16:23:55.644] [TRACE] development - image has been uploaded. Image name =  exercise_1522234435642.png
+[2018-03-28T16:23:55.671] [TRACE] development - image has been uploaded. Image name =  exercise_1522234435645.jpg
+[2018-03-28T16:23:55.675] [TRACE] development - image has been uploaded. Image name =  exercise_1522234435671.png
+[2018-03-28T16:23:55.685] [TRACE] development - image has been uploaded. Image name =  exercise_1522234435675.png
+[2018-03-28T16:23:55.688] [TRACE] development - image has been uploaded. Image name =  exercise_1522234435685.png
+[2018-03-28T16:23:55.692] [TRACE] development - image has been uploaded. Image name =  exercise_1522234435689.png
+[2018-03-28T16:23:55.696] [TRACE] development - image has been uploaded. Image name =  exercise_1522234435692.png
+[2018-03-28T16:23:55.704] [TRACE] development - image has been uploaded. Image name =  exercise_1522234435696.png
+[2018-03-28T16:24:15.536] [TRACE] development - image has been uploaded. Image name =  exercise_1522234455534.png
+[2018-03-28T16:24:15.539] [TRACE] development - image has been uploaded. Image name =  exercise_1522234455536.jpg
+[2018-03-28T16:24:15.541] [TRACE] development - image has been uploaded. Image name =  exercise_1522234455539.png
+[2018-03-28T16:24:15.545] [TRACE] development - image has been uploaded. Image name =  exercise_1522234455541.png
+[2018-03-28T16:24:15.547] [TRACE] development - image has been uploaded. Image name =  exercise_1522234455545.png
+[2018-03-28T16:24:15.549] [TRACE] development - image has been uploaded. Image name =  exercise_1522234455548.png
+[2018-03-28T16:24:15.552] [TRACE] development - image has been uploaded. Image name =  exercise_1522234455550.png
+[2018-03-28T16:24:15.555] [TRACE] development - image has been uploaded. Image name =  exercise_1522234455553.png
+[2018-03-28T16:25:11.948] [TRACE] development - Get all exercise API called
+[2018-03-28T16:25:11.960] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'exercise found',
+  exercise: 
+   { type: '5ab9e6003e44a31c604a8571',
+     equipments: [ '["a","b","c","d"]' ],
+     steps: [ '["abcd","bdsfgdsf","cdfdsfdf","dsfsdfsdfd"]' ],
+     images: 
+      [ 'uploads/exercise/exercise_1522234455534.png',
+        'uploads/exercise/exercise_1522234455536.jpg',
+        'uploads/exercise/exercise_1522234455539.png',
+        'uploads/exercise/exercise_1522234455541.png',
+        'uploads/exercise/exercise_1522234455545.png',
+        'uploads/exercise/exercise_1522234455548.png',
+        'uploads/exercise/exercise_1522234455550.png',
+        'uploads/exercise/exercise_1522234455553.png' ],
+     createdAt: '2018-03-28T10:54:15.557Z',
+     modifiedAt: '2018-03-28T10:54:15.557Z',
+     _id: '5abb7457cc01451d209464d1',
+     name: 'name',
+     description: 'description',
+     mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+     otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+     detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+     mechanics: 'compound',
+     difficltyLevel: 'intermediate',
+     measures: '' } }
+[2018-03-28T16:32:19.478] [TRACE] development - image has been uploaded. Image name =  exercise_1522234939448.png
+[2018-03-28T16:32:19.490] [TRACE] development - image has been uploaded. Image name =  exercise_1522234939480.jpg
+[2018-03-28T16:33:40.068] [TRACE] development - image has been uploaded. Image name =  exercise_1522235020061.png
+[2018-03-28T16:33:40.088] [TRACE] development - image has been uploaded. Image name =  exercise_1522235020069.jpg
+[2018-03-28T16:33:59.453] [TRACE] development - image has been uploaded. Image name =  exercise_1522235039440.png
+[2018-03-28T16:33:59.455] [TRACE] development - image has been uploaded. Image name =  exercise_1522235039454.jpg
+[2018-03-28T16:37:08.555] [TRACE] development - Get all exercise API called
+[2018-03-28T16:37:08.560] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'exercise found',
+  exercise: 
+   { type: '5ab9e6003e44a31c604a8571',
+     equipments: [ '["a1111","b222","c333","d444"]' ],
+     steps: 
+      [ '["abcd222","bdsfgdfsdfsdfsdfsdfsf","cdfdsdsfsdfdsffdf","dsfdsfdsfdsfsdsdfsdfd"]' ],
+     images: 
+      [ 'uploads/exercise/exercise_1522235039440.png',
+        'uploads/exercise/exercise_1522235039454.jpg' ],
+     createdAt: '2018-03-28T10:53:55.721Z',
+     modifiedAt: '2018-03-28T10:53:55.721Z',
+     _id: '5abb7443cc01451d209464d0',
+     name: '5ab9e6003e44a31c604a8571',
+     description: '5ab9e6003e44a31c604a8571',
+     mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+     otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+     detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+     mechanics: '5ab9e6003e44a31c604a8571',
+     difficltyLevel: 'intermediate',
+     measures: '' } }
+[2018-03-28T16:37:23.563] [TRACE] development - Get all exercise API called
+[2018-03-28T16:37:23.567] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:53:55.721Z',
+       modifiedAt: '2018-03-28T10:53:55.721Z',
+       _id: '5abb7443cc01451d209464d0',
+       name: '5ab9e6003e44a31c604a8571',
+       description: '5ab9e6003e44a31c604a8571',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: '5ab9e6003e44a31c604a8571',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:54:15.557Z',
+       modifiedAt: '2018-03-28T10:54:15.557Z',
+       _id: '5abb7457cc01451d209464d1',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' } ] }
+[2018-03-28T16:37:34.739] [TRACE] development - Get all exercise API called
+[2018-03-28T16:37:34.741] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:53:55.721Z',
+       modifiedAt: '2018-03-28T10:53:55.721Z',
+       _id: '5abb7443cc01451d209464d0',
+       name: '5ab9e6003e44a31c604a8571',
+       description: '5ab9e6003e44a31c604a8571',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: '5ab9e6003e44a31c604a8571',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:54:15.557Z',
+       modifiedAt: '2018-03-28T10:54:15.557Z',
+       _id: '5abb7457cc01451d209464d1',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' } ] }
+[2018-03-28T16:37:42.398] [TRACE] development - Get all exercise API called
+[2018-03-28T16:37:42.402] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'exercise found',
+  exercise: 
+   { type: '5ab9e6003e44a31c604a8571',
+     equipments: [ '["a1111","b222","c333","d444"]' ],
+     steps: 
+      [ '["abcd222","bdsfgdfsdfsdfsdfsdfsf","cdfdsdsfsdfdsffdf","dsfdsfdsfdsfsdsdfsdfd"]' ],
+     images: 
+      [ 'uploads/exercise/exercise_1522235039440.png',
+        'uploads/exercise/exercise_1522235039454.jpg' ],
+     createdAt: '2018-03-28T10:53:55.721Z',
+     modifiedAt: '2018-03-28T10:53:55.721Z',
+     _id: '5abb7443cc01451d209464d0',
+     name: '5ab9e6003e44a31c604a8571',
+     description: '5ab9e6003e44a31c604a8571',
+     mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+     otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+     detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+     mechanics: '5ab9e6003e44a31c604a8571',
+     difficltyLevel: 'intermediate',
+     measures: '' } }
+[2018-03-28T16:37:45.955] [TRACE] development - Get all exercise API called
+[2018-03-28T16:37:45.957] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:53:55.721Z',
+       modifiedAt: '2018-03-28T10:53:55.721Z',
+       _id: '5abb7443cc01451d209464d0',
+       name: '5ab9e6003e44a31c604a8571',
+       description: '5ab9e6003e44a31c604a8571',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: '5ab9e6003e44a31c604a8571',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:54:15.557Z',
+       modifiedAt: '2018-03-28T10:54:15.557Z',
+       _id: '5abb7457cc01451d209464d1',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' } ] }
+[2018-03-28T16:37:55.055] [TRACE] development - Get all exercise API called
+[2018-03-28T16:37:55.058] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'exercise found',
+  exercise: 
+   { type: '5ab9e6003e44a31c604a8571',
+     equipments: [ '["a1111","b222","c333","d444"]' ],
+     steps: 
+      [ '["abcd222","bdsfgdfsdfsdfsdfsdfsf","cdfdsdsfsdfdsffdf","dsfdsfdsfdsfsdsdfsdfd"]' ],
+     images: 
+      [ 'uploads/exercise/exercise_1522235039440.png',
+        'uploads/exercise/exercise_1522235039454.jpg' ],
+     createdAt: '2018-03-28T10:53:55.721Z',
+     modifiedAt: '2018-03-28T10:53:55.721Z',
+     _id: '5abb7443cc01451d209464d0',
+     name: '5ab9e6003e44a31c604a8571',
+     description: '5ab9e6003e44a31c604a8571',
+     mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+     otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+     detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+     mechanics: '5ab9e6003e44a31c604a8571',
+     difficltyLevel: 'intermediate',
+     measures: '' } }
+[2018-03-28T16:41:40.904] [TRACE] development - image has been uploaded. Image name =  exercise_1522235500876.png
+[2018-03-28T16:41:40.922] [TRACE] development - image has been uploaded. Image name =  exercise_1522235500904.png
+[2018-03-28T16:41:40.926] [TRACE] development - image has been uploaded. Image name =  exercise_1522235500923.png
+[2018-03-28T16:41:57.777] [TRACE] development - image has been uploaded. Image name =  exercise_1522235517759.png
+[2018-03-28T16:41:57.781] [TRACE] development - image has been uploaded. Image name =  exercise_1522235517778.png
+[2018-03-28T16:41:57.783] [TRACE] development - image has been uploaded. Image name =  exercise_1522235517781.png
+[2018-03-28T16:41:57.786] [ERROR] development - Error while updating exercise data =  { status: 0,
+  message: 'Error occured while updating exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "123" at path "type"',
+     name: 'CastError',
+     stringValue: '"123"',
+     kind: 'ObjectId',
+     value: '123',
+     path: 'type' } }
+[2018-03-28T16:44:38.975] [TRACE] development - image has been uploaded. Image name =  exercise_1522235678949.png
+[2018-03-28T16:44:38.987] [TRACE] development - image has been uploaded. Image name =  exercise_1522235678976.png
+[2018-03-28T16:44:38.992] [TRACE] development - image has been uploaded. Image name =  exercise_1522235678988.png
+[2018-03-28T16:46:28.158] [TRACE] development - image has been uploaded. Image name =  exercise_1522235788139.png
+[2018-03-28T16:46:28.161] [TRACE] development - image has been uploaded. Image name =  exercise_1522235788158.png
+[2018-03-28T16:46:28.163] [TRACE] development - image has been uploaded. Image name =  exercise_1522235788161.png
+[2018-03-28T16:46:28.183] [ERROR] development - Error while inserting exercise data =  { status: 0,
+  message: 'Error occured while inserting Exercise',
+  error: 
+   { errors: { mechanics: [Object] },
+     _message: 'exercise validation failed',
+     message: 'exercise validation failed: mechanics: `5aba0452961e1a1b08b2337a` is not a valid enum value for path `mechanics`.',
+     name: 'ValidationError' } }
+[2018-03-28T16:46:47.419] [TRACE] development - image has been uploaded. Image name =  exercise_1522235807415.png
+[2018-03-28T16:46:47.433] [TRACE] development - image has been uploaded. Image name =  exercise_1522235807420.png
+[2018-03-28T16:46:47.434] [TRACE] development - image has been uploaded. Image name =  exercise_1522235807433.png
+[2018-03-28T17:01:11.551] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'description',
+    msg: 'Description is required' },
+  { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' },
+  { location: 'body', param: 'status', msg: 'Status is required' } ]
+[2018-03-28T17:01:40.122] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' },
+  { location: 'body', param: 'status', msg: 'Status is required' } ]
+[2018-03-28T17:01:47.565] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-28T17:02:16.812] [ERROR] development - Validation Error =  [ { location: 'body',
+    param: 'category_id',
+    msg: 'Category is required' } ]
+[2018-03-28T17:02:56.166] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:03:04.415] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:03:21.856] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:03:26.441] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:03:35.573] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:03:50.753] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:03:54.731] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:04:02.195] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:04:14.030] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:04:33.381] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T17:08:10.169] [TRACE] development - Get all exercise API called
+[2018-03-28T17:08:10.185] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'exercise found',
+  exercise: 
+   { type: '5aba0452961e1a1b08b2337a',
+     equipments: [ '["123","456","789","012"]' ],
+     steps: [ '["step1","step2","step3","step4"]' ],
+     images: 
+      [ 'uploads/exercise/exercise_1522235678949.png',
+        'uploads/exercise/exercise_1522235678976.png',
+        'uploads/exercise/exercise_1522235678988.png' ],
+     createdAt: '2018-03-28T10:53:55.721Z',
+     modifiedAt: '2018-03-28T10:53:55.721Z',
+     _id: '5abb7443cc01451d209464d0',
+     name: 'milan',
+     description: 'milan desc',
+     mainMuscleGroup: '5aba0452961e1a1b08b2337a',
+     otherMuscleGroup: '5aba0452961e1a1b08b2337a',
+     detailedMuscleGroup: '5aba0452961e1a1b08b2337a',
+     mechanics: '5aba0452961e1a1b08b2337a',
+     difficltyLevel: 'expert',
+     measures: '' } }
+[2018-03-28T17:08:30.083] [TRACE] development - Get all exercise API called
+[2018-03-28T17:08:30.090] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5aba0452961e1a1b08b2337a',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:53:55.721Z',
+       modifiedAt: '2018-03-28T10:53:55.721Z',
+       _id: '5abb7443cc01451d209464d0',
+       name: 'milan',
+       description: 'milan desc',
+       mainMuscleGroup: '5aba0452961e1a1b08b2337a',
+       otherMuscleGroup: '5aba0452961e1a1b08b2337a',
+       detailedMuscleGroup: '5aba0452961e1a1b08b2337a',
+       mechanics: '5aba0452961e1a1b08b2337a',
+       difficltyLevel: 'expert',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:54:15.557Z',
+       modifiedAt: '2018-03-28T10:54:15.557Z',
+       _id: '5abb7457cc01451d209464d1',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5aba0452961e1a1b08b2337a',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T11:16:47.436Z',
+       modifiedAt: '2018-03-28T11:16:47.436Z',
+       _id: '5abb799f85953c1420690be4',
+       name: 'would',
+       description: 'could',
+       mainMuscleGroup: '5aba0452961e1a1b08b2337a',
+       otherMuscleGroup: '5aba0452961e1a1b08b2337a',
+       detailedMuscleGroup: '5aba0452961e1a1b08b2337a',
+       mechanics: 'compound',
+       difficltyLevel: 'expert',
+       measures: '' } ] }
+[2018-03-28T17:09:03.501] [TRACE] development - Get all exercise API called
+[2018-03-28T17:09:03.503] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'exercise found',
+  exercise: 
+   { type: '5aba0452961e1a1b08b2337a',
+     equipments: [ '["123","456","789","012"]' ],
+     steps: [ '["step1","step2","step3","step4"]' ],
+     images: 
+      [ 'uploads/exercise/exercise_1522235678949.png',
+        'uploads/exercise/exercise_1522235678976.png',
+        'uploads/exercise/exercise_1522235678988.png' ],
+     createdAt: '2018-03-28T10:53:55.721Z',
+     modifiedAt: '2018-03-28T10:53:55.721Z',
+     _id: '5abb7443cc01451d209464d0',
+     name: 'milan',
+     description: 'milan desc',
+     mainMuscleGroup: '5aba0452961e1a1b08b2337a',
+     otherMuscleGroup: '5aba0452961e1a1b08b2337a',
+     detailedMuscleGroup: '5aba0452961e1a1b08b2337a',
+     mechanics: '5aba0452961e1a1b08b2337a',
+     difficltyLevel: 'expert',
+     measures: '' } }
+[2018-03-28T17:10:14.839] [TRACE] development - Get all exercise API called
+[2018-03-28T17:10:14.857] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5aba0452961e1a1b08b2337a',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:53:55.721Z',
+       modifiedAt: '2018-03-28T10:53:55.721Z',
+       _id: '5abb7443cc01451d209464d0',
+       name: 'milan',
+       description: 'milan desc',
+       mainMuscleGroup: '5aba0452961e1a1b08b2337a',
+       otherMuscleGroup: '5aba0452961e1a1b08b2337a',
+       detailedMuscleGroup: '5aba0452961e1a1b08b2337a',
+       mechanics: '5aba0452961e1a1b08b2337a',
+       difficltyLevel: 'expert',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:54:15.557Z',
+       modifiedAt: '2018-03-28T10:54:15.557Z',
+       _id: '5abb7457cc01451d209464d1',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5aba0452961e1a1b08b2337a',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T11:16:47.436Z',
+       modifiedAt: '2018-03-28T11:16:47.436Z',
+       _id: '5abb799f85953c1420690be4',
+       name: 'would',
+       description: 'could',
+       mainMuscleGroup: '5aba0452961e1a1b08b2337a',
+       otherMuscleGroup: '5aba0452961e1a1b08b2337a',
+       detailedMuscleGroup: '5aba0452961e1a1b08b2337a',
+       mechanics: 'compound',
+       difficltyLevel: 'expert',
+       measures: '' } ] }
+[2018-03-28T17:13:04.510] [TRACE] development - Get all exercise API called
+[2018-03-28T17:13:04.523] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5aba0452961e1a1b08b2337a',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:53:55.721Z',
+       modifiedAt: '2018-03-28T10:53:55.721Z',
+       _id: '5abb7443cc01451d209464d0',
+       name: 'milan',
+       description: 'milan desc',
+       mainMuscleGroup: '5aba0452961e1a1b08b2337a',
+       otherMuscleGroup: '5aba0452961e1a1b08b2337a',
+       detailedMuscleGroup: '5aba0452961e1a1b08b2337a',
+       mechanics: '5aba0452961e1a1b08b2337a',
+       difficltyLevel: 'expert',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T10:54:15.557Z',
+       modifiedAt: '2018-03-28T10:54:15.557Z',
+       _id: '5abb7457cc01451d209464d1',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5aba0452961e1a1b08b2337a',
+       equipments: [Array],
+       steps: [Array],
+       images: [Array],
+       createdAt: '2018-03-28T11:16:47.436Z',
+       modifiedAt: '2018-03-28T11:16:47.436Z',
+       _id: '5abb799f85953c1420690be4',
+       name: 'would',
+       description: 'could',
+       mainMuscleGroup: '5aba0452961e1a1b08b2337a',
+       otherMuscleGroup: '5aba0452961e1a1b08b2337a',
+       detailedMuscleGroup: '5aba0452961e1a1b08b2337a',
+       mechanics: 'compound',
+       difficltyLevel: 'expert',
+       measures: '' } ] }

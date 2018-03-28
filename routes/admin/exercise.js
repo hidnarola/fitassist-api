@@ -1,7 +1,7 @@
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
-
+var async = require("async");
 
 var router = express.Router();
 
@@ -17,7 +17,7 @@ var exercise_helper = require("../../helpers/exercise_helper");
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
- * @apiSuccess (Success 200) {Array} Exercise Array of Exercises document
+ * @apiSuccess (Success 200) {Array} Exercises Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
@@ -151,69 +151,72 @@ router.post("/", async (req, res) => {
             "difficltyLevel": req.body.difficltyLevel,
             "steps": req.body.steps,
             "measures": req.body.measures,
+            
         };
 
-      
-      
+        async.waterfall([
+            function(callback){
+                //image upload
+                if (req.files && req.files['images']) {
+                    var file_path_array=[];
+                    var files = req.files['images'];
+                    var dir = "./uploads/exercise";
+                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-
-        //image upload
-        if (req.files && req.files['images']) {
-            var file_path_array=[];
-
-            var files = req.files['images'];
-            var dir = "./uploads/exercise";
-            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-            files.forEach(file=>{
-               
-                if (mimetype.indexOf(file.mimetype) != -1) {
-                    if (!fs.existsSync(dir)) {
-                        fs.mkdirSync(dir);
-                    }
-                    extention = path.extname(file.name);
-                    filename = "exercise_" + new Date().getTime() + extention;
-                    file.mv(dir + '/' + filename, function (err) {
-                        if (err) {
-                            logger.error("There was an issue in uploading image");
-                            res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
+                    // assuming openFiles is an array of file names
+                    async.eachSeries(files, function(file, loop_callback) {
+                        if (mimetype.indexOf(file.mimetype) != -1) {
+                            if (!fs.existsSync(dir)) {
+                                fs.mkdirSync(dir);
+                            }
+                            extention = path.extname(file.name);
+                            filename = "exercise_" + new Date().getTime() + extention;
+                            file.mv(dir + '/' + filename, function (err) {
+                                if (err) {
+                                    logger.error("There was an issue in uploading image");
+                                    loop_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
+                                } else {
+                                    logger.trace("image has been uploaded. Image name = ", filename);
+                                    //console.log('img : '+filename);
+                                    location = "uploads/exercise/"+filename;
+                                    file_path_array.push(location);
+                                    // console.log(file_path_array);
+                                    //console.log("xyz = ",exercise_obj);
+                                    loop_callback();
+                                }
+                            });
                         } else {
-                            logger.trace("image has been uploaded. Image name = ", filename);
-                            //console.log('img : '+filename);
-                            let path = "uploads/exercise/"+filename;
-                            file_path_array.push(path);
-                            //console.log(file_path_array);
-                            //return res.send(200, "null");
+                            logger.error("Image format is invalid");
+                            loop_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+                        }
+                    }, function(err) {
+                        // if any of the file processing produced an error, err would equal that error
+                        if( err ) {
+                            res.status(err.status).json(err);
+                        } else {
+                            callback(null,file_path_array);
                         }
                     });
                 } else {
-                    logger.error("Image format is invalid");
-                    res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+                    logger.info("Image not available to upload. Executing next instruction");
+                    callback(null, []);
+                    //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
                 }
-
-
-            });
-                
-                
-
-         
-            
-        } else {
-            logger.info("Image not available to upload. Executing next instruction");
-            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-        }
-        //equipment_obj.image='upload/equipment/' + filename;
-        
-        //End image upload
-        console.log(file_path_array);
-        return res.send("bye");
-        let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
-        if (exercise_data.status === 0) {
-            logger.error("Error while inserting exercise data = ", exercise_data);
-            res.status(config.BAD_REQUEST).json({ exercise_data });
-        } else {
-            res.status(config.OK_STATUS).json(exercise_data);
-        }
+            }
+        ],async (err,file_path_array) => {
+            //End image upload
+            //console.log("abc= ", exercise_obj);
+            // res.send(exercise_obj);
+            console.log(file_path_array);
+            exercise_obj.images=file_path_array;
+            let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
+            if (exercise_data.status === 0) {
+                logger.error("Error while inserting exercise data = ", exercise_data);
+                res.status(config.BAD_REQUEST).json({ exercise_data });
+            } else {
+                res.status(config.OK_STATUS).json(exercise_data);
+            }
+        });
     } else {
         logger.error("Validation Error = ", errors);
         res.status(config.BAD_REQUEST).json({ message: errors });
@@ -234,7 +237,7 @@ router.post("/", async (req, res) => {
  * @apiSuccess (Success 200) {Array} Exercise Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/:equipment_id", async (req, res) => {
+router.put("/:exercise_id", async (req, res) => {
     
     var schema = {
         "name": {
@@ -242,72 +245,128 @@ router.put("/:equipment_id", async (req, res) => {
             errorMessage: "Name is required"
         },
         "description": {
-            notEmpty: true,
+            notEmpty: false,
             errorMessage: "Description is required"
         },
-        "category_id": {
+        "mainMuscleGroup": {
             notEmpty: true,
-            errorMessage: "Category is required"
+            errorMessage: "mainMuscleGroup is required"
+        },
+        "otherMuscleGroup": {
+            notEmpty: false,
+            errorMessage: "otherMuscleGroup is required"
+        },
+        "detailedMuscleGroup": {
+            notEmpty: true,
+            errorMessage: "detailedMuscleGroup is required"
+        },
+        "type": {
+            notEmpty: true,
+            errorMessage: "type	 is required"
+        },
+        "mechanics": {
+            notEmpty: false,
+            errorMessage: "mechanics is required"
+        },
+        "equipments": {
+            notEmpty: true,
+            errorMessage: "equipments is required"
+        },
+        "difficltyLevel": {
+            notEmpty: true,
+            errorMessage: "difficltyLevel is required"
+        },
+        "steps": {
+            notEmpty: false,
+            errorMessage: "steps is required"
+        },
+        "image": {
+            notEmpty: false,
+            errorMessage: "image is required"
+        },
+        "measures": {
+            notEmpty: false,
+            errorMessage: "measures is required"
         }
     };
-
-    // Coming in few minutes
-    // ok
-
     req.checkBody(schema);
     var errors = req.validationErrors();
+    
     if (!errors) {
-        var equipment_obj = {
+        //console.log("Data = ",req.body);
+        //console.log("Files = ",req.files);
+        var exercise_obj = {
             "name": req.body.name,
-            "description": (req.body.description) ? req.body.description : null,
-            "category_id":req.body.category_id
+            "description": req.body.description,
+            "mainMuscleGroup": req.body.mainMuscleGroup,
+            "otherMuscleGroup": req.body.otherMuscleGroup,
+            "detailedMuscleGroup": req.body.detailedMuscleGroup,
+            "type": req.body.type,
+            "mechanics": req.body.mechanics,
+            "equipments": req.body.equipments,
+            "difficltyLevel": req.body.difficltyLevel,
+            "steps": req.body.steps,
+            "measures": req.body.measures,
+            
         };
 
-// Image upload
-        var filename;
-        if (req.files && req.files['equipment_img']) {
-            var file = req.files['equipment_img'];
-            var dir = "./uploads/equipment";
-            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+        async.waterfall([
+            function(callback){
+                //image upload
+                if (req.files && req.files['images']) {
+                    var file_path_array=[];
+                    var files = req.files['images'];
+                    var dir = "./uploads/exercise";
+                    var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-            if (mimetype.indexOf(file.mimetype) != -1) {
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
+                    // assuming openFiles is an array of file names
+                    async.eachSeries(files, function(file, loop_callback) {
+                        if (mimetype.indexOf(file.mimetype) != -1) {
+                            if (!fs.existsSync(dir)) {
+                                fs.mkdirSync(dir);
+                            }
+                            extention = path.extname(file.name);
+                            filename = "exercise_" + new Date().getTime() + extention;
+                            file.mv(dir + '/' + filename, function (err) {
+                                if (err) {
+                                    logger.error("There was an issue in uploading image");
+                                    loop_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
+                                } else {
+                                    logger.trace("image has been uploaded. Image name = ", filename);
+                                    location = "uploads/exercise/"+filename;
+                                    file_path_array.push(location);
+                                    loop_callback();
+                                }
+                            });
+                        } else {
+                            logger.error("Image format is invalid");
+                            loop_callback({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+                        }
+                    }, function(err) {
+                        // if any of the file processing produced an error, err would equal that error
+                        if( err ) {
+                            res.status(err.status).json(err);
+                        } else {
+                            callback(null,file_path_array);
+                        }
+                    });
+                } else {
+                    logger.info("Image not available to upload. Executing next instruction");
+                    callback(null, []);
                 }
-                extention = path.extname(file.name);
-                filename = "equipment_" + new Date().getTime() + extention;
-                file.mv(dir + '/' + filename, function (err) {
-                    if (err) {
-                        logger.error("There was an issue in uploading image");
-                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
-                    } else {
-                        logger.trace("image has been uploaded. Image name = ", filename);
-                        //return res.send(200, "null");
-                    }
-                });
-            } else {
-                logger.error("Image format is invalid");
-                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
             }
-        } else {
-            logger.info("Image not available to upload. Executing next instruction");
-            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-        }
-       
-        //End image upload
-        if(filename)
-        {
-            equipment_obj.image='upload/equipment/' + filename;
-        }
+        ],async (err,file_path_array) => {
+            //End image upload
 
-        console.log(equipment_obj);
-        let equipment_data = await equipment_helper.update_equipment_by_id(req.params.equipment_id, equipment_obj);
-        if (equipment_data.status === 0) {
-            logger.error("Error while updating equipment = ", equipment_data);
-            res.status(config.BAD_REQUEST).json({ equipment_data });
-        } else {
-            res.status(config.OK_STATUS).json(equipment_data);
-        }
+            exercise_obj.images=file_path_array;
+            let exercise_data = await exercise_helper.update_exercise_by_id(req.params.exercise_id,exercise_obj);
+            if (exercise_data.status === 0) {
+                logger.error("Error while updating exercise data = ", exercise_data);
+                res.status(config.BAD_REQUEST).json({ exercise_data });
+            } else {
+                res.status(config.OK_STATUS).json(exercise_data);
+            }
+        });
     } else {
         logger.error("Validation Error = ", errors);
         res.status(config.BAD_REQUEST).json({ message: errors });
@@ -326,6 +385,7 @@ router.put("/:equipment_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:exercise_id", async (req, res) => {
+    return res.send(req.params.exercise_id);
   logger.trace("Delete Exercise API - Id = ", req.query.id);
   let exercise_data = await exercise_helper.delete_exercise_by_id(
     req.params.exercise_id
