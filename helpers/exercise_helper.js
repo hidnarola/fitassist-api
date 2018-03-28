@@ -31,7 +31,7 @@ exercise_helper.get_all_exercise = async () => {
  */
 exercise_helper.get_exercise_id = async (id) => {
     try {
-        var exercise = await Exercise.find({_id:id});
+        var exercise = await Exercise.findOne({_id:id});
         if (exercise) {
             return { "status": 1, "message": "exercise found", "exercise": exercise };
         } else {
@@ -54,7 +54,7 @@ exercise_helper.get_exercise_id = async (id) => {
  */
 exercise_helper.insert_exercise = async (exercise_object) => {
     console.log(exercise_object);
-    let exercise = new Equipment(exercise_object);
+    let exercise = new Exercise(exercise_object);
     try {
         let exercise_data = await exercise.save();
         return { "status": 1, "message": "Exercise inserted", "exercise": exercise_data };
