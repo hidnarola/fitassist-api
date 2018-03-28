@@ -31,9 +31,9 @@ equipment_helper.get_all_equipment = async () => {
  */
 equipment_helper.get_equipment_id = async (id) => {
     try {
-        var equipment = await Equipment.find({_id:id});
+        var equipment = await Equipment.findOne({_id:id});
         if (equipment) {
-            return { "status": 1, "message": "Equipments found", "equipments": equipment };
+            return { "status": 1, "message": "Equipment found", "equipment": equipment };
         } else {
             return { "status": 2, "message": "No equipment available" };
         }

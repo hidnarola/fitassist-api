@@ -802,3 +802,545 @@
 [2018-03-27T16:51:38.602] [TRACE] development - Delete Exercise Type  API - Id =  null
 [2018-03-28T11:57:42.485] [TRACE] development - Get all exercise API called
 [2018-03-28T11:57:42.493] [TRACE] development - Exercises got successfully =  { status: 1, message: 'Exercise found', exercises: [] }
+[2018-03-28T12:08:56.749] [TRACE] development - Get all equipment API called
+[2018-03-28T12:08:56.753] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "sdfsdfsdfsd" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"sdfsdfsdfsd"',
+     kind: 'ObjectId',
+     value: 'sdfsdfsdfsd',
+     path: '_id' } }
+[2018-03-28T12:09:14.803] [TRACE] development - Get all equipment API called
+[2018-03-28T12:09:14.804] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "1234567890" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"1234567890"',
+     kind: 'ObjectId',
+     value: '1234567890',
+     path: '_id' } }
+[2018-03-28T12:09:32.324] [TRACE] development - Get all equipment API called
+[2018-03-28T12:09:32.324] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "1234567890" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"1234567890"',
+     kind: 'ObjectId',
+     value: '1234567890',
+     path: '_id' } }
+[2018-03-28T12:10:13.134] [TRACE] development - Get all equipment API called
+[2018-03-28T12:10:13.134] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "1234567890" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"1234567890"',
+     kind: 'ObjectId',
+     value: '1234567890',
+     path: '_id' } }
+[2018-03-28T12:10:25.274] [TRACE] development - Get all equipment API called
+[2018-03-28T12:10:25.274] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgfsdfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgfsdfsdf"',
+     kind: 'ObjectId',
+     value: 'fgfsdfsdf',
+     path: '_id' } }
+[2018-03-28T12:10:26.375] [TRACE] development - Get all equipment API called
+[2018-03-28T12:10:26.375] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgfsdfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgfsdfsdf"',
+     kind: 'ObjectId',
+     value: 'fgfsdfsdf',
+     path: '_id' } }
+[2018-03-28T12:10:36.247] [TRACE] development - Get all exercise API called
+[2018-03-28T12:10:36.250] [TRACE] development - Exercises got successfully =  { status: 1, message: 'Exercise found', exercises: [] }
+[2018-03-28T12:10:39.463] [TRACE] development - Get all equipment API called
+[2018-03-28T12:10:39.463] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "dfdsfsdfs" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"dfdsfsdfs"',
+     kind: 'ObjectId',
+     value: 'dfdsfsdfs',
+     path: '_id' } }
+[2018-03-28T12:10:54.428] [TRACE] development - Get all equipment API called
+[2018-03-28T12:10:54.429] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "dfdsfsdfs" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"dfdsfsdfs"',
+     kind: 'ObjectId',
+     value: 'dfdsfsdfs',
+     path: '_id' } }
+[2018-03-28T12:10:56.625] [TRACE] development - Get all exercise API called
+[2018-03-28T12:10:56.627] [TRACE] development - Exercises got successfully =  { status: 1, message: 'Exercise found', exercises: [] }
+[2018-03-28T12:12:38.062] [TRACE] development - Get all equipment API called
+[2018-03-28T12:12:38.062] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:15.371] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:15.372] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:34.578] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:34.578] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:35.779] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:35.779] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:36.463] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:36.465] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:37.225] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:37.226] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:42.646] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:42.646] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:43.713] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:43.714] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:44.350] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:44.351] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:13:56.652] [TRACE] development - Get all equipment API called
+[2018-03-28T12:13:56.653] [ERROR] development - Error occured while fetching exercise =  { status: 0,
+  message: 'Error occured while finding exercise',
+  error: 
+   { message: 'Cast to ObjectId failed for value "fgsfdsfsdf" at path "_id" for model "exercise"',
+     name: 'CastError',
+     stringValue: '"fgsfdsfsdf"',
+     kind: 'ObjectId',
+     value: 'fgsfdsfsdf',
+     path: '_id' } }
+[2018-03-28T12:14:09.553] [TRACE] development - Get all equipment API called
+[2018-03-28T12:14:09.555] [TRACE] development - Exercises got successfully =  { status: 1, message: 'exercise found', exercise: [] }
+[2018-03-28T12:14:25.183] [TRACE] development - Get all equipment API called
+[2018-03-28T12:14:25.184] [TRACE] development - Exercises got successfully =  { status: 1, message: 'exercise found', exercise: [] }
+[2018-03-28T12:14:30.032] [TRACE] development - Get all exercise API called
+[2018-03-28T12:14:30.033] [TRACE] development - Exercises got successfully =  { status: 1, message: 'Exercise found', exercises: [] }
+[2018-03-28T12:14:44.537] [TRACE] development - Get all exercise API called
+[2018-03-28T12:14:44.538] [TRACE] development - Exercises got successfully =  { status: 1, message: 'Exercise found', exercises: [] }
+[2018-03-28T12:16:57.487] [TRACE] development - Get all exercise API called
+[2018-03-28T12:16:57.498] [TRACE] development - Exercises got successfully =  { status: 1, message: 'exercise found', exercise: [] }
+[2018-03-28T12:17:31.658] [TRACE] development - Get all exercise API called
+[2018-03-28T12:17:31.665] [TRACE] development - Exercises got successfully =  { status: 1, message: 'exercise found', exercise: [] }
+[2018-03-28T14:14:11.246] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' } ]
+[2018-03-28T14:14:19.894] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'mainMuscleGroup',
+    msg: 'mainMuscleGroup is required' },
+  { location: 'body',
+    param: 'detailedMuscleGroup',
+    msg: 'detailedMuscleGroup is required' },
+  { location: 'body', param: 'type', msg: 'type\t is required' },
+  { location: 'body',
+    param: 'equipments',
+    msg: 'equipments is required' },
+  { location: 'body',
+    param: 'difficltyLevel',
+    msg: 'difficltyLevel is required' } ]
+[2018-03-28T14:17:21.165] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'mainMuscleGroup',
+    msg: 'mainMuscleGroup is required' },
+  { location: 'body',
+    param: 'detailedMuscleGroup',
+    msg: 'detailedMuscleGroup is required' },
+  { location: 'body', param: 'type', msg: 'type\t is required' },
+  { location: 'body',
+    param: 'equipments',
+    msg: 'equipments is required' },
+  { location: 'body',
+    param: 'difficltyLevel',
+    msg: 'difficltyLevel is required' } ]
+[2018-03-28T14:17:32.707] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:18:22.667] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:19:14.845] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:19:14.863] [ERROR] development - Error while inserting exercise data =  { status: 0,
+  message: 'Error occured while inserting Exercise',
+  error: 
+   { errors: 
+      { mainMuscleGroup: [Object],
+        otherMuscleGroup: [Object],
+        type: [Object],
+        mechanics: [Object],
+        difficltyLevel: [Object],
+        measures: [Object] },
+     _message: 'exercise validation failed',
+     message: 'exercise validation failed: mainMuscleGroup: Cast to ObjectID failed for value "mainMuscleGroup" at path "mainMuscleGroup", otherMuscleGroup: Cast to ObjectID failed for value "otherMuscleGroup" at path "otherMuscleGroup", type: Cast to ObjectID failed for value "type" at path "type", mechanics: `mechanics` is not a valid enum value for path `mechanics`., difficltyLevel: `difficltyLevel` is not a valid enum value for path `difficltyLevel`., measures: `measures` is not a valid enum value for path `measures`.',
+     name: 'ValidationError' } }
+[2018-03-28T14:19:54.886] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:19:54.893] [ERROR] development - Error while inserting exercise data =  { status: 0,
+  message: 'Error occured while inserting Exercise',
+  error: 
+   { errors: 
+      { mainMuscleGroup: [Object],
+        otherMuscleGroup: [Object],
+        type: [Object],
+        measures: [Object] },
+     _message: 'exercise validation failed',
+     message: 'exercise validation failed: mainMuscleGroup: Cast to ObjectID failed for value "mainMuscleGroup" at path "mainMuscleGroup", otherMuscleGroup: Cast to ObjectID failed for value "otherMuscleGroup" at path "otherMuscleGroup", type: Cast to ObjectID failed for value "type" at path "type", measures: `measures` is not a valid enum value for path `measures`.',
+     name: 'ValidationError' } }
+[2018-03-28T14:20:17.227] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:20:17.232] [ERROR] development - Error while inserting exercise data =  { status: 0,
+  message: 'Error occured while inserting Exercise',
+  error: 
+   { errors: { type: [Object], measures: [Object] },
+     _message: 'exercise validation failed',
+     message: 'exercise validation failed: type: Cast to ObjectID failed for value "type" at path "type", measures: `measures` is not a valid enum value for path `measures`.',
+     name: 'ValidationError' } }
+[2018-03-28T14:20:38.033] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:20:38.037] [ERROR] development - Error while inserting exercise data =  { status: 0,
+  message: 'Error occured while inserting Exercise',
+  error: 
+   { errors: { measures: [Object] },
+     _message: 'exercise validation failed',
+     message: 'exercise validation failed: measures: `measures` is not a valid enum value for path `measures`.',
+     name: 'ValidationError' } }
+[2018-03-28T14:21:18.410] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:22:23.439] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:22:43.262] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:22:43.272] [ERROR] development - Error while inserting exercise data =  { status: 0,
+  message: 'Error occured while inserting Exercise',
+  error: 
+   { errors: { difficltyLevel: [Object] },
+     _message: 'exercise validation failed',
+     message: 'exercise validation failed: difficltyLevel: `["abcd","bdsfgdsf","cdfdsfdf","dsfsdfsdfd"]` is not a valid enum value for path `difficltyLevel`.',
+     name: 'ValidationError' } }
+[2018-03-28T14:23:18.078] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:24:41.404] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:24:41.406] [ERROR] development - Error while inserting exercise data =  { status: 0,
+  message: 'Error occured while inserting Exercise',
+  error: 
+   { errors: { mainMuscleGroup: [Object] },
+     _message: 'exercise validation failed',
+     message: 'exercise validation failed: mainMuscleGroup: Cast to ObjectID failed for value "sdfdsfdsfsdfsdfdsfdsfdsfsdff" at path "mainMuscleGroup"',
+     name: 'ValidationError' } }
+[2018-03-28T14:24:50.058] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:25:30.361] [TRACE] development - Get all exercise API called
+[2018-03-28T14:25:30.371] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:51:18.432Z',
+       modifiedAt: '2018-03-28T08:51:18.432Z',
+       _id: '5abb57866abdfa1d30eeb02a',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:52:23.454Z',
+       modifiedAt: '2018-03-28T08:52:23.454Z',
+       _id: '5abb57c73e708221646f757e',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:53:18.083Z',
+       modifiedAt: '2018-03-28T08:53:18.083Z',
+       _id: '5abb57fe3e708221646f7580',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:54:50.060Z',
+       modifiedAt: '2018-03-28T08:54:50.060Z',
+       _id: '5abb585a3e708221646f7582',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' } ] }
+[2018-03-28T14:25:41.877] [TRACE] development - Get all exercise API called
+[2018-03-28T14:25:41.882] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'Exercise found',
+  exercises: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:51:18.432Z',
+       modifiedAt: '2018-03-28T08:51:18.432Z',
+       _id: '5abb57866abdfa1d30eeb02a',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:52:23.454Z',
+       modifiedAt: '2018-03-28T08:52:23.454Z',
+       _id: '5abb57c73e708221646f757e',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:53:18.083Z',
+       modifiedAt: '2018-03-28T08:53:18.083Z',
+       _id: '5abb57fe3e708221646f7580',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' },
+     { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:54:50.060Z',
+       modifiedAt: '2018-03-28T08:54:50.060Z',
+       _id: '5abb585a3e708221646f7582',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'intermediate',
+       measures: '' } ] }
+[2018-03-28T14:27:08.012] [TRACE] development - Get all exercise API called
+[2018-03-28T14:27:08.014] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'exercise found',
+  exercise: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:51:18.432Z',
+       modifiedAt: '2018-03-28T08:51:18.432Z',
+       _id: '5abb57866abdfa1d30eeb02a',
+       name: 'name',
+       description: 'description',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' } ] }
+[2018-03-28T14:27:25.731] [TRACE] development - Get all exercise API called
+[2018-03-28T14:27:25.732] [TRACE] development - Exercises got successfully =  { status: 1,
+  message: 'exercise found',
+  exercise: 
+   [ { type: '5ab9e6003e44a31c604a8571',
+       equipments: [Array],
+       steps: [Array],
+       image: [],
+       createdAt: '2018-03-28T08:51:18.432Z',
+       modifiedAt: '2018-03-28T08:51:18.432Z',
+       _id: '5abb57866abdfa1d30eeb02a',
+       name: 'amit',
+       description: 'amit desc',
+       mainMuscleGroup: '5ab9e6003e44a31c604a8571',
+       otherMuscleGroup: '5ab9e6003e44a31c604a8571',
+       detailedMuscleGroup: '5ab9e6003e44a31c604a8571',
+       mechanics: 'compound',
+       difficltyLevel: 'beginner',
+       measures: '' } ] }
+[2018-03-28T14:29:33.966] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'mainMuscleGroup',
+    msg: 'mainMuscleGroup is required' },
+  { location: 'body',
+    param: 'detailedMuscleGroup',
+    msg: 'detailedMuscleGroup is required' },
+  { location: 'body', param: 'type', msg: 'type\t is required' },
+  { location: 'body',
+    param: 'equipments',
+    msg: 'equipments is required' },
+  { location: 'body',
+    param: 'difficltyLevel',
+    msg: 'difficltyLevel is required' } ]
+[2018-03-28T14:45:01.822] [ERROR] development - Validation Error =  [ { location: 'body', param: 'name', msg: 'Name is required' },
+  { location: 'body',
+    param: 'mainMuscleGroup',
+    msg: 'mainMuscleGroup is required' },
+  { location: 'body',
+    param: 'detailedMuscleGroup',
+    msg: 'detailedMuscleGroup is required' },
+  { location: 'body', param: 'type', msg: 'type\t is required' },
+  { location: 'body',
+    param: 'equipments',
+    msg: 'equipments is required' },
+  { location: 'body',
+    param: 'difficltyLevel',
+    msg: 'difficltyLevel is required' } ]
+[2018-03-28T14:45:12.283] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:45:20.624] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:45:46.071] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:46:10.755] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:46:49.932] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:47:19.999] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T14:48:16.777] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T15:02:34.929] [INFO] development - Image not available to upload. Executing next instruction
+[2018-03-28T15:03:31.115] [TRACE] development - image has been uploaded. Image name =  exercise_1522229611099.png
+[2018-03-28T15:03:31.122] [TRACE] development - image has been uploaded. Image name =  exercise_1522229611099.png
+[2018-03-28T15:03:31.124] [TRACE] development - image has been uploaded. Image name =  exercise_1522229611099.png
+[2018-03-28T15:05:32.457] [TRACE] development - image has been uploaded. Image name =  exercise_1522229732437.png
+[2018-03-28T15:05:32.460] [TRACE] development - image has been uploaded. Image name =  exercise_1522229732437.png
+[2018-03-28T15:05:32.463] [TRACE] development - image has been uploaded. Image name =  exercise_1522229732437.png
+[2018-03-28T15:06:29.891] [TRACE] development - image has been uploaded. Image name =  exercise_1522229789871.png
+[2018-03-28T15:06:29.898] [TRACE] development - image has been uploaded. Image name =  exercise_1522229789871.png
+[2018-03-28T15:06:29.901] [TRACE] development - image has been uploaded. Image name =  exercise_1522229789871.png
+[2018-03-28T15:07:14.436] [TRACE] development - image has been uploaded. Image name =  exercise_1522229834420.png
+[2018-03-28T15:07:14.444] [TRACE] development - image has been uploaded. Image name =  exercise_1522229834420.png
+[2018-03-28T15:07:14.446] [TRACE] development - image has been uploaded. Image name =  exercise_1522229834420.png
+[2018-03-28T15:07:35.186] [TRACE] development - image has been uploaded. Image name =  exercise_1522229855161.png
+[2018-03-28T15:07:35.193] [TRACE] development - image has been uploaded. Image name =  exercise_1522229855161.png
+[2018-03-28T15:07:35.194] [TRACE] development - image has been uploaded. Image name =  exercise_1522229855161.png
+[2018-03-28T15:07:50.561] [TRACE] development - image has been uploaded. Image name =  exercise_1522229870538.png
+[2018-03-28T15:07:50.572] [TRACE] development - image has been uploaded. Image name =  exercise_1522229870538.png
+[2018-03-28T15:07:50.574] [TRACE] development - image has been uploaded. Image name =  exercise_1522229870538.png
+[2018-03-28T15:08:34.766] [TRACE] development - image has been uploaded. Image name =  exercise_1522229914699.png
+[2018-03-28T15:08:34.801] [TRACE] development - image has been uploaded. Image name =  exercise_1522229914699.png
+[2018-03-28T15:08:34.814] [TRACE] development - image has been uploaded. Image name =  exercise_1522229914699.png
+[2018-03-28T15:08:47.867] [TRACE] development - image has been uploaded. Image name =  exercise_1522229927848.png
+[2018-03-28T15:08:47.873] [TRACE] development - image has been uploaded. Image name =  exercise_1522229927848.png
+[2018-03-28T15:08:47.874] [TRACE] development - image has been uploaded. Image name =  exercise_1522229927848.png
+[2018-03-28T15:09:06.396] [TRACE] development - image has been uploaded. Image name =  exercise_1522229946380.png
+[2018-03-28T15:09:06.399] [TRACE] development - image has been uploaded. Image name =  exercise_1522229946380.png
+[2018-03-28T15:09:06.399] [TRACE] development - image has been uploaded. Image name =  exercise_1522229946380.png
+[2018-03-28T15:12:12.063] [TRACE] development - Get all equipment API called
+[2018-03-28T15:12:12.094] [TRACE] development - Equipments got successfully =  { status: 1,
+  message: 'Equipments found',
+  equipments: 
+   [ { status: true,
+       createdAt: '2018-03-27T06:34:40.427Z',
+       modifiedAt: '2018-03-27T06:34:40.427Z',
+       _id: '5ab9e6003e44a31c604a8571',
+       name: 'amit',
+       description: 'demo amit',
+       category_id: '5ab9d739f25abc2940429b01',
+       image: 'upload/equipment/equipment_1522133138264.png' } ] }
+[2018-03-28T15:15:44.077] [TRACE] development - Get all equipment API called
+[2018-03-28T15:15:44.095] [TRACE] development - Equipments got successfully =  { status: 1,
+  message: 'Equipment found',
+  equipment: 
+   { status: true,
+     createdAt: '2018-03-27T06:34:40.427Z',
+     modifiedAt: '2018-03-27T06:34:40.427Z',
+     _id: '5ab9e6003e44a31c604a8571',
+     name: 'amit',
+     description: 'demo amit',
+     category_id: '5ab9d739f25abc2940429b01',
+     image: 'upload/equipment/equipment_1522133138264.png' } }

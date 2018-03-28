@@ -42,7 +42,7 @@ var ExerciseSchema = new Schema(
     image: { type: Array, required: false, default: [] },
     measures: {
       type: String,
-      enum: ["beginner", "intermediate", "expert"],
+      enum: ["beginner", "intermediate", "expert",""],
       required: false
     },
     createdAt: { type: Date, default: Date.now },

@@ -314,10 +314,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Array",
+            "type": "Object",
             "optional": false,
-            "field": "equipments",
-            "description": "<p>Array of equipment document</p>"
+            "field": "equipment",
+            "description": "<p>Object of equipment document</p>"
           }
         ]
       }
@@ -671,13 +671,6 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "category_id",
-            "description": "<p>Exercise's Category id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "name",
             "description": "<p>Name of Exercise</p>"
           },
@@ -690,10 +683,73 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "file",
+            "type": "String",
+            "optional": false,
+            "field": "mainMuscleGroup",
+            "description": "<p>Reference id of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
             "optional": true,
-            "field": "equipment_img",
-            "description": "<p>Exercise image</p>"
+            "field": "otherMuscleGroup",
+            "description": "<p>Reference ids of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "detailedMuscleGroup",
+            "description": "<p>Reference ids of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>Type of exercise (reference id from exercise type collection)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "mechanics",
+            "description": "<p>Mechanics of Exercise | Possible Values('Compound', 'Isolation')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "equipments",
+            "description": "<p>Reference ids from equipments collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "difficltyLevel",
+            "description": "<p>Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": true,
+            "field": "steps",
+            "description": "<p>Steps of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Files",
+            "optional": true,
+            "field": "images",
+            "description": "<p>Images of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "measures",
+            "description": "<p>Measures of Exercise</p>"
           }
         ]
       }

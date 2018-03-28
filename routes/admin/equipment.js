@@ -40,7 +40,7 @@ router.get("/", async (req, res) => {
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * * @apiParam {String} equipment_id ID of equipment
 
- * @apiSuccess (Success 200) {Array} equipments Array of equipment document
+ * @apiSuccess (Success 200) {Object} equipment Object of equipment document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:equipment_id", async (req, res) => {
