@@ -89,14 +89,21 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of equipment Equipment</p>"
+            "description": "<p>Name of Equipment Equipment</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>status of Equipment</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": true,
             "field": "description",
-            "description": "<p>Description of equipment</p>"
+            "description": "<p>Description of Equipment</p>"
           },
           {
             "group": "Parameter",
@@ -194,6 +201,13 @@ define({ "api": [
             "optional": false,
             "field": "category_id",
             "description": "<p>Equipment's Category id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Status for equipment</p>"
           }
         ]
       }
@@ -1122,7 +1136,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "Exercise",
+            "field": "Exercises",
             "description": "<p>Array of Exercises document</p>"
           }
         ]

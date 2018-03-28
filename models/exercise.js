@@ -39,7 +39,7 @@ var ExerciseSchema = new Schema(
       required: true
     },
     steps: { type: Array, required: false, default: [] },
-    image: { type: Array, required: false, default: [] },
+    images: { type: Array, required: false, default: [] },
     measures: {
       type: String,
       enum: ["beginner", "intermediate", "expert",""],

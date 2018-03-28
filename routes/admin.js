@@ -14,8 +14,8 @@ var exercise = require("./admin/exercise");
 router.use("/nutrition", auth, authorization, nutrition);
 router.use("/equipment_category", auth, authorization, equipment_category);
 
-router.use("/equipment", equipment);
+router.use("/equipment",auth, authorization, equipment);
 router.use("/exercise_type", auth, authorization, exercise_type);
-router.use("/exercise", exercise);
+router.use("/exercise", auth, authorization,exercise);
 
 module.exports = router;

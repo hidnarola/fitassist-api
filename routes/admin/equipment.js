@@ -64,9 +64,9 @@ router.get("/:equipment_id", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} category_id Equipment's Category id
- * @apiParam {String} name Name of equipment Equipment
- * @apiParam {String} name Name of equipment Equipment
- * @apiParam {String} [description] Description of equipment
+ * @apiParam {String} name Name of Equipment Equipment
+ * @apiParam {Boolean} status status of Equipment
+ * @apiParam {String} [description] Description of Equipment
  * @apiParam {file} [equipment_img] Equipment image
  *
  * @apiSuccess (Success 200) {JSON} equipment Equipment details
@@ -85,7 +85,12 @@ router.post("/", async (req, res) => {
         "category_id": {
             notEmpty: true,
             errorMessage: "Category is required"
+        },
+        "status": {
+            notEmpty: true,
+            errorMessage: "Status is required"
         }
+
     };
     
     req.checkBody(schema);
@@ -96,7 +101,8 @@ router.post("/", async (req, res) => {
         var equipment_obj = {
             "name": req.body.name,
             "description": (req.body.description) ? req.body.description : null,
-            "category_id":req.body.category_id
+            "category_id":req.body.category_id,
+            "status":req.body.status
         };
 
         //image upload
@@ -158,6 +164,7 @@ router.post("/", async (req, res) => {
  * @apiParam {String} [description] Description of equipment
  * @apiParam {file} [equipment_img] Equipment image
  * @apiParam {String} category_id Equipment's Category id
+ * @apiParam {Boolean} status Status for equipment
  * @apiSuccess (Success 200) {JSON} equipment Equipment details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -175,6 +182,10 @@ router.put("/:equipment_id", async (req, res) => {
         "category_id": {
             notEmpty: true,
             errorMessage: "Category is required"
+        },
+        "status": {
+            notEmpty: true,
+            errorMessage: "Status is required"
         }
     };
 
@@ -187,7 +198,8 @@ router.put("/:equipment_id", async (req, res) => {
         var equipment_obj = {
             "name": req.body.name,
             "description": (req.body.description) ? req.body.description : null,
-            "category_id":req.body.category_id
+            "category_id":req.body.category_id,
+            "status":req.body.status
         };
 
 // Image upload
@@ -224,7 +236,7 @@ router.put("/:equipment_id", async (req, res) => {
         //End image upload
         if(filename)
         {
-            equipment_obj.image='upload/equipment/' + filename;
+            equipment_obj.image='uploads/equipment/' + filename;
         }
 
         console.log(equipment_obj);
