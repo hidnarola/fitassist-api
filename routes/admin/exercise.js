@@ -142,8 +142,8 @@ router.post("/", async (req, res) => {
             "name": req.body.name,
             "description": req.body.description,
             "mainMuscleGroup": req.body.mainMuscleGroup,
-            "otherMuscleGroup": req.body.otherMuscleGroup,
-            "detailedMuscleGroup": req.body.detailedMuscleGroup,
+            "otherMuscleGroup": JSON.parse(req.body.otherMuscleGroup),
+            "detailedMuscleGroup": JSON.parse(req.body.detailedMuscleGroup),
             "type": req.body.type,
             "mechanics": req.body.mechanics,
             "equipments": JSON.parse(req.body.equipments),
@@ -241,20 +241,19 @@ router.post("/", async (req, res) => {
  */
 router.put("/:exercise_id", async (req, res) => {
     exercise_id = req.params.exercise_id;
-
+    var resp_data = await exercise_helper.get_exercise_id(exercise_id);
+    
+    old_collection_images=resp_data['exercise'].images;
     if(req.body.deleted_images)
     {
         arr=JSON.parse(req.body.deleted_images);
         arr.forEach(element => {
            // console.log(element);
         });
-    
-        var resp_data = await exercise_helper.get_exercise_id(exercise_id);
-    
-        old_collection_images=resp_data['exercise'].images;
+
         //console.log(old_collection_images);
-        arr.forEach(image=>{
-            if(index = old_collection_images.indexOf(image) > -1)
+        old_collection_images.forEach(image=>{
+            if(index = arr.indexOf(image) > -1)
             {
                 console.log("delete : "+image);   
                       
@@ -343,8 +342,10 @@ router.put("/:exercise_id", async (req, res) => {
         async.waterfall([
             function(callback){
                 //image upload
-                if (req.files && req.files['new_images']) {
-                    var file_path_array=old_collection_images;
+                var file_path_array=old_collection_images;
+                console.log(file_path_array);
+                //console.log(req.files);
+                if (req.files && req.files['new_images'] && req.files!=null) {
                     // var files = req.files['images'];
                     var files = [].concat(req.files.new_images);
 
@@ -389,7 +390,7 @@ router.put("/:exercise_id", async (req, res) => {
             }
         ],async (err,file_path_array) => {
             //End image upload
-            console.log(exercise_obj);
+            //console.log(exercise_obj);
 
             exercise_obj.images=file_path_array;
             let exercise_data = await exercise_helper.update_exercise_by_id(req.params.exercise_id,exercise_obj);
