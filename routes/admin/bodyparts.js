@@ -8,26 +8,27 @@ var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
 
-var exercise_helper = require("../../helpers/exercise_helper");
+var body_part_helper = require("../../helpers/body_parts_helper");
 
 /**
- * @api {get} /admin/exercise Exercise - Get all
- * @apiName Exercise - Get all
+ * @api {get} /admin/bodypart Body Parts - Get all
+ * @apiName Body Parts - Get all
  * @apiGroup Admin
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
- * @apiSuccess (Success 200) {Array} exercises Array of Exercises document
+ * @apiSuccess (Success 200) {Array} bodyparts Array of bodyparts document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
+
     logger.trace("Get all exercise API called");
-    var resp_data = await exercise_helper.get_all_exercise();
+    var resp_data = await body_part_helper.get_all_body_parts();
     if (resp_data.status == 0) {
-      logger.error("Error occured while fetching exercise = ", resp_data);
+      logger.error("Error occured while fetching body parts = ", resp_data);
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     } else {
-      logger.trace("Exercises got successfully = ", resp_data);
+      logger.trace("Body Parts got successfully = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
     }
   });
