@@ -241,33 +241,18 @@ router.post("/", async (req, res) => {
  */
 router.put("/:exercise_id", async (req, res) => {
     exercise_id = req.params.exercise_id;
+    
     var resp_data = await exercise_helper.get_exercise_id(exercise_id);
-    
-    old_collection_images=resp_data['exercise'].images;
-    if(req.body.deleted_images)
-    {
-        arr=JSON.parse(req.body.deleted_images);
-        arr.forEach(element => {
-           // console.log(element);
-        });
-
-        //console.log(old_collection_images);
-        old_collection_images.forEach(image=>{
-            if(index = arr.indexOf(image) > -1)
-            {
-                console.log("delete : "+image);   
-                      
-                old_collection_images.splice(index, 1);
-            }
-            
-        });
-    
-    }
-
-    //console.log(old_collection_images.length);
-
-    //res.send("final Images : "+old_collection_images);
-    //return ;
+    new_img_path_list=resp_data["exercise"]['images'];
+    let old_images=new_img_path_list;
+    delete_image=JSON.parse(req.body.delete_images);
+    new_img_path_list.forEach(element => {
+        if(index = delete_image.indexOf(element)>-1)
+        {
+            new_img_path_list.splice(index, 1);
+        }
+    });
+    return res.send({"old_images":old_images,"newlist":new_img_path_list,"delete":delete_image});
     var schema = {
         "name": {
             notEmpty: true,
@@ -329,8 +314,8 @@ router.put("/:exercise_id", async (req, res) => {
             "name": req.body.name,
             "description": req.body.description,
             "mainMuscleGroup": req.body.mainMuscleGroup,
-            "otherMuscleGroup": req.body.otherMuscleGroup,
-            "detailedMuscleGroup": req.body.detailedMuscleGroup,
+            "otherMuscleGroup": JSON.parse(req.body.otherMuscleGroup),
+            "detailedMuscleGroup": JSON.parse(req.body.detailedMuscleGroup),
             "type": req.body.type,
             "mechanics": req.body.mechanics,
             "equipments": JSON.parse(req.body.equipments),
@@ -338,12 +323,12 @@ router.put("/:exercise_id", async (req, res) => {
             "steps": JSON.parse(req.body.steps),
             "measures": req.body.measures,
         };
+       
 
         async.waterfall([
             function(callback){
                 //image upload
-                var file_path_array=old_collection_images;
-                console.log(file_path_array);
+                var file_path_array=[];
                 //console.log(req.files);
                 if (req.files && req.files['new_images'] && req.files!=null) {
                     // var files = req.files['images'];
@@ -391,7 +376,6 @@ router.put("/:exercise_id", async (req, res) => {
         ],async (err,file_path_array) => {
             //End image upload
             //console.log(exercise_obj);
-
             exercise_obj.images=file_path_array;
             let exercise_data = await exercise_helper.update_exercise_by_id(req.params.exercise_id,exercise_obj);
             if (exercise_data.status === 0) {

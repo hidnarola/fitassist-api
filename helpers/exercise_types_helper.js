@@ -15,7 +15,7 @@ exercise_types_helper.get_all_exercise_types = async () => {
     try {
         var exercise_types = await Exercise_types.find();
         if (exercise_types) {
-            return { "status": 1, "message": "Exercise Types found", "equipments": exercise_types };
+            return { "status": 1, "message": "Exercise Types found", "exercise_types": exercise_types };
         } else {
             return { "status": 2, "message": "No Exercise Types available" };
         }
