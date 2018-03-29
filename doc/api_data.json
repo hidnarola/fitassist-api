@@ -1,5 +1,54 @@
 [
   {
+    "type": "get",
+    "url": "/admin/bodypart",
+    "title": "Body Parts - Get all",
+    "name": "Body_Parts___Get_all",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "bodyparts",
+            "description": "<p>Array of bodyparts document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
+    "groupTitle": "Admin"
+  },
+  {
     "type": "delete",
     "url": "/admin/equipment/:equipment_id",
     "title": "Equipment Delete",
@@ -649,7 +698,202 @@
       }
     },
     "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "delete",
+    "url": "/admin/exercise/:exercise_id",
+    "title": "Exercise Delete",
+    "name": "Exercise_Delete",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
     "filename": "routes/admin/exercise.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "post",
+    "url": "/admin/exercise",
+    "title": "Exercise Add",
+    "name": "Exercise_Exercise_Add",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "description",
+            "description": "<p>Description of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "mainMuscleGroup",
+            "description": "<p>Reference id of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "otherMuscleGroup",
+            "description": "<p>Reference ids of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "detailedMuscleGroup",
+            "description": "<p>Reference ids of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>Type of exercise (reference id from exercise type collection)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "mechanics",
+            "description": "<p>Mechanics of Exercise | Possible Values('Compound', 'Isolation')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "equipments",
+            "description": "<p>Reference ids from equipments collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "difficltyLevel",
+            "description": "<p>Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": true,
+            "field": "steps",
+            "description": "<p>Steps of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Files",
+            "optional": true,
+            "field": "images",
+            "description": "<p>Images of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "measures",
+            "description": "<p>Measures of Exercise</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "exercise",
+            "description": "<p>Exercise details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
     "groupTitle": "Admin"
   },
   {
@@ -1112,6 +1356,68 @@
   },
   {
     "type": "get",
+    "url": "/admin/exercise/exercise_id",
+    "title": "Exercise - Get by ID",
+    "name": "Exercise___Get_Exercise_by_ID",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "exercise_id",
+            "description": "<p>ID of Exercise</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "exercise",
+            "description": "<p>Array of Exercise document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "get",
     "url": "/admin/exercise",
     "title": "Exercise - Get all",
     "name": "Exercise___Get_all",
@@ -1185,13 +1491,6 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "category_id",
-            "description": "<p>Exercise's Category id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "name",
             "description": "<p>Name of Exercise</p>"
           },
@@ -1204,10 +1503,80 @@
           },
           {
             "group": "Parameter",
-            "type": "file",
+            "type": "String",
+            "optional": false,
+            "field": "mainMuscleGroup",
+            "description": "<p>Reference id of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
             "optional": true,
-            "field": "equipment_img",
-            "description": "<p>Exercise image</p>"
+            "field": "otherMuscleGroup",
+            "description": "<p>Reference ids of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "detailedMuscleGroup",
+            "description": "<p>Reference ids of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>Type of exercise (reference id from exercise type collection)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "mechanics",
+            "description": "<p>Mechanics of Exercise | Possible Values('Compound', 'Isolation')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "equipments",
+            "description": "<p>Reference ids from equipments collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "difficltyLevel",
+            "description": "<p>Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": true,
+            "field": "steps",
+            "description": "<p>Steps of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "deleted_images",
+            "description": "<p>Array of deleted_images of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "new_images",
+            "description": "<p>New Images of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "measures",
+            "description": "<p>Measures of Exercise</p>"
           }
         ]
       }
@@ -1240,6 +1609,152 @@
     },
     "version": "0.0.0",
     "filename": "routes/admin/exercise.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "put",
+    "url": "/admin/exercise",
+    "title": "Exercise - Update",
+    "name": "Exercise___Update",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "description",
+            "description": "<p>Description of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "mainMuscleGroup",
+            "description": "<p>Reference id of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "otherMuscleGroup",
+            "description": "<p>Reference ids of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "detailedMuscleGroup",
+            "description": "<p>Reference ids of from muscles group collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>Type of exercise (reference id from exercise type collection)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "mechanics",
+            "description": "<p>Mechanics of Exercise | Possible Values('Compound', 'Isolation')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "equipments",
+            "description": "<p>Reference ids from equipments collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "difficltyLevel",
+            "description": "<p>Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": true,
+            "field": "steps",
+            "description": "<p>Steps of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "deleted_images",
+            "description": "<p>Array of deleted_images of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "new_images",
+            "description": "<p>New Images of Exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "measures",
+            "description": "<p>Measures of Exercise</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "exercise",
+            "description": "<p>Array of Exercises document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
     "groupTitle": "Admin"
   },
   {

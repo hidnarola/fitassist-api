@@ -82,8 +82,6 @@ router.get("/:exercise_id", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
-    console.log(req.files);
-    return res.send(req.files);
     var schema = {
         "name": {
             notEmpty: true,
@@ -148,9 +146,9 @@ router.post("/", async (req, res) => {
             "detailedMuscleGroup": req.body.detailedMuscleGroup,
             "type": req.body.type,
             "mechanics": req.body.mechanics,
-            "equipments": req.body.equipments,
+            "equipments": JSON.parse(req.body.equipments),
             "difficltyLevel": req.body.difficltyLevel,
-            "steps": req.body.steps,
+            "steps": JSON.parse(req.body.steps),
             "measures": req.body.measures,
             
         };
@@ -160,7 +158,8 @@ router.post("/", async (req, res) => {
                 //image upload
                 if (req.files && req.files['images']) {
                     var file_path_array=[];
-                    var files = req.files['images'];
+                   // var files = req.files['images'];
+                    var files = [].concat(req.files.images);
                     var dir = "./uploads/exercise";
                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
@@ -179,11 +178,8 @@ router.post("/", async (req, res) => {
                                     loop_callback({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
                                 } else {
                                     logger.trace("image has been uploaded. Image name = ", filename);
-                                    //console.log('img : '+filename);
                                     location = "uploads/exercise/"+filename;
                                     file_path_array.push(location);
-                                    // console.log(file_path_array);
-                                    //console.log("xyz = ",exercise_obj);
                                     loop_callback();
                                 }
                             });
@@ -202,21 +198,17 @@ router.post("/", async (req, res) => {
                 } else {
                     logger.info("Image not available to upload. Executing next instruction");
                     callback(null, []);
-                    //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
                 }
             }
         ],async (err,file_path_array) => {
             //End image upload
-            //console.log("abc= ", exercise_obj);
-            // res.send(exercise_obj);
-            console.log(file_path_array);
             exercise_obj.images=file_path_array;
             let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
             if (exercise_data.status === 0) {
                 logger.error("Error while inserting exercise data = ", exercise_data);
-                res.status(config.BAD_REQUEST).json({ exercise_data });
+                return res.status(config.BAD_REQUEST).json({ exercise_data });
             } else {
-                res.status(config.OK_STATUS).json(exercise_data);
+                return res.status(config.OK_STATUS).json(exercise_data);
             }
         });
     } else {
@@ -231,16 +223,52 @@ router.post("/", async (req, res) => {
  * @apiGroup Admin
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} category_id Exercise's Category id
- * @apiParam {String} name Name of Exercise
  * @apiParam {String} name Name of Exercise
  * @apiParam {String} [description] Description of Exercise
- * @apiParam {file} [equipment_img] Exercise image
+ * @apiParam {String} mainMuscleGroup Reference id of from muscles group collection
+ * @apiParam {String} [otherMuscleGroup] Reference ids of from muscles group collection
+ * @apiParam {String} detailedMuscleGroup Reference ids of from muscles group collection
+ * @apiParam {String} type Type of exercise (reference id from exercise type collection)
+ * @apiParam {Enum} [mechanics] Mechanics of Exercise | Possible Values('Compound', 'Isolation')
+ * @apiParam {Array} equipments Reference ids from equipments collection
+ * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
+ * @apiParam {Array} [steps] Steps of Exercise
+ * @apiParam {Array} deleted_images Array of deleted_images of Exercise
+ * @apiParam {Array} new_images New Images of Exercise
+ * @apiParam {Enum} [measures] Measures of Exercise
  * @apiSuccess (Success 200) {Array} exercise Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:exercise_id", async (req, res) => {
+    exercise_id = req.params.exercise_id;
+
+    if(req.body.deleted_images)
+    {
+        arr=JSON.parse(req.body.deleted_images);
+        arr.forEach(element => {
+           // console.log(element);
+        });
     
+        var resp_data = await exercise_helper.get_exercise_id(exercise_id);
+    
+        old_collection_images=resp_data['exercise'].images;
+        //console.log(old_collection_images);
+        old_collection_images.forEach(image=>{
+            if(index = arr.indexOf(image) > -1)
+            {
+                console.log("delete : "+image);   
+                      
+                old_collection_images.splice(index, 1);
+            }
+            
+        });
+    
+    }
+
+    //console.log(old_collection_images.length);
+
+    //res.send("final Images : "+old_collection_images);
+    //return ;
     var schema = {
         "name": {
             notEmpty: true,
@@ -291,6 +319,7 @@ router.put("/:exercise_id", async (req, res) => {
             errorMessage: "measures is required"
         }
     };
+
     req.checkBody(schema);
     var errors = req.validationErrors();
     
@@ -305,19 +334,20 @@ router.put("/:exercise_id", async (req, res) => {
             "detailedMuscleGroup": req.body.detailedMuscleGroup,
             "type": req.body.type,
             "mechanics": req.body.mechanics,
-            "equipments": req.body.equipments,
+            "equipments": JSON.parse(req.body.equipments),
             "difficltyLevel": req.body.difficltyLevel,
-            "steps": req.body.steps,
+            "steps": JSON.parse(req.body.steps),
             "measures": req.body.measures,
-            
         };
 
         async.waterfall([
             function(callback){
                 //image upload
-                if (req.files && req.files['images']) {
-                    var file_path_array=[];
-                    var files = req.files['images'];
+                if (req.files && req.files['new_images']) {
+                    var file_path_array=old_collection_images;
+                    // var files = req.files['images'];
+                    var files = [].concat(req.files.new_images);
+
                     var dir = "./uploads/exercise";
                     var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
@@ -359,6 +389,7 @@ router.put("/:exercise_id", async (req, res) => {
             }
         ],async (err,file_path_array) => {
             //End image upload
+            console.log(exercise_obj);
 
             exercise_obj.images=file_path_array;
             let exercise_data = await exercise_helper.update_exercise_by_id(req.params.exercise_id,exercise_obj);
