@@ -1095,7 +1095,7 @@
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "exercise_types",
+            "field": "exercise_type",
             "description": "<p>Exercise types details</p>"
           }
         ]
@@ -1560,14 +1560,14 @@
           {
             "group": "Parameter",
             "type": "Array",
-            "optional": false,
+            "optional": true,
             "field": "deleted_images",
             "description": "<p>Array of deleted_images of Exercise</p>"
           },
           {
             "group": "Parameter",
-            "type": "Array",
-            "optional": false,
+            "type": "File",
+            "optional": true,
             "field": "new_images",
             "description": "<p>New Images of Exercise</p>"
           },

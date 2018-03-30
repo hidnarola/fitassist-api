@@ -36,9 +36,9 @@ exercise_types_helper.get_all_exercise_types = async () => {
  */
 exercise_types_helper.get_exercise_type_id = async (id) => {
     try {
-        var exercise_types = await Exercise_types.find({_id:id});
-        if (exercise_types) {
-            return { "status": 1, "message": "Exercise type  found", "Exercise Types": exercise_types };
+        var exercise_type = await Exercise_types.findOne({_id:id});
+        if (exercise_type) {
+            return { "status": 1, "message": "Exercise type  found", "exercise_type": exercise_type };
         } else {
             return { "status": 2, "message": "No Exercise Types available" };
         }
@@ -82,11 +82,11 @@ exercise_types_helper.insert_exercise_type = async (exercise_types_object) => {
  */
 exercise_types_helper.update_exercise_type_by_id = async (exercise_type_id, exercise_types_object) => {
     try {
-        let exercise_types = await Exercise_types.findOneAndUpdate({ _id: exercise_type_id }, exercise_types_object, { new: true });
-        if (!exercise_types) {
+        let exercise_type = await Exercise_types.findOneAndUpdate({ _id: exercise_type_id }, exercise_types_object, { new: true });
+        if (!exercise_type) {
             return { "status": 2, "message": "Record has not updated" };
         } else {
-            return { "status": 1, "message": "Record has been updated", "ExerciseTypes": exercise_types };
+            return { "status": 1, "message": "Record has been updated", "exercise_type": exercise_type };
         }
     } catch (err) {
         return { "status": 0, "message": "Error occured while updating Exercise Types", "error": err }

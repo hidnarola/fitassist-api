@@ -76,7 +76,6 @@ exercise_helper.insert_exercise = async (exercise_object) => {
  * @developed by "amc"
  */
 exercise_helper.update_exercise_by_id = async (exercise_id, exercise_object) => {
-    console.log(exercise_object);
     try {
         let exercise = await Exercise.findOneAndUpdate({ _id: exercise_id }, exercise_object, { new: true });
         if (!exercise) {

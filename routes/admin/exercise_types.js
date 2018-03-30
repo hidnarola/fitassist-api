@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
  * @apiParam {String} name Name of Exercise_types
  * @apiParam {String} description Description of Exercise types 
  * 
- * @apiSuccess (Success 200) {JSON} exercise_types Exercise types details
+ * @apiSuccess (Success 200) {JSON} exercise_type Exercise types details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post('/', async (req, res) => {
