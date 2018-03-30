@@ -1,24 +1,113 @@
 var Measurement = require("./../models/body_measurements");
 var measurement_helper = {};
 
+
 /*
- * insert_measurement is used to insert into user collection
+ * get_all_measurement is used to fetch all measurement data
  * 
- * @param   user_object     JSON object consist of all property that need to insert in collection
- * 
- * @return  status  0 - If any error occur in inserting faculty, with error
- *          status  1 - If faculty inserted, with inserted faculty's document and appropriate message
- * 
- * @developed by "ar"
+ * @return  status 0 - If any internal error occured while fetching measurement data, with error
+ *          status 1 - If measurement data found, with measurement object
+ *          status 2 - If measurement not found, with appropriate message
  */
-measurement_helper.insert_measurement = async (measurement_object) => {
+measurement_helper.get_all_measurement = async () => {
+    try {
+        var measurement = await Measurement.find();
+        if (measurement) {
+            return { "status": 1, "message": "Measurement found", "measurements": measurement };
+        } else {
+            return { "status": 2, "message": "No measurement available" };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while finding measurement", "error": err }
+    }
+}
+
+/*
+ * get_body_measurement_id is used to fetch bodymeasurement by ID
+ * 
+ * @return  status 0 - If any internal error occured while fetching bodymeasurement data, with error
+ *          status 1 - If bodymeasurement data found, with bodymeasurement object
+ *          status 2 - If bodymeasurement not found, with appropriate message
+ */
+measurement_helper.get_body_measurement_id = async (id) => {
+    try {
+        var measurement = await Measurement.findOne({_id:id});
+        if (measurement) {
+            return { "status": 1, "message": "measurement found", "measurement": measurement };
+        } else {
+            return { "status": 2, "message": "No measurement available" };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while finding measurement", "error": err }
+    }
+}
+
+/*
+ * insert_body_measurement is used to insert into body_measurement collection
+ * 
+ * @param   measurement_object     JSON object consist of all property that need to insert in collection
+ * 
+ * @return  status  0 - If any error occur in inserting body measurement, with error
+ *          status  1 - If Body measurement inserted, with inserted body_measurement's document and appropriate message
+ * 
+ * @developed by "amc"
+ */
+measurement_helper.insert_body_measurement = async (measurement_object) => {
     let measurement = new Measurement(measurement_object)
     try{
         let measurement_data = await measurement.save();
-        return { "status": 1, "message": "User's measurement inserted", "measurement": measurement_data };
+        return { "status": 1, "message": "measurement inserted", "measurement": measurement_data };
     } catch(err){
-        return { "status": 0, "message":"Error occured while inserting user's measurement","error": err };
+        return { "status": 0, "message":"Error occured while inserting measurement","error": err };
     }
 };
+
+/*
+ * update_body_measurement is used to update body_measurement data based on body_measurement_id
+ * 
+ * @param   body_measurement_id  String _id of body_measurement that need to be update
+ * @param   measurement_obj  JSON  object consist of all property that need to update
+ * 
+ * @return  status  0 - If any error occur in updating body_measurement, with error
+ *          status  1 - If Body_measurement updated successfully, with appropriate message
+ *          status  2 - If Body_measurement Types not updated, with appropriate message
+ * 
+ * @developed by "amc"
+ */
+measurement_helper.update_body_measurement = async (body_measurement_id, measurement_obj) => {
+    try {
+        let measurement = await Measurement.findOneAndUpdate({ _id: body_measurement_id }, measurement_obj, { new: true });
+        if (!measurement) {
+            return { "status": 2, "message": "Record has not updated" };
+        } else {
+            return { "status": 1, "message": "Record has been updated", "measurement": measurement };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while updating Exercise Types", "error": err }
+    }
+};
+
+/**
+ * @api {delete} /admin/equipment/:equipment_id Equipment Delete
+ * @apiName Equipment Delete
+ * @apiGroup Admin
+ *
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ *
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+measurement_helper.delete_measurement_by_id = async (body_measurement_id) => {
+    try {
+        let resp = await Measurement.findOneAndRemove({ _id: body_measurement_id });
+        if (!resp) {
+            return { "status": 2, "message": "Measurement not found" };
+        } else {
+            return { "status": 1, "message": "Measurement deleted" };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while deleting Measurement", "error": err };
+    }
+}
 
 module.exports = measurement_helper;

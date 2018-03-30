@@ -67,9 +67,9 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiParam {String} name Name of Exercise
  * @apiParam {String} [description] Description of Exercise
  * @apiParam {String} mainMuscleGroup Reference id of from muscles group collection
- * @apiParam {String} [otherMuscleGroup] Reference ids of from muscles group collection
- * @apiParam {String} detailedMuscleGroup Reference ids of from muscles group collection
- * @apiParam {String} type Type of exercise (reference id from exercise type collection)
+ * @apiParam {Array} [otherMuscleGroup] Reference ids of from muscles group collection
+ * @apiParam {Array} [detailedMuscleGroup] Reference ids of from muscles group collection
+ * @apiParam {Array} [type] Type of exercise (reference id from exercise type collection)
  * @apiParam {Enum} [mechanics] Mechanics of Exercise | Possible Values('Compound', 'Isolation')
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
@@ -82,6 +82,8 @@ router.get("/:exercise_id", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
+  console.log(req.body);
+    
   var schema = {
     name: {
       notEmpty: true,
@@ -144,7 +146,7 @@ router.post("/", async (req, res) => {
       mainMuscleGroup: req.body.mainMuscleGroup,
       otherMuscleGroup: JSON.parse(req.body.otherMuscleGroup),
       detailedMuscleGroup: JSON.parse(req.body.detailedMuscleGroup),
-      type: req.body.type,
+      type: JSON.parse(req.body.type),
       mechanics: req.body.mechanics,
       equipments: JSON.parse(req.body.equipments),
       difficltyLevel: req.body.difficltyLevel,
@@ -152,6 +154,8 @@ router.post("/", async (req, res) => {
       measures: req.body.measures
     };
 
+    console.log(exercise_obj);
+    //return res.send(exercise_obj);
     async.waterfall(
       [
         function(callback) {
@@ -243,9 +247,9 @@ router.post("/", async (req, res) => {
  * @apiParam {String} name Name of Exercise
  * @apiParam {String} [description] Description of Exercise
  * @apiParam {String} mainMuscleGroup Reference id of from muscles group collection
- * @apiParam {String} [otherMuscleGroup] Reference ids of from muscles group collection
- * @apiParam {String} detailedMuscleGroup Reference ids of from muscles group collection
- * @apiParam {String} type Type of exercise (reference id from exercise type collection)
+ * @apiParam {Array} [otherMuscleGroup] Reference ids of from muscles group collection
+ * @apiParam {Array} [detailedMuscleGroup] Reference ids of from muscles group collection
+ * @apiParam {Array} [type] Type of exercise (reference id from exercise type collection)
  * @apiParam {Enum} [mechanics] Mechanics of Exercise | Possible Values('Compound', 'Isolation')
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')

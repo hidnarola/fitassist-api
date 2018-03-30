@@ -11,13 +11,15 @@ var equipment = require("./admin/equipment");
 var exercise_type = require("./admin/exercise_types");
 var exercise = require("./admin/exercise");
 var bodypart = require("./admin/bodyparts");
+var body_measurement = require("./admin/measurement");
 
 router.use("/nutrition", auth, authorization, nutrition);
 router.use("/equipment_category", auth, authorization, equipment_category);
 
-router.use("/equipment",auth, authorization, equipment);
+router.use("/equipment", auth, authorization, equipment);
 router.use("/exercise_type", auth, authorization, exercise_type);
-router.use("/exercise", auth, authorization,exercise);
-router.use("/bodypart", auth, authorization,bodypart);
+router.use("/exercise", auth, authorization, exercise);
+router.use("/bodypart", auth, authorization, bodypart);
+router.use("/measurement", auth, authorization, body_measurement);
 
 module.exports = router;
