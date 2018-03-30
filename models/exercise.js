@@ -25,12 +25,12 @@ var ExerciseSchema = new Schema(
       ref: "body_parts",
       required: true
     }],
-    type: [{
+    type: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "exercise_types",
       default: null,
       required: true
-    }],
+    },
     mechanics: {
       type: String,
       enum: ["compound", "isolation"],

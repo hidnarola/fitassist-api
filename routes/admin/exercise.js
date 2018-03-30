@@ -146,7 +146,7 @@ router.post("/", async (req, res) => {
       mainMuscleGroup: req.body.mainMuscleGroup,
       otherMuscleGroup: JSON.parse(req.body.otherMuscleGroup),
       detailedMuscleGroup: JSON.parse(req.body.detailedMuscleGroup),
-      type: JSON.parse(req.body.type),
+      type: req.body.type,
       mechanics: req.body.mechanics,
       equipments: JSON.parse(req.body.equipments),
       difficltyLevel: req.body.difficltyLevel,
