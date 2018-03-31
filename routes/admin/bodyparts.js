@@ -55,7 +55,7 @@ router.get("/:body_part_id", async (req, res) => {
 
 /**
  * @api {post} /admin/bodypart Body Parts - Add
- * @apiNameBody Parts - Add
+ * @apiName Body Parts - Add
  * @apiGroup Admin
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key

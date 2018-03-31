@@ -135,7 +135,10 @@ router.post("/", async (req, res) => {
             logger.info("Image not available to upload. Executing next instruction");
             //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
         }
-        equipment_obj.image='uploads/equipment/' + filename;
+        if(filename)
+        {
+            equipment_obj.image='uploads/equipment/' + filename;
+        }
         
         //End image upload
         
@@ -236,6 +239,12 @@ router.put("/:equipment_id", async (req, res) => {
         //End image upload
         if(filename)
         {
+            var resp_data = await equipment_helper.get_equipment_id(req.params.equipment_id);
+            console.log(resp_data);
+            fs.unlink(resp_data.equipment.image,function(err,Success){
+                if(err) throw err;
+                console.log('image is deleted');
+            });
             equipment_obj.image='uploads/equipment/' + filename;
         }
 
@@ -266,13 +275,19 @@ router.put("/:equipment_id", async (req, res) => {
  */
 router.delete("/:equipment_id", async (req, res) => {
   logger.trace("Delete equipment API - Id = ", req.query.id);
+  var resp_data = await equipment_helper.get_equipment_id(req.params.equipment_id);
+  
   let equipment_data = await equipment_helper.delete_equipment_by_id(
     req.params.equipment_id
   );
 
   if (equipment_data.status === 0) {
+    
     res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
   } else {
+    fs.unlink(resp_data.equipment.image,function(){
+        console.log('image is deleted');
+    });
     res.status(config.OK_STATUS).json(equipment_data);
   }
 });

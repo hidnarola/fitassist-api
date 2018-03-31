@@ -1,6 +1,28 @@
 var User = require("./../models/users");
 var user_helper = {};
 
+
+
+/*
+ * get_all_users is used to fetch all users data
+ * 
+ * @return  status 0 - If any internal error occured while fetching users data, with error
+ *          status 1 - If users data found, with users object
+ *          status 2 - If users not found, with appropriate message
+ */
+user_helper.get_all_users = async () => {
+    try {
+        var users = await User.find();
+        if (users) {
+            return { "status": 1, "message": "users found", "users": users };
+        } else {
+            return { "status": 2, "message": "No users available" };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while finding users", "error": err }
+    }
+}
+
 /*
  * get_user_by_id is used to fetch user details by user id
  * 
@@ -71,17 +93,17 @@ user_helper.insert_user = async (user_object) => {
  * update_user_by_id is used to update user data based on user_id
  * 
  * @param   user_id         String  _id of user that need to be update
- * @param   user_object     JSON    object consist of all property that need to update
+ * @param   user_obj     JSON    object consist of all property that need to update
  * 
  * @return  status  0 - If any error occur in updating user, with error
  *          status  1 - If User updated successfully, with appropriate message
  *          status  2 - If User not updated, with appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
-user_helper.update_user_by_id = async (user_id, user_object) => {
+user_helper.update_user_by_id = async (user_id, user_obj) => {
     try {
-        let user = await User.findOneAndUpdate({ _id: user_id }, user_object);
+        let user = await User.findOneAndUpdate({ _id: user_id }, user_obj);
         if (!user) {
             return { "status": 2, "message": "Record has not updated" };
         } else {
@@ -91,5 +113,32 @@ user_helper.update_user_by_id = async (user_id, user_object) => {
         return { "status": 0, "message": "Error occured while updating user", "error": err }
     }
 };
+
+
+/*
+ * delete_user_by_id is used to delete user data based on user_id
+ * 
+ * @param   user_id         String  _id of user that need to be update
+ * @param   user_obj     JSON    object consist of all property that need to update
+ * 
+ * @return  status  0 - If any error occur in updating user, with error
+ *          status  1 - If User updated successfully, with appropriate message
+ *          status  2 - If User not updated, with appropriate message
+ * 
+ * @developed by "amc"
+ */
+user_helper.delete_user_by_id = async (user_id, user_obj) => {
+    try {
+        let user = await User.findOneAndUpdate({ _id: user_id }, user_obj);
+        if (!user) {
+            return { "status": 2, "message": "Record has not Deleted" };
+        } else {
+            return { "status": 1, "message": "Record has been Deleted"};
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while deleting user", "error": err }
+    }
+};
+
 
 module.exports = user_helper;

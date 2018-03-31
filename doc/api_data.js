@@ -535,6 +535,75 @@ define({ "api": [
     "groupTitle": "Admin"
   },
   {
+    "type": "post",
+    "url": "/admin/bodypart",
+    "title": "Body Parts - Add",
+    "name": "Body_Parts___Add",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "bodypart",
+            "description": "<p>Name of Body Part</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "bodypart",
+            "description": "<p>added Bodypart detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
+    "groupTitle": "Admin"
+  },
+  {
     "type": "delete",
     "url": "/admin/bodypart/:body_part_id",
     "title": "Body Parts - Delete",
@@ -2300,20 +2369,14 @@ define({ "api": [
     "groupTitle": "Admin"
   },
   {
-    "type": "post",
-    "url": "/admin/bodypart",
-    "title": "Body Parts - Add",
+    "type": "delete",
+    "url": "/admin/user/:user_id",
+    "title": "User - Delete",
+    "name": "User___Delete",
     "group": "Admin",
     "header": {
       "fields": {
         "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
           {
             "group": "Header",
             "type": "String",
@@ -2324,28 +2387,15 @@ define({ "api": [
         ]
       }
     },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "bodypart",
-            "description": "<p>Name of Body Part</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "fields": {
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "JSON",
+            "type": "String",
             "optional": false,
-            "field": "bodypart",
-            "description": "<p>added Bodypart detail</p>"
+            "field": "Success",
+            "description": "<p>message</p>"
           }
         ]
       }
@@ -2364,9 +2414,251 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/bodyparts.js",
-    "groupTitle": "Admin",
-    "name": "PostAdminBodypart"
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "get",
+    "url": "/admin/user",
+    "title": "User - Get all",
+    "name": "User___Get_all",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "users",
+            "description": "<p>Array of users document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "put",
+    "url": "/admin/user",
+    "title": "User - Update",
+    "name": "User___Update",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "first_name",
+            "description": "<p>First name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "last_name",
+            "description": "<p>Last name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Username</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email address</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "gender",
+            "description": "<p>gender | Possible Values ('male', 'female', 'transgender')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "date_of_birth",
+            "description": "<p>Date of Birth</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "goal",
+            "description": "<p>goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": false,
+            "field": "user_img",
+            "description": "<p>avatar</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "aboutMe",
+            "description": "<p>aboutMe</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "favRecipes",
+            "description": "<p>favRecipes</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>status</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Array of users document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "get",
+    "url": "/admin/user/user_id",
+    "title": "User - Get by ID",
+    "name": "User___Users_by_ID",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "user_id",
+            "description": "<p>ID of User</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Array of user document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin"
   },
   {
     "type": "post",

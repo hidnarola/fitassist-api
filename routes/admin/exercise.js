@@ -82,7 +82,8 @@ router.get("/:exercise_id", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
+  console.log(req.files);
+
     
   var schema = {
     name: {
@@ -351,6 +352,11 @@ router.put("/:exercise_id", async (req, res) => {
               var index = new_img_path_list.indexOf(element);
 
               if (index > -1) {
+                
+             fs.unlink(element,function(){
+              console.log("Image deleted: "+element);
+             });
+       
                 new_img_path_list.splice(index, 1);
               }
             });
@@ -457,13 +463,23 @@ router.put("/:exercise_id", async (req, res) => {
  */
 router.delete("/:exercise_id", async (req, res) => {
   logger.trace("Delete Exercise API - Id = ", req.query.id);
+  
+  var resp_data = await exercise_helper.get_exercise_id(req.params.exercise_id);
+  images= resp_data.exercise.images;
+  
+
   let exercise_data = await exercise_helper.delete_exercise_by_id(
     req.params.exercise_id
   );
-
   if (exercise_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
   } else {
+    images= resp_data.exercise.images;
+    images.forEach(image => {
+      fs.unlink(image,function(){
+        console.log("Image "+image+" is deleted")
+      });
+    });
     res.status(config.OK_STATUS).json(exercise_data);
   }
 });

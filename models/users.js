@@ -19,6 +19,7 @@ var UserSchema = new Schema({
     aboutMe: {type: String},
     favRecipes: [mongoose.Schema.Types.ObjectId],
     status: {type:Boolean, default:true},
+    isDelete: {type:Boolean, default:0},
     refreshToken: {type: String},
     lastLoginDate: {type: Date},
     passwordChangedDate: {type: Date},
