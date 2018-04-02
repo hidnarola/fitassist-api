@@ -422,7 +422,7 @@ router.put("/:exercise_id", async (req, res) => {
 
               console.log('hey');
             // var files = req.files['images'];
-            var files = [].concat(req.files.new_images);
+            var files = [].concat(req.files.images);
 
             var dir = "./uploads/exercise";
             var mimetype = ["image/png", "image/jpeg", "image/jpg"];
