@@ -1564,6 +1564,103 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/admin/exercise/filter",
+    "title": "Exercise Filter",
+    "name": "Exercise_Exercise_Filter",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilter",
+            "description": "<p>columnFilter Object for filter data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnSort",
+            "description": "<p>columnSort Object for Sorting Data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "filter",
+            "description": "<p>Filter Object for global seach</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilterEqual",
+            "description": "<p>columnFilterEqual Object for select box</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "selectCols",
+            "description": "<p>selectCols Object for select columns</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "filtered_data",
+            "description": "<p>filtered details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/exercise.js",
+    "groupTitle": "Admin"
+  },
+  {
+    "type": "post",
     "url": "/admin/exercise_type",
     "title": "Exercise Types Add",
     "name": "Exercise_Type_Add",
@@ -2019,14 +2116,14 @@ define({ "api": [
             "group": "Parameter",
             "type": "Array",
             "optional": true,
-            "field": "deleted_images",
-            "description": "<p>Array of deleted_images of Exercise</p>"
+            "field": "delete_images",
+            "description": "<p>Path of all images to be delete</p>"
           },
           {
             "group": "Parameter",
             "type": "File",
             "optional": true,
-            "field": "new_images",
+            "field": "images",
             "description": "<p>New Images of Exercise</p>"
           },
           {

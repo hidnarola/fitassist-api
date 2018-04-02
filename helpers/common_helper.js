@@ -12,4 +12,8 @@ common_helper.hashPassword = function (callback) {
     });
 };
 
+common_helper.changeObject = function (data,callback) {
+    console.log(data);
+};
+
 module.exports = common_helper;

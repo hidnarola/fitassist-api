@@ -9,6 +9,57 @@ var config = require("../../config");
 var logger = config.logger;
 
 var exercise_helper = require("../../helpers/exercise_helper");
+var filter_helper = require("../../helpers/search_filter_helper");
+var common_helper = require("../../helpers/common_helper");
+
+
+/**
+ * @api {post} /admin/exercise/filter Exercise Filter
+ * @apiName Exercise Exercise Filter
+ * @apiGroup Admin
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * 
+ * @apiParam {Object} columnFilter columnFilter Object for filter data
+ * @apiParam {Object} columnSort columnSort Object for Sorting Data
+ * @apiParam {Object} filter Filter Object for global seach
+ * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
+ * @apiParam {Object} selectCols selectCols Object for select columns
+
+ 
+ * @apiSuccess (Success 200) {JSON} filtered_data filtered details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+
+router.post("/filter", async (req, res) => {
+//console.log(req.body);
+// return res.send(req.body.columnFilter)));
+  filter_object={
+    "page":req.body.page,
+    "columnFilter":req.body.columnFilter,
+    "columnSort":req.body.columnSort,
+    "filter":req.body.filter,
+    "columnFilterEqual":req.body.columnFilterEqual
+  }
+  //return res.send(filter_object);
+  // page              = req.body.page;
+  // columnFilter      = req.body.columnFilter;
+  // columnSort        = req.body.columnSort;
+  // filter            = req.body.filter;
+  // columnFilterEqual = req.body.columnFilterEqual;
+  //common_helper.
+  let filtered_data = await filter_helper.get_filtered_records(filter_object);
+  if (filtered_data.status === 0) {
+    logger.error("Error while fetching searched data = ", filtered_data);
+    return res.status(config.BAD_REQUEST).json({ filtered_data });
+  } else {
+    return res.status(config.OK_STATUS).json(filtered_data);
+  }
+});
+
+
+
 
 /**
  * @api {get} /admin/exercise Exercise - Get all
@@ -81,7 +132,7 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
-router.post("/", async (req, res) => {
+router.post("/", async (req, res) => {  
   console.log(req.files);
 
     
@@ -255,8 +306,8 @@ router.post("/", async (req, res) => {
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
  * @apiParam {Array} [steps] Steps of Exercise
- * @apiParam {Array} [deleted_images] Array of deleted_images of Exercise
- * @apiParam {File} [new_images] New Images of Exercise
+ * @apiParam {Array} [delete_images] Path of all images to be delete
+ * @apiParam {File} [images] New Images of Exercise
  * @apiParam {Enum} [measures] Measures of Exercise
  * @apiSuccess (Success 200) {Array} exercise Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -367,7 +418,7 @@ router.put("/:exercise_id", async (req, res) => {
           //image upload
           var file_path_array = new_img_path_list;
           //console.log(new_img_path_list);
-          if (req.files && req.files["new_images"] && req.files != null) {
+          if (req.files && req.files["images"] && req.files != null) {
 
               console.log('hey');
             // var files = req.files['images'];
@@ -483,5 +534,7 @@ router.delete("/:exercise_id", async (req, res) => {
     res.status(config.OK_STATUS).json(exercise_data);
   }
 });
+
+
 
 module.exports = router;
