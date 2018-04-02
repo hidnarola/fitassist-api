@@ -35,7 +35,7 @@ var common_helper = require("../../helpers/common_helper");
 router.post("/filter", async (req, res) => {
 //console.log(req.body);
 // return res.send(req.body.columnFilter)));
-  filter_object={
+  filter_data={
     "page":req.body.page,
     "columnFilter":req.body.columnFilter,
     "columnSort":req.body.columnSort,
@@ -49,6 +49,8 @@ router.post("/filter", async (req, res) => {
   // filter            = req.body.filter;
   // columnFilterEqual = req.body.columnFilterEqual;
   //common_helper.
+  
+  filter_object = common_helper.changeObject(req.body);
   let filtered_data = await filter_helper.get_filtered_records(filter_object);
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);

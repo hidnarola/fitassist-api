@@ -10,10 +10,11 @@ var filter_helper = {};
  */
 filter_helper.get_filtered_records = async (filter_obj) => {
 
-    console.log(filter_obj);
+  console.log(filter_obj);
+    console.log(filter_obj.columnFilter);
     // return { "status": 1, "message": "filtered data is found", "filtered_data": filter_obj };;
     try {
-        var filtered_data = await Exercise.find(filter_obj.columnFilter).sort(filter_obj.columnSort).exec();
+        var filtered_data = await Exercise.find({$and:filter_obj.columnFilter}).exec();
         console.log(filtered_data.length);
         if (filtered_data) {
             //console.log(filtered_data.length);
