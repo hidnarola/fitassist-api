@@ -20,10 +20,12 @@ filter_helper.get_filtered_records = async (filter_obj) => {
       queryObj['$and']=filter_obj.columnFilter;
   }
   console.log(filter_obj.columnSort);
-  total_count= Exercise.count();
   skip=(filter_obj.pageSize*filter_obj.page);
     try {
-        var filtered_data = await Exercise.find(queryObj).sort(filter_obj.columnSort).limit(filter_obj.pageSize).skip(skip).exec();
+        total_count= await  Exercise.count({},function(err,cnt){
+            return cnt;
+          });
+        var filtered_data = await Exercise.find(queryObj).or(filter_obj.columnFilterEqual).sort(filter_obj.columnSort).limit(filter_obj.pageSize).skip(skip).exec();
 
         if (filtered_data) {
             filtered_data.forEach(element => {
