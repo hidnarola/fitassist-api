@@ -11,7 +11,7 @@ module.exports = {
     "logger": log4js.getLogger( "development" ),
 
     // Database config
-    "database": "mongodb://127.0.0.1:27017/fitassist",
+    "database": "mongodb://167.99.90.169:27017/fitassist",
 
     // JWT
     "ACCESS_TOKEN_SECRET_KEY": "fitassist_jwt_token",
