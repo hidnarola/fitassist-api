@@ -18,14 +18,17 @@ filter_helper.get_filtered_records = async (filter_obj) => {
     // queryObj.push({$and:filter_obj.columnFilter})
   }
 
-  
+  skip=(filter_obj.pageSize*filter_obj.page);
     // return { "status": 1, "message": "filtered data is found", "filtered_data": filter_obj };;
     try {
-        var filtered_data = await Exercise.find(queryObj).limit(filter_obj.pageSize).skip(filter_obj.pageSize*filter_obj.page).exec();
+        var filtered_data = await Exercise.find(queryObj).limit(filter_obj.pageSize).skip(skip).sort().exec();
 
         if (filtered_data) {
+            filtered_data.forEach(element => {
+                console.log(element.name);
+            });
             //console.log(filtered_data.length);
-            return { "status": 1, "message": "filtered data is found","filtered_total_pages":Math.ceil(filtered_data.length/filter_obj.pageSize), "filtered_exercises": filtered_data };
+            return { "status": 1, "message": "filtered data is found","count":filtered_data.length,"filtered_total_pages":Math.ceil(filtered_data.length/filter_obj.pageSize), "filtered_exercises": filtered_data };
         } else {
             return { "status": 2, "message": "No filtered data available" };
         }
