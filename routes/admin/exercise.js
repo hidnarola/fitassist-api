@@ -23,25 +23,17 @@ var common_helper = require("../../helpers/common_helper");
  * 
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
- * @apiParam {Object} filter Filter Object for global seach
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
- * @apiParam {Object} selectCols selectCols Object for select columns
+ * @apiParam {Number} pageSize pageSize
 
- 
- * @apiSuccess (Success 200) {JSON} filtered_data filtered details
+ * @apiSuccess (Success 200) {JSON} filtered_exercises filtered details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
 router.post("/filter", async (req, res) => {
 //console.log(req.body);
 // return res.send(req.body.columnFilter)));
-  filter_data={
-    "page":req.body.page,
-    "columnFilter":req.body.columnFilter,
-    "columnSort":req.body.columnSort,
-    "filter":req.body.filter,
-    "columnFilterEqual":req.body.columnFilterEqual
-  }
+ 
   //return res.send(filter_object);
   // page              = req.body.page;
   // columnFilter      = req.body.columnFilter;

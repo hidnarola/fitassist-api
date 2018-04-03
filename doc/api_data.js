@@ -1609,22 +1609,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "Object",
             "optional": false,
-            "field": "filter",
-            "description": "<p>Filter Object for global seach</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
             "field": "columnFilterEqual",
             "description": "<p>columnFilterEqual Object for select box</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "selectCols",
-            "description": "<p>selectCols Object for select columns</p>"
           }
         ]
       }

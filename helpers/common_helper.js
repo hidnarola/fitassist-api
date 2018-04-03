@@ -43,6 +43,8 @@ common_helper.changeObject = function (data,callback) {
         
     });
     data={
+        "pageSize":data.pageSize,
+        "page":data.page,
         columnFilterEqual,
         columnSort,
         columnFilter
