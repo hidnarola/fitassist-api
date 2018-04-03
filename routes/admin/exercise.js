@@ -31,16 +31,6 @@ var common_helper = require("../../helpers/common_helper");
  */
 
 router.post("/filter", async (req, res) => {
-//console.log(req.body);
-// return res.send(req.body.columnFilter)));
- 
-  //return res.send(filter_object);
-  // page              = req.body.page;
-  // columnFilter      = req.body.columnFilter;
-  // columnSort        = req.body.columnSort;
-  // filter            = req.body.filter;
-  // columnFilterEqual = req.body.columnFilterEqual;
-  //common_helper.
   
   filter_object = common_helper.changeObject(req.body);
   let filtered_data = await filter_helper.get_filtered_records(filter_object);

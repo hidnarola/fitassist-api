@@ -14,9 +14,8 @@ common_helper.hashPassword = function (callback) {
 };
 
 common_helper.changeObject = function (data,callback) {
-    //console.log(data);
     columnFilter=[];
-    columnSort=[];
+    columnSort={};
     filter=[];
     columnFilterEqual=[];
     async.forEach(data.columnFilter, function(val, next) {
@@ -27,13 +26,14 @@ common_helper.changeObject = function (data,callback) {
         columnFilter.push({[key]:value});
 
     });
-    // app.User.find().or([{ 'firstName': {  }}, { 'lastName': { $regex: re }}]).sort('title', 1).exec(function(err, users) {
-    //     res.json(JSON.stringify(users));
-    // });
     async.forEach(data.columnSort, function(val, next) {
         var key=val.id;
-        var value=val.value;
-        columnSort.push({[key]:value});
+        var value=-1;
+        if(val.value)
+        {
+            value=1;
+        }
+        columnSort[key]=value;
     });
 
     async.forEach(data.columnFilterEqual, function(val, next) {
