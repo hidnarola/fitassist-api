@@ -116,8 +116,8 @@ app.use(function(err, req, res, next) {
 //   cluster.fork();
 // });
 
-// var server = app.listen(config.node_port || 3000, function() {
-//   console.log("Listening on port " + (config.node_port || 3000) + "...");
-// });
+var server = app.listen(config.node_port || 3000, function() {
+  console.log("Listening on port " + (config.node_port || 3000) + "...");
+});
 
 module.exports = app;
