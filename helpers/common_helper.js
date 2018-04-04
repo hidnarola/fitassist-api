@@ -1,6 +1,7 @@
 var bcrypt = require('bcrypt');
 var common_helper = {};
 var async = require("async");
+var _ = require('underscore');
 
 common_helper.hashPassword = function (callback) {
     console.log("in hash password");
@@ -14,18 +15,21 @@ common_helper.hashPassword = function (callback) {
 };
 
 common_helper.changeObject = function (data,callback) {
-    columnFilter=[];
+    
+    columnFilter={};
     columnSort={};
     filter=[];
     columnFilterEqual=[];
+
     async.forEach(data.columnFilter, function(val, next) {
         var key=val.id;
         var re = new RegExp(val.value, 'i');
         var value={$regex: re};
         
-        columnFilter.push({[key]:value});
+        columnFilter[key]=value;
 
     });
+    
     async.forEach(data.columnSort, function(val, next) {
         var key=val.id;
         var value=-1;

@@ -237,11 +237,11 @@ router.post('/user_signup', async (req, res) => {
   logger.trace("API - User signup called");
   logger.debug("req.body = ", req.body);
   var schema = {
-      'first_name': {
+      'firstName': {
           notEmpty: true,
           errorMessage: "First name is required"
       },
-      'last_name': {
+      'lastName': {
           notEmpty: true,
           errorMessage: "Last name is required"
       },
@@ -305,13 +305,13 @@ router.post('/user_signup', async (req, res) => {
   if (!errors) {
     let data = req.body;
     var user_obj = {
-      "firstName" : req.body.first_name,
-      "lastName":  req.body.last_name,
+      "firstName" : req.body.firstName,
+      "lastName":  req.body.lastName,
       "email": req.body.email,
       "username": req.body.username,
       "password": req.body.password,
       "gender": req.body.gender,
-      "date_of_birth": req.body.date_of_birth,
+      "dateOfBirth": req.body.dateOfBirth,
       "goal":[req.body.goal]
     };
 
@@ -329,7 +329,7 @@ router.post('/user_signup', async (req, res) => {
         'height':req.body.height,
         'weight':req.body.weight
       };
-      let measurement_data = await measurement_helper.insert_measurement(measurement_obj);
+      let measurement_data = await measurement_helper.insert_body_measurement(measurement_obj);
       logger.trace("User's measurement has been inserted");
 
       var excercise_preference = {

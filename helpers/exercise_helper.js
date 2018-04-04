@@ -10,7 +10,7 @@ var exercise_helper = {};
  */
 exercise_helper.get_all_exercise = async () => {
     try {
-        var exercise = await Exercise.find();
+         var exercise = await Exercise.find();
         if (exercise) {
             return { "status": 1, "message": "Exercise found", "exercises": exercise };
         } else {
