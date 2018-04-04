@@ -29,6 +29,7 @@ var common_helper = require("../../helpers/common_helper");
 
 router.post("/filter", async (req, res) => {
   filter_object = common_helper.changeObject(req.body);
+  console.log(filter_object);
   let filtered_data = await ingredients_helper.get_filtered_records(
     filter_object
   );
@@ -285,7 +286,6 @@ router.delete("/:ingredient_id", async (req, res) => {
   } else {
     try {
       if (resp_data.ingredient.image != null) {
-        console.log("i am in if:-------------> ", resp_data.ingredient.image);
         fs.unlink(resp_data.ingredient.image, function() {
           console.log("image is deleted");
         });
