@@ -150,13 +150,12 @@ ingredients_helper.get_filtered_records = async (filter_obj) => {
       if (andFilterArr && andFilterArr.length > 0) {
         andFilterObj = { $and: andFilterArr };
       }
-    var searched_record_count = await Ingredients.find(andFilterObj).count();
-    //   var searched_record_count = await Ingredients.aggregate([
-    //     {
-    //       $match: filter_object.columnFilter,
-    //     }
-    //   ]);
-      console.log(searched_record_count.length);
+       //var searched_record_count = await Ingredients.find(andFilterObj).count();
+      var searched_record_count = await Ingredients.aggregate([
+        {
+          $match: filter_object.columnFilter,
+        }
+      ]);
     //   var filtered_data = await Ingredients.find(andFilterObj)
     //     .sort(filter_obj.columnSort)
     //     .limit(filter_obj.pageSize)
@@ -178,8 +177,8 @@ ingredients_helper.get_filtered_records = async (filter_obj) => {
         return {
           status: 1,
           message: "filtered data is found",
-          count: searched_record_count,
-          filtered_total_pages: Math.ceil(total_count / filter_obj.pageSize),
+          count: searched_record_count.length,
+          filtered_total_pages: Math.ceil(searched_record_count.length / filter_obj.pageSize),
           filtered_ingredients: filtered_data
         };
       } else {
