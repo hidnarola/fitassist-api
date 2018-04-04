@@ -26,7 +26,7 @@ var common_helper = require("../../helpers/common_helper");
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
  * @apiParam {Number} page page number
- * @apiSuccess (Success 200) {JSON} filtered_ingredient filtered details
+ * @apiSuccess (Success 200) {JSON} filtered_ingredients filtered details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
@@ -46,23 +46,23 @@ router.post("/filter", async (req, res) => {
 
 
 /**
- * @api {get} /admin/equipment Equipment - Get all
- * @apiName Equipment - Get all
+ * @api {get} /admin/ingredient Ingredients - Get all
+ * @apiName Ingredients - Get all
  * @apiGroup Admin
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
- * @apiSuccess (Success 200) {Array} equipments Array of equipments document
+ * @apiSuccess (Success 200) {Array} ingredients Array of Ingredients document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-    logger.trace("Get all equipment API called");
-    var resp_data = await ingredients_helper.get_all_equipment();
+    logger.trace("Get all Ingredients API called");
+    var resp_data = await ingredients_helper.get_all_ingredients();
     if (resp_data.status == 0) {
-      logger.error("Error occured while fetching equipment = ", resp_data);
+      logger.error("Error occured while Ingredients equipment = ", resp_data);
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     } else {
-      logger.trace("Equipments got successfully = ", resp_data);
+      logger.trace("Ingredients got successfully = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
     }
   });
@@ -78,73 +78,53 @@ router.get("/", async (req, res) => {
  * @apiSuccess (Success 200) {Object} equipment Object of equipment document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:equipment_id", async (req, res) => {
-  equipment_id = req.params.equipment_id;
-  logger.trace("Get all equipment API called");
-  var resp_data = await ingredients_helper.get_equipment_id(equipment_id);
+router.get("/:ingredient_id", async (req, res) => {
+    ingredient_id = req.params.ingredient_id;
+  logger.trace("Get all ingredient API called");
+  var resp_data = await ingredients_helper.get_ingredient_id(ingredient_id);
   if (resp_data.status == 0) {
-    logger.error("Error occured while fetching equipment = ", resp_data);
+    logger.error("Error occured while fetching ingredient = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.trace("Equipments got successfully = ", resp_data);
+    logger.trace("ingredient got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
 /**
- * @api {post} /admin/equipment Equipment Add
- * @apiName Equipment Equipment Add
+ * @api {post} /admin/ingredient Ingredient - Add
+ * @apiName Ingredient Ingredient - Add
  * @apiGroup Admin
- *
+ * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} category_id Equipment's Category id
- * @apiParam {String} name Name of Equipment Equipment
- * @apiParam {Boolean} status status of Equipment
- * @apiParam {String} [description] Description of Equipment
- * @apiParam {file} [equipment_img] Equipment image
- *
- * @apiSuccess (Success 200) {JSON} equipment Equipment details
+ * @apiParam {String} name name of Ingredient
+ * @apiParam {String} [description] description of Ingredient
+ * @apiParam {File} [ingredient_img] image of Ingredient
+ * @apiSuccess (Success 200) {JSON} ingredient ingredient details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
     var schema = {
         "name": {
             notEmpty: true,
-            errorMessage: "Name is required"
-        },
-        "description": {
-            notEmpty: true,
-            errorMessage: "Description is required"
-        },
-        "category_id": {
-            notEmpty: true,
-            errorMessage: "Category is required"
-        },
-        "status": {
-            notEmpty: true,
-            errorMessage: "Status is required"
+            errorMessage: "Name of ingredient is required"
         }
-
     };
     
     req.checkBody(schema);
     var errors = req.validationErrors();
     if (!errors) {
-        //console.log("Data = ",req.body);
-        //console.log("Files = ",req.files);
-        var equipment_obj = {
+        var ingredient_obj = {
             "name": req.body.name,
             "description": (req.body.description) ? req.body.description : null,
-            "category_id":req.body.category_id,
-            "status":req.body.status
         };
 
         //image upload
         var filename;
-        if (req.files && req.files['equipment_img']) {
-            var file = req.files['equipment_img'];
-            var dir = "./uploads/equipment";
+        if (req.files && req.files['ingredient_img']) {
+            var file = req.files['ingredient_img'];
+            var dir = "./uploads/ingredient";
             var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
             if (mimetype.indexOf(file.mimetype) != -1) {
@@ -152,7 +132,7 @@ router.post("/", async (req, res) => {
                     fs.mkdirSync(dir);
                 }
                 extention = path.extname(file.name);
-                filename = "equipment_" + new Date().getTime() + extention;
+                filename = "ingredient_" + new Date().getTime() + extention;
                 file.mv(dir + '/' + filename, function (err) {
                     if (err) {
                         logger.error("There was an issue in uploading image");
@@ -172,17 +152,17 @@ router.post("/", async (req, res) => {
         }
         if(filename)
         {
-            equipment_obj.image='uploads/equipment/' + filename;
+            ingredient_obj.image='uploads/ingredient/' + filename;
         }
         
         //End image upload
         
-        let equipment_data = await ingredients_helper.insert_equipment(equipment_obj);
-        if (equipment_data.status === 0) {
-            logger.error("Error while inserting equipment = ", equipment_data);
-            res.status(config.BAD_REQUEST).json({ equipment_data });
+        let ingredient_data = await ingredients_helper.insert_ingredient(ingredient_obj);
+        if (ingredient_data.status === 0) {
+            logger.error("Error while inserting ingredient = ", ingredient_data);
+            res.status(config.BAD_REQUEST).json({ ingredient_data });
         } else {
-            res.status(config.OK_STATUS).json(equipment_data);
+            res.status(config.OK_STATUS).json(ingredient_data);
         }
     } else {
         logger.error("Validation Error = ", errors);
@@ -191,60 +171,40 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/equipment/:equipment_id Equipment Update
- * @apiName Equipment Update
+ * @api {put} /admin/ingredient Ingredient - Update
+ * @apiName Ingredient Ingredient - Update
  * @apiGroup Admin
- *
+ * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
- * @apiParam {String} name Name of equipment Equipment
- * @apiParam {String} [description] Description of equipment
- * @apiParam {file} [equipment_img] Equipment image
- * @apiParam {String} category_id Equipment's Category id
- * @apiParam {Boolean} status Status for equipment
- * @apiSuccess (Success 200) {JSON} equipment Equipment details
+ * @apiParam {String} name name of Ingredient
+ * @apiParam {String} [description] description of Ingredient
+ * @apiParam {File} [ingredient_img] image of Ingredient
+ * @apiSuccess (Success 200) {JSON} ingredient ingredient details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/:equipment_id", async (req, res) => {
+router.put("/:ingredient_id", async (req, res) => {
     
     var schema = {
         "name": {
             notEmpty: true,
-            errorMessage: "Name is required"
-        },
-        "description": {
-            notEmpty: true,
-            errorMessage: "Description is required"
-        },
-        "category_id": {
-            notEmpty: true,
-            errorMessage: "Category is required"
-        },
-        "status": {
-            notEmpty: true,
-            errorMessage: "Status is required"
+            errorMessage: "Name of ingredient is required"
         }
     };
-
-    // Coming in few minutes
-    // ok
-
+    
     req.checkBody(schema);
     var errors = req.validationErrors();
     if (!errors) {
-        var equipment_obj = {
+        var ingredient_obj = {
             "name": req.body.name,
             "description": (req.body.description) ? req.body.description : null,
-            "category_id":req.body.category_id,
-            "status":req.body.status
         };
 
-// Image upload
+        //image upload
         var filename;
-        if (req.files && req.files['equipment_img']) {
-            var file = req.files['equipment_img'];
-            var dir = "./uploads/equipment";
+        if (req.files && req.files['ingredient_img']) {
+            var file = req.files['ingredient_img'];
+            var dir = "./uploads/ingredient";
             var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
             if (mimetype.indexOf(file.mimetype) != -1) {
@@ -252,7 +212,7 @@ router.put("/:equipment_id", async (req, res) => {
                     fs.mkdirSync(dir);
                 }
                 extention = path.extname(file.name);
-                filename = "equipment_" + new Date().getTime() + extention;
+                filename = "ingredient_" + new Date().getTime() + extention;
                 file.mv(dir + '/' + filename, function (err) {
                     if (err) {
                         logger.error("There was an issue in uploading image");
@@ -270,37 +230,30 @@ router.put("/:equipment_id", async (req, res) => {
             logger.info("Image not available to upload. Executing next instruction");
             //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
         }
-       
-        //End image upload
         if(filename)
         {
-            var resp_data = await ingredients_helper.get_equipment_id(req.params.equipment_id);
-            console.log(resp_data);
-            fs.unlink(resp_data.equipment.image,function(err,Success){
-                if(err) throw err;
-                console.log('image is deleted');
-            });
-            equipment_obj.image='uploads/equipment/' + filename;
+            ingredient_obj.image='uploads/ingredient/' + filename;
         }
-
-        console.log(equipment_obj);
-        let equipment_data = await ingredients_helper.update_equipment_by_id(req.params.equipment_id, equipment_obj);
-        if (equipment_data.status === 0) {
-            logger.error("Error while updating equipment = ", equipment_data);
-            res.status(config.BAD_REQUEST).json({ equipment_data });
+        
+        //End image upload
+        
+        let ingredient_data = await ingredients_helper.update_ingredient(req.params.ingredient_id,ingredient_obj);
+        if (ingredient_data.status === 0) {
+            logger.error("Error while updating ingredient = ", ingredient_data);
+            res.status(config.BAD_REQUEST).json({ ingredient_data });
         } else {
-            res.status(config.OK_STATUS).json(equipment_data);
+            res.status(config.OK_STATUS).json(ingredient_data);
         }
     } else {
         logger.error("Validation Error = ", errors);
         res.status(config.BAD_REQUEST).json({ message: errors });
     }
-
 });
 
+
 /**
- * @api {delete} /admin/equipment/:equipment_id Equipment Delete
- * @apiName Equipment Delete
+ * @api {delete} /admin/equipment/:ingredient_id Ingredient Delete
+ * @apiName Ingredient Delete
  * @apiGroup Admin
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -308,22 +261,23 @@ router.put("/:equipment_id", async (req, res) => {
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/:equipment_id", async (req, res) => {
-  logger.trace("Delete equipment API - Id = ", req.query.id);
-  var resp_data = await ingredients_helper.get_equipment_id(req.params.equipment_id);
-  
-  let equipment_data = await ingredients_helper.delete_equipment_by_id(
-    req.params.equipment_id
+router.delete("/:ingredient_id", async (req, res) => {
+  logger.trace("Delete Ingredient API - Id = ", req.query.id);
+  var resp_data = await ingredients_helper.get_ingredient_id(req.params.ingredient_id);
+  console.log(resp_data);
+  let ingredient_data = await ingredients_helper.delete_ingredient_by_id(
+    req.params.ingredient_id
   );
+  console.log(ingredient_data);
 
-  if (equipment_data.status === 0) {
+  if (ingredient_data.status === 0) {
     
-    res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(ingredient_data);
   } else {
     fs.unlink(resp_data.equipment.image,function(){
         console.log('image is deleted');
     });
-    res.status(config.OK_STATUS).json(equipment_data);
+    res.status(config.OK_STATUS).json(ingredient_data);
   }
 });
 

@@ -2,11 +2,11 @@ var Ingredients = require("./../models/ingredients");
 var ingredients_helper = {};
 
 /*
- * get_all_body_parts is used to fetch all body_parts data
+ * get_all_ingredients is used to fetch all ingredients data
  * 
- * @return  status 0 - If any internal error occured while fetching body_parts data, with error
- *          status 1 - If body_parts data found, with body_parts object
- *          status 2 - If body_parts not found, with appropriate message
+ * @return  status 0 - If any internal error occured while fetching ingredients data, with error
+ *          status 1 - If ingredients data found, with ingredients object
+ *          status 2 - If ingrediens not found, with appropriate message
  */
 ingredients_helper.get_all_ingredients = async () => {
     try {
@@ -23,11 +23,11 @@ ingredients_helper.get_all_ingredients = async () => {
 
 
 /*
- * get_body_part_id is used to fetch Body Part by ID
+ * get_ingredient_id is used to fetch ingredient by ID
  * 
- * @return  status 0 - If any internal error occured while fetching body part data, with error
- *          status 1 - If Body parts data found, with body part object
- *          status 2 - If Body parts data not found, with appropriate message
+ * @return  status 0 - If any internal error occured while fetching ingredient data, with error
+ *          status 1 - If ingredient data found, with ingredient object
+ *          status 2 - If ingredient data not found, with appropriate message
  */
 ingredients_helper.get_ingredient_id = async (id) => {
     try {
@@ -43,12 +43,12 @@ ingredients_helper.get_ingredient_id = async (id) => {
 }
 
 /*
- * insert_body_part is used to insert into bodyparts collection
+ * insert_ingredient is used to insert into ingredients collection
  * 
- * @param   body_part_obj     JSON object consist of all property that need to insert in collection
+ * @param   ingredient_obj     JSON object consist of all property that need to insert in collection
  * 
- * @return  status  0 - If any error occur in inserting Body part, with error
- *          status  1 - If Body part inserted, with inserted Body part document and appropriate message
+ * @return  status  0 - If any error occur in inserting ingredient, with error
+ *          status  1 - If ingredient inserted, with inserted ingredient document and appropriate message
  * 
  * @developed by "amc"
  */
@@ -64,18 +64,18 @@ ingredients_helper.insert_ingredient = async (ingredient_obj) => {
 };
 
 /*
- * update_bodypart_by_id is used to update bodypart data based on body_part_id
+ * update_ingredient is used to update ingredient data based on ingredient_id
  * 
- * @param   body_part_id         String  _id of bodypart that need to be update
- * @param   body_part_obj     JSON    object consist of all property that need to update
+ * @param   ingredient_id         String  _id of ingredient that need to be update
+ * @param   ingredient_obj     JSON    object consist of all property that need to update
  * 
- * @return  status  0 - If any error occur in updating bodypart, with error
- *          status  1 - If bodypart updated successfully, with appropriate message
- *          status  2 - If bodypart not updated, with appropriate message
+ * @return  status  0 - If any error occur in updating ingredient, with error
+ *          status  1 - If ingredient updated successfully, with appropriate message
+ *          status  2 - If ingredient not updated, with appropriate message
  * 
  * @developed by "amc"
  */
-ingredients_helper.update_ingredient_by_id = async (ingredient_id, ingredient_obj) => {
+ingredients_helper.update_ingredient = async (ingredient_id, ingredient_obj) => {
     console.log(ingredient_obj);
     try {
         let ingredient = await Ingredients.findOneAndUpdate({ _id: ingredient_id }, ingredient_obj, { new: true });
@@ -90,25 +90,25 @@ ingredients_helper.update_ingredient_by_id = async (ingredient_id, ingredient_ob
 };
 
 /*
- * delete_bodypart_by_id is used to delete bodypart from database
+ * delete_ingredient_by_id is used to delete Ingredient from database
  * 
- * @param   bodypart_id String  _id of bodypart that need to be delete
+ * @param   ingredient_id String  _id of Ingredient that need to be delete
  * 
- * @return  status  0 - If any error occur in deletion of bodypart, with error
- *          status  1 - If bodypart deleted successfully, with appropriate message
+ * @return  status  0 - If any error occur in deletion of Ingredient, with error
+ *          status  1 - If Ingredient deleted successfully, with appropriate message
  * 
  * @developed by "amc"
  */
 ingredients_helper.delete_ingredient_by_id = async (ingredient_id) => {
     try {
-        let resp = await BodyPart.findOneAndRemove({ _id: bodypart_id });
+        let resp = await Ingredients.findOneAndRemove({ _id: ingredient_id });
         if (!resp) {
-            return { "status": 2, "message": "Bodypart not found" };
+            return { "status": 2, "message": "Ingredient not found" };
         } else {
-            return { "status": 1, "message": "Bodypart deleted" };
+            return { "status": 1, "message": "Ingredient deleted" };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting Bodypart", "error": err };
+        return { "status": 0, "message": "Error occured while deleting Ingredient", "error": err };
     }
 }
 
@@ -164,7 +164,7 @@ ingredients_helper.get_filtered_records = async (filter_obj) => {
           message: "filtered data is found",
           count: searched_record_count,
           filtered_total_pages: Math.ceil(total_count / filter_obj.pageSize),
-          filtered_ingredient: filtered_data
+          filtered_ingredients: filtered_data
         };
       } else {
         return { status: 2, message: "No filtered data available" };
