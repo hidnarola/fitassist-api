@@ -9,7 +9,6 @@ var config = require("../../config");
 var logger = config.logger;
 
 var exercise_helper = require("../../helpers/exercise_helper");
-var filter_helper = require("../../helpers/search_filter_helper");
 var common_helper = require("../../helpers/common_helper");
 
 

@@ -157,8 +157,6 @@ exercise_helper.get_filtered_records = async (filter_obj) => {
         .exec();
   
       if (filtered_data) {
-        filtered_data.forEach(element => {});
-        //console.log(filtered_data.length);
         return {
           status: 1,
           message: "filtered data is found",
