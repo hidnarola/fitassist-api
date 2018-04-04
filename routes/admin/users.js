@@ -9,6 +9,40 @@ var config = require("../../config");
 var logger = config.logger;
 
 var user_helper = require("../../helpers/user_helper");
+var common_helper = require("../../helpers/common_helper");
+
+
+
+
+/**
+ * @api {post} /admin/user/filter User Filter
+ * @apiName User User Filter
+ * @apiGroup Admin
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * 
+ * @apiParam {Object} columnFilter columnFilter Object for filter data
+ * @apiParam {Object} columnSort columnSort Object for Sorting Data
+ * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
+ * @apiParam {Number} pageSize pageSize
+ * @apiParam {Number} page page number
+ * @apiSuccess (Success 200) {JSON} filtered_user filtered details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+
+router.post("/filter", async (req, res) => {
+  
+    filter_object = common_helper.changeObject(req.body);
+    let filtered_data = await user_helper.get_filtered_records(filter_object);
+    console.log(filtered_data);
+    if (filtered_data.status === 0) {
+      logger.error("Error while fetching searched data = ", filtered_data);
+      return res.status(config.BAD_REQUEST).json({ filtered_data });
+    } else {
+      return res.status(config.OK_STATUS).json(filtered_data);
+    }
+  });
 
 /**
  * @api {get} /admin/user User - Get all
@@ -31,6 +65,7 @@ router.get("/", async (req, res) => {
     }
   });
 
+  
 /**
  * @api {get} /admin/user/user_id User - Get by ID
  * @apiName User - Users by ID
@@ -63,11 +98,12 @@ router.get("/:user_id", async (req, res) => {
  * @apiParam {String} last_name Last name of user
  * @apiParam {String} username Username
  * @apiParam {String} email Email address
+ * @apiParam {Number} [mobileNumber] mobileNumber
  * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
- * @apiParam {Date} date_of_birth Date of Birth
- * @apiParam {Array} goal goal
- * @apiParam {File} user_img avatar
- * @apiParam {String} aboutMe aboutMe
+ * @apiParam {Date} [dateOfBirth] Date of Birth
+ * @apiParam {Array} [goal] goal
+ * @apiParam {File} [user_img] avatar
+ * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {Array} favRecipes favRecipes
  * @apiParam {Boolean} status status
  * @apiSuccess (Success 200) {Array} user Array of users document
@@ -102,10 +138,6 @@ router.put("/:user_id", async (req, res) => {
             },
             errorMessage: "Gender is required",
         },
-        'date_of_birth': {
-          notEmpty: true,
-          errorMessage: "Birth date is required"
-        },
         'goal': {
             notEmpty: true,
             errorMessage: "Goal is required"
@@ -132,8 +164,9 @@ router.put("/:user_id", async (req, res) => {
             "last_name": req.body.last_name,
             "username": req.body.username,
             "email": req.body.email,
+            "mobileNumber": req.body.mobileNumber,
             "gender": req.body.gender,
-            "date_of_birth": req.body.date_of_birth,
+            "dateOfBirth": req.body.dateOfBirth,
             "goal": JSON.parse(req.body.goal),
             "aboutMe": req.body.aboutme,
             "favRecipes": JSON.parse(req.body.favRecipes),

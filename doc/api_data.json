@@ -1611,6 +1611,20 @@
             "optional": false,
             "field": "columnFilterEqual",
             "description": "<p>columnFilterEqual Object for select box</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>pageSize</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>page number</p>"
           }
         ]
       }
@@ -1622,7 +1636,7 @@
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "filtered_data",
+            "field": "filtered_exercises",
             "description": "<p>filtered details</p>"
           }
         ]
@@ -2452,6 +2466,103 @@
     "groupTitle": "Admin"
   },
   {
+    "type": "post",
+    "url": "/admin/user/filter",
+    "title": "User Filter",
+    "name": "User_User_Filter",
+    "group": "Admin",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilter",
+            "description": "<p>columnFilter Object for filter data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnSort",
+            "description": "<p>columnSort Object for Sorting Data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilterEqual",
+            "description": "<p>columnFilterEqual Object for select box</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>pageSize</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>page number</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "filtered_user",
+            "description": "<p>filtered details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin"
+  },
+  {
     "type": "delete",
     "url": "/admin/user/:user_id",
     "title": "User - Delete",
@@ -2601,6 +2712,13 @@
           },
           {
             "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "mobileNumber",
+            "description": "<p>mobileNumber</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "Enum",
             "optional": false,
             "field": "gender",
@@ -2609,28 +2727,28 @@
           {
             "group": "Parameter",
             "type": "Date",
-            "optional": false,
-            "field": "date_of_birth",
+            "optional": true,
+            "field": "dateOfBirth",
             "description": "<p>Date of Birth</p>"
           },
           {
             "group": "Parameter",
             "type": "Array",
-            "optional": false,
+            "optional": true,
             "field": "goal",
             "description": "<p>goal</p>"
           },
           {
             "group": "Parameter",
             "type": "File",
-            "optional": false,
+            "optional": true,
             "field": "user_img",
             "description": "<p>avatar</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "aboutMe",
             "description": "<p>aboutMe</p>"
           },

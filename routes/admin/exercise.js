@@ -25,7 +25,7 @@ var common_helper = require("../../helpers/common_helper");
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
-
+ * @apiParam {Number} page page number
  * @apiSuccess (Success 200) {JSON} filtered_exercises filtered details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -33,7 +33,7 @@ var common_helper = require("../../helpers/common_helper");
 router.post("/filter", async (req, res) => {
   
   filter_object = common_helper.changeObject(req.body);
-  let filtered_data = await filter_helper.get_filtered_records(filter_object);
+  let filtered_data = await exercise_helper.get_filtered_records(filter_object);
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
     return res.status(config.BAD_REQUEST).json({ filtered_data });
