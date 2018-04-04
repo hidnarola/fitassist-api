@@ -2539,7 +2539,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "filtered_user",
+            "field": "filtered_users",
             "description": "<p>filtered details</p>"
           }
         ]
