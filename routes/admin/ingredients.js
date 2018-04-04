@@ -2,7 +2,6 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 
-
 var router = express.Router();
 
 var config = require("../../config");
@@ -11,16 +10,14 @@ var logger = config.logger;
 var ingredients_helper = require("../../helpers/ingredient_helper");
 var common_helper = require("../../helpers/common_helper");
 
-
-
 /**
  * @api {post} /admin/ingredient/filter Ingredient Filter
  * @apiName Ingredient Ingredient Filter
  * @apiGroup Admin
- * 
+ *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
+ *
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
@@ -31,19 +28,17 @@ var common_helper = require("../../helpers/common_helper");
  */
 
 router.post("/filter", async (req, res) => {
-  
-    filter_object = common_helper.changeObject(req.body);
-    let filtered_data = await ingredients_helper.get_filtered_records(filter_object);
-    if (filtered_data.status === 0) {
-      logger.error("Error while fetching searched data = ", filtered_data);
-      return res.status(config.BAD_REQUEST).json({ filtered_data });
-    } else {
-      return res.status(config.OK_STATUS).json(filtered_data);
-    }
-  });
-
-  
-
+  filter_object = common_helper.changeObject(req.body);
+  let filtered_data = await ingredients_helper.get_filtered_records(
+    filter_object
+  );
+  if (filtered_data.status === 0) {
+    logger.error("Error while fetching searched data = ", filtered_data);
+    return res.status(config.BAD_REQUEST).json({ filtered_data });
+  } else {
+    return res.status(config.OK_STATUS).json(filtered_data);
+  }
+});
 
 /**
  * @api {get} /admin/ingredient Ingredients - Get all
@@ -56,16 +51,16 @@ router.post("/filter", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-    logger.trace("Get all Ingredients API called");
-    var resp_data = await ingredients_helper.get_all_ingredients();
-    if (resp_data.status == 0) {
-      logger.error("Error occured while Ingredients equipment = ", resp_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-      logger.trace("Ingredients got successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    }
-  });
+  logger.trace("Get all Ingredients API called");
+  var resp_data = await ingredients_helper.get_all_ingredients();
+  if (resp_data.status == 0) {
+    logger.error("Error occured while Ingredients equipment = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Ingredients got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
 
 /**
  * @api {get} /admin/equipment/equipment_id Equipment - Get by ID
@@ -79,7 +74,7 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:ingredient_id", async (req, res) => {
-    ingredient_id = req.params.ingredient_id;
+  ingredient_id = req.params.ingredient_id;
   logger.trace("Get all ingredient API called");
   var resp_data = await ingredients_helper.get_ingredient_id(ingredient_id);
   if (resp_data.status == 0) {
@@ -95,7 +90,7 @@ router.get("/:ingredient_id", async (req, res) => {
  * @api {post} /admin/ingredient Ingredient - Add
  * @apiName Ingredient Ingredient - Add
  * @apiGroup Admin
- * 
+ *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of Ingredient
@@ -105,76 +100,83 @@ router.get("/:ingredient_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
-    var schema = {
-        "name": {
-            notEmpty: true,
-            errorMessage: "Name of ingredient is required"
-        }
-    };
-    
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-    if (!errors) {
-        var ingredient_obj = {
-            "name": req.body.name,
-            "description": (req.body.description) ? req.body.description : null,
-        };
-
-        //image upload
-        var filename;
-        if (req.files && req.files['ingredient_img']) {
-            var file = req.files['ingredient_img'];
-            var dir = "./uploads/ingredient";
-            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-            if (mimetype.indexOf(file.mimetype) != -1) {
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
-                }
-                extention = path.extname(file.name);
-                filename = "ingredient_" + new Date().getTime() + extention;
-                file.mv(dir + '/' + filename, function (err) {
-                    if (err) {
-                        logger.error("There was an issue in uploading image");
-                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
-                    } else {
-                        logger.trace("image has been uploaded. Image name = ", filename);
-                        //return res.send(200, "null");
-                    }
-                });
-            } else {
-                logger.error("Image format is invalid");
-                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
-            }
-        } else {
-            logger.info("Image not available to upload. Executing next instruction");
-            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-        }
-        if(filename)
-        {
-            ingredient_obj.image='uploads/ingredient/' + filename;
-        }
-        
-        //End image upload
-        
-        let ingredient_data = await ingredients_helper.insert_ingredient(ingredient_obj);
-        if (ingredient_data.status === 0) {
-            logger.error("Error while inserting ingredient = ", ingredient_data);
-            res.status(config.BAD_REQUEST).json({ ingredient_data });
-        } else {
-            res.status(config.OK_STATUS).json(ingredient_data);
-        }
-    } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.BAD_REQUEST).json({ message: errors });
+  var schema = {
+    name: {
+      notEmpty: true,
+      errorMessage: "Name of ingredient is required"
     }
+  };
+
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    var ingredient_obj = {
+      name: req.body.name,
+      description: req.body.description ? req.body.description : null
+    };
+
+    //image upload
+    var filename;
+    if (req.files && req.files["ingredient_img"]) {
+      var file = req.files["ingredient_img"];
+      var dir = "./uploads/ingredient";
+      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+
+      if (mimetype.indexOf(file.mimetype) != -1) {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+        extention = path.extname(file.name);
+        filename = "ingredient_" + new Date().getTime() + extention;
+        file.mv(dir + "/" + filename, function(err) {
+          if (err) {
+            logger.error("There was an issue in uploading image");
+            res.send({
+              status: config.MEDIA_ERROR_STATUS,
+              err: "There was an issue in uploading image"
+            });
+          } else {
+            logger.trace("image has been uploaded. Image name = ", filename);
+            //return res.send(200, "null");
+          }
+        });
+      } else {
+        logger.error("Image format is invalid");
+        res.send({
+          status: config.VALIDATION_FAILURE_STATUS,
+          err: "Image format is invalid"
+        });
+      }
+    } else {
+      logger.info("Image not available to upload. Executing next instruction");
+      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+    }
+    if (filename) {
+      ingredient_obj.image = "uploads/ingredient/" + filename;
+    }
+
+    //End image upload
+
+    let ingredient_data = await ingredients_helper.insert_ingredient(
+      ingredient_obj
+    );
+    if (ingredient_data.status === 0) {
+      logger.error("Error while inserting ingredient = ", ingredient_data);
+      res.status(config.BAD_REQUEST).json({ ingredient_data });
+    } else {
+      res.status(config.OK_STATUS).json(ingredient_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.BAD_REQUEST).json({ message: errors });
+  }
 });
 
 /**
- * @api {put} /admin/ingredient Ingredient - Update
+ * @api {put} /admin/ingredient/:ingredient_id Ingredient - Update
  * @apiName Ingredient Ingredient - Update
  * @apiGroup Admin
- * 
+ *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of Ingredient
@@ -184,72 +186,78 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:ingredient_id", async (req, res) => {
-    
-    var schema = {
-        "name": {
-            notEmpty: true,
-            errorMessage: "Name of ingredient is required"
-        }
-    };
-    
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-    if (!errors) {
-        var ingredient_obj = {
-            "name": req.body.name,
-            "description": (req.body.description) ? req.body.description : null,
-        };
-
-        //image upload
-        var filename;
-        if (req.files && req.files['ingredient_img']) {
-            var file = req.files['ingredient_img'];
-            var dir = "./uploads/ingredient";
-            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-            if (mimetype.indexOf(file.mimetype) != -1) {
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
-                }
-                extention = path.extname(file.name);
-                filename = "ingredient_" + new Date().getTime() + extention;
-                file.mv(dir + '/' + filename, function (err) {
-                    if (err) {
-                        logger.error("There was an issue in uploading image");
-                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
-                    } else {
-                        logger.trace("image has been uploaded. Image name = ", filename);
-                        //return res.send(200, "null");
-                    }
-                });
-            } else {
-                logger.error("Image format is invalid");
-                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
-            }
-        } else {
-            logger.info("Image not available to upload. Executing next instruction");
-            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-        }
-        if(filename)
-        {
-            ingredient_obj.image='uploads/ingredient/' + filename;
-        }
-        
-        //End image upload
-        
-        let ingredient_data = await ingredients_helper.update_ingredient(req.params.ingredient_id,ingredient_obj);
-        if (ingredient_data.status === 0) {
-            logger.error("Error while updating ingredient = ", ingredient_data);
-            res.status(config.BAD_REQUEST).json({ ingredient_data });
-        } else {
-            res.status(config.OK_STATUS).json(ingredient_data);
-        }
-    } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.BAD_REQUEST).json({ message: errors });
+  var schema = {
+    name: {
+      notEmpty: true,
+      errorMessage: "Name of ingredient is required"
     }
-});
+  };
 
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    var ingredient_obj = {
+      name: req.body.name,
+      description: req.body.description ? req.body.description : null
+    };
+
+    //image upload
+    var filename;
+    if (req.files && req.files["ingredient_img"]) {
+      var file = req.files["ingredient_img"];
+      var dir = "./uploads/ingredient";
+      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+
+      if (mimetype.indexOf(file.mimetype) != -1) {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+        extention = path.extname(file.name);
+        filename = "ingredient_" + new Date().getTime() + extention;
+        file.mv(dir + "/" + filename, function(err) {
+          if (err) {
+            logger.error("There was an issue in uploading image");
+            res.send({
+              status: config.MEDIA_ERROR_STATUS,
+              err: "There was an issue in uploading image"
+            });
+          } else {
+            logger.trace("image has been uploaded. Image name = ", filename);
+            //return res.send(200, "null");
+          }
+        });
+      } else {
+        logger.error("Image format is invalid");
+        res.send({
+          status: config.VALIDATION_FAILURE_STATUS,
+          err: "Image format is invalid"
+        });
+      }
+    } else {
+      logger.info("Image not available to upload. Executing next instruction");
+      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+    }
+    if (filename) {
+      ingredient_obj.image = "uploads/ingredient/" + filename;
+    }
+
+    //End image upload
+
+    let ingredient_data = await ingredients_helper.update_ingredient(
+      req.params.ingredient_id,
+      ingredient_obj
+    );
+    if (ingredient_data.status === 0) {
+      logger.error("Error while updating ingredient = ", ingredient_data);
+      res.status(config.BAD_REQUEST).json({ ingredient_data });
+    } else {
+      res.status(config.OK_STATUS).json(ingredient_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.BAD_REQUEST).json({ message: errors });
+  }
+});
 
 /**
  * @api {delete} /admin/equipment/:ingredient_id Ingredient Delete
@@ -263,20 +271,27 @@ router.put("/:ingredient_id", async (req, res) => {
  */
 router.delete("/:ingredient_id", async (req, res) => {
   logger.trace("Delete Ingredient API - Id = ", req.query.id);
-  var resp_data = await ingredients_helper.get_ingredient_id(req.params.ingredient_id);
+  var resp_data = await ingredients_helper.get_ingredient_id(
+    req.params.ingredient_id
+  );
   console.log(resp_data);
   let ingredient_data = await ingredients_helper.delete_ingredient_by_id(
     req.params.ingredient_id
   );
-  console.log(ingredient_data);
+  console.log(resp_data);
 
   if (ingredient_data.status === 0) {
-    
     res.status(config.INTERNAL_SERVER_ERROR).json(ingredient_data);
   } else {
-    fs.unlink(resp_data.equipment.image,function(){
-        console.log('image is deleted');
-    });
+    try {
+      if (resp_data.ingredient.image != null) {
+        console.log("i am in if:-------------> ", resp_data.ingredient.image);
+        fs.unlink(resp_data.ingredient.image, function() {
+          console.log("image is deleted");
+        });
+      }
+    } catch (err) {}
+
     res.status(config.OK_STATUS).json(ingredient_data);
   }
 });
