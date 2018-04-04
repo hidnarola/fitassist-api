@@ -192,7 +192,7 @@ user_helper.get_filtered_records = async (filter_obj) => {
           message: "filtered data is found",
           count: searched_record_count,
           filtered_total_pages: Math.ceil(total_count / filter_obj.pageSize),
-          filtered_user: filtered_data
+          filtered_users: filtered_data
         };
       } else {
         return { status: 2, message: "No filtered data available" };

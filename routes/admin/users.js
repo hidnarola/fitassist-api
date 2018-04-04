@@ -27,7 +27,7 @@ var common_helper = require("../../helpers/common_helper");
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
  * @apiParam {Number} page page number
- * @apiSuccess (Success 200) {JSON} filtered_user filtered details
+ * @apiSuccess (Success 200) {JSON} filtered_users filtered details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
