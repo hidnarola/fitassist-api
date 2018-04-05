@@ -14,6 +14,7 @@ var bodypart = require("./admin/bodyparts");
 var body_measurement = require("./admin/measurement");
 var user = require("./admin/users");
 var ingredient = require("./admin/ingredients");
+var recipes = require("./admin/recipes");
 
 router.use("/nutrition", auth, authorization, nutrition);
 router.use("/equipment_category", auth, authorization, equipment_category);
@@ -25,5 +26,7 @@ router.use("/bodypart", auth, authorization, bodypart);
 router.use("/measurement", auth, authorization, body_measurement);
 router.use("/user", auth, authorization, user);
 router.use("/ingredient", auth, authorization, ingredient);
+router.use("/recipes", auth, authorization, recipes);
+
 
 module.exports = router;
