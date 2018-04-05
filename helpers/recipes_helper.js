@@ -8,7 +8,7 @@ var recipe_helper = {};
  *          status 1 - If recipes data found, with recipes object
  *          status 2 - If recipes not found, with appropriate message
  */
-recipe_helper.get_recipes = async () => {
+recipe_helper.get_all_recipes = async () => {
     try {
         var recipes = await Recipes.find();
         if (recipes) {
@@ -23,22 +23,22 @@ recipe_helper.get_recipes = async () => {
 
 
 /*
- * get_body_part_id is used to fetch Body Part by ID
+ * get_recipe_by_id is used to fetch recipe by ID
  * 
- * @return  status 0 - If any internal error occured while fetching body part data, with error
- *          status 1 - If Body parts data found, with body part object
- *          status 2 - If Body parts data not found, with appropriate message
+ * @return  status 0 - If any internal error occured while fetching recipe data, with error
+ *          status 1 - If recipe data found, with recipe object
+ *          status 2 - If recipe data not found, with appropriate message
  */
-recipe_helper.get_recipes_id = async (id) => {
+recipe_helper.get_recipe_by_id = async (id) => {
     try {
-        var bodypart = await BodyPart.findOne({_id:id});
-        if (bodypart) {
-            return { "status": 1, "message": "Body part found", "bodypart": bodypart };
+        var recipe = await Recipes.findOne({_id:id});
+        if (recipe) {
+            return { "status": 1, "message": "recipe found", "recipe": recipe };
         } else {
-            return { "status": 2, "message": "No Body part available" };
+            return { "status": 2, "message": "No recipe available" };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding Body part", "error": err }
+        return { "status": 0, "message": "Error occured while finding recipe", "error": err }
     }
 }
 
@@ -53,39 +53,37 @@ recipe_helper.get_recipes_id = async (id) => {
  * @developed by "amc"
  */
 recipe_helper.insert_recipes = async (recipes_obj) => {
-    console.log(body_part_obj);
-    let bodypart = new BodyPart(body_part_obj);
+    let recipe = new Recipes(recipes_obj);
     try {
-        let bodypart_data = await bodypart.save();
-        return { "status": 1, "message": "Bodypart inserted", "bodypart": bodypart_data };
+        let recipe_data = await recipe.save();
+        return { "status": 1, "message": "recipe inserted", "recipe": recipe_data };
     } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting Bodypart", "error": err };
+        return { "status": 0, "message": "Error occured while inserting recipe", "error": err };
     }
 };
 
 /*
- * update_bodypart_by_id is used to update bodypart data based on body_part_id
+ * update_recipes_by_id is used to update recipe data based on recipes_id
  * 
- * @param   body_part_id         String  _id of bodypart that need to be update
- * @param   body_part_obj     JSON    object consist of all property that need to update
+ * @param   recipes_id         String  _id of recipe that need to be update
+ * @param   recipes_obj     JSON    object consist of all property that need to update
  * 
- * @return  status  0 - If any error occur in updating bodypart, with error
- *          status  1 - If bodypart updated successfully, with appropriate message
- *          status  2 - If bodypart not updated, with appropriate message
+ * @return  status  0 - If any error occur in updating recipe, with error
+ *          status  1 - If recipe updated successfully, with appropriate message
+ *          status  2 - If recipe not updated, with appropriate message
  * 
  * @developed by "amc"
  */
 recipe_helper.update_recipes_by_id = async (recipes_id, recipes_obj) => {
-    console.log(body_part_obj);
     try {
-        let bodypart = await BodyPart.findOneAndUpdate({ _id: body_part_id }, body_part_obj, { new: true });
-        if (!bodypart) {
+        let recipe_data = await Recipes.findOneAndUpdate({ _id: recipes_id }, recipes_obj, { new: true });
+        if (!recipe_data) {
             return { "status": 2, "message": "Record has not updated" };
         } else {
-            return { "status": 1, "message": "Record has been updated", "bodypart": bodypart };
+            return { "status": 1, "message": "Record has been updated", "recipe":recipe_data };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while updating bodypart", "error": err }
+        return { "status": 0, "message": "Error occured while updating recipe_data", "error": err }
     }
 };
 
@@ -101,14 +99,14 @@ recipe_helper.update_recipes_by_id = async (recipes_id, recipes_obj) => {
  */
 recipe_helper.delete_recipes_by_id = async (recipes_id) => {
     try {
-        let resp = await BodyPart.findOneAndRemove({ _id: bodypart_id });
+        let resp = await Recipes.findOneAndRemove({ _id: recipes_id });
         if (!resp) {
-            return { "status": 2, "message": "Bodypart not found" };
+            return { "status": 2, "message": "Recipe not found" };
         } else {
-            return { "status": 1, "message": "Bodypart deleted" };
+            return { "status": 1, "message": "Recipe deleted" };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting Bodypart", "error": err };
+        return { "status": 0, "message": "Error occured while deleting Recipe", "error": err };
     }
 }
 

@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 
 var NutritionSchema = new Schema(
 {
-    nutrition: { type: mongoose.Schema.Types.ObjectId, ref: "nutrition" },
+  nutrition: { type: mongoose.Schema.Types.ObjectId, ref: "nutrition" },
     units: { type: String, default: null }
 });
 
@@ -25,7 +25,7 @@ var RecipesSchema = new Schema(
     cookTime: { type: Number, default: null },
     difficultyLevel: {
       type: String,
-      enum: ["easy", "meduim", "hard"],
+      enum: ["easy", "medium", "hard"],
       default: "easy"
     },
     rating: { type: Number, default: 0 },

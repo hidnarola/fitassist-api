@@ -11,9 +11,6 @@ var logger = config.logger;
 var recipes_helper = require("../../helpers/recipes_helper");
 var common_helper = require("../../helpers/common_helper");
 
-
-
-
 /**
  * @api {post} /admin/recipes/filter Recipes Filter
  * @apiName Recipes Recipes Filter
@@ -44,207 +41,284 @@ router.post("/filter", async (req, res) => {
     }
   });
 
-// /**
-//  * @api {get} /admin/user User - Get all
-//  * @apiName User - Get all
-//  * @apiGroup Admin
-//  * @apiHeader {String}  x-access-token Admin's unique access-key
-//  * @apiSuccess (Success 200) {Array} users Array of users document
-//  * @apiError (Error 4xx) {String} message Validation or error message.
-//  */
-// router.get("/", async (req, res) => {
+/**
+ * @api {get} /admin/recipes Recipes - Get all
+ * @apiName Recipes - Get all
+ * @apiGroup Admin
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiSuccess (Success 200) {Array} recipes Array of recipes document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/", async (req, res) => {
 
-//     logger.trace("Get all Users API called");
-//     var resp_data = await user_helper.get_all_users();
-//     if (resp_data.status == 0) {
-//       logger.error("Error occured while fetching Users = ", resp_data);
-//       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-//     } else {
-//       logger.trace("Users got successfully = ", resp_data);
-//       res.status(config.OK_STATUS).json(resp_data);
-//     }
-//   });
+    logger.trace("Get All Recipes API called");
+    var resp_data = await recipes_helper.get_all_recipes();
+    if (resp_data.status == 0) {
+      logger.error("Error occured while fetching Recipes = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      logger.trace("Recipes got successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    }
+  });
 
   
-// /**
-//  * @api {get} /admin/user/user_id User - Get by ID
-//  * @apiName User - Users by ID
-//  * @apiGroup Admin
-//  * @apiHeader {String}  x-access-token Admin's unique access-key
-//  * @apiParam {String} user_id ID of User
-//  * @apiSuccess (Success 200) {Array} user Array of user document
-//  * @apiError (Error 4xx) {String} message Validation or error message.
-//  */
-// router.get("/:user_id", async (req, res) => {
-//     user_id = req.params.user_id;
-//   logger.trace("Get user by id API called");
-//   var resp_data = await user_helper.get_user_by_id(user_id);
-//   if (resp_data.status == 0) {
-//     logger.error("Error occured while fetching user = ", resp_data);
-//     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-//   } else {
-//     logger.trace("user got successfully = ", resp_data);
-//     res.status(config.OK_STATUS).json(resp_data);
-//   }
-// });
-
-
-// /**
-//  * @api {put} /admin/user User - Update
-//  * @apiName User - Update
-//  * @apiGroup Admin
-//  * @apiHeader {String}  x-access-token Admin's unique access-key
-//  * @apiParam {String} first_name First name of user
-//  * @apiParam {String} last_name Last name of user
-//  * @apiParam {String} username Username
-//  * @apiParam {String} email Email address
-//  * @apiParam {Number} [mobileNumber] mobileNumber
-//  * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
-//  * @apiParam {Date} [dateOfBirth] Date of Birth
-//  * @apiParam {Array} [goal] goal
-//  * @apiParam {File} [user_img] avatar
-//  * @apiParam {String} [aboutMe] aboutMe
-//  * @apiParam {Array} favRecipes favRecipes
-//  * @apiParam {Boolean} status status
-//  * @apiSuccess (Success 200) {Array} user Array of users document
-//  * @apiError (Error 4xx) {String} message Validation or error message.
-//  */
-// router.put("/:user_id", async (req, res) => {
-//     user_id = req.params.user_id;
+/**
+ * @api {get} /admin/recipes/recipe_id Recipes - Get by ID
+ * @apiName Recipes - Recipes by ID
+ * @apiGroup Admin
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiParam {String} recipe_id ID of Recipe
+ * @apiSuccess (Success 200) {Array} recipe Array of Recipes document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/:recipe_id", async (req, res) => {
+    recipe_id = req.params.recipe_id;
+  logger.trace("Get recipe by id API called");
+  var resp_data = await recipes_helper.get_recipe_by_id(recipe_id);
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching recipe = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("recipe got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+/**
+ * @api {post} /admin/recipes Recipes - Add
+ * @apiName Recipes - Add
+ * @apiGroup Admin
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiParam {String} name name of recipe
+ * @apiParam {String} [description] description of recipe
+ * @apiParam {String} [image] image of recipe
+ * @apiParam {String} [method] method of recipe
+ * @apiParam {Array} [ingredients] ingredients of recipe
+ * @apiParam {Array} [ingredientsIncluded] ingredientsIncluded
+ * @apiParam {Number} [preparationTime] time of preparationTime
+ * @apiParam {Number} [cookTime] cooking time
+ * @apiParam {Enum} [difficultyLevel] difficultyLevel of recipe
+ * @apiParam {Number} [rating] rating of recipe
+ * @apiParam {Enum} recipeType recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
+ * @apiParam {Array} nutritions nutritions Object Array
+ * @apiParam {File} [recipe_img] recipe image
+ * @apiSuccess (Success 200) {Array} recipe Array of recipes document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/", async (req, res) => {
    
-//     var schema = {
-//         'first_name': {
-//             notEmpty: true,
-//             errorMessage: "First name is required"
-//         },
-//         'last_name': {
-//             notEmpty: true,
-//             errorMessage: "Last name is required"
-//         },
-//         'username': {
-//           notEmpty: true,
-//           errorMessage: "Username is required"
-//         },
-//         'email': {
-//             notEmpty: true,
-//             errorMessage: "Email address is required",
-//             isEmail: {errorMessage: "Please enter valid email address"}
-//         },
-//         'gender': {
-//             notEmpty: true,
-//             isIn: {
-//               options: [['male', 'female', 'transgender']],
-//               errorMessage: 'Gender can be from male, female or transgender'
-//             },
-//             errorMessage: "Gender is required",
-//         },
-//         'goal': {
-//             notEmpty: true,
-//             errorMessage: "Goal is required"
-//         },
-//         'aboutme': {
-//             notEmpty: true,
-//             errorMessage: "About me is required"
-//         },
-//         'favRecipes': {
-//             notEmpty: true,
-//             errorMessage: "FavRecipes is required"
-//         },
-//         'status': {
-//             notEmpty: true,
-//             errorMessage: "Status is required"
-//         }
-//     };
-//     req.checkBody(schema);
-//     var errors = req.validationErrors();
+    var schema = {
+        'name': {
+            notEmpty: true,
+            errorMessage: "name of recipe is required"
+        },
+        'recipeType': {
+            notEmpty: true,
+            errorMessage: "RecipeType is required"
+        },
+        'nutritions': {
+            notEmpty: true,
+            errorMessage: "Nutritions is required"
+        }
+    };
+    req.checkBody(schema);
+    var errors = req.validationErrors();
     
-//     if (!errors) {
-//         var user_obj = {
-//             "first_name": req.body.first_name,
-//             "last_name": req.body.last_name,
-//             "username": req.body.username,
-//             "email": req.body.email,
-//             "mobileNumber": req.body.mobileNumber,
-//             "gender": req.body.gender,
-//             "dateOfBirth": req.body.dateOfBirth,
-//             "goal": JSON.parse(req.body.goal),
-//             "aboutMe": req.body.aboutme,
-//             "favRecipes": JSON.parse(req.body.favRecipes),
-//             "status": req.body.status,            
-//             };
+    if (!errors) {
+        var recipe_obj = 
+        {
+            name:req.body.name,           
+            description:req.body.description,
+            method:req.body.method,
+            ingredients:req.body.ingredients,
+            ingredientsIncluded:JSON.parse(req.body.ingredientsIncluded),
+            preparationTime:req.body.preparationTime,
+            cookTime:req.body.cookTime,
+            difficultyLevel:req.body.difficultyLevel,
+            rating:req.body.rating,
+            recipeType:req.body.recipeType,
+            nutritions:JSON.parse(req.body.nutritions)        
+        };
+            //image upload
+        var filename;
+        if (req.files && req.files['recipe_img']) {
+            var file = req.files['recipe_img'];
+            var dir = "./uploads/recipe";
+            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-//             //image upload
-//         var filename;
-//         if (req.files && req.files['user_img']) {
-//             var file = req.files['user_img'];
-//             var dir = "./uploads/user";
-//             var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-//             if (mimetype.indexOf(file.mimetype) != -1) {
-//                 if (!fs.existsSync(dir)) {
-//                     fs.mkdirSync(dir);
-//                 }
-//                 extention = path.extname(file.name);
-//                 filename = "user_" + new Date().getTime() + extention;
-//                 file.mv(dir + '/' + filename, function (err) {
-//                     if (err) {
-//                         logger.error("There was an issue in uploading image");
-//                         res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
-//                     } else {
-//                         logger.trace("image has been uploaded. Image name = ", filename);
-//                         //return res.send(200, "null");
-//                     }
-//                 });
-//             } else {
-//                 logger.error("Image format is invalid");
-//                 res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
-//             }
-//         } else {
-//             logger.info("Image not available to upload. Executing next instruction");
-//             //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-//         }
-//         user_obj.avatar='uploads/user/' + filename;
-//         console.log(user_obj);
+            if (mimetype.indexOf(file.mimetype) != -1) {
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir);
+                }
+                extention = path.extname(file.name);
+                filename = "recipe_" + new Date().getTime() + extention;
+                file.mv(dir + '/' + filename, function (err) {
+                    if (err) {
+                        logger.error("There was an issue in uploading image");
+                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
+                    } else {
+                        logger.trace("image has been uploaded. Image name = ", filename);
+                        //return res.send(200, "null");
+                    }
+                });
+            } else {
+                logger.error("Image format is invalid");
+                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+            }
+        } else {
+            logger.info("Image not available to upload. Executing next instruction");
+            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+        }
+        recipe_obj.image='uploads/recipe/' + filename;
+        console.log(recipe_obj);
         
-//             let user_data = await user_helper.update_user_by_id(user_id,user_obj);
-//             if (user_data.status === 0) {
-//                 logger.error("Error while updating user data = ", user_data);
-//                 return res.status(config.BAD_REQUEST).json({ user_data });
-//             } else {
-//                 return res.status(config.OK_STATUS).json(user_data);
-//             }
-//     } else {
-//         logger.error("Validation Error = ", errors);
-//         res.status(config.BAD_REQUEST).json({ message: errors });
-//     }
+            let recipe_data = await recipes_helper.insert_recipes(recipe_obj);
+            if (recipe_data.status === 0) {
+                logger.error("Error while inserting recipe data = ", recipe_data);
+                return res.status(config.BAD_REQUEST).json({ recipe_data });
+            } else {
+                return res.status(config.OK_STATUS).json(recipe_data);
+            }
+    } else {
+        logger.error("Validation Error = ", errors);
+        res.status(config.BAD_REQUEST).json({ message: errors });
+    }
 
-// });
-
-// /**
-//  * @api {delete} /admin/user/:user_id User - Delete
-//  * @apiName User - Delete  
-//  * @apiGroup Admin
-//  * 
-//  * @apiHeader {String}  x-access-token Admin's unique access-key
-//  * @apiSuccess (Success 200) {String} Success message
-//  * @apiError (Error 4xx) {String} message Validation or error message.
-//  */
-// router.delete("/:user_id", async (req, res) => {
+});
+/**
+ * @api {post} /admin/recipes Recipes - Add
+ * @apiName Recipes - Add
+ * @apiGroup Admin
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiParam {String} name name of recipe
+ * @apiParam {String} [description] description of recipe
+ * @apiParam {String} [image] image of recipe
+ * @apiParam {String} [method] method of recipe
+ * @apiParam {Array} [ingredients] ingredients of recipe
+ * @apiParam {Array} [ingredientsIncluded] ingredientsIncluded
+ * @apiParam {Number} [preparationTime] time of preparationTime
+ * @apiParam {Number} [cookTime] cooking time
+ * @apiParam {Enum} [difficultyLevel] difficultyLevel of recipe
+ * @apiParam {Number} [rating] rating of recipe
+ * @apiParam {Enum} recipeType recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
+ * @apiParam {Array} nutritions nutritions Object Array
+ * @apiParam {File} [recipe_img] recipe image
+ * @apiSuccess (Success 200) {Array} recipe Array of recipes document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/:recipe_id", async (req, res) => {
+   
+    var schema = {
+        'name': {
+            notEmpty: true,
+            errorMessage: "name of recipe is required"
+        },
+        'recipeType': {
+            notEmpty: true,
+            errorMessage: "RecipeType is required"
+        },
+        'nutritions': {
+            notEmpty: true,
+            errorMessage: "Nutritions is required"
+        }
+    };
+    req.checkBody(schema);
+    var errors = req.validationErrors();
     
-//     logger.trace("Delete user API - Id = ", req.query.id);
-//     var user_obj = 
-//     {
-//         "isDelete": 1,            
-//     };
-//     let userdata = await user_helper.delete_user_by_id(
-//         req.params.user_id,user_obj
-//     );
+    if (!errors) {
+        var recipe_obj = 
+        {
+            name:req.body.name,           
+            description:req.body.description,
+            method:req.body.method,
+            ingredients:req.body.ingredients,
+            ingredientsIncluded:JSON.parse(req.body.ingredientsIncluded),
+            preparationTime:req.body.preparationTime,
+            cookTime:req.body.cookTime,
+            difficultyLevel:req.body.difficultyLevel,
+            rating:req.body.rating,
+            recipeType:req.body.recipeType,
+            nutritions:JSON.parse(req.body.nutritions)        
+        };
+            //image upload
+        var filename;
+        if (req.files && req.files['recipe_img']) {
+            var file = req.files['recipe_img'];
+            var dir = "./uploads/recipe";
+            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
 
-//     if (userdata.status === 0) {
-//         res.status(config.INTERNAL_SERVER_ERROR).json(userdata);
-//     } else {
-//         res.status(config.OK_STATUS).json(userdata);
-//     }
-// });
+            if (mimetype.indexOf(file.mimetype) != -1) {
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir);
+                }
+                extention = path.extname(file.name);
+                filename = "recipe_" + new Date().getTime() + extention;
+                file.mv(dir + '/' + filename, function (err) {
+                    if (err) {
+                        logger.error("There was an issue in uploading image");
+                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
+                    } else {
+                        logger.trace("image has been uploaded. Image name = ", filename);
+                        //return res.send(200, "null");
+                    }
+                });
+            } else {
+                logger.error("Image format is invalid");
+                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
+            }
+        } else {
+            logger.info("Image not available to upload. Executing next instruction");
+            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+        }
+        if(filename){
+            recipe_obj.image='uploads/recipe/' + filename;  
+            var single_data = await recipes_helper.get_recipe_by_id(req.params.recipe_id);
+            try{
+                fs.unlink(single_data.recipe.image,function(){
+                    console.log("Image is deleted")
+                  });  
+            }   
+            catch(err){
+
+            }         
+                    
+        }
+        
+            let recipe_data = await recipes_helper.update_recipes_by_id(req.params.recipe_id,recipe_obj);
+            if (recipe_data.status === 0) {
+                logger.error("Error while updating recipe data = ", recipe_data);
+                return res.status(config.BAD_REQUEST).json({ recipe_data });
+            } else {
+                return res.status(config.OK_STATUS).json(recipe_data);
+            }
+    } else {
+        logger.error("Validation Error = ", errors);
+        res.status(config.BAD_REQUEST).json({ message: errors });
+    }
+
+});
+/**
+ * @api {delete} /admin/recipe/:recipe_id Recipes - Delete
+ * @apiName Recipes - Delete  
+ * @apiGroup Admin
+ * 
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.delete("/:recipe_id", async (req, res) => {
+    
+    logger.trace("Delete recipe API - Id = ", req.query.id);
+
+    let recipe = await recipes_helper.delete_recipes_by_id(
+        req.params.recipe_id
+    );
+
+    if (recipe.status === 0) {
+        res.status(config.INTERNAL_SERVER_ERROR).json(recipe);
+    } else {
+        res.status(config.OK_STATUS).json(recipe);
+    }
+});
 
 module.exports = router;
