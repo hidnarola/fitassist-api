@@ -157,7 +157,7 @@ exercise_helper.get_filtered_records = async (filter_obj) => {
                 from: "bodyparts",
                 localField: "mainMuscleGroup",
                 foreignField: "_id",
-                as: "bodydetails"
+                as: "mainMuscle"
               }
          },
          
