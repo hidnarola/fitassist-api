@@ -32,10 +32,10 @@ common_helper.changeObject = function (data,callback) {
     
     async.forEach(data.columnSort, function(val, next) {
         var key=val.id;
-        var value=-1;
-        if(val.value)
+        var value=1;
+        if(val.desc)
         {
-            value=1;
+            value=-1;
         }
         columnSort[key]=value;
     });
