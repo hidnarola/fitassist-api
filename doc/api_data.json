@@ -2986,7 +2986,7 @@
     "groupTitle": "Admin"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Recipes - Add",
     "name": "Recipes___Add",
@@ -3020,13 +3020,6 @@
             "optional": true,
             "field": "description",
             "description": "<p>description of recipe</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "image",
-            "description": "<p>image of recipe</p>"
           },
           {
             "group": "Parameter",
@@ -3166,13 +3159,6 @@
             "optional": true,
             "field": "description",
             "description": "<p>description of recipe</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "image",
-            "description": "<p>image of recipe</p>"
           },
           {
             "group": "Parameter",

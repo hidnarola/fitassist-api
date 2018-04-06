@@ -31,6 +31,7 @@ var common_helper = require("../../helpers/common_helper");
 router.post("/filter", async (req, res) => {
   
     filter_object = common_helper.changeObject(req.body);
+    console.log(filter_object);
     let filtered_data = await recipes_helper.get_filtered_records(filter_object);
     //console.log(filtered_data);
     if (filtered_data.status === 0) {
@@ -91,7 +92,6 @@ router.get("/:recipe_id", async (req, res) => {
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of recipe
  * @apiParam {String} [description] description of recipe
- * @apiParam {String} [image] image of recipe
  * @apiParam {String} [method] method of recipe
  * @apiParam {Array} [ingredients] ingredients of recipe
  * @apiParam {Array} [ingredientsIncluded] ingredientsIncluded
@@ -186,13 +186,12 @@ router.post("/", async (req, res) => {
 
 });
 /**
- * @api {post} /admin/recipes Recipes - Add
+ * @api {put} /admin/recipes Recipes - Add
  * @apiName Recipes - Add
  * @apiGroup Admin
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of recipe
  * @apiParam {String} [description] description of recipe
- * @apiParam {String} [image] image of recipe
  * @apiParam {String} [method] method of recipe
  * @apiParam {Array} [ingredients] ingredients of recipe
  * @apiParam {Array} [ingredientsIncluded] ingredientsIncluded

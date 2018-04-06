@@ -159,7 +159,7 @@ user_helper.get_filtered_records = async (filter_obj) => {
     if (filter_obj.columnFilterEqual && filter_obj.columnFilterEqual.length > 0) {
       equalTo = filter_obj.columnFilterEqual;
     }
-    skip = filter_obj.pageSize * filter_obj.page;
+    var skip = filter_obj.pageSize * filter_obj.page;
     try {
       total_count = await User.count({}, function(err, cnt) {
         return cnt;
@@ -178,20 +178,27 @@ user_helper.get_filtered_records = async (filter_obj) => {
       if (andFilterArr && andFilterArr.length > 0) {
         andFilterObj = { $and: andFilterArr };
       }
-      var searched_record_count = await User.find(andFilterObj).count();
+      var searched_record_count = await User.aggregate([
+        {
+          $match: filter_object.columnFilter,
+        }
+      ]);
   
-      var filtered_data = await User.find(andFilterObj)
-        .sort(filter_obj.columnSort)
-        .limit(filter_obj.pageSize)
-        .skip(skip)
-        .exec();
+      var filtered_data = await User.aggregate([
+        {
+          $match: filter_object.columnFilter,
+        },
+        { $limit: filter_object.pageSize },
+        { $skip: skip },
+        { $sort: filter_obj.columnSort }
+      ]);
   
       if (filtered_data) {
         return {
           status: 1,
           message: "filtered data is found",
-          count: searched_record_count,
-          filtered_total_pages: Math.ceil(searched_record_count / filter_obj.pageSize),
+          count: searched_record_count.length,
+          filtered_total_pages: Math.ceil(searched_record_count.length / filter_obj.pageSize),
           filtered_users: filtered_data
         };
       } else {

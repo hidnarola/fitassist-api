@@ -119,7 +119,6 @@ recipe_helper.delete_recipes_by_id = async (recipes_id) => {
  *          status 2 - If filtered not found, with appropriate message
  */
 recipe_helper.get_filtered_records = async (filter_obj) => {
-    console.log(filter_obj);
     queryObj = {};
     if (filter_obj.columnFilter && filter_obj.columnFilter.length > 0) {
       queryObj = filter_obj.columnFilter;
@@ -148,13 +147,20 @@ recipe_helper.get_filtered_records = async (filter_obj) => {
       if (andFilterArr && andFilterArr.length > 0) {
         andFilterObj = { $and: andFilterArr };
       }
-      var searched_record_count = await Recipes.find(andFilterObj).count();
+      var searched_record_count = await Recipes.aggregate([
+        {
+          $match: filter_object.columnFilter,
+        }
+      ]);
   
-      var filtered_data = await Recipes.find(andFilterObj)
-        .sort(filter_obj.columnSort)
-        .limit(filter_obj.pageSize)
-        .skip(skip)
-        .exec();
+      var filtered_data = await Recipes.aggregate([
+        {
+          $match: filter_object.columnFilter,
+        },
+        { $limit: filter_object.pageSize },
+        { $skip: skip },
+        { $sort: filter_obj.columnSort }
+      ]);
   
       if (filtered_data) {
         return {
