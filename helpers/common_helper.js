@@ -29,7 +29,7 @@ common_helper.changeObject = function (data,callback) {
         columnFilter[key]=value;
 
     });
-    if(data.columnSort)
+    if(data.columnSort && data.columnSort.length>0)
     {
         async.forEach(data.columnSort, function(val, next) {
             var key=val.id;
