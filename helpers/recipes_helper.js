@@ -149,13 +149,14 @@ recipe_helper.get_filtered_records = async filter_obj => {
 
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await Recipes.aggregate([
+    var searched_record_count = await Recipes.aggregate([      
       {
         $match: filter_object.columnFilter
       }
     ]);
 
     var filtered_data = await Recipes.aggregate([
+      
       {
         $match: filter_object.columnFilter
       },
@@ -163,7 +164,7 @@ recipe_helper.get_filtered_records = async filter_obj => {
       { $limit: filter_object.pageSize },
       { $sort: filter_obj.columnSort }
     ]);
-
+    
     if (filtered_data) {
       return {
         status: 1,

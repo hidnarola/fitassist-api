@@ -99,7 +99,7 @@ router.get("/:recipe_id", async (req, res) => {
  * @apiParam {Number} [cookTime] cooking time
  * @apiParam {Enum} [difficultyLevel] difficultyLevel of recipe
  * @apiParam {Number} [rating] rating of recipe
- * @apiParam {Enum} recipeType recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
+ * @apiParam {Array} recipeType recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
  * @apiParam {Array} nutritions nutritions Object Array
  * @apiParam {File} [recipe_img] recipe image
  * @apiSuccess (Success 200) {Array} recipe Array of recipes document
@@ -136,7 +136,7 @@ router.post("/", async (req, res) => {
             cookTime:req.body.cookTime,
             difficultyLevel:req.body.difficultyLevel,
             rating:req.body.rating,
-            recipeType:req.body.recipeType,
+            recipeType:JSON.parse(req.body.recipeType),
             nutritions:JSON.parse(req.body.nutritions)        
         };
             //image upload
@@ -199,7 +199,7 @@ router.post("/", async (req, res) => {
  * @apiParam {Number} [cookTime] cooking time
  * @apiParam {Enum} [difficultyLevel] difficultyLevel of recipe
  * @apiParam {Number} [rating] rating of recipe
- * @apiParam {Enum} recipeType recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
+ * @apiParam {Array} recipeType recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
  * @apiParam {Array} nutritions nutritions Object Array
  * @apiParam {File} [recipe_img] recipe image
  * @apiSuccess (Success 200) {Array} recipe Array of recipes document
@@ -236,7 +236,7 @@ router.put("/:recipe_id", async (req, res) => {
             cookTime:req.body.cookTime,
             difficultyLevel:req.body.difficultyLevel,
             rating:req.body.rating,
-            recipeType:req.body.recipeType,
+            recipeType:JSON.parse(req.body.recipeType),
             nutritions:JSON.parse(req.body.nutritions)        
         };
             //image upload

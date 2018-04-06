@@ -12,17 +12,17 @@ var ExerciseSchema = new Schema(
     description: { type: String, required: false },
     mainMuscleGroup: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "body_parts",
+      ref: "bodyparts",
       required: true
     },
     otherMuscleGroup: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "body_parts",
+      ref: "bodyparts",
       required: true
     }],
     detailedMuscleGroup: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "body_parts",
+      ref: "bodyparts",
       required: true
     }],
     type: {

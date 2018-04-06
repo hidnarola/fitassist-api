@@ -152,13 +152,23 @@ exercise_helper.get_filtered_records = async (filter_obj) => {
   
       var filtered_data = await Exercise.aggregate([
         {
+            $lookup:
+              {
+                from: "bodyparts",
+                localField: "mainMuscleGroup",
+                foreignField: "_id",
+                as: "bodydetails"
+              }
+         },
+         
+        {
           $match: filter_object.columnFilter,
         },
         { $skip: skip },
         { $limit: filter_object.pageSize },
         { $sort: filter_obj.columnSort }
       ]);
-  
+
       if (filtered_data) {
         return {
           status: 1,

@@ -3699,7 +3699,7 @@
           },
           {
             "group": "Parameter",
-            "type": "Enum",
+            "type": "Array",
             "optional": false,
             "field": "recipeType",
             "description": "<p>recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"
@@ -3838,7 +3838,7 @@
           },
           {
             "group": "Parameter",
-            "type": "Enum",
+            "type": "Array",
             "optional": false,
             "field": "recipeType",
             "description": "<p>recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"

@@ -29,7 +29,7 @@ var RecipesSchema = new Schema(
       default: "easy"
     },
     rating: { type: Number, default: 0 },
-    recipeType: {
+    recipeType: [{
       type: String,
       enum: [
         "vegetarian",
@@ -42,7 +42,7 @@ var RecipesSchema = new Schema(
         "pescaterian"
       ],
       required: true
-    },
+    }],
     nutritions: [NutritionSchema]
   },
   { versionKey: false }
