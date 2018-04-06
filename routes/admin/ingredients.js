@@ -240,6 +240,16 @@ router.put("/:ingredient_id", async (req, res) => {
     }
     if (filename) {
       ingredient_obj.image = "uploads/ingredient/" + filename;
+      var resp_data = await ingredients_helper.get_ingredient_id(req.params.ingredient_id);
+      try{
+                fs.unlink(resp_data.ingredient.image,function(){
+                    console.log("Image deleted");
+                   });
+            }
+            catch(err)
+            {
+
+            }
     }
 
     //End image upload

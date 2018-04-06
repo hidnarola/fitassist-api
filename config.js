@@ -16,7 +16,8 @@ module.exports = {
     // JWT
     "ACCESS_TOKEN_SECRET_KEY": "fitassist_jwt_token",
     "REFRESH_TOKEN_SECRET_KEY": "fitassist_jwt_refresh_token",
-    "ACCESS_TOKEN_EXPIRE_TIME" : 60 * 60 * 24 * 7, // 7 days
+    // "ACCESS_TOKEN_EXPIRE_TIME" : 60 * 60 * 24 * 7, // 7 days
+    "ACCESS_TOKEN_EXPIRE_TIME" : 60 * 60 * 24 * 100, // 7 days
 
     // HTTP Status
     "OK_STATUS": 200,

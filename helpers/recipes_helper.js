@@ -9,18 +9,21 @@ var recipe_helper = {};
  *          status 2 - If recipes not found, with appropriate message
  */
 recipe_helper.get_all_recipes = async () => {
-    try {
-        var recipes = await Recipes.find();
-        if (recipes) {
-            return { "status": 1, "message": "recipes found", "recipes": recipes };
-        } else {
-            return { "status": 2, "message": "No recipes available" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while finding recipes", "error": err }
+  try {
+    var recipes = await Recipes.find();
+    if (recipes) {
+      return { status: 1, message: "recipes found", recipes: recipes };
+    } else {
+      return { status: 2, message: "No recipes available" };
     }
-}
-
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding recipes",
+      error: err
+    };
+  }
+};
 
 /*
  * get_recipe_by_id is used to fetch recipe by ID
@@ -29,18 +32,22 @@ recipe_helper.get_all_recipes = async () => {
  *          status 1 - If recipe data found, with recipe object
  *          status 2 - If recipe data not found, with appropriate message
  */
-recipe_helper.get_recipe_by_id = async (id) => {
-    try {
-        var recipe = await Recipes.findOne({_id:id});
-        if (recipe) {
-            return { "status": 1, "message": "recipe found", "recipe": recipe };
-        } else {
-            return { "status": 2, "message": "No recipe available" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while finding recipe", "error": err }
+recipe_helper.get_recipe_by_id = async id => {
+  try {
+    var recipe = await Recipes.findOne({ _id: id });
+    if (recipe) {
+      return { status: 1, message: "recipe found", recipe: recipe };
+    } else {
+      return { status: 2, message: "No recipe available" };
     }
-}
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding recipe",
+      error: err
+    };
+  }
+};
 
 /*
  * insert_body_part is used to insert into bodyparts collection
@@ -52,14 +59,18 @@ recipe_helper.get_recipe_by_id = async (id) => {
  * 
  * @developed by "amc"
  */
-recipe_helper.insert_recipes = async (recipes_obj) => {
-    let recipe = new Recipes(recipes_obj);
-    try {
-        let recipe_data = await recipe.save();
-        return { "status": 1, "message": "recipe inserted", "recipe": recipe_data };
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting recipe", "error": err };
-    }
+recipe_helper.insert_recipes = async recipes_obj => {
+  let recipe = new Recipes(recipes_obj);
+  try {
+    let recipe_data = await recipe.save();
+    return { status: 1, message: "recipe inserted", recipe: recipe_data };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting recipe",
+      error: err
+    };
+  }
 };
 
 /*
@@ -75,16 +86,28 @@ recipe_helper.insert_recipes = async (recipes_obj) => {
  * @developed by "amc"
  */
 recipe_helper.update_recipes_by_id = async (recipes_id, recipes_obj) => {
-    try {
-        let recipe_data = await Recipes.findOneAndUpdate({ _id: recipes_id }, recipes_obj, { new: true });
-        if (!recipe_data) {
-            return { "status": 2, "message": "Record has not updated" };
-        } else {
-            return { "status": 1, "message": "Record has been updated", "recipe":recipe_data };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while updating recipe_data", "error": err }
+  try {
+    let recipe_data = await Recipes.findOneAndUpdate(
+      { _id: recipes_id },
+      recipes_obj,
+      { new: true }
+    );
+    if (!recipe_data) {
+      return { status: 2, message: "Record has not updated" };
+    } else {
+      return {
+        status: 1,
+        message: "Record has been updated",
+        recipe: recipe_data
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating recipe_data",
+      error: err
+    };
+  }
 };
 
 /*
@@ -97,19 +120,22 @@ recipe_helper.update_recipes_by_id = async (recipes_id, recipes_obj) => {
  * 
  * @developed by "amc"
  */
-recipe_helper.delete_recipes_by_id = async (recipes_id) => {
-    try {
-        let resp = await Recipes.findOneAndRemove({ _id: recipes_id });
-        if (!resp) {
-            return { "status": 2, "message": "Recipe not found" };
-        } else {
-            return { "status": 1, "message": "Recipe deleted" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting Recipe", "error": err };
+recipe_helper.delete_recipes_by_id = async recipes_id => {
+  try {
+    let resp = await Recipes.findOneAndRemove({ _id: recipes_id });
+    if (!resp) {
+      return { status: 2, message: "Recipe not found" };
+    } else {
+      return { status: 1, message: "Recipe deleted" };
     }
-}
-
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while deleting Recipe",
+      error: err
+    };
+  }
+};
 
 /*
  * get_filtered_records is used to fetch all filtered data
@@ -118,68 +144,45 @@ recipe_helper.delete_recipes_by_id = async (recipes_id) => {
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message
  */
-recipe_helper.get_filtered_records = async (filter_obj) => {
-    console.log(filter_obj);
-    queryObj = {};
-    if (filter_obj.columnFilter && filter_obj.columnFilter.length > 0) {
-      queryObj = filter_obj.columnFilter;
-    }
-  
-    equalTo = {};
-    if (filter_obj.columnFilterEqual && filter_obj.columnFilterEqual.length > 0) {
-      equalTo = filter_obj.columnFilterEqual;
-    }
-    skip = filter_obj.pageSize * filter_obj.page;
-    try {
-      total_count = await Recipes.count({}, function(err, cnt) {
-        return cnt;
-      });
-      // var filtered_data = await Exercise.find(queryObj).sort(filter_obj.columnSort).limit(filter_obj.pageSize).skip(skip).exec();
-  
-      var andFilterArr = [];
-      if (queryObj && queryObj.length > 0) {
-        andFilterArr.push({ $and: queryObj });
+recipe_helper.get_filtered_records = async filter_obj => {
+  console.log(filter_obj);
+
+  skip = filter_obj.pageSize * filter_obj.page;
+  try {
+    var searched_record_count = await Recipes.aggregate([
+      {
+        $match: filter_object.columnFilter
       }
-  
-      if (equalTo && equalTo.length > 0) {
-        andFilterArr.push({ $and: equalTo });
-      }
-      var andFilterObj = {};
-      if (andFilterArr && andFilterArr.length > 0) {
-        andFilterObj = { $and: andFilterArr };
-      }
-      var searched_record_count = await Recipes.aggregate([
-        {
-          $match: filter_object.columnFilter,
-        }
-      ]);
-  
-      var filtered_data = await Recipes.aggregate([
-        {
-          $match: filter_object.columnFilter,
-        },
-        { $skip: skip },
-        { $limit: filter_object.pageSize },
-        { $sort: filter_obj.columnSort }
-      ]);
-  
-      if (filtered_data) {
-        return {
-          status: 1,
-          message: "filtered data is found",
-          count: searched_record_count.length,
-          filtered_total_pages: Math.ceil(searched_record_count.length / filter_obj.pageSize),
-          filtered_recipes: filtered_data
-        };
-      } else {
-        return { status: 2, message: "No filtered data available" };
-      }
-    } catch (err) {
+    ]);
+
+    var filtered_data = await Recipes.aggregate([
+      {
+        $match: filter_object.columnFilter
+      },
+      { $skip: skip },
+      { $limit: filter_object.pageSize },
+      { $sort: filter_obj.columnSort }
+    ]);
+
+    if (filtered_data) {
       return {
-        status: 0,
-        message: "Error occured while filtering data",
-        error: err
+        status: 1,
+        message: "filtered data is found",
+        count: searched_record_count.length,
+        filtered_total_pages: Math.ceil(
+          searched_record_count.length / filter_obj.pageSize
+        ),
+        filtered_recipes: filtered_data
       };
+    } else {
+      return { status: 2, message: "No filtered data available" };
     }
-  };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while filtering data",
+      error: err
+    };
+  }
+};
 module.exports = recipe_helper;

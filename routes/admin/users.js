@@ -203,7 +203,20 @@ router.put("/:user_id", async (req, res) => {
             logger.info("Image not available to upload. Executing next instruction");
             //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
         }
-        user_obj.avatar='uploads/user/' + filename;
+        if(filename)
+        {
+            user_obj.avatar='uploads/user/' + filename;
+            resp_data=await user_helper.get_user_by_id(user_id);
+            try{
+                fs.unlink(resp_data.user.avatar,function(){
+                    console.log("Image deleted");
+                   });
+            }
+            catch(err)
+            {
+
+            }
+        }
         console.log(user_obj);
         
             let user_data = await user_helper.update_user_by_id(user_id,user_obj);
