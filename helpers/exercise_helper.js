@@ -150,11 +150,14 @@ exercise_helper.get_filtered_records = async (filter_obj) => {
       }
       var searched_record_count = await Exercise.find(andFilterObj).count();
   
-      var filtered_data = await Exercise.find(andFilterObj)
-        .sort(filter_obj.columnSort)
-        .limit(filter_obj.pageSize)
-        .skip(skip)
-        .exec();
+      var filtered_data = await Exercise.aggregate([
+        {
+          $match: filter_object.columnFilter,
+        },
+        { $skip: skip },
+        { $limit: filter_object.pageSize },
+        { $sort: filter_obj.columnSort }
+      ]);
   
       if (filtered_data) {
         return {

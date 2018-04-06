@@ -166,8 +166,8 @@ ingredients_helper.get_filtered_records = async (filter_obj) => {
       {
         $match: filter_object.columnFilter,
       },
-      { $limit: filter_object.pageSize },
       { $skip: skip },
+      { $limit: filter_object.pageSize },
       { $sort: filter_obj.columnSort }
     ]);
 

@@ -157,8 +157,8 @@ recipe_helper.get_filtered_records = async (filter_obj) => {
         {
           $match: filter_object.columnFilter,
         },
-        { $limit: filter_object.pageSize },
         { $skip: skip },
+        { $limit: filter_object.pageSize },
         { $sort: filter_obj.columnSort }
       ]);
   
@@ -166,8 +166,8 @@ recipe_helper.get_filtered_records = async (filter_obj) => {
         return {
           status: 1,
           message: "filtered data is found",
-          count: searched_record_count,
-          filtered_total_pages: Math.ceil(searched_record_count / filter_obj.pageSize),
+          count: searched_record_count.length,
+          filtered_total_pages: Math.ceil(searched_record_count.length / filter_obj.pageSize),
           filtered_recipes: filtered_data
         };
       } else {
