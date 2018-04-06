@@ -29,16 +29,21 @@ common_helper.changeObject = function (data,callback) {
         columnFilter[key]=value;
 
     });
-    
-    async.forEach(data.columnSort, function(val, next) {
-        var key=val.id;
-        var value=1;
-        if(val.desc)
-        {
-            value=-1;
-        }
-        columnSort[key]=value;
-    });
+    if(data.columnSort)
+    {
+        async.forEach(data.columnSort, function(val, next) {
+            var key=val.id;
+            var value=1;
+            if(val.desc)
+            {
+                value=-1;
+            }
+            columnSort[key]=value;
+        });
+    }
+    else{
+        columnSort["_id"]=-1;
+    }
 
     async.forEach(data.columnFilterEqual, function(val, next) {
         var key=val.id;

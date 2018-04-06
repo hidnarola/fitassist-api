@@ -119,6 +119,7 @@ recipe_helper.delete_recipes_by_id = async (recipes_id) => {
  *          status 2 - If filtered not found, with appropriate message
  */
 recipe_helper.get_filtered_records = async (filter_obj) => {
+    console.log(filter_obj);
     queryObj = {};
     if (filter_obj.columnFilter && filter_obj.columnFilter.length > 0) {
       queryObj = filter_obj.columnFilter;
