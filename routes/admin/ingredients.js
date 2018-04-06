@@ -11,9 +11,9 @@ var ingredients_helper = require("../../helpers/ingredient_helper");
 var common_helper = require("../../helpers/common_helper");
 
 /**
- * @api {post} /admin/ingredient/filter Ingredient Filter
- * @apiName Ingredient Ingredient Filter
- * @apiGroup Admin
+ * @api {post} /admin/ingredient/filter Filter
+ * @apiName Filter
+ * @apiGroup Ingredient
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -42,9 +42,9 @@ router.post("/filter", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/ingredient Ingredients - Get all
- * @apiName Ingredients - Get all
- * @apiGroup Admin
+ * @api {get} /admin/ingredient Get all
+ * @apiName Get all
+ * @apiGroup Ingredient
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
@@ -55,7 +55,7 @@ router.get("/", async (req, res) => {
   logger.trace("Get all Ingredients API called");
   var resp_data = await ingredients_helper.get_all_ingredients();
   if (resp_data.status == 0) {
-    logger.error("Error occured while Ingredients equipment = ", resp_data);
+    logger.error("Error occured while Ingredients  = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     logger.trace("Ingredients got successfully = ", resp_data);
@@ -64,14 +64,14 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/equipment/equipment_id Equipment - Get by ID
- * @apiName Equipment - Get equipment by ID
- * @apiGroup Admin
+ * @api {get} /admin/ingredient/ingredient_id Get by ID
+ * @apiName  - Get Ingredient by ID
+ * @apiGroup Ingredient
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * * @apiParam {String} equipment_id ID of equipment
+ * * @apiParam {String} ingredient_id ID of Ingredient
 
- * @apiSuccess (Success 200) {Object} equipment Object of equipment document
+ * @apiSuccess (Success 200) {Object} ingredient Object of Ingredient document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:ingredient_id", async (req, res) => {
@@ -88,9 +88,9 @@ router.get("/:ingredient_id", async (req, res) => {
 });
 
 /**
- * @api {post} /admin/ingredient Ingredient - Add
- * @apiName Ingredient Ingredient - Add
- * @apiGroup Admin
+ * @api {post} /admin/ingredient Add
+ * @apiName Add
+ * @apiGroup Ingredient
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -174,9 +174,9 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/ingredient/:ingredient_id Ingredient - Update
- * @apiName Ingredient Ingredient - Update
- * @apiGroup Admin
+ * @api {put} /admin/ingredient/:ingredient_id Update
+ * @apiName Update
+ * @apiGroup Ingredient
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -271,9 +271,9 @@ router.put("/:ingredient_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/equipment/:ingredient_id Ingredient Delete
- * @apiName Ingredient Delete
- * @apiGroup Admin
+ * @api {delete} /admin/ingredient/:ingredient_id Delete
+ * @apiName Delete
+ * @apiGroup Ingredient
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *

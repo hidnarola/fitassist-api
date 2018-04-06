@@ -12,9 +12,9 @@ var recipes_helper = require("../../helpers/recipes_helper");
 var common_helper = require("../../helpers/common_helper");
 
 /**
- * @api {post} /admin/recipes/filter Recipes Filter
- * @apiName Recipes Recipes Filter
- * @apiGroup Admin
+ * @api {post} /admin/recipes/filter Filter
+ * @apiName Filter
+ * @apiGroup Recipes
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -43,9 +43,9 @@ router.post("/filter", async (req, res) => {
   });
 
 /**
- * @api {get} /admin/recipes Recipes - Get all
- * @apiName Recipes - Get all
- * @apiGroup Admin
+ * @api {get} /admin/recipes Get all
+ * @apiName Get all
+ * @apiGroup Recipes
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} recipes Array of recipes document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -65,9 +65,9 @@ router.get("/", async (req, res) => {
 
   
 /**
- * @api {get} /admin/recipes/recipe_id Recipes - Get by ID
- * @apiName Recipes - Recipes by ID
- * @apiGroup Admin
+ * @api {get} /admin/recipes/recipe_id Get by ID
+ * @apiName Get by ID
+ * @apiGroup Recipes
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} recipe_id ID of Recipe
  * @apiSuccess (Success 200) {Array} recipe Array of Recipes document
@@ -86,9 +86,9 @@ router.get("/:recipe_id", async (req, res) => {
   }
 });
 /**
- * @api {post} /admin/recipes Recipes - Add
- * @apiName Recipes - Add
- * @apiGroup Admin
+ * @api {post} /admin/recipes Add
+ * @apiName Add
+ * @apiGroup Recipes
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of recipe
  * @apiParam {String} [description] description of recipe
@@ -186,9 +186,9 @@ router.post("/", async (req, res) => {
 
 });
 /**
- * @api {put} /admin/recipes Recipes - Add
- * @apiName Recipes - Add
- * @apiGroup Admin
+ * @api {put} /admin/recipes Add
+ * @apiName Add
+ * @apiGroup Recipes
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of recipe
  * @apiParam {String} [description] description of recipe
@@ -297,9 +297,9 @@ router.put("/:recipe_id", async (req, res) => {
 
 });
 /**
- * @api {delete} /admin/recipe/:recipe_id Recipes - Delete
- * @apiName Recipes - Delete  
- * @apiGroup Admin
+ * @api {delete} /admin/recipe/:recipe_id Delete
+ * @apiName Delete  
+ * @apiGroup Recipes
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {String} Success message

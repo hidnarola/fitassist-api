@@ -11,9 +11,9 @@ var logger = config.logger;
 var body_part_helper = require("../../helpers/body_parts_helper");
 
 /**
- * @api {get} /admin/bodypart Body Parts - Get all
- * @apiName Body Parts - Get all
- * @apiGroup Admin
+ * @api {get} /admin/bodypart Get all
+ * @apiName Get all
+ * @apiGroup  Body Parts
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} bodyparts Array of bodyparts document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -32,9 +32,9 @@ router.get("/", async (req, res) => {
   });
 
 /**
- * @api {get} /admin/bodypart/body_part_id Body Parts - Get by ID
+ * @api {get} /admin/bodypart/body_part_id Get by ID
  * @apiName Body Part - Body Parts by ID
- * @apiGroup Admin
+ * @apiGroup  Body Parts
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} body_part_id ID of Body part
  * @apiSuccess (Success 200) {Array} bodypart Array of Body part document
@@ -54,9 +54,9 @@ router.get("/:body_part_id", async (req, res) => {
 });
 
 /**
- * @api {post} /admin/bodypart Body Parts - Add
- * @apiName Body Parts - Add
- * @apiGroup Admin
+ * @api {post} /admin/bodypart  Add
+ * @apiName Add
+ * @apiGroup  Body Parts
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} bodypart Name of Body Part
@@ -93,9 +93,9 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/bodypart Body Parts - Update
- * @apiName Body Parts - Update
- * @apiGroup Admin
+ * @api {put} /admin/bodypart Update
+ * @apiName Update
+ * @apiGroup  Body Parts
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} bodypart Name of Body Part
  * @apiSuccess (Success 200) {Array} bodypart Array of bodypart document
@@ -133,9 +133,9 @@ router.put("/:body_part_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/bodypart/:body_part_id Body Parts - Delete
- * @apiName Body Parts - Delete  
- * @apiGroup Admin
+ * @api {delete} /admin/bodypart/:body_part_id Delete
+ * @apiName Delete  
+ * @apiGroup  Body Parts
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 

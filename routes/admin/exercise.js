@@ -13,9 +13,9 @@ var common_helper = require("../../helpers/common_helper");
 
 
 /**
- * @api {post} /admin/exercise/filter Exercise Filter
- * @apiName Exercise Exercise Filter
- * @apiGroup Admin
+ * @api {post} /admin/exercise/filter Filter
+ * @apiName Filter
+ * @apiGroup Exercise
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -45,9 +45,9 @@ router.post("/filter", async (req, res) => {
 
 
 /**
- * @api {get} /admin/exercise Exercise - Get all
- * @apiName Exercise - Get all
- * @apiGroup Admin
+ * @api {get} /admin/exercise Get all
+ * @apiName Get all
+ * @apiGroup Exercise
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
@@ -67,9 +67,9 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/exercise/exercise_id Exercise - Get by ID
- * @apiName Exercise - Get Exercise by ID
- * @apiGroup Admin
+ * @api {get} /admin/exercise/exercise_id Get by ID
+ * @apiName Get Exercise by ID
+ * @apiGroup Exercise
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * * @apiParam {String} exercise_id ID of Exercise
@@ -91,9 +91,9 @@ router.get("/:exercise_id", async (req, res) => {
 });
 
 /**
- * @api {post} /admin/exercise Exercise Add
- * @apiName Exercise Exercise Add
- * @apiGroup Admin
+ * @api {post} /admin/exercise Add
+ * @apiName Add
+ * @apiGroup Exercise
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -274,9 +274,9 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/exercise Exercise - Update
- * @apiName Exercise - Update
- * @apiGroup Admin
+ * @api {put} /admin/exercise Update
+ * @apiName Update
+ * @apiGroup Exercise
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name Name of Exercise
@@ -486,9 +486,9 @@ router.put("/:exercise_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/exercise/:exercise_id Exercise Delete
- * @apiName Exercise Delete
- * @apiGroup Admin
+ * @api {delete} /admin/exercise/:exercise_id Delete
+ * @apiName Delete
+ * @apiGroup Exercise
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *

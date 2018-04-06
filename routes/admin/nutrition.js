@@ -7,9 +7,9 @@ var logger = config.logger;
 var nutrition_helper = require('../../helpers/nutrition_helper');
 
 /**
- * @api {get} /admin/nutrition Nutrition - Get all
- * @apiName Nutrition - Get all
- * @apiGroup Admin
+ * @api {get} /admin/nutrition Get all
+ * @apiName Get all
+ * @apiGroup Nutrition
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
@@ -29,9 +29,9 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * @api {get} /admin/nutrition/:nutrition_id Nutrition - Get by ID
- * @apiName Nutrition - Get by ID
- * @apiGroup Admin
+ * @api {get} /admin/nutrition/:nutrition_id Get by ID
+ * @apiName Get by ID
+ * @apiGroup Nutrition
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
@@ -51,9 +51,9 @@ router.get('/:nutrition_id', async (req, res) => {
 });
 
 /**
- * @api {post} /admin/nutrition Nutrition Add
- * @apiName Nutrition Add
- * @apiGroup Admin
+ * @api {post} /admin/nutrition Add
+ * @apiName Add
+ * @apiGroup Nutrition
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -94,9 +94,9 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {put} /admin/nutrition/:nutrition_id Nutrition Update
- * @apiName Nutrition Update
- * @apiGroup Admin
+ * @api {put} /admin/nutrition/:nutrition_id Update
+ * @apiName Update
+ * @apiGroup Nutrition
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -167,9 +167,9 @@ router.put('/:nutrition_id', async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/nutrition/:nutrition_id Nutrition Delete
- * @apiName Nutrition Delete 
- * @apiGroup Admin
+ * @api {delete} /admin/nutrition/:nutrition_id Delete
+ * @apiName Delete 
+ * @apiGroup Nutrition
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 

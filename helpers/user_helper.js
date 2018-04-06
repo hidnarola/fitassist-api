@@ -150,34 +150,9 @@ user_helper.delete_user_by_id = async (user_id, user_obj) => {
  */
 user_helper.get_filtered_records = async (filter_obj) => {
     console.log(filter_obj);
-    queryObj = {};
-    if (filter_obj.columnFilter && filter_obj.columnFilter.length > 0) {
-      queryObj = filter_obj.columnFilter;
-    }
-  
-    equalTo = {};
-    if (filter_obj.columnFilterEqual && filter_obj.columnFilterEqual.length > 0) {
-      equalTo = filter_obj.columnFilterEqual;
-    }
     var skip = filter_obj.pageSize * filter_obj.page;
     try {
-      total_count = await User.count({}, function(err, cnt) {
-        return cnt;
-      });
-      // var filtered_data = await Exercise.find(queryObj).sort(filter_obj.columnSort).limit(filter_obj.pageSize).skip(skip).exec();
-  
-      var andFilterArr = [];
-      if (queryObj && queryObj.length > 0) {
-        andFilterArr.push({ $and: queryObj });
-      }
-  
-      if (equalTo && equalTo.length > 0) {
-        andFilterArr.push({ $and: equalTo });
-      }
-      var andFilterObj = {};
-      if (andFilterArr && andFilterArr.length > 0) {
-        andFilterObj = { $and: andFilterArr };
-      }
+      
       var searched_record_count = await User.aggregate([
         {
           $match: filter_object.columnFilter,

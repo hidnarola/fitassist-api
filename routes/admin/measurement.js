@@ -11,9 +11,9 @@ var logger = config.logger;
 var measurement_helper = require("../../helpers/measurement_helper");
 
 /**
- * @api {get} /admin/measurement Body Measurement - Get all
- * @apiName Body Measurement - Get all
- * @apiGroup Admin
+ * @api {get} /admin/measurement Get all
+ * @apiName Get all
+ * @apiGroup Measurement
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
@@ -33,9 +33,9 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/measurement/:measurement_by_id Body Measurement - Get by ID
- * @apiName Body Measurement -  - Get by ID
- * @apiGroup Admin
+ * @api {get} /admin/measurement/:measurement_by_id Get by ID
+ * @apiName Get by ID
+ * @apiGroup Measurement
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * * @apiParam {String} measurement_by_id ID of Body measurement
@@ -57,9 +57,9 @@ router.get("/:measurement_by_id", async (req, res) => {
 });
 
 /**
- * @api {post} /admin/measurement Body Measurement Add
- * @apiName Body Measurement - Add
- * @apiGroup Admin
+ * @api {post} /admin/measurement Add
+ * @apiName Add
+ * @apiGroup Measurement
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -128,9 +128,9 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/measurement/:measurement_id Body Measurement Update
- * @apiName Body Measurement - Update
- * @apiGroup Admin
+ * @api {put} /admin/measurement/:measurement_id Update
+ * @apiName Update
+ * @apiGroup Measurement
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} userId userId of User Collection
@@ -198,9 +198,9 @@ router.put("/:measurement_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/measurement/:measurement_id Body Measurement Delete
- * @apiName Body Measurement - Delete
- * @apiGroup Admin
+ * @api {delete} /admin/measurement/:measurement_id Delete
+ * @apiName Delete
+ * @apiGroup Measurement
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {String} Success message

@@ -7,9 +7,9 @@ var logger = config.logger;
 var equipment_category_helper = require('../../helpers/equipment_category_helper');
 
 /**
- * @api {get} /admin/equipment_category Equipment category - Get all
- * @apiName Equipment category - Get all
- * @apiGroup Admin
+ * @api {get} /admin/equipment_category Get all
+ * @apiName Get all
+ * @apiGroup Equipment category
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
@@ -29,9 +29,9 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * @api {post} /admin/equipment_category Equipment category Add
- * @apiName Equipment category Add
- * @apiGroup Admin
+ * @api {post} /admin/equipment_category Add
+ * @apiName  Add
+ * @apiGroup Equipment category
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -72,9 +72,9 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {put} /admin/equipment_category/:equipment_category_id Equipment category Update
- * @apiName Equipment category Update
- * @apiGroup Admin
+ * @api {put} /admin/equipment_category/:equipment_category_id Update
+ * @apiName Update
+ * @apiGroup Equipment category
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -145,9 +145,9 @@ router.put('/:equipment_category_id', async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/equipment_category/:equipment_category_id Equipment category Delete
- * @apiName Equipment category Delete 
- * @apiGroup Admin
+ * @api {delete} /admin/equipment_category/:equipment_category_id Delete
+ * @apiName Delete 
+ * @apiGroup Equipment category
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 

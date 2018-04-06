@@ -17,7 +17,7 @@ var common_helper = require("../../helpers/common_helper");
 /**
  * @api {post} /admin/user/filter User Filter
  * @apiName User User Filter
- * @apiGroup Admin
+ * @apiGroup User
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -47,7 +47,7 @@ router.post("/filter", async (req, res) => {
 /**
  * @api {get} /admin/user User - Get all
  * @apiName User - Get all
- * @apiGroup Admin
+ * @apiGroup User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} users Array of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -69,7 +69,7 @@ router.get("/", async (req, res) => {
 /**
  * @api {get} /admin/user/user_id User - Get by ID
  * @apiName User - Users by ID
- * @apiGroup Admin
+ * @apiGroup User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} user_id ID of User
  * @apiSuccess (Success 200) {Array} user Array of user document
@@ -92,7 +92,7 @@ router.get("/:user_id", async (req, res) => {
 /**
  * @api {put} /admin/user User - Update
  * @apiName User - Update
- * @apiGroup Admin
+ * @apiGroup User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} first_name First name of user
  * @apiParam {String} last_name Last name of user
@@ -236,7 +236,7 @@ router.put("/:user_id", async (req, res) => {
 /**
  * @api {delete} /admin/user/:user_id User - Delete
  * @apiName User - Delete  
- * @apiGroup Admin
+ * @apiGroup User
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {String} Success message

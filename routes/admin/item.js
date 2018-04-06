@@ -15,9 +15,9 @@ var common_helper = require("../../helpers/common_helper");
 
 
 /**
- * @api {post} /admin/item/filter Item Filter
- * @apiName Item Item Filter
- * @apiGroup Item
+ * @api {post} /admin/item/filter Filter
+ * @apiName Filter
+ * @apiGroup Items
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -45,8 +45,8 @@ router.post("/filter", async (req, res) => {
   });
 
 /**
- * @api {get} /admin/item Items - Get all
- * @apiName Items - Get all
+ * @api {get} /admin/item Get all
+ * @apiName Get all
  * @apiGroup Items
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} items Array of items document
@@ -67,8 +67,8 @@ router.get("/", async (req, res) => {
 
   
 /**
- * @api {get} /admin/item/item_id Items - Get item by ID
- * @apiName Items - Item by ID
+ * @api {get} /admin/item/item_id Get item by ID
+ * @apiName Item by ID
  * @apiGroup Items
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} item_id ID of item
@@ -90,8 +90,8 @@ router.get("/:item_id", async (req, res) => {
 
 
 /**
- * @api {post} /admin/item Items - Add
- * @apiName Items - Add
+ * @api {post} /admin/item Add
+ * @apiName Add
  * @apiGroup Items
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of item
@@ -167,8 +167,8 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/item Items - Update
- * @apiName Items - Update
+ * @api {put} /admin/item Update
+ * @apiName Update
  * @apiGroup Items
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of item
@@ -258,9 +258,9 @@ router.put("/:item_id", async (req, res) => {
 
 
 /**
- * @api {delete} /admin/item/:item_id Item - Delete
- * @apiName Item - Delete  
- * @apiGroup Item
+ * @api {delete} /admin/item/:item_id Delete
+ * @apiName Delete  
+ * @apiGroup Items
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {String} Success message

@@ -7,9 +7,9 @@ var logger = config.logger;
 var exercise_types_helper = require('../../helpers/exercise_types_helper');
 
 /**
- * @api {get} /admin/exercise_type Exercise Types - Get all
- * @apiName Exercise Type - Get all
- * @apiGroup Admin
+ * @api {get} /admin/exercise_type Get all
+ * @apiName Get all
+ * @apiGroup Exercise Type
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
@@ -29,9 +29,9 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * @api {post} /admin/exercise_type Exercise Types Add
- * @apiName Exercise Type Add
- * @apiGroup Admin
+ * @api {post} /admin/exercise_type Add
+ * @apiName Add
+ * @apiGroup Exercise Type
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -78,9 +78,9 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {put} /admin/exercise_type/:exercise_type_id Exercise Type Update
- * @apiName Exercise Type Update
- * @apiGroup Admin
+ * @api {put} /admin/exercise_type/:exercise_type_id Update
+ * @apiName Update
+ * @apiGroup Exercise Type
  * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -129,9 +129,9 @@ router.put('/:exercise_type_id', async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/exercise_type/:exercise_type_id Exercise Type Delete
- * @apiName Exercise Type Delete 
- * @apiGroup Admin
+ * @api {delete} /admin/exercise_type/:exercise_type_id Delete
+ * @apiName Delete 
+ * @apiGroup Exercise Type
  * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 

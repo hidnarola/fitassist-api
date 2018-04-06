@@ -11,9 +11,9 @@ var logger = config.logger;
 var equipment_helper = require("../../helpers/equipment_helper");
 
 /**
- * @api {get} /admin/equipment Equipment - Get all
- * @apiName Equipment - Get all
- * @apiGroup Admin
+ * @api {get} /admin/equipment Get all
+ * @apiName Get all
+ * @apiGroup Equipment
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
@@ -33,9 +33,9 @@ router.get("/", async (req, res) => {
   });
 
 /**
- * @api {get} /admin/equipment/equipment_id Equipment - Get by ID
- * @apiName Equipment - Get equipment by ID
- * @apiGroup Admin
+ * @api {get} /admin/equipment/equipment_id Get by ID
+ * @apiName Get equipment by ID
+ * @apiGroup Equipment
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * * @apiParam {String} equipment_id ID of equipment
@@ -57,9 +57,9 @@ router.get("/:equipment_id", async (req, res) => {
 });
 
 /**
- * @api {post} /admin/equipment Equipment Add
- * @apiName Equipment Equipment Add
- * @apiGroup Admin
+ * @api {post} /admin/equipment Add
+ * @apiName  Add
+ * @apiGroup Equipment
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -156,9 +156,9 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/equipment/:equipment_id Equipment Update
- * @apiName Equipment Update
- * @apiGroup Admin
+ * @api {put} /admin/equipment/:equipment_id Update
+ * @apiName Update
+ * @apiGroup Equipment
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -264,9 +264,9 @@ router.put("/:equipment_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/equipment/:equipment_id Equipment Delete
- * @apiName Equipment Delete
- * @apiGroup Admin
+ * @api {delete} /admin/equipment/:equipment_id Delete
+ * @apiName Delete
+ * @apiGroup Equipment
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
