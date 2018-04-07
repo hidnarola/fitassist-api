@@ -8,6 +8,8 @@ var IngredientSchema = new Schema({
     name: {type: String, required:true},
     description: {type: String, default:null},
     image: {type: String, default:null},
+    allowInShopList: {type: Boolean, default:true},
+    isDeleted: {type: Boolean, default:false},
     createdAt: {type: Date, default: Date.now},
     modifiedAt: {type: Date, default: Date.now}
 

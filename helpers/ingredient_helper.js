@@ -9,18 +9,25 @@ var ingredients_helper = {};
  *          status 2 - If ingrediens not found, with appropriate message
  */
 ingredients_helper.get_all_ingredients = async () => {
-    try {
-        var ingredients = await Ingredients.find();
-        if (ingredients) {
-            return { "status": 1, "message": "ingredients found", "ingredients": ingredients };
-        } else {
-            return { "status": 2, "message": "No ingredients available" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while finding ingredients", "error": err }
+  try {
+    var ingredients = await Ingredients.find();
+    if (ingredients) {
+      return {
+        status: 1,
+        message: "ingredients found",
+        ingredients: ingredients
+      };
+    } else {
+      return { status: 2, message: "No ingredients available" };
     }
-}
-
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding ingredients",
+      error: err
+    };
+  }
+};
 
 /*
  * get_ingredient_id is used to fetch ingredient by ID
@@ -29,18 +36,22 @@ ingredients_helper.get_all_ingredients = async () => {
  *          status 1 - If ingredient data found, with ingredient object
  *          status 2 - If ingredient data not found, with appropriate message
  */
-ingredients_helper.get_ingredient_id = async (id) => {
-    try {
-        var ingredient = await Ingredients.findOne({_id:id});
-        if (ingredient) {
-            return { "status": 1, "message": "ingredient found", "ingredient": ingredient };
-        } else {
-            return { "status": 2, "message": "No ingredient available" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while finding ingredient", "error": err }
+ingredients_helper.get_ingredient_id = async id => {
+  try {
+    var ingredient = await Ingredients.findOne({ _id: id });
+    if (ingredient) {
+      return { status: 1, message: "ingredient found", ingredient: ingredient };
+    } else {
+      return { status: 2, message: "No ingredient available" };
     }
-}
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding ingredient",
+      error: err
+    };
+  }
+};
 
 /*
  * insert_ingredient is used to insert into ingredients collection
@@ -52,15 +63,23 @@ ingredients_helper.get_ingredient_id = async (id) => {
  * 
  * @developed by "amc"
  */
-ingredients_helper.insert_ingredient = async (ingredient_obj) => {
-    console.log(ingredient_obj);
-    let ingredient = new Ingredients(ingredient_obj);
-    try {
-        let ingredient_data = await ingredient.save();
-        return { "status": 1, "message": "ingredient inserted", "ingredient": ingredient_data };
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting ingredient", "error": err };
-    }
+ingredients_helper.insert_ingredient = async ingredient_obj => {
+  console.log(ingredient_obj);
+  let ingredient = new Ingredients(ingredient_obj);
+  try {
+    let ingredient_data = await ingredient.save();
+    return {
+      status: 1,
+      message: "ingredient inserted",
+      ingredient: ingredient_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting ingredient",
+      error: err
+    };
+  }
 };
 
 /*
@@ -75,18 +94,33 @@ ingredients_helper.insert_ingredient = async (ingredient_obj) => {
  * 
  * @developed by "amc"
  */
-ingredients_helper.update_ingredient = async (ingredient_id, ingredient_obj) => {
-    console.log(ingredient_obj);
-    try {
-        let ingredient = await Ingredients.findOneAndUpdate({ _id: ingredient_id }, ingredient_obj, { new: true });
-        if (!ingredient) {
-            return { "status": 2, "message": "Record has not updated" };
-        } else {
-            return { "status": 1, "message": "Record has been updated", "ingredient": ingredient };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while updating ingredient", "error": err }
+ingredients_helper.update_ingredient = async (
+  ingredient_id,
+  ingredient_obj
+) => {
+  console.log(ingredient_obj);
+  try {
+    let ingredient = await Ingredients.findOneAndUpdate(
+      { _id: ingredient_id },
+      ingredient_obj,
+      { new: true }
+    );
+    if (!ingredient) {
+      return { status: 2, message: "Record has not updated" };
+    } else {
+      return {
+        status: 1,
+        message: "Record has been updated",
+        ingredient: ingredient
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating ingredient",
+      error: err
+    };
+  }
 };
 
 /*
@@ -99,19 +133,22 @@ ingredients_helper.update_ingredient = async (ingredient_id, ingredient_obj) => 
  * 
  * @developed by "amc"
  */
-ingredients_helper.delete_ingredient_by_id = async (ingredient_id) => {
+ingredients_helper.delete_ingredient_by_id = async ingredient_id => {
     try {
-        let resp = await Ingredients.findOneAndRemove({ _id: ingredient_id });
-        if (!resp) {
-            return { "status": 2, "message": "Ingredient not found" };
+        var ingredient_obj = 
+    {
+        "isDelete": 0,            
+    };
+        let ingredient = await Ingredients.findOneAndUpdate({ _id: ingredient_id }, ingredient_obj);
+        if (!ingredient) {
+            return { "status": 2, "message": "Record has not Deleted" };
         } else {
-            return { "status": 1, "message": "Ingredient deleted" };
+            return { "status": 1, "message": "Record has been Deleted"};
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting Ingredient", "error": err };
+        return { "status": 0, "message": "Error occured while deleting user", "error": err }
     }
-}
-
+};
 
 /*
  * get_filtered_records is used to fetch all filtered data
@@ -120,78 +157,46 @@ ingredients_helper.delete_ingredient_by_id = async (ingredient_id) => {
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message
  */
-ingredients_helper.get_filtered_records = async (filter_obj) => {
-    //console.log(filter_obj);
-    queryObj = {};
-    if (filter_obj.columnFilter && filter_obj.columnFilter.length > 0) {
-      queryObj = filter_obj.columnFilter;
-    }
-  
-    equalTo = {};
-    if (filter_obj.columnFilterEqual && filter_obj.columnFilterEqual.length > 0) {
-      equalTo = filter_obj.columnFilterEqual;
-    }
-    skip = filter_obj.pageSize * filter_obj.page;
-    try {
-      total_count = await Ingredients.count({}, function(err, cnt) {
-        return cnt;
-      });
-      // var filtered_data = await Exercise.find(queryObj).sort(filter_obj.columnSort).limit(filter_obj.pageSize).skip(skip).exec();
-  
-      var andFilterArr = [];
-      if (queryObj && queryObj.length > 0) {
-        andFilterArr.push({ $and: queryObj });
-      }
-  
-      if (equalTo && equalTo.length > 0) {
-        andFilterArr.push({ $and: equalTo });
-      }
-      var andFilterObj = {};
-      if (andFilterArr && andFilterArr.length > 0) {
-        andFilterObj = { $and: andFilterArr };
-      }
-       //var searched_record_count = await Ingredients.find(andFilterObj).count();
-      var searched_record_count = await Ingredients.aggregate([
-        {
-          $match: filter_object.columnFilter,
-        }
-      ]);
-    //   var filtered_data = await Ingredients.find(andFilterObj)
-    //     .sort(filter_obj.columnSort)
-    //     .limit(filter_obj.pageSize)
-    //     .skip(skip)
-    //     .exec();
+ingredients_helper.get_filtered_records = async filter_obj => {
+  //console.log(filter_obj);
 
-       var filtered_data = await Ingredients.aggregate([
+  skip = filter_obj.pageSize * filter_obj.page;
+  try {
+    var searched_record_count = await Ingredients.aggregate([
       {
-        $match: filter_object.columnFilter,
+        $match: filter_object.columnFilter
+      }
+    ]);
+
+    var filtered_data = await Ingredients.aggregate([
+      {
+        $match: filter_object.columnFilter
       },
       { $skip: skip },
       { $limit: filter_object.pageSize },
       { $sort: filter_obj.columnSort }
     ]);
 
-
-  
-      if (filtered_data) {
-        return {
-          status: 1,
-          message: "filtered data is found",
-          count: searched_record_count.length,
-          filtered_total_pages: Math.ceil(searched_record_count.length / filter_obj.pageSize),
-          filtered_ingredients: filtered_data
-        };
-      } else {
-        return { status: 2, message: "No filtered data available" };
-      }
-    } catch (err) {
+    if (filtered_data) {
       return {
-        status: 0,
-        message: "Error occured while filtering data",
-        error: err
+        status: 1,
+        message: "filtered data is found",
+        count: searched_record_count.length,
+        filtered_total_pages: Math.ceil(
+          searched_record_count.length / filter_obj.pageSize
+        ),
+        filtered_ingredients: filtered_data
       };
+    } else {
+      return { status: 2, message: "No filtered data available" };
     }
-  };
-
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while filtering data",
+      error: err
+    };
+  }
+};
 
 module.exports = ingredients_helper;

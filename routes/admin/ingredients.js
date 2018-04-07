@@ -96,6 +96,7 @@ router.get("/:ingredient_id", async (req, res) => {
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of Ingredient
  * @apiParam {String} [description] description of Ingredient
+ * @apiParam {Boolean} allowInShopList allowInShopList of Ingredient
  * @apiParam {File} [ingredient_img] image of Ingredient
  * @apiSuccess (Success 200) {JSON} ingredient ingredient details
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -113,7 +114,8 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var ingredient_obj = {
       name: req.body.name,
-      description: req.body.description ? req.body.description : null
+      description: req.body.description ? req.body.description : null,
+      allowInShopList: req.body.allowInShopList,
     };
 
     //image upload
@@ -182,6 +184,7 @@ router.post("/", async (req, res) => {
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of Ingredient
  * @apiParam {String} [description] description of Ingredient
+ * @apiParam {Boolean} allowInShopList allowInShopList of Ingredient
  * @apiParam {File} [ingredient_img] image of Ingredient
  * @apiSuccess (Success 200) {JSON} ingredient ingredient details
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -199,7 +202,8 @@ router.put("/:ingredient_id", async (req, res) => {
   if (!errors) {
     var ingredient_obj = {
       name: req.body.name,
-      description: req.body.description ? req.body.description : null
+      description: req.body.description ? req.body.description : null,
+      allowInShopList: req.body.allowInShopList,
     };
 
     //image upload
@@ -285,22 +289,20 @@ router.delete("/:ingredient_id", async (req, res) => {
   var resp_data = await ingredients_helper.get_ingredient_id(
     req.params.ingredient_id
   );
-  console.log(resp_data);
   let ingredient_data = await ingredients_helper.delete_ingredient_by_id(
     req.params.ingredient_id
   );
-  console.log(resp_data);
 
   if (ingredient_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(ingredient_data);
   } else {
-    try {
-      if (resp_data.ingredient.image != null) {
-        fs.unlink(resp_data.ingredient.image, function() {
-          console.log("image is deleted");
-        });
-      }
-    } catch (err) {}
+    // try {
+    //   if (resp_data.ingredient.image != null) {
+    //     fs.unlink(resp_data.ingredient.image, function() {
+    //       console.log("image is deleted");
+    //     });
+    //   }
+    // } catch (err) {}
 
     res.status(config.OK_STATUS).json(ingredient_data);
   }

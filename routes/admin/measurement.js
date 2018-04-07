@@ -38,8 +38,6 @@ router.get("/", async (req, res) => {
  * @apiGroup Measurement
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * * @apiParam {String} measurement_by_id ID of Body measurement
-
  * @apiSuccess (Success 200) {Array} measurement Array of body_measurement document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
