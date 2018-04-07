@@ -189,11 +189,6 @@ exercise_helper.get_filtered_records = async filter_obj => {
       {
         $unwind: "$detailedMuscle"
       },
-      //  {
-      //      $match:{
-      //             "otherMuscle.bodypart":"Upper Legs"
-      //          }
-      //  },
       {
         $match: filter_object.columnFilter
       },
@@ -205,6 +200,8 @@ exercise_helper.get_filtered_records = async filter_obj => {
         otherMuscle: { "$push": "$otherMuscle" },
         detailedMuscle: { "$push": "$detailedMuscle" },
         mainMuscle: { "$push": "$mainMuscle" },
+        mainMuscle: { "$push": "$mainMuscle" },
+
     }},
     
       { $sort: filter_obj.columnSort },
