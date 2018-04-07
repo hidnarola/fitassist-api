@@ -151,6 +151,8 @@ exercise_helper.get_filtered_records = async (filter_obj) => {
       var searched_record_count = await Exercise.find(andFilterObj).count();
   
       var filtered_data = await Exercise.aggregate([
+        { $unwind: "$otherMuscleGroup" },
+        { $unwind: "$detailedMuscleGroup" }, 
         {
             $lookup:
               {
@@ -158,6 +160,24 @@ exercise_helper.get_filtered_records = async (filter_obj) => {
                 localField: "mainMuscleGroup",
                 foreignField: "_id",
                 as: "mainMuscle"
+              }
+         },
+         {
+            $lookup:
+              {
+                from: "bodyparts",
+                localField: "otherMuscleGroup",
+                foreignField: "_id",
+                as: "otherMuscle"
+              }
+         },
+         {
+            $lookup:
+              {
+                from: "bodyparts",
+                localField: "detailedMuscleGroup",
+                foreignField: "_id",
+                as: "detailedMuscle"
               }
          },
          
