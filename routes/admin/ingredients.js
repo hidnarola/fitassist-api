@@ -110,6 +110,7 @@ router.post("/", async (req, res) => {
   };
 
   req.checkBody(schema);
+  
   var errors = req.validationErrors();
   if (!errors) {
     var ingredient_obj = {

@@ -18,7 +18,6 @@ var UserSchema = new Schema({
     goal: [{type: String, enum:['Gain Muscle','Gain Flexibility','Lose Fat','Gain Strength','Gain Power','Increase Endurance']}],
     avatar: {type: String},
     aboutMe: {type: String},
-    favRecipes: [mongoose.Schema.Types.ObjectId],
     status: {type:Number, default:1},
     isDelete: {type:Boolean, default:0},
     refreshToken: {type: String},

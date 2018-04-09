@@ -4320,10 +4320,10 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "Array",
+            "type": "Enum-Array",
             "optional": true,
             "field": "goal",
-            "description": "<p>goal</p>"
+            "description": "<p>goal | Possible Values ('Gain Muscle', 'Gain Flexibility', 'Lose Fat', 'Gain Strength', 'Gain Power', 'Increase Endurance')</p>"
           },
           {
             "group": "Parameter",
@@ -4338,13 +4338,6 @@ define({ "api": [
             "optional": true,
             "field": "aboutMe",
             "description": "<p>aboutMe</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Array",
-            "optional": false,
-            "field": "favRecipes",
-            "description": "<p>favRecipes</p>"
           },
           {
             "group": "Parameter",
