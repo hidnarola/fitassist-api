@@ -204,9 +204,6 @@ exercise_helper.get_filtered_records = async filter_obj => {
       {
         $unwind: "$type"
       },
-      {
-        $match: filter_object.columnFilter
-      },
       
       {
         $group: {
@@ -228,6 +225,9 @@ exercise_helper.get_filtered_records = async filter_obj => {
           type: { $first: "$type" }
         }
       },
+      {
+        $match: filter_object.columnFilter
+      },      
       { $skip: skip },
       { $limit: filter_object.pageSize },
       { $sort: filter_obj.columnSort }
