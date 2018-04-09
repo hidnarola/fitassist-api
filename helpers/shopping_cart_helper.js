@@ -2,7 +2,7 @@ var ShoppingCart = require("./../models/shopping_cart");
 var shopping_cart_helper = {};
 
 /*
- * get_all_shopping is used to fetch all shopping cart data
+ * get_all_shoppingcart is used to fetch all shopping cart data
  * 
  * @return  status 0 - If any internal error occured while fetching shopping cart data, with error
  *          status 1 - If shopping cart data found, with shopping cart object
@@ -11,11 +11,11 @@ var shopping_cart_helper = {};
  * @developed by "amc"
 
  */
-shopping_cart_helper.get_all_shopping = async () => {
+shopping_cart_helper.get_all_shoppingcart = async () => {
     try {
         var shopping_cart = await ShoppingCart.find();
         if (shopping_cart) {
-            return { "status": 1, "message": "shopping cart found", "shopping_cart": shopping_cart };
+            return { "status": 1, "message": "shopping cart found", "shopping_carts": shopping_cart };
         } else {
             return { "status": 2, "message": "No shopping cart available" };
         }

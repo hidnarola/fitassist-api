@@ -3741,7 +3741,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/admin/shppingcart",
+    "url": "/admin/shoppingcart",
     "title": "Add",
     "name": "Add",
     "group": "Shopping_Cart",
@@ -3772,8 +3772,22 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "bodypart",
-            "description": "<p>Name of Body Part</p>"
+            "field": "itemId",
+            "description": "<p>ingredients  ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "qty",
+            "description": "<p>Quantity of ingredients</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>User ID</p>"
           }
         ]
       }
@@ -3785,8 +3799,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "bodypart",
-            "description": "<p>added Bodypart detail</p>"
+            "field": "shopping_cart",
+            "description": "<p>added shoppingcart detail</p>"
           }
         ]
       }
@@ -3805,74 +3819,12 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shppingcart.js",
-    "groupTitle": "Shopping_Cart"
-  },
-  {
-    "type": "get",
-    "url": "/admin/shppingcart/shopping_cart_id",
-    "title": "Get by ID",
-    "name": "Body_Parts_by_ID",
-    "group": "Shopping_Cart",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "shopping_cart_id",
-            "description": "<p>ID of Body part</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "bodypart",
-            "description": "<p>Array of Body part document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/shppingcart.js",
+    "filename": "routes/admin/shoppingcart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
     "type": "delete",
-    "url": "/admin/shppingcart/:shopping_cart_id",
+    "url": "/admin/shoppingcart/:shopping_cart_id",
     "title": "Delete",
     "name": "Delete",
     "group": "Shopping_Cart",
@@ -3916,12 +3868,12 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shppingcart.js",
+    "filename": "routes/admin/shoppingcart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
     "type": "get",
-    "url": "/admin/shppingcart",
+    "url": "/admin/shoppingcart",
     "title": "Get all",
     "name": "Get_all",
     "group": "Shopping_Cart",
@@ -3945,8 +3897,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "bodyparts",
-            "description": "<p>Array of bodyparts document</p>"
+            "field": "shopping_carts",
+            "description": "<p>Array of shoppingcart document</p>"
           }
         ]
       }
@@ -3965,18 +3917,74 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shppingcart.js",
+    "filename": "routes/admin/shoppingcart.js",
+    "groupTitle": "Shopping_Cart"
+  },
+  {
+    "type": "get",
+    "url": "/admin/shoppingcart/shopping_cart_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "Shopping_Cart",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "shopping_cart",
+            "description": "<p>Array of shoppingcart document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/shoppingcart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
     "type": "put",
-    "url": "/admin/shppingcart",
+    "url": "/admin/shoppingcart",
     "title": "Update",
     "name": "Update",
     "group": "Shopping_Cart",
     "header": {
       "fields": {
         "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
           {
             "group": "Header",
             "type": "String",
@@ -3994,8 +4002,22 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "bodypart",
-            "description": "<p>Name of Body Part</p>"
+            "field": "itemId",
+            "description": "<p>ingredients  ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "qty",
+            "description": "<p>Quantity of ingredients</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>User ID</p>"
           }
         ]
       }
@@ -4005,10 +4027,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Array",
+            "type": "JSON",
             "optional": false,
-            "field": "bodypart",
-            "description": "<p>Array of bodypart document</p>"
+            "field": "shopping_cart",
+            "description": "<p>updated shoppingcart detail</p>"
           }
         ]
       }
@@ -4027,7 +4049,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shppingcart.js",
+    "filename": "routes/admin/shoppingcart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
