@@ -94,7 +94,7 @@ router.get("/:user_id", async (req, res) => {
  * @apiParam {Number} [mobileNumber] mobileNumber
  * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
  * @apiParam {Date} [dateOfBirth] Date of Birth
- * @apiParam {Enum-Array} [goal] goal | Possible Values ('Gain Muscle', 'Gain Flexibility', 'Lose Fat', 'Gain Strength', 'Gain Power', 'Increase Endurance')
+ * @apiParam {Enum-Array} [goal] goal | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')
  * @apiParam {File} [user_img] avatar
  * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {Boolean} status status
@@ -132,15 +132,15 @@ router.put("/:user_id", async (req, res) => {
     },
     goal: {
       notEmpty: true,
-      isIn: {
+      matches: {
         options: [
           [
-            "Gain Muscle",
-            "Gain Flexibility",
-            "Lose Fat",
-            "Gain Strength",
-            "Gain Power",
-            "Increase Endurance"
+            "gain_muscle",
+            "gain_flexibility",
+            "lose_fat",
+            "gain_strength",
+            "gain_power",
+            "increase_endurance"
           ]
         ],
         errorMessage: "Goal can be from Enum"
@@ -256,6 +256,28 @@ router.delete("/:user_id", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(userdata);
   } else {
     res.status(config.OK_STATUS).json(userdata);
+  }
+});
+
+/**
+ * @api {post} /admin/user/checkemail User - Check Unique
+ * @apiName Email - Check Unique
+ * @apiGroup User
+ *
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiParam {String} email email to be check uniqueness
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/checkemail", async (req, res) => {
+  logger.trace("Get check email API called");
+  var resp_data = await user_helper.check_email_uniqueness(req.body.email);
+  if (resp_data.status == 0) {
+    logger.error("Error occured while checking email uniqueness  = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Email is Unique found successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

@@ -3206,6 +3206,333 @@
   },
   {
     "type": "post",
+    "url": "/admin/nutrition_preferences",
+    "title": "Add",
+    "name": "Add",
+    "group": "Nutrition_Preferences",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>userId of User</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "dietaryRestrictedRecipieTypes",
+            "description": "<p>| Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "recipieDifficulty",
+            "description": "<p>recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "maxRecipieTime",
+            "description": "<p>Description [{dayDrive : enum, time : 'value'}] | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>nutrition_preference details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/nutrition_preferences.js",
+    "groupTitle": "Nutrition_Preferences"
+  },
+  {
+    "type": "delete",
+    "url": "/admin/nutrition_preferences/:nutrition_preferences_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "Nutrition_Preferences",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/nutrition_preferences.js",
+    "groupTitle": "Nutrition_Preferences"
+  },
+  {
+    "type": "get",
+    "url": "/admin/nutrition_preferences",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "Nutrition_Preferences",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "nutrition_preferences",
+            "description": "<p>Array of nutrition_preferences 's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/nutrition_preferences.js",
+    "groupTitle": "Nutrition_Preferences"
+  },
+  {
+    "type": "get",
+    "url": "/admin/nutrition_preferences/:nutrition_preferences_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "Nutrition_Preferences",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>nutrition_preferences's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/nutrition_preferences.js",
+    "groupTitle": "Nutrition_Preferences"
+  },
+  {
+    "type": "put",
+    "url": "/admin/nutrition_preferences/:nutrition_preferences_id",
+    "title": "Update",
+    "name": "Update",
+    "group": "Nutrition_Preferences",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>userId of User</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "dietaryRestrictedRecipieTypes",
+            "description": "<p>| Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "recipieDifficulty",
+            "description": "<p>recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "maxRecipieTime",
+            "description": "<p>Description [{dayDrive : enum, time : 'value'}] | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>nutrition_preference details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/nutrition_preferences.js",
+    "groupTitle": "Nutrition_Preferences"
+  },
+  {
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -4054,6 +4381,68 @@
   },
   {
     "type": "post",
+    "url": "/admin/user/checkemail",
+    "title": "User - Check Unique",
+    "name": "Email___Check_Unique",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>email to be check uniqueness</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "post",
     "url": "/admin/user/filter",
     "title": "User Filter",
     "name": "User_User_Filter",
@@ -4323,7 +4712,7 @@
             "type": "Enum-Array",
             "optional": true,
             "field": "goal",
-            "description": "<p>goal | Possible Values ('Gain Muscle', 'Gain Flexibility', 'Lose Fat', 'Gain Strength', 'Gain Power', 'Increase Endurance')</p>"
+            "description": "<p>goal | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
           },
           {
             "group": "Parameter",

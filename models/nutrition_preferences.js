@@ -1,12 +1,35 @@
 //Require Mongoose
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 
 //Define a schema
 var Schema = mongoose.Schema;
 
-var NutritionPreferenceSchema = new Schema({
-    userId: {type: mongoose.Schema.Types.ObjectId, ref: "users", required: true},
-    dietaryRestrictedRecipieTypes: [{
+var maxRecipieTimeSchema = new Schema({
+  dayDrive: {
+    type: String,
+    enum: ["breakfast", "lunch", "dinner", "Snacks"],
+    required: true
+  },
+  time: { type: Number, default: null }
+});
+
+var nutritionTargetsSchema = new Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  start: { type: Number, default: null },
+  end: { type: Number, default: null }
+});
+var NutritionPreferenceSchema = new Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: true
+    },
+    dietaryRestrictedRecipieTypes: [
+      {
         type: String,
         enum: [
           "vegetarian",
@@ -19,27 +42,36 @@ var NutritionPreferenceSchema = new Schema({
           "pescaterian"
         ],
         required: true
-      }],
-      recipieDifficulty: [{
+      }
+    ],
+    recipieDifficulty: [
+      {
         type: String,
         enum: ["easy", "medium", "hard"],
         required: true
-      }],
-      maxRecipieTime: [{
-        type: String,
-        enum: ["easy", "medium", "hard"],
-        required: true
-      }],
-    experienceLevel: {type: Number},
-    workoutLocation: {type: String},
-    excludeExercise : [{type: mongoose.Schema.Types.ObjectId}],
-    excludeExerciseType : [{type: mongoose.Schema.Types.ObjectId}],
-    exerciseInjuries : [{type: mongoose.Schema.Types.ObjectId}],
-    createdAt: {type: Date, default: Date.now},
-    modifiedAt: {type: Date, default: Date.now}
-}, {versionKey: false});
+      }
+    ],
+    maxRecipieTime: [maxRecipieTimeSchema],
+    nutritionTargets: [nutritionTargetsSchema],
+    excludeIngredients: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ingredients",
+        default: null
+      }
+    ],
+
+    createdAt: { type: Date, default: Date.now },
+    modifiedAt: { type: Date, default: Date.now }
+  },
+  { versionKey: false }
+);
 
 // Compile model from schema
-var Exercise_preference = mongoose.model('nutritionpreference', NutritionPreferenceSchema, 'nutritionpreference');
+var Nutrition_preference = mongoose.model(
+  "nutrition_preferences",
+  NutritionPreferenceSchema,
+  "nutrition_preferences"
+);
 
-module.exports = Exercise_preference;
+module.exports = Nutrition_preference;

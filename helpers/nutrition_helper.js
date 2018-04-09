@@ -21,6 +21,13 @@ nutrition_helper.get_all_nutrition = async () => {
     }
 }
 
+/*
+ * get_nutrition_by_id is used to fetch get_nutrition by ID
+ * 
+ * @return  status 0 - If any internal error occured while fetching nutrition data, with error
+ *          status 1 - If nutrition data found, with nutrition object
+ *          status 2 - If nutrition data not found, with appropriate message
+ */
 nutrition_helper.get_nutrition_by_id = async (nutrition_id) => {
     try {
         let resp = await Nutrition.findOne({ _id: nutrition_id });
