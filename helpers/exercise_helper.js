@@ -194,19 +194,25 @@ exercise_helper.get_filtered_records = async filter_obj => {
       },
       { $skip: skip },
       { $limit: filter_object.pageSize },
-      { $group: {
-        _id: "$_id",
-        // cols:filter_object.columnFilter,
-        otherMuscle: { "$push": "$otherMuscle" },
-        detailedMuscle: { "$push": "$detailedMuscle" },
-        mainMuscle: { "$push": "$mainMuscle" },
-        mainMuscle: { "$push": "$mainMuscle" },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $push: "$name" },
+          // cols:filter_object.columnFilter,
+          otherMuscle: { $push: "$otherMuscle" },
+          detailedMuscle: { $push: "$detailedMuscle" },
+          mainMuscle: { $push: "$mainMuscle" },
+          name: { $first: "$name" },
+          description: { $first: "$description" },
+          mainMuscleGroup: { $first: "$mainMuscleGroup" },
+          mechanics: { $first: "$mechanics" },
+          difficltyLevel: { $first: "$difficltyLevel" },
+          measures: { $first: "$measures" },
+          type: { $first: "$type" },
+        }
+      },
 
-    }},
-    
-      { $sort: filter_obj.columnSort },
-      
-   
+      { $sort: filter_obj.columnSort }
     ]);
 
     if (filtered_data) {

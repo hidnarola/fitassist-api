@@ -15,6 +15,7 @@ var body_measurement = require("./admin/measurement");
 var user = require("./admin/users");
 var ingredient = require("./admin/ingredients");
 var recipes = require("./admin/recipes");
+var shppingcart = require("./admin/shppingcart");
 // var item = require("./admin/item");
 
 router.use("/nutrition", auth, authorization, nutrition);
@@ -28,6 +29,7 @@ router.use("/measurement", auth, authorization, body_measurement);
 router.use("/user", auth, authorization, user);
 router.use("/ingredient", auth, authorization, ingredient);
 router.use("/recipes", auth, authorization, recipes);
+router.use("/shppingcart", auth, authorization, shppingcart);
 // router.use("/item", auth, authorization, item);
 
 
