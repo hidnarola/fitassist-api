@@ -221,7 +221,7 @@ exercise_helper.get_filtered_records = async filter_obj => {
           name: { $first: "$name" },
           description: { $first: "$description" },
           mainMuscleGroup: { $first: "$mainMuscleGroup" },
-          otherMuscleGroup: { $first: "$otherMuscleGroup" },
+          otherMuscleGroup: { $addToSet: "$otherMuscleGroup" },
           mechanics: { $first: "$mechanics" },
           difficltyLevel: { $first: "$difficltyLevel" },
           measures: { $first: "$measures" },
