@@ -193,6 +193,17 @@ exercise_helper.get_filtered_records = async filter_obj => {
         $unwind: "$detailedMuscle"
       },
       {
+        $lookup: {
+          from: "exercise_types",
+          localField: "type",
+          foreignField: "_id",
+          as: "type"
+        }
+      },
+      {
+        $unwind: "$type"
+      },
+      {
         $match: filter_object.columnFilter
       },
       { $skip: skip },
@@ -204,6 +215,7 @@ exercise_helper.get_filtered_records = async filter_obj => {
           // cols:filter_object.columnFilter,
           otherMuscle: { $addToSet: "$otherMuscle" },
           detailedMuscle: { $addToSet: "$detailedMuscle" },
+          type: { $addToSet: "$type" },
           mainMuscle: { $first: "$mainMuscle" },
           name: { $first: "$name" },
           description: { $first: "$description" },
