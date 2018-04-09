@@ -20,6 +20,16 @@ var NutritionPreferenceSchema = new Schema({
         ],
         required: true
       }],
+      recipieDifficulty: [{
+        type: String,
+        enum: ["easy", "medium", "hard"],
+        required: true
+      }],
+      maxRecipieTime: [{
+        type: String,
+        enum: ["easy", "medium", "hard"],
+        required: true
+      }],
     experienceLevel: {type: Number},
     workoutLocation: {type: String},
     excludeExercise : [{type: mongoose.Schema.Types.ObjectId}],

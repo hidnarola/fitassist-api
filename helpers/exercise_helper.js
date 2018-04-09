@@ -149,6 +149,7 @@ exercise_helper.delete_exercise_by_id = async exercise_id => {
  *          status 2 - If filtered not found, with appropriate message
  */
 exercise_helper.get_filtered_records = async filter_obj => {
+  console.log(filter_obj);
   skip = filter_obj.pageSize * filter_obj.page;
   try {
     var searched_record_count = await Exercise.aggregate([
@@ -206,8 +207,7 @@ exercise_helper.get_filtered_records = async filter_obj => {
       {
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
+      
       {
         $group: {
           _id: "$_id",
@@ -226,9 +226,11 @@ exercise_helper.get_filtered_records = async filter_obj => {
           type: { $first: "$type" }
         }
       },
-
+      { $skip: skip },
+      { $limit: filter_object.pageSize },
       { $sort: filter_obj.columnSort }
     ]);
+
 
     if (filtered_data) {
       return {
