@@ -170,7 +170,7 @@ router.put('/:exercise_type_id', async (req, res) => {
         if (req.body.description) {
             exercise_type_obj.description = req.body.description;
         }
-        if (req.body.status) {
+        if (typeof req.body.status !== 'undefined' && req.body.status>=0) {
             exercise_type_obj.status = req.body.status;
         }
 
