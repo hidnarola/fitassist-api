@@ -65,12 +65,11 @@ app.use(function(req, res, next) {
 var static_data = require("./routes/static");
 var index = require("./routes/index");
 var admin = require("./routes/admin");
-var users = require("./routes/users");
+var user = require("./routes/user");
 
 app.use("/", index);
 app.use("/", static_data);
-// app.use('/user', user);
-app.use("/admin", admin);
+app.use('/user', user);
 app.use("/admin", admin);
 
 // error handlers
