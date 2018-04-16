@@ -32,7 +32,5 @@ var nutrition_preferences = require("./user/nutrition_preferences");
 router.use("/measurement", auth, authorization, body_measurement);
 router.use("/nutrition_preferences", auth, authorization, nutrition_preferences);
 
-var body_measurement = require("./user/measurement");
-var nutrition_preference = require("./user/nutrition_preferences");
 
 module.exports = router;
