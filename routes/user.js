@@ -4,10 +4,11 @@ var router = express.Router();
 var auth = require("./../middlewares/auth");
 var authorization = require("./../middlewares/authorization");
 
-var nutrition = require("./admin/nutrition");
+
+var body_measurement = require("./user/measurement");
 
 
-router.use("/nutrition", auth, authorization, nutrition);
+router.use("/measurement", auth, authorization, body_measurement);
 
 
 
