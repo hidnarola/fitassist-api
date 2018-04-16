@@ -9,6 +9,39 @@ var config = require("../../config");
 var logger = config.logger;
 
 var equipment_helper = require("../../helpers/equipment_helper");
+var common_helper = require("../../helpers/common_helper");
+
+
+
+/**
+ * @api {post} /admin/equipment/filter Filter
+ * @apiName Filter
+ * @apiGroup Equipment
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * 
+ * @apiParam {Object} columnFilter columnFilter Object for filter data
+ * @apiParam {Object} columnSort columnSort Object for Sorting Data
+ * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
+ * @apiParam {Number} pageSize pageSize
+ * @apiParam {Number} page page number
+ * @apiSuccess (Success 200) {JSON} filtered_equipments filtered details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+
+router.post("/filter", async (req, res) => {
+  
+    filter_object = common_helper.changeObject(req.body);
+    let filtered_data = await equipment_helper.get_filtered_records(filter_object);
+    if (filtered_data.status === 0) {
+      logger.error("Error while fetching searched data = ", filtered_data);
+      return res.status(config.BAD_REQUEST).json({ filtered_data });
+    } else {
+      return res.status(config.OK_STATUS).json(filtered_data);
+    }
+  });
+  
 
 /**
  * @api {get} /admin/equipment Get all
@@ -291,5 +324,7 @@ router.delete("/:equipment_id", async (req, res) => {
     res.status(config.OK_STATUS).json(equipment_data);
   }
 });
+
+
 
 module.exports = router;
