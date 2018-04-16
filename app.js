@@ -62,6 +62,20 @@ app.use(function(req, res, next) {
   }
 });
 
+const authCheck = jwt({
+  secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        // YOUR-AUTH0-DOMAIN name e.g prosper.auth0.com
+        jwksUri: "https://{YOUR-AUTH0-DOMAIN}/.well-known/jwks.json"
+    }),
+    // This is the identifier we set when we created the API
+    audience: '{YOUR-API-AUDIENCE-ATTRIBUTE}',
+    issuer: '{YOUR-AUTH0-DOMAIN}',
+    algorithms: ['RS256']
+});
+
 var static_data = require("./routes/static");
 var index = require("./routes/index");
 var admin = require("./routes/admin");

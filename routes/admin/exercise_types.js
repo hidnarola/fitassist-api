@@ -143,6 +143,7 @@ router.post('/', async (req, res) => {
  * 
  * @apiParam {String} name Exercise type name
  * @apiParam {String} description Exercise type description
+ * @apiParam {Boolean} status status of Exercise type  
  * 
  * @apiSuccess (Success 200) {JSON} exercise_type Exercise Type details
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -169,6 +170,10 @@ router.put('/:exercise_type_id', async (req, res) => {
         if (req.body.description) {
             exercise_type_obj.description = req.body.description;
         }
+        if (req.body.status) {
+            exercise_type_obj.status = req.body.status;
+        }
+
 
         let exercise_type_data = await exercise_types_helper.update_exercise_type_by_id(req.params.exercise_type_id, exercise_type_obj);
         if (exercise_type_data.status === 0) {

@@ -7,6 +7,7 @@ var Schema = mongoose.Schema;
 var ExerciseTypes = new Schema({
     name: {type: String, required:true},
     description: {type: String, required:false},
+    status: {type: Number, default:1},
     createdAt: {type: Date, default: Date.now},
     modifiedAt: {type: Date, default: Date.now}
 }, {versionKey: false});

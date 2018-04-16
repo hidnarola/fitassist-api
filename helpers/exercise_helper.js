@@ -76,7 +76,6 @@ exercise_helper.insert_exercise = async exercise_object => {
 
 /*
  * update_exercise_by_id is used to update exercise data based on exercise_id
- * 
  * @param   exercise_id         String  _id of exercise that need to be update
  * @param   exercise_object     JSON    object consist of all property that need to update
  * 
@@ -86,10 +85,7 @@ exercise_helper.insert_exercise = async exercise_object => {
  * 
  * @developed by "amc"
  */
-exercise_helper.update_exercise_by_id = async (
-  exercise_id,
-  exercise_object
-) => {
+exercise_helper.update_exercise_by_id = async (exercise_id,exercise_object) => {
   try {
     let exercise = await Exercise.findOneAndUpdate(
       { _id: exercise_id },
