@@ -6,41 +6,20 @@ var logger = config.logger;
 
 var nutrition_preferences_helper = require('../../helpers/nutrition_preferences_helper');
 
-/**
- * @api {get} /admin/nutrition_preferences Get all
- * @apiName Get all
- * @apiGroup Nutrition Preferences
- * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
- * @apiSuccess (Success 200) {Array} nutrition_preferences Array of nutrition_preferences 's document
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get('/', async (req, res) => {
-    logger.trace("Get all nutrition_preferences API called");
-    var resp_data = await nutrition_preferences_helper.get_all_nutrition_preferences();
-    if(resp_data.status == 0){
-        logger.error("Error occured while fetching nutrition preferences = ",resp_data)
-        res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-        logger.trace("Nutrition Preferences got successfully = ",resp_data);
-        res.status(config.OK_STATUS).json(resp_data);
-    }
-});
 
 /**
- * @api {get} /admin/nutrition_preferences/:nutrition_preferences_id Get by ID
- * @apiName Get by ID
+ * @api {get} /user/nutrition_preferences/:userid Get by User ID
+ * @apiName Get by User ID
  * @apiGroup Nutrition Preferences
  * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiHeader {String}  x-access-token user's unique access-key
  * 
  * @apiSuccess (Success 200) {Array} nutrition_preference nutrition_preferences's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get('/:nutrition_preferences_id', async (req, res) => {
-    logger.trace("Get nutrition preference by ID API called : ",req.params.nutrition_preferences_id);
-    var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_id(req.params.nutrition_preferences_id);
+router.get('/:userid', async (req, res) => {
+    logger.trace("Get nutrition preference by ID API called : ",req.params.userid);
+    var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_user_id(req.params.userid);
     if(resp_data.status == 0){
         logger.error("Error occured while fetching nutrition preference = ",resp_data)
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -51,12 +30,12 @@ router.get('/:nutrition_preferences_id', async (req, res) => {
 });
 
 /**
- * @api {post} /admin/nutrition_preferences Add
+ * @api {post} /user/nutrition_preferences Add
  * @apiName Add
  * @apiGroup Nutrition Preferences
  * 
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiHeader {String}  x-access-token user's unique access-key
  * 
  * @apiParam {String} userId userId of User
  * @apiParam {Enum-Array} dietaryRestrictedRecipieTypes | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
@@ -102,12 +81,12 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @api {put} /admin/nutrition_preferences/:nutrition_preferences_id Update
+ * @api {put} /user/nutrition_preferences/:nutrition_preferences_id Update
  * @apiName Update
  * @apiGroup Nutrition Preferences
  * 
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiHeader {String}  x-access-token user's unique access-key
  * 
  * @apiParam {String} userId userId of User
  * @apiParam {Enum-Array} dietaryRestrictedRecipieTypes | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
@@ -158,11 +137,11 @@ router.put('/:nutrition_preferences_id', async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/nutrition_preferences/:nutrition_preferences_id Delete
+ * @api {delete} /user/nutrition_preferences/:nutrition_preferences_id Delete
  * @apiName Delete 
  * @apiGroup Nutrition Preferences
  * 
- * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiHeader {String}  x-access-token user's unique access-key
  * 
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.

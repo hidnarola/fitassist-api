@@ -1915,6 +1915,13 @@ define({ "api": [
             "optional": false,
             "field": "description",
             "description": "<p>Exercise type description</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>status of Exercise type</p>"
           }
         ]
       }
@@ -3107,7 +3114,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/admin/measurement/userid/:measurement_by_userid",
+    "url": "/admin/measurement/userid/:user_id",
     "title": "Get by User ID",
     "name": "Get_by_User_ID",
     "group": "Measurement",
@@ -3131,7 +3138,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "measurement",
+            "field": "measurements",
             "description": "<p>Array of body_measurement document</p>"
           }
         ]
@@ -3660,6 +3667,13 @@ define({ "api": [
             "group": "Parameter",
             "type": "Array",
             "optional": false,
+            "field": "nutritionTargets",
+            "description": "<p>nutritionTargets  [title:{title},start:{start value},end:{end value}]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
             "field": "maxRecipieTime",
             "description": "<p>Description [{dayDrive : enum, time : 'value'}] | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
           }
@@ -3892,6 +3906,13 @@ define({ "api": [
             "optional": false,
             "field": "recipieDifficulty",
             "description": "<p>recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "nutritionTargets",
+            "description": "<p>nutritionTargets  [title:{title},start:{start value},end:{end value}]</p>"
           },
           {
             "group": "Parameter",
@@ -5064,22 +5085,15 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "first_name",
+            "field": "firstName",
             "description": "<p>First name of user</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "last_name",
+            "field": "lastName",
             "description": "<p>Last name of user</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "username",
-            "description": "<p>Username</p>"
           },
           {
             "group": "Parameter",
@@ -5113,8 +5127,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "Enum-Array",
             "optional": true,
-            "field": "goal",
-            "description": "<p>goal | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
+            "field": "goals",
+            "description": "<p>goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
           },
           {
             "group": "Parameter",

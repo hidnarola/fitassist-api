@@ -43,6 +43,26 @@ measurement_helper.get_body_measurement_id = async (id) => {
 }
 
 /*
+ * get_body_measurement_by_userid is used to fetch bodymeasurement by userID
+ * 
+ * @return  status 0 - If any internal error occured while fetching bodymeasurement data, with error
+ *          status 1 - If bodymeasurement data found, with bodymeasurement object
+ *          status 2 - If bodymeasurement not found, with appropriate message
+ */
+measurement_helper.get_body_measurement_by_userid = async (id) => {
+    try {
+        var measurement = await Measurement.find(id);
+        if (measurement) {
+            return { "status": 1, "message": "measurement found", "measurements": measurement };
+        } else {
+            return { "status": 2, "message": "No measurement available" };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while finding measurement", "error": err }
+    }
+}
+
+/*
  * insert_body_measurement is used to insert into body_measurement collection
  * 
  * @param   measurement_object     JSON object consist of all property that need to insert in collection
