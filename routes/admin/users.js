@@ -87,14 +87,13 @@ router.get("/:user_id", async (req, res) => {
  * @apiName User - Update
  * @apiGroup User
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} first_name First name of user
- * @apiParam {String} last_name Last name of user
- * @apiParam {String} username Username
+ * @apiParam {String} firstName First name of user
+ * @apiParam {String} lastName Last name of user
  * @apiParam {String} email Email address
  * @apiParam {Number} [mobileNumber] mobileNumber
  * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
  * @apiParam {Date} [dateOfBirth] Date of Birth
- * @apiParam {Enum-Array} [goal] goal | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')
+ * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')
  * @apiParam {File} [user_img] avatar
  * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {Boolean} status status
@@ -105,17 +104,13 @@ router.put("/:user_id", async (req, res) => {
   user_id = req.params.user_id;
 
   var schema = {
-    first_name: {
+    firstName: {
       notEmpty: true,
       errorMessage: "First name is required"
     },
-    last_name: {
+    lastName: {
       notEmpty: true,
       errorMessage: "Last name is required"
-    },
-    username: {
-      notEmpty: true,
-      errorMessage: "Username is required"
     },
     email: {
       notEmpty: true,
@@ -130,30 +125,26 @@ router.put("/:user_id", async (req, res) => {
       },
       errorMessage: "Gender is required"
     },
-    goal: {
-      notEmpty: true,
-      matches: {
-        options: [
-          [
-            "gain_muscle",
-            "gain_flexibility",
-            "lose_fat",
-            "gain_strength",
-            "gain_power",
-            "increase_endurance"
-          ]
-        ],
-        errorMessage: "Goal can be from Enum"
-      },
-      errorMessage: "Goal is required"
-    },
-    aboutme: {
+    // goals: {
+    //   notEmpty: true,
+    //   matches: {
+    //     options: [
+    //       [
+    //         "gain_muscle",
+    //         "gain_flexibility",
+    //         "lose_fat",
+    //         "gain_strength",
+    //         "gain_power",
+    //         "increase_endurance"
+    //       ]
+    //     ],
+    //     errorMessage: "goals can be from Enum"
+    //   },
+    //   errorMessage: "goals is required"
+    // },
+    aboutMe: {
       notEmpty: true,
       errorMessage: "About me is required"
-    },
-    status: {
-      notEmpty: true,
-      errorMessage: "Status is required"
     }
   };
   req.checkBody(schema);
@@ -161,15 +152,16 @@ router.put("/:user_id", async (req, res) => {
 
   if (!errors) {
     var user_obj = {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      username: req.body.username,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
       email: req.body.email,
       mobileNumber: req.body.mobileNumber,
       gender: req.body.gender,
+      height: req.body.height,
+      weight: req.body.weight,
       dateOfBirth: req.body.dateOfBirth,
-      goal: JSON.parse(req.body.goal),
-      aboutMe: req.body.aboutme,
+      goals: req.body.goals,
+      aboutMe: req.body.aboutMe,
       status: req.body.status
     };
 

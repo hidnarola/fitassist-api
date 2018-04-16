@@ -42,6 +42,26 @@ nutrition_preferences_helper.get_nutrition_preference_by_id = async (nutrition_p
 }
 
 /*
+ * get_nutrition_preference_by_user_id is used to fetch get_nutrition_preference by ID
+ * 
+ * @return  status 0 - If any internal error occured while fetching nutrition_preference data, with error
+ *          status 1 - If nutrition_preference data found, with nutrition_preference object
+ *          status 2 - If nutrition_preference data not found, with appropriate message
+ */
+nutrition_preferences_helper.get_nutrition_preference_by_user_id = async (userid) => {
+    try {
+        let resp = await NutritionPreferences.find({ userId: userid });
+        if (!resp) {
+            return { "status": 2, "message": "Nutrition Preferences not found" };
+        } else {
+            return { "status": 1, "message": "Nutrition Preferences found", "nutrition_preference":resp };
+        }
+    } catch(err){
+        return {"status":0,"error":err};
+    }
+}
+
+/*
  * insert_nutrition_preference is used to insert into nutrition_preferences collection
  * 
  * @param   nutrition_preferences_object     JSON object consist of all property that need to insert in collection

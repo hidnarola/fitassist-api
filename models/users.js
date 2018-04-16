@@ -8,7 +8,6 @@ var SALT_WORK_FACTOR = 10;
 
 var UserSchema = new Schema(
   {
-    
     authUserId: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -23,8 +22,8 @@ var UserSchema = new Schema(
     },
     dateOfBirth: { type: Date, default: null },
     height: { type: Number, default: 0 },
-    weight	: { type: Number, default: 0 },
-    goal: [
+    weight: { type: Number, default: 0 },
+    goals: [
       {
         type: String,
         enum: [
@@ -37,6 +36,11 @@ var UserSchema = new Schema(
         ]
       }
     ],
+    workoutLocation: {
+      type: String,
+      enum: ["gym", "home"],
+      default: "gym"
+    },
     avatar: { type: String },
     aboutMe: { type: String },
     status: { type: Number, default: 1 },
