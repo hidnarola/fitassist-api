@@ -1915,6 +1915,13 @@
             "optional": false,
             "field": "description",
             "description": "<p>Exercise type description</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>status of Exercise type</p>"
           }
         ]
       }
@@ -3107,7 +3114,7 @@
   },
   {
     "type": "get",
-    "url": "/admin/measurement/userid/:measurement_by_userid",
+    "url": "/admin/measurement/userid/:user_id",
     "title": "Get by User ID",
     "name": "Get_by_User_ID",
     "group": "Measurement",
@@ -3131,7 +3138,7 @@
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "measurement",
+            "field": "measurements",
             "description": "<p>Array of body_measurement document</p>"
           }
         ]

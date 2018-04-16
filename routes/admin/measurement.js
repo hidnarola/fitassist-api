@@ -85,18 +85,18 @@ router.get("/:measurement_by_id", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/measurement/userid/:measurement_by_userid Get by User ID
+ * @api {get} /admin/measurement/userid/:user_id Get by User ID
  * @apiName Get by User ID
  * @apiGroup Measurement
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {Array} measurement Array of body_measurement document
+ * @apiSuccess (Success 200) {Array} measurements Array of body_measurement document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/userid/:measurement_by_userid", async (req, res) => {
-  measurement_by_userid = req.params.measurement_by_userid;
+router.get("/userid/:user_id", async (req, res) => {
+  user_id = req.params.user_id;
   logger.trace("Get all measurement API called");
-  var resp_data = await measurement_helper.get_body_measurement_id({userId:measurement_by_userid});
+  var resp_data = await measurement_helper.get_body_measurement_by_userid({userId:user_id});
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching get_body_measurement_by_userid = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
