@@ -1,6 +1,9 @@
 var express = require("express");
+
 const jwt = require('express-jwt');
-const jwks = require('jwks-rsa');
+const jwtAuthz = require('express-jwt-authz');
+const jwksRsa = require('jwks-rsa');
+
 var path = require("path");
 var fs = require("fs");
 
@@ -64,19 +67,22 @@ app.use(function(req, res, next) {
   }
 });
 
-const authCheck = jwt({
-  secret: jwks.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        // YOUR-AUTH0-DOMAIN name e.g prosper.auth0.com
-        jwksUri: "https://{YOUR-AUTH0-DOMAIN}/.well-known/jwks.json"
-    }),
-    // This is the identifier we set when we created the API
-    audience: '{YOUR-API-AUDIENCE-ATTRIBUTE}',
-    issuer: '{YOUR-AUTH0-DOMAIN}',
-    algorithms: ['RS256']
+
+
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://fitassist.eu.auth0.com/.well-known/jwks.json`
+  }),
+
+  // Validate the audience and the issuer.
+  audience: 'https://fitassist.eu.auth0.com/api/v2/',
+  issuer: `https://fitassist.eu.auth0.com/`,
+  algorithms: ['RS256']
 });
+
 
 var static_data = require("./routes/static");
 var index = require("./routes/index");
