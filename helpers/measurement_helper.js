@@ -31,7 +31,7 @@ measurement_helper.get_all_measurement = async () => {
  */
 measurement_helper.get_body_measurement_id = async (id) => {
     try {
-        var measurement = await Measurement.findOne({_id:id});
+        var measurement = await Measurement.findOne(id);
         if (measurement) {
             return { "status": 1, "message": "measurement found", "measurement": measurement };
         } else {
@@ -109,5 +109,53 @@ measurement_helper.delete_measurement_by_id = async (body_measurement_id) => {
         return { "status": 0, "message": "Error occured while deleting Measurement", "error": err };
     }
 }
+
+/*
+ * get_filtered_records is used to fetch all filtered data
+ * 
+ * @return  status 0 - If any internal error occured while fetching filtered data, with error
+ *          status 1 - If filtered data found, with filtered object
+ *          status 2 - If filtered not found, with appropriate message
+ */
+measurement_helper.get_filtered_records = async filter_obj => {
+  
+    skip = filter_obj.pageSize * filter_obj.page;
+    try {
+      var searched_record_count = await Measurement.aggregate([
+        {
+          $match: filter_object.columnFilter
+        }
+      ]);
+  
+      var filtered_data = await Measurement.aggregate([
+        {
+          $match: filter_object.columnFilter
+        },
+        { $skip: skip },
+        { $limit: filter_object.pageSize },
+        { $sort: filter_obj.columnSort }
+      ]);
+  
+      if (filtered_data) {
+        return {
+          status: 1,
+          message: "filtered data is found",
+          count: searched_record_count.length,
+          filtered_total_pages: Math.ceil(
+            searched_record_count.length / filter_obj.pageSize
+          ),
+          filtered_measurements: filtered_data
+        };
+      } else {
+        return { status: 2, message: "No filtered data available" };
+      }
+    } catch (err) {
+      return {
+        status: 0,
+        message: "Error occured while filtering data",
+        error: err
+      };
+    }
+  };
 
 module.exports = measurement_helper;

@@ -62,7 +62,7 @@ exercise_types_helper.insert_exercise_type = async (exercise_types_object) => {
     let Exercise_type = new Exercise_types(exercise_types_object);
     try {
         let exercise_types_data = await Exercise_type.save();
-        return { "status": 1, "message": "Exercise Types inserted", "equipment": exercise_types_data };
+        return { "status": 1, "message": "Exercise Types inserted", "Exercise_types": exercise_types_data };
     } catch (err) {
         return { "status": 0, "message": "Error occured while inserting Exercise Types", "error": err };
     }
@@ -116,4 +116,53 @@ exercise_types_helper.delete_exercise_type_by_id = async (exercise_type_id) => {
     }
 }
 
+
+
+/*
+ * get_filtered_records is used to fetch all filtered data
+ * 
+ * @return  status 0 - If any internal error occured while fetching filtered data, with error
+ *          status 1 - If filtered data found, with filtered object
+ *          status 2 - If filtered not found, with appropriate message
+ */
+exercise_types_helper.get_filtered_records = async filter_obj => {
+  
+    skip = filter_obj.pageSize * filter_obj.page;
+    try {
+      var searched_record_count = await Exercise_types.aggregate([
+        {
+          $match: filter_object.columnFilter
+        }
+      ]);
+  
+      var filtered_data = await Exercise_types.aggregate([
+        {
+          $match: filter_object.columnFilter
+        },
+        { $skip: skip },
+        { $limit: filter_object.pageSize },
+        { $sort: filter_obj.columnSort }
+      ]);
+  
+      if (filtered_data) {
+        return {
+          status: 1,
+          message: "filtered data is found",
+          count: searched_record_count.length,
+          filtered_total_pages: Math.ceil(
+            searched_record_count.length / filter_obj.pageSize
+          ),
+          filtered_exercise_types: filtered_data
+        };
+      } else {
+        return { status: 2, message: "No filtered data available" };
+      }
+    } catch (err) {
+      return {
+        status: 0,
+        message: "Error occured while filtering data",
+        error: err
+      };
+    }
+  };
 module.exports = exercise_types_helper;

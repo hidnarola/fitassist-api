@@ -5,6 +5,37 @@ var config = require('../../config');
 var logger = config.logger;
 
 var exercise_types_helper = require('../../helpers/exercise_types_helper');
+var common_helper = require('../../helpers/common_helper');
+
+
+/**
+ * @api {post} /admin/exercise_type/filter Filter
+ * @apiName Filter
+ * @apiGroup Exercise Type
+ * 
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * 
+ * @apiParam {Object} columnFilter columnFilter Object for filter data
+ * @apiParam {Object} columnSort columnSort Object for Sorting Data
+ * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
+ * @apiParam {Number} pageSize pageSize
+ * @apiParam {Number} page page number
+ * @apiSuccess (Success 200) {JSON} filtered_exercise_types filtered details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+
+router.post("/filter", async (req, res) => {
+  
+    filter_object = common_helper.changeObject(req.body);
+    let filtered_data = await exercise_types_helper.get_filtered_records(filter_object);
+    if (filtered_data.status === 0) {
+      logger.error("Error while fetching searched data = ", filtered_data);
+      return res.status(config.BAD_REQUEST).json({ filtered_data });
+    } else {
+      return res.status(config.OK_STATUS).json(filtered_data);
+    }
+  });
 
 /**
  * @api {get} /admin/exercise_type Get all
@@ -27,6 +58,31 @@ router.get('/', async (req, res) => {
         res.status(config.OK_STATUS).json(resp_data);
     }
 });
+
+/**
+ * @api {get} /admin/exercise_type/exercise_type_id Get by ID
+ * @apiName Get Exercise Type by ID
+ * @apiGroup Exercise Type
+ *
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * * @apiParam {String} exercise_id ID of Exercise
+
+ * @apiSuccess (Success 200) {Array} exercise_type Array of exercise_type document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/:exercise_type_id", async (req, res) => {
+    exercise_type_id = req.params.exercise_type_id;
+    logger.trace("Get all exercise_type API called");
+    var resp_data = await exercise_types_helper.get_exercise_type_id(exercise_type_id);
+    if (resp_data.status == 0) {
+      logger.error("Error occured while fetching exercise_type = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      logger.trace("exercise_type got successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    }
+  });
+  
 
 /**
  * @api {post} /admin/exercise_type Add
