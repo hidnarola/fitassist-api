@@ -1,4 +1,6 @@
 var express = require("express");
+const jwt = require('express-jwt');
+const jwks = require('jwks-rsa');
 var path = require("path");
 var fs = require("fs");
 
