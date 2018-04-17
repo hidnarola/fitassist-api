@@ -43,6 +43,7 @@ var ExerciseSchema = new Schema(
       required: true
     },
     steps: { type: Array, required: false, default: [] },
+    tips: { type: Array, required: false, default: [] },
     images: { type: Array, required: false, default: [] },
     measures: {
       type: String,

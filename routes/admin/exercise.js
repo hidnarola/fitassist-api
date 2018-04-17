@@ -11,15 +11,14 @@ var logger = config.logger;
 var exercise_helper = require("../../helpers/exercise_helper");
 var common_helper = require("../../helpers/common_helper");
 
-
 /**
  * @api {post} /admin/exercise/filter Filter
  * @apiName Filter
  * @apiGroup Exercise
- * 
+ *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
+ *
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
@@ -30,7 +29,6 @@ var common_helper = require("../../helpers/common_helper");
  */
 
 router.post("/filter", async (req, res) => {
-  
   filter_object = common_helper.changeObject(req.body);
   let filtered_data = await exercise_helper.get_filtered_records(filter_object);
   if (filtered_data.status === 0) {
@@ -40,9 +38,6 @@ router.post("/filter", async (req, res) => {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
 });
-
-
-
 
 /**
  * @api {get} /admin/exercise Get all
@@ -108,6 +103,7 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
  * @apiParam {Array} [steps] Steps of Exercise
+ * @apiParam {Array} [tips] tips of Exercise
  * @apiParam {Files} [images] Images of Exercise
  * @apiParam {Enum} [measures] Measures of Exercise
  
@@ -115,38 +111,21 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
-router.post("/", async (req, res) => {  
+router.post("/", async (req, res) => {
   console.log(req.files);
 
-    
   var schema = {
     name: {
       notEmpty: true,
       errorMessage: "Name is required"
     },
-    description: {
-      notEmpty: false,
-      errorMessage: "Description is required"
-    },
     mainMuscleGroup: {
       notEmpty: true,
       errorMessage: "mainMuscleGroup is required"
     },
-    otherMuscleGroup: {
-      notEmpty: false,
-      errorMessage: "otherMuscleGroup is required"
-    },
-    detailedMuscleGroup: {
-      notEmpty: true,
-      errorMessage: "detailedMuscleGroup is required"
-    },
     type: {
       notEmpty: true,
       errorMessage: "type	 is required"
-    },
-    mechanics: {
-      notEmpty: false,
-      errorMessage: "mechanics is required"
     },
     equipments: {
       notEmpty: true,
@@ -155,20 +134,9 @@ router.post("/", async (req, res) => {
     difficltyLevel: {
       notEmpty: true,
       errorMessage: "difficltyLevel is required"
-    },
-    steps: {
-      notEmpty: false,
-      errorMessage: "steps is required"
-    },
-    image: {
-      notEmpty: false,
-      errorMessage: "image is required"
-    },
-    measures: {
-      notEmpty: false,
-      errorMessage: "measures is required"
     }
   };
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
@@ -179,13 +147,14 @@ router.post("/", async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       mainMuscleGroup: req.body.mainMuscleGroup,
-      otherMuscleGroup: JSON.parse(req.body.otherMuscleGroup),
-      detailedMuscleGroup: JSON.parse(req.body.detailedMuscleGroup),
+      otherMuscleGroup: req.body.otherMuscleGroup ? JSON.parse(req.body.otherMuscleGroup) : null,
+      detailedMuscleGroup:  req.body.detailedMuscleGroup ? JSON.parse(req.body.detailedMuscleGroup) : null,
       type: req.body.type,
       mechanics: req.body.mechanics,
-      equipments: JSON.parse(req.body.equipments),
+      equipments: req.body.equipments ? JSON.parse(req.body.equipments) : null,
       difficltyLevel: req.body.difficltyLevel,
-      steps: JSON.parse(req.body.steps),
+      steps: req.body.steps ? JSON.parse(req.body.steps) : null,
+      tips: req.body.tips ? JSON.parse(req.body.tips) : null,
       measures: req.body.measures
     };
 
@@ -289,6 +258,7 @@ router.post("/", async (req, res) => {
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
  * @apiParam {Array} [steps] Steps of Exercise
+ * @apiParam {Array} [tips] tips of Exercise
  * @apiParam {Array} [delete_images] Path of all images to be delete
  * @apiParam {File} [images] New Images of Exercise
  * @apiParam {Enum} [measures] Measures of Exercise
@@ -296,36 +266,19 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:exercise_id", async (req, res) => {
-
   // return res.send({"after delete":new_img_path_list});
   var schema = {
     name: {
       notEmpty: true,
       errorMessage: "Name is required"
     },
-    description: {
-      notEmpty: false,
-      errorMessage: "Description is required"
-    },
     mainMuscleGroup: {
       notEmpty: true,
       errorMessage: "mainMuscleGroup is required"
     },
-    otherMuscleGroup: {
-      notEmpty: false,
-      errorMessage: "otherMuscleGroup is required"
-    },
-    detailedMuscleGroup: {
-      notEmpty: true,
-      errorMessage: "detailedMuscleGroup is required"
-    },
     type: {
       notEmpty: true,
       errorMessage: "type	 is required"
-    },
-    mechanics: {
-      notEmpty: false,
-      errorMessage: "mechanics is required"
     },
     equipments: {
       notEmpty: true,
@@ -334,18 +287,6 @@ router.put("/:exercise_id", async (req, res) => {
     difficltyLevel: {
       notEmpty: true,
       errorMessage: "difficltyLevel is required"
-    },
-    steps: {
-      notEmpty: false,
-      errorMessage: "steps is required"
-    },
-    image: {
-      notEmpty: false,
-      errorMessage: "image is required"
-    },
-    measures: {
-      notEmpty: false,
-      errorMessage: "measures is required"
     }
   };
 
@@ -359,20 +300,20 @@ router.put("/:exercise_id", async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       mainMuscleGroup: req.body.mainMuscleGroup,
-      otherMuscleGroup: JSON.parse(req.body.otherMuscleGroup),
-      detailedMuscleGroup: JSON.parse(req.body.detailedMuscleGroup),
+      otherMuscleGroup: req.body.otherMuscleGroup ? JSON.parse(req.body.otherMuscleGroup) : null,
+      detailedMuscleGroup:  req.body.detailedMuscleGroup ? JSON.parse(req.body.detailedMuscleGroup) : null,
       type: req.body.type,
       mechanics: req.body.mechanics,
-      equipments: JSON.parse(req.body.equipments),
+      equipments: req.body.equipments ? JSON.parse(req.body.equipments) : null,
       difficltyLevel: req.body.difficltyLevel,
-      steps: JSON.parse(req.body.steps),
+      steps: req.body.steps ? JSON.parse(req.body.steps) : null,
+      tips: req.body.tips ? JSON.parse(req.body.tips) : null,
       measures: req.body.measures
     };
     exercise_id = req.params.exercise_id;
 
     var resp_data = await exercise_helper.get_exercise_id(exercise_id);
     new_img_path_list = resp_data["exercise"]["images"];
-    
 
     async.waterfall(
       [
@@ -386,24 +327,22 @@ router.put("/:exercise_id", async (req, res) => {
               var index = new_img_path_list.indexOf(element);
 
               if (index > -1) {
-                
-             fs.unlink(element,function(){
-              console.log("Image deleted: "+element);
-             });
-       
+                fs.unlink(element, function() {
+                  console.log("Image deleted: " + element);
+                });
+
                 new_img_path_list.splice(index, 1);
               }
             });
           }
-          callback(null,new_img_path_list)
+          callback(null, new_img_path_list);
         },
-        function(new_img_path_list,callback) {
+        function(new_img_path_list, callback) {
           //image upload
           var file_path_array = new_img_path_list;
           //console.log(new_img_path_list);
           if (req.files && req.files["images"] && req.files != null) {
-
-              console.log('hey');
+            console.log("hey");
             // var files = req.files['images'];
             var files = [].concat(req.files.images);
 
@@ -497,10 +436,9 @@ router.put("/:exercise_id", async (req, res) => {
  */
 router.delete("/:exercise_id", async (req, res) => {
   logger.trace("Delete Exercise API - Id = ", req.query.id);
-  
+
   var resp_data = await exercise_helper.get_exercise_id(req.params.exercise_id);
-  images= resp_data.exercise.images;
-  
+  images = resp_data.exercise.images;
 
   let exercise_data = await exercise_helper.delete_exercise_by_id(
     req.params.exercise_id
@@ -508,16 +446,14 @@ router.delete("/:exercise_id", async (req, res) => {
   if (exercise_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
   } else {
-    images= resp_data.exercise.images;
+    images = resp_data.exercise.images;
     images.forEach(image => {
-      fs.unlink(image,function(){
-        console.log("Image "+image+" is deleted")
+      fs.unlink(image, function() {
+        console.log("Image " + image + " is deleted");
       });
     });
     res.status(config.OK_STATUS).json(exercise_data);
   }
 });
-
-
 
 module.exports = router;

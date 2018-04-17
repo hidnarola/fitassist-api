@@ -218,19 +218,15 @@ user_helper.get_filtered_records = async filter_obj => {
  *          status 1 - If email unique, with email
  *          status 2 - If email unique not found, with appropriate message
  */
-user_helper.check_email_uniqueness = async email => {
+user_helper.check_email = async email => {
   try {
     var count = await User.find({ email: email }).count();
-    console.log(count);
     if (count == 0) {
-      console.log("email is not exist");
-      return { status: 1, message: "Email is not exists" };
+      return { status: 1, message: "Email is not exists", count: count  };
     } else if (count == 1) {
-      console.log("email usniq");
-      return { status: 1, message: "Email is Unique" };
+      return { status: 1, message: "Email is Unique", count: count  };
     } else {
-      console.log("email not usniq");
-      return { status: 2, message: "Email is not Unique", data: count };
+      return { status: 2, message: "Email is not Unique", count: count };
     }
   } catch (err) {
     return {
