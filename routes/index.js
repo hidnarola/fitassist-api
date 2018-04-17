@@ -352,11 +352,11 @@ router.get("/auth0_user_sync", async (req, res) => {
   logger.trace("API - auth0_user_sync called");
   logger.debug("req.body = ", req.body);
 
-  if (typeof req.headers.authorization !== "undefined") {
+  if (typeof req.headers["x-access-token"] !== "undefined") {
     var options = {
       url: "https://fitassist.eu.auth0.com/userinfo",
       headers: {
-        authorization: req.headers.authorization
+        authorization: req.headers["x-access-token"]
       }
     };
 
@@ -374,11 +374,14 @@ router.get("/auth0_user_sync", async (req, res) => {
         console.log(user_obj);
         var user_data = await user_helper.insert_user(user_obj);
         res.status(config.OK_STATUS).json(user_data);
+      } else {
+        res.status(config.OK_STATUS).json({ message: "Email already exists" });
       }
+    } else {
+      res.status(config.OK_STATUS).json({ message: "Auth Server Error" });
     }
-  }
-  else{
-    res.status(config.OK_STATUS).json({message:"authorization missing"});
+  } else {
+    res.status(config.OK_STATUS).json({ message: "authorization missing" });
   }
 });
 
