@@ -13,8 +13,6 @@ var UserSchema = new Schema(
     lastName: { type: String },
     email: { type: String, required: true, unique: true },
     mobileNumber: { type: String },
-    username: { type: String, unique: true },
-    password: { type: String },
     gender: {
       type: String,
       enum: ["male", "female", "transgender"],
@@ -45,9 +43,6 @@ var UserSchema = new Schema(
     aboutMe: { type: String },
     status: { type: Number, default: 1 },
     isDelete: { type: Boolean, default: 0 },
-    refreshToken: { type: String },
-    lastLoginDate: { type: Date },
-    passwordChangedDate: { type: Date },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },
