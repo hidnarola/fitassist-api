@@ -352,29 +352,34 @@ router.get("/auth0_user_sync", async (req, res) => {
   logger.trace("API - auth0_user_sync called");
   logger.debug("req.body = ", req.body);
 
-  var options = {
-    url: "https://fitassist.eu.auth0.com/userinfo",
-    headers: {
-      authorization: req.headers.authorization
-    }
-  };
+  if (typeof req.headers.authorization !== "undefined") {
+    var options = {
+      url: "https://fitassist.eu.auth0.com/userinfo",
+      headers: {
+        authorization: req.headers.authorization
+      }
+    };
 
-  var response = await request(options);
-  var response = JSON.parse(response);
-  if (response.email && typeof response.email !== "undefined") {
-    let data = await user_helper.check_email(response.email);
-    if (data.count <= 0) {
-      var user_obj = {
-        authUserId: response.sub,
-        firstName: response.name,
-        email: response.email,
-        avatar:response.picture
-      };
-      console.log(user_obj);
-      var user_data = await user_helper.insert_user(user_obj);
-      res.status(config.OK_STATUS).json(user_data);
+    var response = await request(options);
+    var response = JSON.parse(response);
+    if (response.email && typeof response.email !== "undefined") {
+      let data = await user_helper.check_email(response.email);
+      if (data.count <= 0) {
+        var user_obj = {
+          authUserId: response.sub,
+          firstName: response.name,
+          email: response.email,
+          avatar: response.picture
+        };
+        console.log(user_obj);
+        var user_data = await user_helper.insert_user(user_obj);
+        res.status(config.OK_STATUS).json(user_data);
+      }
     }
-    }
+  }
+  else{
+    res.status(config.OK_STATUS).json({message:"authorization missing"});
+  }
 });
 
 module.exports = router;
