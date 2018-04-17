@@ -42,7 +42,7 @@ var UserSchema = new Schema(
     avatar: { type: String },
     aboutMe: { type: String },
     status: { type: Number, default: 1 },
-    isDelete: { type: Boolean, default: 0 },
+    isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },
