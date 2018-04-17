@@ -1,9 +1,6 @@
 var express = require("express");
 var router = express.Router();
-
-var auth = require("./../middlewares/auth");
-var authorization = require("./../middlewares/authorization");
-
+var auth = require("../middlewares/user_auth");
 
 // var nutrition = require("./user/nutrition");
 // var equipment_category = require("./user/equipment_category");
@@ -29,8 +26,7 @@ var nutrition_preferences = require("./user/nutrition_preferences");
 // router.use("/ingredient", auth, authorization, ingredient);
 // router.use("/recipes", auth, authorization, recipes);
 // router.use("/shoppingcart", auth, authorization, shoppingcart);
-router.use("/measurement", auth, authorization, body_measurement);
-router.use("/nutrition_preferences", auth, authorization, nutrition_preferences);
-
+router.use("/measurement", auth, body_measurement);
+router.use("/nutrition_preferences", auth, nutrition_preferences);
 
 module.exports = router;

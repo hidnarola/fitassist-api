@@ -322,26 +322,12 @@ router.post('/user_signup', async (req, res) => {
       logger.debug("Error = ",user_data.error);
       res.status(config.INTERNAL_SERVER_ERROR).json(user_data);
     } else {
+      
       logger.trace("User has been inserted");
-      var measurement_obj = {
-        'userId': user_data.user._id,
-        'logDate':moment(),
-        'height':req.body.height,
-        'weight':req.body.weight
-      };
-      let measurement_data = await measurement_helper.insert_body_measurement(measurement_obj);
-      logger.trace("User's measurement has been inserted");
-
-      var excercise_preference = {
-        'userId': user_data.user._id,
-        'workoutIntensity': req.body.workout_intensity,
-        'experienceLevel': req.body.experience_level,
-        'workoutLocation': req.body.workout_location
-      };
-      let excercise_preference_data = await exercise_preference_helper.insert_prefernece(excercise_preference);
-      logger.trace("User's exercise preference has been inserted");
-
-      res.status(config.OK_STATUS).json({"status":1,"message":"User registered successfully"});
+     
+      
+   
+     
     }
   } else {
     logger.error("Validation Error = ", errors);

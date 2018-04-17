@@ -1,9 +1,5 @@
 var express = require("express");
 
-const jwt = require('express-jwt');
-const jwtAuthz = require('express-jwt-authz');
-const jwksRsa = require('jwks-rsa');
-
 var path = require("path");
 var fs = require("fs");
 
@@ -69,20 +65,6 @@ app.use(function(req, res, next) {
 
 
 
-const checkJwt = jwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://fitassist.eu.auth0.com/.well-known/jwks.json`
-  }),
-
-  // Validate the audience and the issuer.
-  audience: 'https://fitassist.eu.auth0.com/api/v2/',
-  issuer: `https://fitassist.eu.auth0.com/`,
-  algorithms: ['RS256']
-});
-
 
 var static_data = require("./routes/static");
 var index = require("./routes/index");
@@ -91,7 +73,7 @@ var user = require("./routes/user");
 
 app.use("/", index);
 app.use("/", static_data);
-app.use('/user', user);
+app.use("/user", user);
 app.use("/admin", admin);
 
 // error handlers

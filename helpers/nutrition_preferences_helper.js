@@ -9,17 +9,25 @@ var nutrition_preferences_helper = {};
  *          status 2 - If nutrition preferences not found, with appropriate message
  */
 nutrition_preferences_helper.get_all_nutrition_preferences = async () => {
-    try {
-        var nutrition_preferences = await NutritionPreferences.find();
-        if (nutrition_preferences) {
-            return { "status": 1, "message": "nutrition_preferences details found", "nutrition_preferences": nutrition_preferences };
-        } else {
-            return { "status": 2, "message": "No nutrition_preferences available" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while finding nutrition_preferences", "error": err }
+  try {
+    var nutrition_preferences = await NutritionPreferences.find();
+    if (nutrition_preferences) {
+      return {
+        status: 1,
+        message: "nutrition_preferences details found",
+        nutrition_preferences: nutrition_preferences
+      };
+    } else {
+      return { status: 2, message: "No nutrition_preferences available" };
     }
-}
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding nutrition_preferences",
+      error: err
+    };
+  }
+};
 
 /*
  * get_nutrition_preference_by_id is used to fetch get_nutrition_preference by ID
@@ -28,18 +36,24 @@ nutrition_preferences_helper.get_all_nutrition_preferences = async () => {
  *          status 1 - If nutrition_preference data found, with nutrition_preference object
  *          status 2 - If nutrition_preference data not found, with appropriate message
  */
-nutrition_preferences_helper.get_nutrition_preference_by_id = async (nutrition_preference_id) => {
-    try {
-        let resp = await NutritionPreferences.findOne({ _id: nutrition_preference_id });
-        if (!resp) {
-            return { "status": 2, "message": "Nutrition Preferences not found" };
-        } else {
-            return { "status": 1, "message": "Nutrition Preferences found", "nutrition_preference":resp };
-        }
-    } catch(err){
-        return {"status":0,"error":err};
+nutrition_preferences_helper.get_nutrition_preference_by_id = async nutrition_preference_id => {
+  try {
+    let resp = await NutritionPreferences.findOne({
+      _id: nutrition_preference_id
+    });
+    if (!resp) {
+      return { status: 2, message: "Nutrition Preferences not found" };
+    } else {
+      return {
+        status: 1,
+        message: "Nutrition Preferences found",
+        nutrition_preference: resp
+      };
     }
-}
+  } catch (err) {
+    return { status: 0, error: err };
+  }
+};
 
 /*
  * get_nutrition_preference_by_user_id is used to fetch get_nutrition_preference by ID
@@ -48,18 +62,58 @@ nutrition_preferences_helper.get_nutrition_preference_by_id = async (nutrition_p
  *          status 1 - If nutrition_preference data found, with nutrition_preference object
  *          status 2 - If nutrition_preference data not found, with appropriate message
  */
-nutrition_preferences_helper.get_nutrition_preference_by_user_id = async (userid) => {
-    try {
-        let resp = await NutritionPreferences.find({ userId: userid });
-        if (!resp) {
-            return { "status": 2, "message": "Nutrition Preferences not found" };
-        } else {
-            return { "status": 1, "message": "Nutrition Preferences found", "nutrition_preference":resp };
-        }
-    } catch(err){
-        return {"status":0,"error":err};
+nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid => {
+  try {
+    // look up aggregate mongoose
+    let resp = await NutritionPreferences.aggregate([
+        {
+            $unwind: "$excludeIngredients"
+         },
+        {
+            $lookup:
+              {
+                from: "ingredients",
+                localField: "excludeIngredients",
+                foreignField: "_id",
+                as: "excludeIngredients"
+              }
+         },
+         {
+            $unwind: "$excludeIngredients"
+         },
+         {
+            $unwind: "$dietaryRestrictedRecipieTypes"
+         },
+         {
+            $group: {
+                _id: "$_id",
+                dietaryRestrictedRecipieTypes:{ $addToSet: "$dietaryRestrictedRecipieTypes" },
+                recipieDifficulty:{ $first: "$recipieDifficulty" },
+                maxRecipieTime:{ $first: "$maxRecipieTime" },
+                nutritionTargets:{ $first: "$nutritionTargets" },
+                excludeIngredients:{ $addToSet: "$excludeIngredients" },
+                userId:{ $first: "$userId" },
+              
+            }
+          },
+
+        
+    ]);
+//    let resp = await NutritionPreferences.find({ userId: userid });
+    console.log(resp);
+    if (!resp) {
+      return { status: 2, message: "Nutrition Preferences not found" };
+    } else {
+      return {
+        status: 1,
+        message: "Nutrition Preferences found",
+        nutrition_preference: resp
+      };
     }
-}
+  } catch (err) {
+    return { status: 0, error: err };
+  }
+};
 
 /*
  * insert_nutrition_preference is used to insert into nutrition_preferences collection
@@ -71,15 +125,25 @@ nutrition_preferences_helper.get_nutrition_preference_by_user_id = async (userid
  * 
  * @developed by "amc"
  */
-nutrition_preferences_helper.insert_nutrition_preference = async (nutrition_preferences_object) => {
-    console.log("obj = ", nutrition_preferences_object);
-    let nutrition_preference = new NutritionPreferences(nutrition_preferences_object);
-    try {
-        let nutrition_preference_data = await nutrition_preference.save();
-        return { "status": 1, "message": "Nutrition preference inserted", "nutrition_preference": nutrition_preference_data };
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting nutrition preference", "error": err };
-    }
+nutrition_preferences_helper.insert_nutrition_preference = async nutrition_preferences_object => {
+  console.log("obj = ", nutrition_preferences_object);
+  let nutrition_preference = new NutritionPreferences(
+    nutrition_preferences_object
+  );
+  try {
+    let nutrition_preference_data = await nutrition_preference.save();
+    return {
+      status: 1,
+      message: "Nutrition preference inserted",
+      nutrition_preference: nutrition_preference_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting nutrition preference",
+      error: err
+    };
+  }
 };
 
 /*
@@ -94,17 +158,32 @@ nutrition_preferences_helper.insert_nutrition_preference = async (nutrition_pref
  * 
  * @developed by "amc"
  */
-nutrition_preferences_helper.update_nutrition_preference_by_id = async (nutrition_preference_id, nutrition_preferences_object) => {
-    try {
-        let nutrition_preference = await NutritionPreferences.findOneAndUpdate({ _id: nutrition_preference_id }, nutrition_preferences_object, { new: true });
-        if (!nutrition_preference) {
-            return { "status": 2, "message": "Record has not updated" };
-        } else {
-            return { "status": 1, "message": "Record has been updated", "nutrition_preference": nutrition_preference };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while updating nutrition_preference", "error": err }
+nutrition_preferences_helper.update_nutrition_preference_by_id = async (
+  nutrition_preference_id,
+  nutrition_preferences_object
+) => {
+  try {
+    let nutrition_preference = await NutritionPreferences.findOneAndUpdate(
+      { _id: nutrition_preference_id },
+      nutrition_preferences_object,
+      { new: true }
+    );
+    if (!nutrition_preference) {
+      return { status: 2, message: "Record has not updated" };
+    } else {
+      return {
+        status: 1,
+        message: "Record has been updated",
+        nutrition_preference: nutrition_preference
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating nutrition_preference",
+      error: err
+    };
+  }
 };
 
 /*
@@ -117,17 +196,23 @@ nutrition_preferences_helper.update_nutrition_preference_by_id = async (nutritio
  * 
  * @developed by "amc"
  */
-nutrition_preferences_helper.delete_nutrition_preference_by_id = async (nutrition_preference_id) => {
-    try {
-        let resp = await NutritionPreferences.findOneAndRemove({ _id: nutrition_preference_id });
-        if (!resp) {
-            return { "status": 2, "message": "Nutrition Preferences not found" };
-        } else {
-            return { "status": 1, "message": "Nutrition Preferences deleted" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting nutrition preferences", "error": err };
+nutrition_preferences_helper.delete_nutrition_preference_by_id = async nutrition_preference_id => {
+  try {
+    let resp = await NutritionPreferences.findOneAndRemove({
+      _id: nutrition_preference_id
+    });
+    if (!resp) {
+      return { status: 2, message: "Nutrition Preferences not found" };
+    } else {
+      return { status: 1, message: "Nutrition Preferences deleted" };
     }
-}
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while deleting nutrition preferences",
+      error: err
+    };
+  }
+};
 
 module.exports = nutrition_preferences_helper;

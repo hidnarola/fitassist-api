@@ -10,14 +10,19 @@ module.exports = {
     "node_port": 3300,
     "logger": log4js.getLogger( "development" ),
 
+    //Auth0 config
+    "jwksUri":"https://fitassist.eu.auth0.com/.well-known/jwks.json",
+    "audience":"https://fitassist.eu.auth0.com/api/v2/",
+    "issuer":"https://fitassist.eu.auth0.com/",
+    "algorithms":"RS256",
     // Database config
     "database": "mongodb://fitassist:jP3gnc4fW9@167.99.90.169/fitassist",
 
     // JWT
     "ACCESS_TOKEN_SECRET_KEY": "fitassist_jwt_token",
     "REFRESH_TOKEN_SECRET_KEY": "fitassist_jwt_refresh_token",
-    // "ACCESS_TOKEN_EXPIRE_TIME" : 60 * 60 * 24 * 7, // 7 days
-    "ACCESS_TOKEN_EXPIRE_TIME" : 60 * 60 * 24 * 100, // 7 days
+    "ACCESS_TOKEN_EXPIRE_TIME" : 60 * 60 * 24 * 7, // 7 days
+    // "ACCESS_TOKEN_EXPIRE_TIME" : 60 * 60 * 24 * 100, // 100 days
 
     // HTTP Status
     "OK_STATUS": 200,

@@ -15,7 +15,7 @@ var common_helper = require("../../helpers/common_helper");
 /**
  * @api {post} /user/measurement/get_by_id_logdate Get User Measurement
  * @apiName Get User Measurement by User Id and LogDate
- * @apiGroup User - Measurement
+ * @apiGroup User Measurement
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token User's unique access-key
  * @apiParam {String} userId userId of User Collection

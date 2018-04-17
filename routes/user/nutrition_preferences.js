@@ -29,56 +29,7 @@ router.get('/:userid', async (req, res) => {
     }
 });
 
-/**
- * @api {post} /user/nutrition_preferences Add
- * @apiName Add
- * @apiGroup Nutrition Preferences
- * 
- * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token user's unique access-key
- * 
- * @apiParam {String} userId userId of User
- * @apiParam {Enum-Array} dietaryRestrictedRecipieTypes | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
- * @apiParam {Enum-Array} recipieDifficulty recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')
- * @apiParam {Array} nutritionTargets nutritionTargets  [title:{title},start:{start value},end:{end value}]
- * @apiParam {Array} maxRecipieTime Description [{dayDrive : enum, time : 'value'}] | Possible Values ("breakfast", "lunch", "dinner","Snacks")
- * 
- * @apiSuccess (Success 200) {JSON} nutrition_preference nutrition_preference details
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.post('/', async (req, res) => {
-    var schema = {
-        "userId": {
-            notEmpty: true,
-            errorMessage: "User ID is required"
-        }
-    };
 
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-    if (!errors) {
-        var nutrition_preference_obj = {
-            "userId": req.body.userId,
-            "dietaryRestrictedRecipieTypes": (req.body.dietaryRestrictedRecipieTypes) ? JSON.parse(req.body.dietaryRestrictedRecipieTypes) : null,
-            "recipieDifficulty": (req.body.recipieDifficulty) ? req.body.recipieDifficulty : null,
-            "maxRecipieTime": (req.body.maxRecipieTime) ? JSON.parse(req.body.maxRecipieTime) : null,
-            "nutritionTargets": (req.body.nutritionTargets) ? JSON.parse(req.body.nutritionTargets) : null,
-            "excludeIngredients": (req.body.excludeIngredients) ? JSON.parse(req.body.excludeIngredients) : null,
-
-        };
-
-        let nutrition_preference_data = await nutrition_preferences_helper.insert_nutrition_preference(nutrition_preference_obj);
-        if (nutrition_preference_data.status === 0) {
-            logger.error("Error while inserting nutrition preference = ", nutrition_preference_data);
-            res.status(config.BAD_REQUEST).json({ nutrition_preference_data });
-        } else {
-            res.status(config.OK_STATUS).json(nutrition_preference_data);
-        }
-    } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.BAD_REQUEST).json({ message: errors });
-    }
-});
 
 /**
  * @api {put} /user/nutrition_preferences/:nutrition_preferences_id Update
@@ -136,25 +87,6 @@ router.put('/:nutrition_preferences_id', async (req, res) => {
     }
 });
 
-/**
- * @api {delete} /user/nutrition_preferences/:nutrition_preferences_id Delete
- * @apiName Delete 
- * @apiGroup Nutrition Preferences
- * 
- * @apiHeader {String}  x-access-token user's unique access-key
- * 
- * @apiSuccess (Success 200) {String} Success message
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.delete('/:nutrition_preferences_id', async (req, res) => {
-    logger.trace("Delete Nutrition Preference API - Id = ", req.params.nutrition_preferences_id);
-    let nutrition_predata_data = await nutrition_preferences_helper.delete_nutrition_preference_by_id(req.params.nutrition_preferences_id);
 
-    if (nutrition_predata_data.status === 0) {
-        res.status(config.INTERNAL_SERVER_ERROR).json(nutrition_predata_data);
-    } else {
-        res.status(config.OK_STATUS).json(nutrition_predata_data);
-    }
-});
 
 module.exports = router;
