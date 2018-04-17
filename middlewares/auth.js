@@ -1,5 +1,6 @@
 var jwt = require('jsonwebtoken');
 var config = require('../config');
+
 module.exports = function (req, res, next) {
     console.log("\n=================================================================");
     console.log("Request Headers", req.headers);

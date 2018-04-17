@@ -10,11 +10,11 @@ var UserSchema = new Schema(
   {
     authUserId: { type: String, required: true },
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    lastName: { type: String },
     email: { type: String, required: true, unique: true },
     mobileNumber: { type: String },
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    username: { type: String, unique: true },
+    password: { type: String },
     gender: {
       type: String,
       enum: ["male", "female", "transgender"],
