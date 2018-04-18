@@ -4,6 +4,7 @@ var path = require("path");
 var async = require("async");
 
 var router = express.Router();
+var jwtDecode = require("jwt-decode");
 
 var config = require("../../config");
 var logger = config.logger;
@@ -15,10 +16,10 @@ var common_helper = require("../../helpers/common_helper");
  * @api {post} /admin/measurement/filter Filter
  * @apiName Filter
  * @apiGroup Measurement
- * 
+ *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
+ *
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
@@ -29,9 +30,10 @@ var common_helper = require("../../helpers/common_helper");
  */
 
 router.post("/filter", async (req, res) => {
-  
   filter_object = common_helper.changeObject(req.body);
-  let filtered_data = await measurement_helper.get_filtered_records(filter_object);
+  let filtered_data = await measurement_helper.get_filtered_records(
+    filter_object
+  );
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
     return res.status(config.BAD_REQUEST).json({ filtered_data });
@@ -74,9 +76,14 @@ router.get("/", async (req, res) => {
 router.get("/:measurement_by_id", async (req, res) => {
   measurement_by_id = req.params.measurement_by_id;
   logger.trace("Get all measurement API called");
-  var resp_data = await measurement_helper.get_body_measurement_id({_id:measurement_by_id});
+  var resp_data = await measurement_helper.get_body_measurement_id({
+    _id: measurement_by_id
+  });
   if (resp_data.status == 0) {
-    logger.error("Error occured while fetching get_body_measurement_by_id = ", resp_data);
+    logger.error(
+      "Error occured while fetching get_body_measurement_by_id = ",
+      resp_data
+    );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     logger.trace("body_measurement got successfully = ", resp_data);
@@ -96,9 +103,14 @@ router.get("/:measurement_by_id", async (req, res) => {
 router.get("/userid/:user_id", async (req, res) => {
   user_id = req.params.user_id;
   logger.trace("Get all measurement API called");
-  var resp_data = await measurement_helper.get_body_measurement_by_userid({userId:user_id});
+  var resp_data = await measurement_helper.get_body_measurement_by_userid({
+    userId: user_id
+  });
   if (resp_data.status == 0) {
-    logger.error("Error occured while fetching get_body_measurement_by_userid = ", resp_data);
+    logger.error(
+      "Error occured while fetching get_body_measurement_by_userid = ",
+      resp_data
+    );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     logger.trace("body_measurement got successfully = ", resp_data);
@@ -110,10 +122,9 @@ router.get("/userid/:user_id", async (req, res) => {
  * @api {post} /admin/measurement Add
  * @apiName Add
  * @apiGroup Measurement
- * 
+ *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} userId userId of User Collection
  * @apiParam {Date} logDate logDate of bodymesurement
  * @apiParam {Number} [neck] neck of bodymesurement
  * @apiParam {Number} [shoulder] shoulder of bodymesurement
@@ -126,17 +137,22 @@ router.get("/userid/:user_id", async (req, res) => {
  * @apiParam {Number} [calf] calf of bodymesurement
  * @apiParam {Number} [weight] weight of bodymesurement
  * @apiParam {Number} [height] height of bodymesurement
- * 
+ *
  * @apiSuccess (Success 200) {JSON} measurement Measurement details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
 router.post("/", async (req, res) => {
+  if (req.headers["authorization"]) {
+    var decoded = jwtDecode(req.headers["authorization"]);
+  } else {
+    return res.status(config.UNAUTHORIZED).json({
+      message: "authorization token missing"
+    });
+  }
+
+  authUserId = decoded.sub;
   var schema = {
-    userId: {
-      notEmpty: true,
-      errorMessage: "User ID is required"
-    },
     logDate: {
       notEmpty: true,
       errorMessage: "Log Date is required"
@@ -147,30 +163,33 @@ router.post("/", async (req, res) => {
 
   if (!errors) {
     var measurement_obj = {
-      
-        userId:		req.body.userId?req.body.userId:0,
-        logDate:	req.body.logDate?req.body.logDate:0,
-        neck:		req.body.neck?req.body.neck:0,
-        shoulders:	req.body.shoulders?req.body.shoulders:0,
-        chest:		req.body.chest?req.body.chest:0, 
-        upperArm:	req.body.upperArm?req.body.upperArm:0,
-        waist:		req.body.waist?req.body.waist:0,
-        forearm:	req.body.forearm?req.body.forearm:0, 
-        hips:		req.body.hips?req.body.hips:0,
-        thigh:		req.body.thigh?req.body.thigh:0,
-        calf:		req.body.calf?req.body.calf:0,
-        weight:		req.body.weight?req.body.weight:0,
-        height:		req.body.height?req.body.height:0
-      };
+      userId: authUserId,
+      logDate: req.body.logDate ? req.body.logDate : 0,
+      neck: req.body.neck ? req.body.neck : 0,
+      shoulders: req.body.shoulders ? req.body.shoulders : 0,
+      chest: req.body.chest ? req.body.chest : 0,
+      upperArm: req.body.upperArm ? req.body.upperArm : 0,
+      waist: req.body.waist ? req.body.waist : 0,
+      forearm: req.body.forearm ? req.body.forearm : 0,
+      hips: req.body.hips ? req.body.hips : 0,
+      thigh: req.body.thigh ? req.body.thigh : 0,
+      calf: req.body.calf ? req.body.calf : 0,
+      weight: req.body.weight ? req.body.weight : 0,
+      height: req.body.height ? req.body.height : 0
+    };
 
-
-      let measurement_data = await measurement_helper.insert_body_measurement(measurement_obj);
-      if (measurement_data.status === 0) {
-      logger.error("Error while inserting measurement data = ", measurement_data);
+    let measurement_data = await measurement_helper.insert_body_measurement(
+      measurement_obj
+    );
+    if (measurement_data.status === 0) {
+      logger.error(
+        "Error while inserting measurement data = ",
+        measurement_data
+      );
       return res.status(config.BAD_REQUEST).json({ measurement_data });
-      } else {
+    } else {
       return res.status(config.OK_STATUS).json(measurement_data);
-      }
+    }
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.BAD_REQUEST).json({ message: errors });
@@ -183,7 +202,6 @@ router.post("/", async (req, res) => {
  * @apiGroup Measurement
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} userId userId of User Collection
  * @apiParam {Date} logDate logDate of bodymesurement
  * @apiParam {Number} [neck] neck of bodymesurement
  * @apiParam {Number} [shoulder] shoulder of bodymesurement
@@ -196,16 +214,14 @@ router.post("/", async (req, res) => {
  * @apiParam {Number} [calf] calf of bodymesurement
  * @apiParam {Number} [weight] weight of bodymesurement
  * @apiParam {Number} [height] height of bodymesurement
- * 
+ *
  * @apiSuccess (Success 200) {Array}  measurement of body_measurement document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:measurement_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  authUserId = decoded.sub;
   var schema = {
-    userId: {
-      notEmpty: true,
-      errorMessage: "User ID is required"
-    },
     logDate: {
       notEmpty: true,
       errorMessage: "Log Date is required"
@@ -216,35 +232,38 @@ router.put("/:measurement_id", async (req, res) => {
 
   if (!errors) {
     var measurement_obj = {
-      
-        userId:		req.body.userId?req.body.userId:0,
-        logDate:	req.body.logDate?req.body.logDate:0,
-        neck:		req.body.neck?req.body.neck:0,
-        shoulders:	req.body.shoulders?req.body.shoulders:0,
-        chest:		req.body.chest?req.body.chest:0, 
-        upperArm:	req.body.upperArm?req.body.upperArm:0,
-        waist:		req.body.waist?req.body.waist:0,
-        forearm:	req.body.forearm?req.body.forearm:0, 
-        hips:		req.body.hips?req.body.hips:0,
-        thigh:		req.body.thigh?req.body.thigh:0,
-        calf:		req.body.calf?req.body.calf:0,
-        weight:		req.body.weight?req.body.weight:0,
-        height:		req.body.height?req.body.height:0
-      };
+      userId: authUserId,
+      logDate: req.body.logDate ? req.body.logDate : 0,
+      neck: req.body.neck ? req.body.neck : 0,
+      shoulders: req.body.shoulders ? req.body.shoulders : 0,
+      chest: req.body.chest ? req.body.chest : 0,
+      upperArm: req.body.upperArm ? req.body.upperArm : 0,
+      waist: req.body.waist ? req.body.waist : 0,
+      forearm: req.body.forearm ? req.body.forearm : 0,
+      hips: req.body.hips ? req.body.hips : 0,
+      thigh: req.body.thigh ? req.body.thigh : 0,
+      calf: req.body.calf ? req.body.calf : 0,
+      weight: req.body.weight ? req.body.weight : 0,
+      height: req.body.height ? req.body.height : 0
+    };
 
-
-      let measurement_data = await measurement_helper.update_body_measurement(req.params.measurement_id,measurement_obj);
-      if (measurement_data.status === 0) {
-      logger.error("Error while updating measurement data = ", measurement_data);
+    let measurement_data = await measurement_helper.update_body_measurement(
+      req.params.measurement_id,
+      measurement_obj
+    );
+    if (measurement_data.status === 0) {
+      logger.error(
+        "Error while updating measurement data = ",
+        measurement_data
+      );
       return res.status(config.BAD_REQUEST).json({ measurement_data });
-      } else {
+    } else {
       return res.status(config.OK_STATUS).json(measurement_data);
-      }
+    }
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.BAD_REQUEST).json({ message: errors });
   }
-  
 });
 
 /**

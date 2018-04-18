@@ -13,10 +13,10 @@ var user_helper = require("../../helpers/user_helper");
 
 
 /**
- * @api {put} /admin/user Profile - Update
+ * @api {put} /user/profile Profile - Update
  * @apiName Profile - Update
  * @apiGroup User
- * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiHeader {String}  x-access-token User's unique access-key
  * @apiParam {String} firstName First name of user
  * @apiParam {String} lastName Last name of user
  * @apiParam {String} email Email address
@@ -30,7 +30,7 @@ var user_helper = require("../../helpers/user_helper");
  * @apiSuccess (Success 200) {Array} user Array of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/:user_id", async (req, res) => {
+router.put("/profile/:user_id", async (req, res) => {
   user_id = req.params.user_id;
 
   var schema = {

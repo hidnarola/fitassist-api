@@ -36,11 +36,11 @@ router.post("/get_by_id_logdate", async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
   var measurement_obj = {
-    status: "",
+    status: 1,
     message: "",
     measurement_logs: {
-      measurement: "",
-      logdates: ""
+      measurement: {},
+      logdates: []
     }
   };
   if (!errors) {
@@ -49,26 +49,21 @@ router.post("/get_by_id_logdate", async (req, res) => {
       userId: authUserId,
       logDate: logDate
     });
-    if (resp_data.status == 0) {
-      logger.error(
-        "Error occured while fetching get_body_measurement_by_userid and logDate = ",
-        resp_data
-      );
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-      measurement_obj.status = 1;
-      measurement_obj.message = "Measurement Data found";
-      measurement_obj.measurement_logs.measurement = resp_data.measurement;
+    if (resp_data.status == 1 || resp_data.status == 2) {
+      measurement_obj.status = resp_data.status;
+      measurement_obj.message = resp_data.message;
+      if (resp_data.measurement) {
+        measurement_obj.measurement_logs.measurement = resp_data.measurement;
+      }
 
-      var check = await moment(resp_data.measurement.logDate);
-      var dateMonth = parseInt(check.format('M'));
+      var check = await moment(req.body.logDate);
+      var dateMonth = parseInt(check.format("M"));
 
       var log_data = await measurement_helper.get_logdata_by_userid([
         { $match: { userId: authUserId } },
-        { $project: { month: { $month: "$logDate" },date:"$logDate" } },
-        { $match: { month: dateMonth } }, 
+        { $project: { month: { $month: "$logDate" }, date: "$logDate" } },
+        { $match: { month: dateMonth } }
       ]);
-
 
       if (log_data.status != 0) {
         measurement_obj.measurement_logs.logdates = log_data.logdata;
@@ -110,6 +105,15 @@ router.post("/get_by_id_logdate", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
+  if (req.headers["authorization"]) {
+    var decoded = jwtDecode(req.headers["authorization"]);
+  } else {
+    return res.status(config.UNAUTHORIZED).json({
+      message: "authorization token missing"
+    });
+  }
+  authUserId = decoded.sub;
+
   var schema = {
     userId: {
       notEmpty: true,
@@ -125,7 +129,7 @@ router.post("/", async (req, res) => {
 
   if (!errors) {
     var measurement_obj = {
-      userId: req.body.userId ? req.body.userId : 0,
+      userId: authUserId,
       logDate: req.body.logDate ? req.body.logDate : 0,
       neck: req.body.neck ? req.body.neck : 0,
       shoulders: req.body.shoulders ? req.body.shoulders : 0,
@@ -182,6 +186,15 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:measurement_id", async (req, res) => {
+  if (req.headers["authorization"]) {
+    var decoded = jwtDecode(req.headers["authorization"]);
+  } else {
+    return res.status(config.UNAUTHORIZED).json({
+      message: "authorization token missing"
+    });
+  }
+  authUserId = decoded.sub;
+
   var schema = {
     userId: {
       notEmpty: true,
@@ -197,7 +210,7 @@ router.put("/:measurement_id", async (req, res) => {
 
   if (!errors) {
     var measurement_obj = {
-      userId: req.body.userId ? req.body.userId : 0,
+      userId: authUserId,
       logDate: req.body.logDate ? req.body.logDate : 0,
       neck: req.body.neck ? req.body.neck : 0,
       shoulders: req.body.shoulders ? req.body.shoulders : 0,

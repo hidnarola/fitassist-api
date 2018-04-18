@@ -2764,13 +2764,6 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>userId of User Collection</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "Date",
             "optional": false,
             "field": "logDate",
@@ -3215,13 +3208,6 @@
     "parameter": {
       "fields": {
         "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>userId of User Collection</p>"
-          },
           {
             "group": "Parameter",
             "type": "Date",
@@ -5122,7 +5108,7 @@
   },
   {
     "type": "put",
-    "url": "/admin/user",
+    "url": "/user/profile",
     "title": "Profile - Update",
     "name": "Profile___Update",
     "group": "User",
@@ -5698,13 +5684,6 @@
     "parameter": {
       "fields": {
         "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>userId of User Collection</p>"
-          },
           {
             "group": "Parameter",
             "type": "Date",
