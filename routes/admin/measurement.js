@@ -143,19 +143,14 @@ router.get("/userid/:user_id", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
-  if (req.headers["authorization"]) {
-    var decoded = jwtDecode(req.headers["authorization"]);
-  } else {
-    return res.status(config.UNAUTHORIZED).json({
-      message: "authorization token missing"
-    });
-  }
-
-  authUserId = decoded.sub;
   var schema = {
     logDate: {
       notEmpty: true,
       errorMessage: "Log Date is required"
+    },
+    userId: {
+      notEmpty: true,
+      errorMessage: "userId is required"
     }
   };
   req.checkBody(schema);
@@ -163,7 +158,7 @@ router.post("/", async (req, res) => {
 
   if (!errors) {
     var measurement_obj = {
-      userId: authUserId,
+      userId: req.body.userId,
       logDate: req.body.logDate ? req.body.logDate : 0,
       neck: req.body.neck ? req.body.neck : 0,
       shoulders: req.body.shoulders ? req.body.shoulders : 0,
@@ -219,12 +214,14 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:measurement_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  authUserId = decoded.sub;
   var schema = {
     logDate: {
       notEmpty: true,
       errorMessage: "Log Date is required"
+    },
+    userId: {
+      notEmpty: true,
+      errorMessage: "userId is required"
     }
   };
   req.checkBody(schema);
@@ -232,7 +229,7 @@ router.put("/:measurement_id", async (req, res) => {
 
   if (!errors) {
     var measurement_obj = {
-      userId: authUserId,
+      userId: req.body.userId,
       logDate: req.body.logDate ? req.body.logDate : 0,
       neck: req.body.neck ? req.body.neck : 0,
       shoulders: req.body.shoulders ? req.body.shoulders : 0,

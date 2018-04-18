@@ -44,10 +44,24 @@ router.post("/get_by_id_logdate", async (req, res) => {
     }
   };
   if (!errors) {
+    // var startdate = moment(logDate).utcOffset(0);
+    var startdate = moment(logDate);
+    startdate.set({hour:0,minute:0,second:0,millisecond:0})
+    startdate.toISOString()
+    startdate.format()
+
+    var enddate = moment(logDate);
+    enddate.set({hour:23,minute:59,second:59,millisecond:99})
+    enddate.toISOString()
+    enddate.format()
     logger.trace("Get measurement by authUserId and logDate API called");
     var resp_data = await measurement_helper.get_body_measurement_id({
       userId: authUserId,
-      logDate: logDate
+      logDate: {
+       "$gte":startdate,
+        "$lte":enddate
+      }
+   
     });
     if (resp_data.status == 1 || resp_data.status == 2) {
       measurement_obj.status = resp_data.status;
