@@ -4,7 +4,6 @@ var auth = require("../middlewares/user_auth");
 
 // var nutrition = require("./user/nutrition");
 // var equipment_category = require("./user/equipment_category");
-// var equipment = require("./user/equipment");
 // var exercise_type = require("./user/exercise_types");
 // var exercise = require("./user/exercise");
 // var bodypart = require("./user/bodyparts");
@@ -15,6 +14,7 @@ var auth = require("../middlewares/user_auth");
 var body_measurement = require("./user/measurement");
 var nutrition_preferences = require("./user/nutrition_preferences");
 var profile = require("./user/profile");
+var equipment = require("./user/equipment");
 
 // router.use("/nutrition", auth, nutrition);
 // router.use("/equipment_category", auth, equipment_category);
@@ -28,5 +28,6 @@ var profile = require("./user/profile");
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preferences", auth, nutrition_preferences);
 router.use("/profile", auth, profile);
+router.use("/equipment", auth, equipment);
 
 module.exports = router;
