@@ -13,8 +13,8 @@ var user_helper = require("../../helpers/user_helper");
 
 
 /**
- * @api {put} /admin/user User - Update
- * @apiName User - Update
+ * @api {put} /admin/user Profile - Update
+ * @apiName Profile - Update
  * @apiGroup User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} firstName First name of user

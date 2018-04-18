@@ -69,7 +69,6 @@ router.get("/", async (req, res) => {
  * @apiName Get by ID
  * @apiGroup Recipes
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} recipe_id ID of Recipe
  * @apiSuccess (Success 200) {Array} recipe Array of Recipes document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

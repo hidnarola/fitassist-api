@@ -359,29 +359,37 @@ router.get("/auth0_user_sync", async (req, res) => {
         authorization: req.headers["x-access-token"]
       }
     };
-
-    var response = await request(options);
-    var response = JSON.parse(response);
-    if (response.email && typeof response.email !== "undefined") {
-      let data = await user_helper.check_email(response.email);
-      if (data.count <= 0) {
-        var user_obj = {
-          authUserId: response.sub,
-          firstName: response.name,
-          email: response.email,
-          avatar: response.picture
-        };
-        console.log(user_obj);
-        var user_data = await user_helper.insert_user(user_obj);
-        res.status(config.OK_STATUS).json(user_data);
+    try {
+      var response = await request(options);
+      response = JSON.parse(response);
+      if (response.email && typeof response.email !== "undefined") {
+        let data = await user_helper.check_email(response.email);
+        if (data.count <= 0) {
+          var user_obj = {
+            authUserId: response.sub,
+            firstName: response.name,
+            email: response.email,
+            avatar: response.picture
+          };
+          var user_data = await user_helper.insert_user(user_obj);
+          res.status(config.OK_STATUS).json(user_data);
+        } else {
+          let data = await user_helper.get_user_by_email_authID(
+            response.email,
+            response.sub
+          );
+          res.status(config.OK_STATUS).json(data);
+        }
       } else {
-        res.status(config.OK_STATUS).json({ message: "Email already exists" });
+        res.status(config.BAD_REQUEST).json({ message: "Auth Server Error" });
       }
-    } else {
-      res.status(config.OK_STATUS).json({ message: "Auth Server Error" });
+    } catch (error) {
+      res.status(config.UNAUTHORIZED).json({ message: "Unauthorized" });
     }
   } else {
-    res.status(config.OK_STATUS).json({ message: "authorization missing" });
+    res
+      .status(config.UNAUTHORIZED)
+      .json({ message: "authorization token missing" });
   }
 });
 

@@ -41,8 +41,8 @@ router.post("/filter", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/user User - Get all
- * @apiName User - Get all
+ * @api {get} /admin/user Get all
+ * @apiName Get all
  * @apiGroup User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} users Array of users document
@@ -61,11 +61,10 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/user/user_id User - Get by ID
- * @apiName User - Users by ID
+ * @api {get} /admin/user/user_id Get by ID
+ * @apiName Users by ID
  * @apiGroup User
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} user_id ID of User
  * @apiSuccess (Success 200) {Array} user Array of user document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -83,8 +82,8 @@ router.get("/:user_id", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/user User - Update
- * @apiName User - Update
+ * @api {put} /admin/user/:user_id Update
+ * @apiName Update
  * @apiGroup User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} firstName First name of user
@@ -226,8 +225,8 @@ router.put("/:user_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/user/:user_id User - Delete
- * @apiName User - Delete
+ * @api {delete} /admin/user/:user_id Delete
+ * @apiName Delete
  * @apiGroup User
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -252,8 +251,8 @@ router.delete("/:user_id", async (req, res) => {
 });
 
 /**
- * @api {post} /admin/user/checkemail User - Check Unique
- * @apiName Email - Check Unique
+ * @api {post} /admin/user/checkemail Check Unique
+ * @apiName Check Unique
  * @apiGroup User
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key

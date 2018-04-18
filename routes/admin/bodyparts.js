@@ -36,7 +36,6 @@ router.get("/", async (req, res) => {
  * @apiName Body Part - Body Parts by ID
  * @apiGroup  Body Parts
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiParam {String} body_part_id ID of Body part
  * @apiSuccess (Success 200) {Array} bodypart Array of Body part document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

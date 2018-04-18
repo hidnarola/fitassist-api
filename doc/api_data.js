@@ -124,19 +124,6 @@ define({ "api": [
         ]
       }
     },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body_part_id",
-            "description": "<p>ID of Body part</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "fields": {
         "Success 200": [
@@ -634,19 +621,6 @@ define({ "api": [
             "optional": false,
             "field": "x-access-token",
             "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "equipment_id",
-            "description": "<p>ID of equipment</p>"
           }
         ]
       }
@@ -4643,19 +4617,6 @@ define({ "api": [
         ]
       }
     },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "recipe_id",
-            "description": "<p>ID of Recipe</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "fields": {
         "Success 200": [
@@ -5002,8 +4963,8 @@ define({ "api": [
   {
     "type": "post",
     "url": "/admin/user/checkemail",
-    "title": "User - Check Unique",
-    "name": "Email___Check_Unique",
+    "title": "Check Unique",
+    "name": "Check_Unique",
     "group": "User",
     "header": {
       "fields": {
@@ -5062,107 +5023,10 @@ define({ "api": [
     "groupTitle": "User"
   },
   {
-    "type": "post",
-    "url": "/admin/user/filter",
-    "title": "User Filter",
-    "name": "User_User_Filter",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnFilter",
-            "description": "<p>columnFilter Object for filter data</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnSort",
-            "description": "<p>columnSort Object for Sorting Data</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnFilterEqual",
-            "description": "<p>columnFilterEqual Object for select box</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "pageSize",
-            "description": "<p>pageSize</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "page",
-            "description": "<p>page number</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "filtered_users",
-            "description": "<p>filtered details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/users.js",
-    "groupTitle": "User"
-  },
-  {
     "type": "delete",
     "url": "/admin/user/:user_id",
-    "title": "User - Delete",
-    "name": "User___Delete",
+    "title": "Delete",
+    "name": "Delete",
     "group": "User",
     "header": {
       "fields": {
@@ -5210,8 +5074,8 @@ define({ "api": [
   {
     "type": "get",
     "url": "/admin/user",
-    "title": "User - Get all",
-    "name": "User___Get_all",
+    "title": "Get all",
+    "name": "Get_all",
     "group": "User",
     "header": {
       "fields": {
@@ -5259,8 +5123,133 @@ define({ "api": [
   {
     "type": "put",
     "url": "/admin/user",
-    "title": "User - Update",
-    "name": "User___Update",
+    "title": "Profile - Update",
+    "name": "Profile___Update",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "firstName",
+            "description": "<p>First name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "lastName",
+            "description": "<p>Last name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email address</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "mobileNumber",
+            "description": "<p>mobileNumber</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "gender",
+            "description": "<p>gender | Possible Values ('male', 'female', 'transgender')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": true,
+            "field": "dateOfBirth",
+            "description": "<p>Date of Birth</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": true,
+            "field": "goals",
+            "description": "<p>goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "user_img",
+            "description": "<p>avatar</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "aboutMe",
+            "description": "<p>aboutMe</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>status</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Array of users document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/profile.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "put",
+    "url": "/admin/user/:user_id",
+    "title": "Update",
+    "name": "Update",
     "group": "User",
     "header": {
       "fields": {
@@ -5382,14 +5371,21 @@ define({ "api": [
     "groupTitle": "User"
   },
   {
-    "type": "get",
-    "url": "/admin/user/user_id",
-    "title": "User - Get by ID",
-    "name": "User___Users_by_ID",
+    "type": "post",
+    "url": "/admin/user/filter",
+    "title": "User Filter",
+    "name": "User_User_Filter",
     "group": "User",
     "header": {
       "fields": {
         "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
           {
             "group": "Header",
             "type": "String",
@@ -5405,10 +5401,87 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilter",
+            "description": "<p>columnFilter Object for filter data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnSort",
+            "description": "<p>columnSort Object for Sorting Data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilterEqual",
+            "description": "<p>columnFilterEqual Object for select box</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>pageSize</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>page number</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "filtered_users",
+            "description": "<p>filtered details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
             "type": "String",
             "optional": false,
-            "field": "user_id",
-            "description": "<p>ID of User</p>"
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "get",
+    "url": "/admin/user/user_id",
+    "title": "Get by ID",
+    "name": "Users_by_ID",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
           }
         ]
       }
@@ -5445,86 +5518,10 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/measurement/get_by_id_logdate",
-    "title": "Get User Measurement",
-    "name": "Get_User_Measurement_by_User_Id_and_LogDate",
-    "group": "User_Measurement",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>userId of User Collection</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Date",
-            "optional": false,
-            "field": "logDate",
-            "description": "<p>logDate of bodymesurement</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "measurement",
-            "description": "<p>data of body_measurement document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/measurement.js",
-    "groupTitle": "User_Measurement"
-  },
-  {
-    "type": "post",
     "url": "/user/measurement",
     "title": "Add",
     "name": "Add",
-    "group": "User___Measurement",
+    "group": "User_Measurement",
     "header": {
       "fields": {
         "Header": [
@@ -5670,14 +5667,90 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/user/measurement.js",
-    "groupTitle": "User___Measurement"
+    "groupTitle": "User_Measurement"
+  },
+  {
+    "type": "post",
+    "url": "/user/measurement/get_by_id_logdate",
+    "title": "Get User Measurement",
+    "name": "Get_User_Measurement_by_User_Id_and_LogDate",
+    "group": "User_Measurement",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>userId of User Collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "logDate",
+            "description": "<p>logDate of bodymesurement</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "measurement_logs",
+            "description": "<p>data of body_measurement document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/measurement.js",
+    "groupTitle": "User_Measurement"
   },
   {
     "type": "put",
     "url": "/user/measurement/:measurement_id",
     "title": "Update",
     "name": "Update",
-    "group": "User___Measurement",
+    "group": "User_Measurement",
     "header": {
       "fields": {
         "Header": [
@@ -5823,6 +5896,6 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/user/measurement.js",
-    "groupTitle": "User___Measurement"
+    "groupTitle": "User_Measurement"
   }
 ] });
