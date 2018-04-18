@@ -61,6 +61,25 @@ measurement_helper.get_body_measurement_by_userid = async (id) => {
         return { "status": 0, "message": "Error occured while finding measurement", "error": err }
     }
 }
+/*
+ * get_logdata_by_userid is used to fetch logdata by userID
+ * 
+ * @return  status 0 - If any internal error occured while fetching logdata data, with error
+ *          status 1 - If logdata data found, with logdata object
+ *          status 2 - If logdata not found, with appropriate message
+ */
+measurement_helper.get_logdata_by_userid = async (id) => {
+    try {
+        var logdata = await Measurement.aggregate(id);
+        if (logdata) {
+            return { "status": 1, "message": "logdata found", "logdata": logdata };
+        } else {
+            return { "status": 2, "message": "No logdata available" };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while finding logdata", "error": err }
+    }
+}
 
 /*
  * insert_body_measurement is used to insert into body_measurement collection

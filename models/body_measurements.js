@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var MeasurementSchema = new Schema({
-    userId: {type: mongoose.Schema.Types.ObjectId, ref: "users", required: true},
+    userId: {type: String, ref: "users", field:"authUserId", required: true},
     logDate: {type: Date, required: true},
     neck: {type: Number, required: false, default:0},
     shoulders: {type: Number, required: false, default:0},

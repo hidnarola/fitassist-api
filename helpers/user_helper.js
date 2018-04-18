@@ -62,9 +62,9 @@ user_helper.get_user_by_id = async user_id => {
  * 
  * @developed by "ar"
  */
-user_helper.get_user_by_email = async email => {
+user_helper.get_user_by_email_authID = async (email, authid) => {
   try {
-    var user = await User.findOne({ email: email });
+    var user = await User.findOne({ email: email, authUserId: authid });
     if (user) {
       return { status: 1, message: "User details found", user: user };
     } else {
@@ -222,9 +222,9 @@ user_helper.check_email = async email => {
   try {
     var count = await User.find({ email: email }).count();
     if (count == 0) {
-      return { status: 1, message: "Email is not exists", count: count  };
+      return { status: 1, message: "Email is not exists", count: count };
     } else if (count == 1) {
-      return { status: 1, message: "Email is Unique", count: count  };
+      return { status: 1, message: "Email is Unique", count: count };
     } else {
       return { status: 2, message: "Email is not Unique", count: count };
     }
