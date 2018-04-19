@@ -9,17 +9,22 @@ var equipment_helper = {};
  *          status 2 - If equipment not found, with appropriate message
  */
 equipment_helper.get_all_equipment = async () => {
-    try {
-        var equipment = await Equipment.find();
-        if (equipment) {
-            return { "status": 1, "message": "Equipments found", "equipments": equipment };
-        } else {
-            return { "status": 2, "message": "No equipment available" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while finding equipment", "error": err }
+  try {
+    var equipment = await Equipment.find();
+    if (equipment) {
+      return { status: 1, message: "Equipments found", equipments: equipment };
+    } else {
+      return { status: 2, message: "No equipment available" };
     }
-}
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding equipment",
+      error: err
+    };
+  }
+};
+
 
 
 /*
@@ -29,18 +34,22 @@ equipment_helper.get_all_equipment = async () => {
  *          status 1 - If equipment data found, with equipment object
  *          status 2 - If equipment not found, with appropriate message
  */
-equipment_helper.get_equipment_id = async (id) => {
-    try {
-        var equipment = await Equipment.findOne({_id:id});
-        if (equipment) {
-            return { "status": 1, "message": "Equipment found", "equipment": equipment };
-        } else {
-            return { "status": 2, "message": "No equipment available" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while finding equipment", "error": err }
+equipment_helper.get_equipment_id = async id => {
+  try {
+    var equipment = await Equipment.findOne({ _id: id });
+    if (equipment) {
+      return { status: 1, message: "Equipment found", equipment: equipment };
+    } else {
+      return { status: 2, message: "No equipment available" };
     }
-}
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding equipment",
+      error: err
+    };
+  }
+};
 
 /*
  * insert_equipment is used to insert into equipment collection
@@ -52,15 +61,23 @@ equipment_helper.get_equipment_id = async (id) => {
  * 
  * @developed by "ar"
  */
-equipment_helper.insert_equipment = async (equipment_object) => {
-    console.log(equipment_object);
-    let equipment = new Equipment(equipment_object);
-    try {
-        let equipment_data = await equipment.save();
-        return { "status": 1, "message": "Equipment inserted", "equipment": equipment_data };
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting equipment", "error": err };
-    }
+equipment_helper.insert_equipment = async equipment_object => {
+  console.log(equipment_object);
+  let equipment = new Equipment(equipment_object);
+  try {
+    let equipment_data = await equipment.save();
+    return {
+      status: 1,
+      message: "Equipment inserted",
+      equipment: equipment_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting equipment",
+      error: err
+    };
+  }
 };
 
 /*
@@ -75,17 +92,32 @@ equipment_helper.insert_equipment = async (equipment_object) => {
  * 
  * @developed by "ar"
  */
-equipment_helper.update_equipment_by_id = async (equipment_id, equipment_object) => {
-    try {
-        let equipment = await Equipment.findOneAndUpdate({ _id: equipment_id }, equipment_object, { new: true });
-        if (!equipment) {
-            return { "status": 2, "message": "Record has not updated" };
-        } else {
-            return { "status": 1, "message": "Record has been updated", "equipment": equipment };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while updating equipment", "error": err }
+equipment_helper.update_equipment_by_id = async (
+  equipment_id,
+  equipment_object
+) => {
+  try {
+    let equipment = await Equipment.findOneAndUpdate(
+      { _id: equipment_id },
+      equipment_object,
+      { new: true }
+    );
+    if (!equipment) {
+      return { status: 2, message: "Record has not updated" };
+    } else {
+      return {
+        status: 1,
+        message: "Record has been updated",
+        equipment: equipment
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating equipment",
+      error: err
+    };
+  }
 };
 
 /*
@@ -98,20 +130,22 @@ equipment_helper.update_equipment_by_id = async (equipment_id, equipment_object)
  * 
  * @developed by "ar"
  */
-equipment_helper.delete_equipment_by_id = async (equipment_id) => {
-    try {
-        let resp = await Equipment.findOneAndRemove({ _id: equipment_id });
-        if (!resp) {
-            return { "status": 2, "message": "Equipment not found" };
-        } else {
-            return { "status": 1, "message": "Equipment deleted" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting equipment", "error": err };
+equipment_helper.delete_equipment_by_id = async equipment_id => {
+  try {
+    let resp = await Equipment.findOneAndRemove({ _id: equipment_id });
+    if (!resp) {
+      return { status: 2, message: "Equipment not found" };
+    } else {
+      return { status: 1, message: "Equipment deleted" };
     }
-}
-
-
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while deleting equipment",
+      error: err
+    };
+  }
+};
 
 /*
  * get_filtered_records is used to fetch all filtered data
@@ -121,43 +155,42 @@ equipment_helper.delete_equipment_by_id = async (equipment_id) => {
  *          status 2 - If filtered not found, with appropriate message
  */
 equipment_helper.get_filtered_records = async filter_obj => {
-  
-    skip = filter_obj.pageSize * filter_obj.page;
-    try {
-      var searched_record_count = await Equipment.aggregate([
-        {
-          $match: filter_object.columnFilter
-        }
-      ]);
-  
-      var filtered_data = await Equipment.aggregate([
-        {
-          $match: filter_object.columnFilter
-        },
-        { $skip: skip },
-        { $limit: filter_object.pageSize },
-        { $sort: filter_obj.columnSort }
-      ]);
-  
-      if (filtered_data) {
-        return {
-          status: 1,
-          message: "filtered data is found",
-          count: searched_record_count.length,
-          filtered_total_pages: Math.ceil(
-            searched_record_count.length / filter_obj.pageSize
-          ),
-          filtered_equipments: filtered_data
-        };
-      } else {
-        return { status: 2, message: "No filtered data available" };
+  skip = filter_obj.pageSize * filter_obj.page;
+  try {
+    var searched_record_count = await Equipment.aggregate([
+      {
+        $match: filter_object.columnFilter
       }
-    } catch (err) {
+    ]);
+
+    var filtered_data = await Equipment.aggregate([
+      {
+        $match: filter_object.columnFilter
+      },
+      { $skip: skip },
+      { $limit: filter_object.pageSize },
+      { $sort: filter_obj.columnSort }
+    ]);
+
+    if (filtered_data) {
       return {
-        status: 0,
-        message: "Error occured while filtering data",
-        error: err
+        status: 1,
+        message: "filtered data is found",
+        count: searched_record_count.length,
+        filtered_total_pages: Math.ceil(
+          searched_record_count.length / filter_obj.pageSize
+        ),
+        filtered_equipments: filtered_data
       };
+    } else {
+      return { status: 2, message: "No filtered data available" };
     }
-  };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while filtering data",
+      error: err
+    };
+  }
+};
 module.exports = equipment_helper;

@@ -24,9 +24,16 @@ var common_helper = require("../../helpers/common_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/get_by_id_logdate", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
+  if (req.headers["authorization"]) {
+    var decoded = jwtDecode(req.headers["authorization"]);
+  } else {
+    return res.status(config.UNAUTHORIZED).json({
+      message: "authorization token missing"
+    });
+  }
   authUserId = decoded.sub;
   logDate = req.body.logDate;
+
   var schema = {
     logDate: {
       notEmpty: true,
@@ -46,22 +53,21 @@ router.post("/get_by_id_logdate", async (req, res) => {
   if (!errors) {
     // var startdate = moment(logDate).utcOffset(0);
     var startdate = moment(logDate);
-    startdate.set({hour:0,minute:0,second:0,millisecond:0})
-    startdate.toISOString()
-    startdate.format()
+    startdate.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+    startdate.toISOString();
+    startdate.format();
 
     var enddate = moment(logDate);
-    enddate.set({hour:23,minute:59,second:59,millisecond:99})
-    enddate.toISOString()
-    enddate.format()
+    enddate.set({ hour: 23, minute: 59, second: 59, millisecond: 99 });
+    enddate.toISOString();
+    enddate.format();
     logger.trace("Get measurement by authUserId and logDate API called");
     var resp_data = await measurement_helper.get_body_measurement_id({
       userId: authUserId,
       logDate: {
-       "$gte":startdate,
-        "$lte":enddate
+        $gte: startdate,
+        $lte: enddate
       }
-   
     });
     if (resp_data.status == 1 || resp_data.status == 2) {
       measurement_obj.status = resp_data.status;
@@ -94,8 +100,8 @@ router.post("/get_by_id_logdate", async (req, res) => {
 });
 
 /**
- * @api {post} /user/measurement Add
- * @apiName Add
+ * @api {post} /user/measurement Save
+ * @apiName Save
  * @apiGroup User Measurement
  *
  * @apiHeader {String}  Content-Type application/json
@@ -126,135 +132,118 @@ router.post("/", async (req, res) => {
       message: "authorization token missing"
     });
   }
-  authUserId = decoded.sub;
 
-  var schema = {
-    userId: {
-      notEmpty: true,
-      errorMessage: "User ID is required"
-    },
+  var authUserId = decoded.sub;
+  var logDate = req.body.logDate;
+
+  var startdate = moment(logDate);
+  startdate.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+  startdate.toISOString();
+  startdate.format();
+
+  var enddate = moment(logDate);
+  enddate.set({ hour: 23, minute: 59, second: 59, millisecond: 99 });
+  enddate.toISOString();
+  enddate.format();
+  logger.trace("Get measurement by authUserId and logDate API called");
+  var resp_data = await measurement_helper.get_body_measurement_id({
+    userId: authUserId,
     logDate: {
-      notEmpty: true,
-      errorMessage: "Log Date is required"
+      $gte: startdate,
+      $lte: enddate
     }
-  };
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-
-  if (!errors) {
-    var measurement_obj = {
-      userId: authUserId,
-      logDate: req.body.logDate ? req.body.logDate : 0,
-      neck: req.body.neck ? req.body.neck : 0,
-      shoulders: req.body.shoulders ? req.body.shoulders : 0,
-      chest: req.body.chest ? req.body.chest : 0,
-      upperArm: req.body.upperArm ? req.body.upperArm : 0,
-      waist: req.body.waist ? req.body.waist : 0,
-      forearm: req.body.forearm ? req.body.forearm : 0,
-      hips: req.body.hips ? req.body.hips : 0,
-      thigh: req.body.thigh ? req.body.thigh : 0,
-      calf: req.body.calf ? req.body.calf : 0,
-      weight: req.body.weight ? req.body.weight : 0,
-      height: req.body.height ? req.body.height : 0
+  });
+  if (resp_data.status == 2) {
+    var schema = {
+      logDate: {
+        notEmpty: true,
+        errorMessage: "Log Date is required"
+      }
     };
+    req.checkBody(schema);
+    var errors = req.validationErrors();
 
-    let measurement_data = await measurement_helper.insert_body_measurement(
-      measurement_obj
-    );
-    if (measurement_data.status === 0) {
-      logger.error(
-        "Error while inserting measurement data = ",
-        measurement_data
+    if (!errors) {
+      var measurement_obj = {
+        userId: authUserId,
+        logDate: req.body.logDate ? req.body.logDate : 0,
+        neck: req.body.neck ? req.body.neck : 0,
+        shoulders: req.body.shoulders ? req.body.shoulders : 0,
+        chest: req.body.chest ? req.body.chest : 0,
+        upperArm: req.body.upperArm ? req.body.upperArm : 0,
+        waist: req.body.waist ? req.body.waist : 0,
+        forearm: req.body.forearm ? req.body.forearm : 0,
+        hips: req.body.hips ? req.body.hips : 0,
+        thigh: req.body.thigh ? req.body.thigh : 0,
+        calf: req.body.calf ? req.body.calf : 0,
+        weight: req.body.weight ? req.body.weight : 0,
+        height: req.body.height ? req.body.height : 0
+      };
+
+      let measurement_data = await measurement_helper.insert_body_measurement(
+        measurement_obj
       );
-      return res.status(config.BAD_REQUEST).json({ measurement_data });
+      if (measurement_data.status === 0) {
+        logger.error(
+          "Error while inserting measurement data = ",
+          measurement_data
+        );
+        return res.status(config.BAD_REQUEST).json({ measurement_data });
+      } else {
+        return res.status(config.OK_STATUS).json(measurement_data);
+      }
     } else {
-      return res.status(config.OK_STATUS).json(measurement_data);
+      logger.error("Validation Error = ", errors);
+      res.status(config.BAD_REQUEST).json({ message: errors });
     }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
-  }
-});
-
-/**
- * @api {put} /user/measurement/:measurement_id Update
- * @apiName Update
- * @apiGroup User Measurement
- * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
- * @apiParam {String} userId userId of User Collection
- * @apiParam {Date} logDate logDate of bodymesurement
- * @apiParam {Number} [neck] neck of bodymesurement
- * @apiParam {Number} [shoulder] shoulder of bodymesurement
- * @apiParam {Number} [chest] chest of bodymesurement
- * @apiParam {Number} [upperArm] upperArm of bodymesurement
- * @apiParam {Number} [waist] waist of bodymesurement
- * @apiParam {Number} [forearm] forearm of bodymesurement
- * @apiParam {Number} [hips] hips of bodymesurement
- * @apiParam {Number} [thigh] thigh of bodymesurement
- * @apiParam {Number} [calf] calf of bodymesurement
- * @apiParam {Number} [weight] weight of bodymesurement
- * @apiParam {Number} [height] height of bodymesurement
- *
- * @apiSuccess (Success 200) {Array}  measurement of body_measurement document
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.put("/:measurement_id", async (req, res) => {
-  if (req.headers["authorization"]) {
-    var decoded = jwtDecode(req.headers["authorization"]);
-  } else {
-    return res.status(config.UNAUTHORIZED).json({
-      message: "authorization token missing"
-    });
-  }
-  authUserId = decoded.sub;
-
-  var schema = {
-    userId: {
-      notEmpty: true,
-      errorMessage: "User ID is required"
-    },
-    logDate: {
-      notEmpty: true,
-      errorMessage: "Log Date is required"
-    }
-  };
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-
-  if (!errors) {
-    var measurement_obj = {
-      userId: authUserId,
-      logDate: req.body.logDate ? req.body.logDate : 0,
-      neck: req.body.neck ? req.body.neck : 0,
-      shoulders: req.body.shoulders ? req.body.shoulders : 0,
-      chest: req.body.chest ? req.body.chest : 0,
-      upperArm: req.body.upperArm ? req.body.upperArm : 0,
-      waist: req.body.waist ? req.body.waist : 0,
-      forearm: req.body.forearm ? req.body.forearm : 0,
-      hips: req.body.hips ? req.body.hips : 0,
-      thigh: req.body.thigh ? req.body.thigh : 0,
-      calf: req.body.calf ? req.body.calf : 0,
-      weight: req.body.weight ? req.body.weight : 0,
-      height: req.body.height ? req.body.height : 0
+  } else if(resp_data.status==1) 
+  {
+    var schema = {
+      logDate: {
+        notEmpty: true,
+        errorMessage: "Log Date is required"
+      }
     };
+    req.checkBody(schema);
+    var errors = req.validationErrors();
 
-    let measurement_data = await measurement_helper.update_body_measurement(
-      req.params.measurement_id,
-      measurement_obj
-    );
-    if (measurement_data.status === 0) {
-      logger.error(
-        "Error while updating measurement data = ",
-        measurement_data
+    if (!errors) {
+      var measurement_obj = {
+        userId: authUserId,
+        logDate: req.body.logDate ? req.body.logDate : 0,
+        neck: req.body.neck ? req.body.neck : 0,
+        shoulders: req.body.shoulders ? req.body.shoulders : 0,
+        chest: req.body.chest ? req.body.chest : 0,
+        upperArm: req.body.upperArm ? req.body.upperArm : 0,
+        waist: req.body.waist ? req.body.waist : 0,
+        forearm: req.body.forearm ? req.body.forearm : 0,
+        hips: req.body.hips ? req.body.hips : 0,
+        thigh: req.body.thigh ? req.body.thigh : 0,
+        calf: req.body.calf ? req.body.calf : 0,
+        weight: req.body.weight ? req.body.weight : 0,
+        height: req.body.height ? req.body.height : 0
+      };
+
+      console.log(resp_data.measurement._id);
+      let measurement_data = await measurement_helper.update_body_measurement(resp_data.measurement._id,
+        measurement_obj
       );
-      return res.status(config.BAD_REQUEST).json({ measurement_data });
+      if (measurement_data.status === 0) {
+        logger.error(
+          "Error while inserting measurement data = ",
+          measurement_data
+        );
+        return res.status(config.BAD_REQUEST).json({ measurement_data });
+      } else {
+        return res.status(config.OK_STATUS).json(measurement_data);
+      }
     } else {
-      return res.status(config.OK_STATUS).json(measurement_data);
+      logger.error("Validation Error = ", errors);
+      res.status(config.BAD_REQUEST).json({ message: errors });
     }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+  }
+  else{
+    return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
