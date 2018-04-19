@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {put} /user/nutrition_preferences/:nutrition_preferences_id Update
+ * @api {post} /user/nutrition_preferences/ Update
  * @apiName Update
  * @apiGroup Nutrition Preferences
  *
