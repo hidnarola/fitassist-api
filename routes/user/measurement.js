@@ -232,24 +232,24 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {post} /user/measurement Get LogDates of User Measurement
- * @apiName Get LogDates of User Measurement
+ * @api {post} /user/measurement/get_log_dates_by_date Get Logs of User Measurement
+ * @apiName Get Logs of User Measurement
  * @apiGroup User Measurement
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Number} logMonth logMonth of Measurement
+ * @apiParam {Number} logDate logDate of user's Measurement
  *
  * @apiSuccess (Success 200) {JSON} logdates Measurement details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
-router.post("/get_log_dates_by_month", async (req, res) => {
+router.post("/get_log_dates_by_date", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var schema = {
-    logMonth: {
+    logDate: {
       notEmpty: true,
-      errorMessage: "log Month is required"
+      errorMessage: "log Date is required"
     }
   };
   req.checkBody(schema);
@@ -257,12 +257,20 @@ router.post("/get_log_dates_by_month", async (req, res) => {
 
   if (!errors) {
     var authUserId = decoded.sub;
-    logMonth = parseInt(req.body.logMonth);
+    var check = await moment(req.body.logDate);
+    var dateMonth = parseInt(check.format("M"));
+    var dateYear = parseInt(check.format("Y"));
 
     var log_data = await measurement_helper.get_logdata_by_userid([
       { $match: { userId: authUserId } },
-      { $project: { month: { $month: "$logDate" }, date: "$logDate" } },
-      { $match: { month: logMonth } }
+      {
+        $project: {
+          month: { $month: "$logDate" },
+          year: { $year: "$logDate" },
+          date: "$logDate"
+        }
+      },
+      { $match: { month: dateMonth, year: dateYear } }
     ]);
 
     if (log_data.status != 0) {
