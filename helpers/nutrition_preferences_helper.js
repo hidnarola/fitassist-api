@@ -66,40 +66,40 @@ nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid 
   try {
     // look up aggregate mongoose
     let resp = await NutritionPreferences.aggregate([
-        {
-            $unwind: "$excludeIngredients"
-         },
-        {
-            $lookup:
-              {
-                from: "ingredients",
-                localField: "excludeIngredients",
-                foreignField: "_id",
-                as: "excludeIngredients"
-              }
-         },
-         {
-            $unwind: "$excludeIngredients"
-         },
-         {
-            $unwind: "$dietaryRestrictedRecipieTypes"
-         },
-         {
-            $group: {
-                _id: "$_id",
-                dietaryRestrictedRecipieTypes:{ $addToSet: "$dietaryRestrictedRecipieTypes" },
-                recipieDifficulty:{ $first: "$recipieDifficulty" },
-                maxRecipieTime:{ $first: "$maxRecipieTime" },
-                nutritionTargets:{ $first: "$nutritionTargets" },
-                excludeIngredients:{ $addToSet: "$excludeIngredients" },
-                userId:{ $first: "$userId" },
-              
-            }
+      {
+        $unwind: "$excludeIngredients"
+      },
+      {
+        $lookup: {
+          from: "ingredients",
+          localField: "excludeIngredients",
+          foreignField: "_id",
+          as: "excludeIngredients"
+        }
+      },
+      {
+        $unwind: "$excludeIngredients"
+      },
+      {
+        $unwind: "$dietaryRestrictedRecipieTypes"
+      },
+      {
+        $group: {
+          _id: "$_id",
+          dietaryRestrictedRecipieTypes: {
+            $addToSet: "$dietaryRestrictedRecipieTypes"
           },
-
-        
+          recipieDifficulty: { $first: "$recipieDifficulty" },
+          maxRecipieTime: { $first: "$maxRecipieTime" },
+          nutritionTargets: { $first: "$nutritionTargets" },
+          excludeIngredients: { $addToSet: "$excludeIngredients" },
+          userId: { $first: "$userId" }
+        }
+      },
+      {
+        $match: { userId: userid }
+      }
     ]);
-//    let resp = await NutritionPreferences.find({ userId: userid });
     console.log(resp);
     if (!resp) {
       return { status: 2, message: "Nutrition Preferences not found" };

@@ -3881,7 +3881,7 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -4034,7 +4034,7 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -5119,7 +5119,7 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -5503,10 +5503,10 @@
     "groupTitle": "User"
   },
   {
-    "type": "post",
-    "url": "/user/equipment/",
-    "title": "Add User Equipment",
-    "name": "Add_Equipment",
+    "type": "get",
+    "url": "/user/equipment",
+    "title": "Get User's all Equipment",
+    "name": "Get_all_User_s_Equipment",
     "group": "User_Equipment",
     "header": {
       "fields": {
@@ -5515,21 +5515,8 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String[]",
-            "optional": false,
-            "field": "equipmentsId",
-            "description": "<p>equipmentsId of equipments</p>"
           }
         ]
       }
@@ -5565,11 +5552,12 @@
     "groupTitle": "User_Equipment"
   },
   {
-    "type": "get",
-    "url": "/user/equipment/auth_user_id",
-    "title": "Get all User Equipment",
-    "name": "Get_all_Equipment",
+    "type": "post",
+    "url": "/user/equipment/",
+    "title": "Save User Equipment",
+    "name": "Save_Equipment",
     "group": "User_Equipment",
+    "description": "<p>Save User Equipment API is for save and update User Equipment. if record is exists it would update else insert.</p>",
     "header": {
       "fields": {
         "Header": [
@@ -5577,8 +5565,21 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "equipmentsId",
+            "description": "<p>equipmentsId of equipments</p>"
           }
         ]
       }
@@ -5591,7 +5592,7 @@
             "type": "Array",
             "optional": false,
             "field": "user_equipments",
-            "description": "<p>Array of equipments document</p>"
+            "description": "<p>Array of user's equipments document</p>"
           }
         ]
       }
@@ -5615,6 +5616,75 @@
   },
   {
     "type": "post",
+    "url": "/user/measurement",
+    "title": "Get LogDates of User Measurement",
+    "name": "Get_LogDates_of_User_Measurement",
+    "group": "User_Measurement",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "logMonth",
+            "description": "<p>logMonth of Measurement</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "logdates",
+            "description": "<p>Measurement details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/measurement.js",
+    "groupTitle": "User_Measurement"
+  },
+  {
+    "type": "post",
     "url": "/user/measurement/get_by_id_logdate",
     "title": "Get User Measurement",
     "name": "Get_User_Measurement_by_User_Id_and_LogDate",
@@ -5633,7 +5703,7 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -5685,8 +5755,8 @@
   {
     "type": "post",
     "url": "/user/measurement",
-    "title": "Save",
-    "name": "Save",
+    "title": "Save User Measurement",
+    "name": "Save_User_Measurement",
     "group": "User_Measurement",
     "header": {
       "fields": {
@@ -5702,7 +5772,7 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]

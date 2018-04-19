@@ -36,7 +36,7 @@ user_helper.get_all_users = async () => {
  */
 user_helper.get_user_by_id = async user_id => {
   try {
-    var user = await User.findOne({ _id: { $eq: user_id } });
+    var user = await User.findOne({ authUserId: { $eq: user_id } });
     if (user) {
       return { status: 1, message: "User details found", user: user };
     } else {
@@ -116,8 +116,10 @@ user_helper.insert_user = async user_object => {
  * @developed by "amc"
  */
 user_helper.update_user_by_id = async (user_id, user_obj) => {
+  console.log(user_id)
+  console.log(user_obj);
   try {
-    let user = await User.findOneAndUpdate({ _id: user_id }, user_obj);
+    let user = await User.findOneAndUpdate({ authUserId: user_id }, user_obj);
     if (!user) {
       return { status: 2, message: "Record has not updated" };
     } else {

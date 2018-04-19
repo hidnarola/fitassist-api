@@ -10,12 +10,7 @@ var user_equipments_helper = {};
  */
 user_equipments_helper.get_all_user_equipment = async user_auth_id => {
     try {
-      var user_equipment = await UserEquipments.aggregate([
-        {
-          $match: {userId:user_auth_id}
-        },      
-        
-      ]);
+      var user_equipment = await UserEquipments.findOne({userId:user_auth_id});
       if (user_equipment) {
         return { status: 1, message: "User Equipments found", user_equipments: user_equipment };
       } else {
@@ -59,13 +54,13 @@ user_equipments_helper.insert_user_equipment = async (user_equipment_obj) => {
  *          status 1 - If user's equipment data updated, with user's equipment object
  *          status 2 - If user's equipment not updated, with appropriate message
  */
-user_equipments_helper.update_user_equipment = async (user_equipment_obj) => {
+user_equipments_helper.update_user_equipment = async (id,user_equipment_obj) => {
   try {
-    let measurement = await Measurement.findOneAndUpdate({ _id: body_measurement_id }, measurement_obj, { new: true });
-    if (!measurement) {
+    let user_equipments = await UserEquipments.findOneAndUpdate({ _id: id }, user_equipment_obj, { new: true });
+    if (!user_equipments) {
         return { "status": 2, "message": "Record has not updated" };
     } else {
-        return { "status": 1, "message": "Record has been updated", "measurement": measurement };
+        return { "status": 1, "message": "Record has been updated", "user_equipments": user_equipments };
     }
 } catch (err) {
     return { "status": 0, "message": "Error occured while updating Exercise Types", "error": err }

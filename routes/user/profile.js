@@ -2,7 +2,7 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 var async = require("async");
-
+var jwtDecode = require("jwt-decode");
 var router = express.Router();
 
 var config = require("../../config");
@@ -16,7 +16,7 @@ var user_helper = require("../../helpers/user_helper");
  * @api {put} /user/profile Profile - Update
  * @apiName Profile - Update
  * @apiGroup User
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} firstName First name of user
  * @apiParam {String} lastName Last name of user
  * @apiParam {String} email Email address
@@ -30,8 +30,10 @@ var user_helper = require("../../helpers/user_helper");
  * @apiSuccess (Success 200) {Array} user Array of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/profile/:user_id", async (req, res) => {
-  user_id = req.params.user_id;
+router.put("/", async (req, res) => {
+  
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
 
   var schema = {
     firstName: {
@@ -85,14 +87,14 @@ router.put("/profile/:user_id", async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
-      mobileNumber: req.body.mobileNumber,
+      mobileNumber: req.body.mobileNumber?req.body.mobileNumber:null,
       gender: req.body.gender,
-      dateOfBirth: req.body.dateOfBirth,
-      height: req.body.height,
-      weight: req.body.weight,
+      dateOfBirth: req.body.dateOfBirth?req.body.dateOfBirth:null,
+      height: req.body.height?req.body.height:null,
+      weight: req.body.weight?req.body.weight:null,
       aboutMe: req.body.aboutMe,
-      goals: req.body.goals,
-      workoutLocation:req.body.workoutLocation,
+      goals: req.body.goals?req.body.goals:null,
+      workoutLocation:req.body.workoutLocation?req.body.workoutLocation:null,
     };
 
     //image upload
@@ -133,16 +135,15 @@ router.put("/profile/:user_id", async (req, res) => {
     }
     if (filename) {
       user_obj.avatar = "uploads/user/" + filename;
-      resp_data = await user_helper.get_user_by_id(user_id);
+      resp_data = await user_helper.get_user_by_id(authUserId);
       try {
         fs.unlink(resp_data.user.avatar, function() {
           console.log("Image deleted");
         });
       } catch (err) {}
     }
-    console.log(user_obj);
 
-    let user_data = await user_helper.update_user_by_id(user_id, user_obj);
+    let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
     if (user_data.status === 0) {
       logger.error("Error while updating user data = ", user_data);
       return res.status(config.BAD_REQUEST).json({ user_data });

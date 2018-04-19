@@ -31,7 +31,6 @@ var common_helper = require("../../helpers/common_helper");
 router.post("/filter", async (req, res) => {
   
     filter_object = common_helper.changeObject(req.body);
-    console.log(filter_object);
     let filtered_data = await recipes_helper.get_filtered_records(filter_object);
     //console.log(filtered_data);
     if (filtered_data.status === 0) {
@@ -169,7 +168,6 @@ router.post("/", async (req, res) => {
             //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
         }
         recipe_obj.image='uploads/recipe/' + filename;
-        console.log(recipe_obj);
         
             let recipe_data = await recipes_helper.insert_recipes(recipe_obj);
             if (recipe_data.status === 0) {

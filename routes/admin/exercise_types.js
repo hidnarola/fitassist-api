@@ -120,7 +120,6 @@ router.post('/', async (req, res) => {
 
         let exercise_type_data = await exercise_types_helper.insert_exercise_type(exercise_type_obj);
         if (exercise_type_data.status === 0) {
-            console.log('heyy');
 
             logger.error("Error while inserting Exercise type data = ", exercise_type_data);
             res.status(config.BAD_REQUEST).json({ exercise_type_data });

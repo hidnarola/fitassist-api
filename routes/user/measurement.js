@@ -18,20 +18,14 @@ var common_helper = require("../../helpers/common_helper");
  * @apiName Get User Measurement by User Id and LogDate
  * @apiGroup User Measurement
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {Date} logDate logDate of bodymesurement
  * @apiSuccess (Success 200) {Array}  measurement_logs  data of body_measurement document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/get_by_id_logdate", async (req, res) => {
-  if (req.headers["authorization"]) {
-    var decoded = jwtDecode(req.headers["authorization"]);
-  } else {
-    return res.status(config.UNAUTHORIZED).json({
-      message: "authorization token missing"
-    });
-  }
-  authUserId = decoded.sub;
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   logDate = req.body.logDate;
 
   var schema = {
@@ -45,10 +39,7 @@ router.post("/get_by_id_logdate", async (req, res) => {
   var measurement_obj = {
     status: 1,
     message: "",
-    measurement_logs: {
-      measurement: {},
-      logdates: []
-    }
+    measurement: {}
   };
   if (!errors) {
     // var startdate = moment(logDate).utcOffset(0);
@@ -73,23 +64,23 @@ router.post("/get_by_id_logdate", async (req, res) => {
       measurement_obj.status = resp_data.status;
       measurement_obj.message = resp_data.message;
       if (resp_data.measurement) {
-        measurement_obj.measurement_logs.measurement = resp_data.measurement;
+        measurement_obj.measurement = resp_data.measurement;
       }
 
-      var check = await moment(req.body.logDate);
-      var dateMonth = parseInt(check.format("M"));
+      // var check = await moment(req.body.logDate);
+      // var dateMonth = parseInt(check.format("M"));
 
-      var log_data = await measurement_helper.get_logdata_by_userid([
-        { $match: { userId: authUserId } },
-        { $project: { month: { $month: "$logDate" }, date: "$logDate" } },
-        { $match: { month: dateMonth } }
-      ]);
+      // var log_data = await measurement_helper.get_logdata_by_userid([
+      //   { $match: { userId: authUserId } },
+      //   { $project: { month: { $month: "$logDate" }, date: "$logDate" } },
+      //   { $match: { month: dateMonth } }
+      // ]);
 
-      if (log_data.status != 0) {
-        measurement_obj.measurement_logs.logdates = log_data.logdata;
-      } else {
-        measurement_obj.measurement_logs.logdates = log_data.message;
-      }
+      // if (log_data.status != 0) {
+      //   measurement_obj.measurement_logs.logdates = log_data.logdata;
+      // } else {
+      //   measurement_obj.measurement_logs.logdates = log_data.message;
+      // }
 
       res.status(config.OK_STATUS).json(measurement_obj);
     }
@@ -100,12 +91,12 @@ router.post("/get_by_id_logdate", async (req, res) => {
 });
 
 /**
- * @api {post} /user/measurement Save
- * @apiName Save
+ * @api {post} /user/measurement Save User Measurement
+ * @apiName Save User Measurement
  * @apiGroup User Measurement
  *
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} userId userId of User Collection
  * @apiParam {Date} logDate logDate of bodymesurement
  * @apiParam {Number} [neck] neck of bodymesurement
@@ -125,14 +116,7 @@ router.post("/get_by_id_logdate", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
-  if (req.headers["authorization"]) {
-    var decoded = jwtDecode(req.headers["authorization"]);
-  } else {
-    return res.status(config.UNAUTHORIZED).json({
-      message: "authorization token missing"
-    });
-  }
-
+  var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var logDate = req.body.logDate;
 
@@ -160,6 +144,7 @@ router.post("/", async (req, res) => {
         errorMessage: "Log Date is required"
       }
     };
+
     req.checkBody(schema);
     var errors = req.validationErrors();
 
@@ -196,8 +181,7 @@ router.post("/", async (req, res) => {
       logger.error("Validation Error = ", errors);
       res.status(config.BAD_REQUEST).json({ message: errors });
     }
-  } else if(resp_data.status==1) 
-  {
+  } else if (resp_data.status == 1) {
     var schema = {
       logDate: {
         notEmpty: true,
@@ -225,7 +209,8 @@ router.post("/", async (req, res) => {
       };
 
       console.log(resp_data.measurement._id);
-      let measurement_data = await measurement_helper.update_body_measurement(resp_data.measurement._id,
+      let measurement_data = await measurement_helper.update_body_measurement(
+        resp_data.measurement._id,
         measurement_obj
       );
       if (measurement_data.status === 0) {
@@ -241,9 +226,61 @@ router.post("/", async (req, res) => {
       logger.error("Validation Error = ", errors);
       res.status(config.BAD_REQUEST).json({ message: errors });
     }
-  }
-  else{
+  } else {
     return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
+});
+
+/**
+ * @api {post} /user/measurement/get_log_dates_by_date Get Logs of User Measurement
+ * @apiName Get Logs of User Measurement
+ * @apiGroup User Measurement
+ *
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Number} logDate logDate of user's Measurement
+ *
+ * @apiSuccess (Success 200) {JSON} logdates Measurement details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+
+router.post("/get_log_dates_by_date", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var schema = {
+    logDate: {
+      notEmpty: true,
+      errorMessage: "log Date is required"
+    }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+
+  if (!errors) {
+    var authUserId = decoded.sub;
+    var check = await moment(req.body.logDate);
+    var dateMonth = parseInt(check.format("M"));
+    var dateYear = parseInt(check.format("Y"));
+
+    var log_data = await measurement_helper.get_logdata_by_userid([
+      { $match: { userId: authUserId } },
+      {
+        $project: {
+          month: { $month: "$logDate" },
+          year: { $year: "$logDate" },
+          date: "$logDate"
+        }
+      },
+      { $match: { month: dateMonth, year: dateYear } }
+    ]);
+
+    if (log_data.status != 0) {
+      res.status(config.OK_STATUS).json(log_data);
+    } else {
+      return res.status(config.BAD_REQUEST).json({ log_data });
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.BAD_REQUEST).json({ message: errors });
   }
 });
 
