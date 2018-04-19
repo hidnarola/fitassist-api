@@ -23,11 +23,8 @@ var nutritionTargetsSchema = new Schema({
 });
 var NutritionPreferenceSchema = new Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
-      required: true
-    },
+    userId: { type: String, ref: "users", field: "authUserId", required: true },
+
     dietaryRestrictedRecipieTypes: [
       {
         type: String,

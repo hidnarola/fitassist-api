@@ -72,7 +72,7 @@ measurement_helper.get_logdata_by_userid = async (id) => {
     try {
         var logdata = await Measurement.aggregate(id);
         if (logdata) {
-            return { "status": 1, "message": "logdata found", "logdata": logdata };
+            return { "status": 1, "message": "logdata found", "logdates": logdata };
         } else {
             return { "status": 2, "message": "No logdata available" };
         }

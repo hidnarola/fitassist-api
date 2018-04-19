@@ -11,23 +11,17 @@ var user_equipment_helper = require("../../helpers/user_equipment_helper");
 var equipment_helper = require("../../helpers/equipment_helper");
 
 /**
- * @api {get} /user/equipment/auth_user_id Get all User Equipment
- * @apiName Get all Equipment
+ * @api {get} /user/equipment Get User's all Equipment
+ * @apiName Get all User's Equipment
  * @apiGroup User Equipment
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
- * @apiSuccess (Success 200) {Array} user_equipments Array of equipments document
+ * @apiSuccess (Success 200) {Array} equipments Array of equipments document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-  if (req.headers["authorization"]) {
-    var decoded = jwtDecode(req.headers["authorization"]);
-  } else {
-    return res.status(config.UNAUTHORIZED).json({
-      message: "authorization token missing"
-    });
-  }
+  var decoded = jwtDecode(req.headers["authorization"]);
   authUserId = decoded.sub;
   var user_equipment_obj = {
     status: 1,
@@ -58,20 +52,14 @@ router.get("/", async (req, res) => {
  * @api {post} /user/equipment/ Save User Equipment
  * @apiName Save Equipment
  * @apiGroup User Equipment
- *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiDescription Save User Equipment API is for save and update User Equipment. if record is exists it would update else insert.
+ * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {String[]} equipmentsId equipmentsId of equipments
  * @apiSuccess (Success 200) {Array} user_equipments Array of user's equipments document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
-  if (req.headers["authorization"]) {
-    var decoded = jwtDecode(req.headers["authorization"]);
-  } else {
-    return res.status(config.UNAUTHORIZED).json({
-      message: "authorization token missing"
-    });
-  }
+  var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
   var user_equipment_obj = {
@@ -82,31 +70,37 @@ router.post("/", async (req, res) => {
   var resp_data = await user_equipment_helper.get_all_user_equipment(
     authUserId
   );
-  if(resp_data.status==2)
-  {
-    let user_equipment_data = await user_equipment_helper.insert_user_equipment(user_equipment_obj);
+  console.log(resp_data.user_equipments);
+  if (resp_data.status == 2) {
+    let user_equipment_data = await user_equipment_helper.insert_user_equipment(
+      user_equipment_obj
+    );
     if (user_equipment_data.status === 0) {
-        logger.error("Error while inserting user equipments = ", user_equipment_data);
-        res.status(config.BAD_REQUEST).json({ user_equipment_data });
+      logger.error(
+        "Error while inserting user equipments = ",
+        user_equipment_data
+      );
+      res.status(config.BAD_REQUEST).json({ user_equipment_data });
     } else {
-        res.status(config.OK_STATUS).json(user_equipment_data);
-    }  
-  }
-  else if(resp_data.status==1)
-  {
-    let user_equipment_data = await user_equipment_helper.update_user_equipment(user_equipment_obj);
+      res.status(config.OK_STATUS).json(user_equipment_data);
+    }
+  } else if (resp_data.status == 1) {
+    let user_equipment_data = await user_equipment_helper.update_user_equipment(
+      resp_data.user_equipments._id,
+      user_equipment_obj
+    );
     if (user_equipment_data.status === 0) {
-        logger.error("Error while inserting user equipments = ", user_equipment_data);
-        res.status(config.BAD_REQUEST).json({ user_equipment_data });
+      logger.error(
+        "Error while inserting user equipments = ",
+        user_equipment_data
+      );
+      res.status(config.BAD_REQUEST).json({ user_equipment_data });
     } else {
-        res.status(config.OK_STATUS).json(user_equipment_data);
-    } 
+      res.status(config.OK_STATUS).json(user_equipment_data);
+    }
+  } else {
+    return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
-  else{
-    
-    console.log('error');
-  }
- 
 });
 
 module.exports = router;

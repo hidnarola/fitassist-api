@@ -29,7 +29,6 @@ var common_helper = require("../../helpers/common_helper");
 
 router.post("/filter", async (req, res) => {
   filter_object = common_helper.changeObject(req.body);
-  console.log(filter_object);
   let filtered_data = await ingredients_helper.get_filtered_records(
     filter_object
   );
