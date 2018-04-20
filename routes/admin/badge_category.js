@@ -16,7 +16,29 @@ var common_helper = require("../../helpers/common_helper");
  * @api {post} /admin/badge_category/filter Filter
  * @apiName Filter
  * @apiGroup Badge Category
- *
+ * @apiDescription Request Object :<pre><code>
+ * {
+  pageSize: 10,
+  page: 0,
+  columnFilter: [
+    {
+      id: "firstName",
+      value: "mi"
+    }
+  ],
+  columnSort: [
+    {
+      id: "firstName",
+      value: true
+    }
+  ],
+  columnFilterEqual: [
+    {
+      id: "email",
+      value: "ake@narola.email"
+    }
+  ]
+}</code></pre>
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
@@ -123,7 +145,7 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/badge_category Update
+ * @api {put} /admin/badge_category/:badge_category_id Update
  * @apiName Update
  * @apiGroup  Badge Category
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -173,7 +195,7 @@ router.put("/:badge_category_id", async (req, res) => {
  */
 router.delete("/:badge_category_id", async (req, res) => {
 
-  logger.trace("Delete badge_category API - Id = ", req.query.id);
+  logger.trace("Delete badge_category API - Id = ", req.body.badge_category_id);
   let badge_category_data = await badge_category_helper.delete_badge_category_by_id(
     req.params.badge_category_id
   );

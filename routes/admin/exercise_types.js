@@ -12,7 +12,29 @@ var common_helper = require('../../helpers/common_helper');
  * @api {post} /admin/exercise_type/filter Filter
  * @apiName Filter
  * @apiGroup Exercise Type
- * 
+ * @apiDescription Request Object :<pre><code>
+ * {
+  pageSize: 10,
+  page: 0,
+  columnFilter: [
+    {
+      id: "firstName",
+      value: "mi"
+    }
+  ],
+  columnSort: [
+    {
+      id: "firstName",
+      value: true
+    }
+  ],
+  columnFilterEqual: [
+    {
+      id: "email",
+      value: "ake@narola.email"
+    }
+  ]
+}</code></pre>
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
@@ -41,9 +63,7 @@ router.post("/filter", async (req, res) => {
  * @api {get} /admin/exercise_type Get all
  * @apiName Get all
  * @apiGroup Exercise Type
- * 
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
  * @apiSuccess (Success 200) {Array} exercise_types Array of exercise_types's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

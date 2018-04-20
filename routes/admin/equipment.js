@@ -16,6 +16,29 @@ var common_helper = require("../../helpers/common_helper");
 /**
  * @api {post} /admin/equipment/filter Filter
  * @apiName Filter
+ * @apiDescription Request Object :<pre><code>
+ * {
+  pageSize: 10,
+  page: 0,
+  columnFilter: [
+    {
+      id: "firstName",
+      value: "mi"
+    }
+  ],
+  columnSort: [
+    {
+      id: "firstName",
+      value: true
+    }
+  ],
+  columnFilterEqual: [
+    {
+      id: "email",
+      value: "ake@narola.email"
+    }
+  ]
+}</code></pre>
  * @apiGroup Equipment
  * 
  * @apiHeader {String}  Content-Type application/json

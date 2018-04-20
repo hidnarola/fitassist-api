@@ -100,7 +100,7 @@ badge_category_helper.update_badge_category_by_id = async (badge_category_id, ba
  */
 badge_category_helper.delete_badge_category_by_id = async (badge_category_id) => {
     try {
-        let resp = await BadgeCategory.findOneAndRemove({ _id: badge_category_id });
+        let resp = await BadgeCategory.findOneAndUpdate({ _id: badge_category_id }, {isDeleted:1});
         if (!resp) {
             return { "status": 2, "message": "badge category not found" };
         } else {

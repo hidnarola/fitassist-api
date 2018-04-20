@@ -15,7 +15,29 @@ var common_helper = require("../../helpers/common_helper");
  * @api {post} /admin/recipes/filter Filter
  * @apiName Filter
  * @apiGroup Recipes
- * 
+ * @apiDescription Request Object :<pre><code>
+ * {
+  pageSize: 10,
+  page: 0,
+  columnFilter: [
+    {
+      id: "firstName",
+      value: "mi"
+    }
+  ],
+  columnSort: [
+    {
+      id: "firstName",
+      value: true
+    }
+  ],
+  columnFilterEqual: [
+    {
+      id: "email",
+      value: "ake@narola.email"
+    }
+  ]
+}</code></pre>
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * 
