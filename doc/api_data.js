@@ -1,5 +1,436 @@
 define({ "api": [
   {
+    "type": "post",
+    "url": "/admin/user/checkemail",
+    "title": "Check Unique",
+    "name": "Check_Unique",
+    "group": "Admin_Side_User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>email to be check uniqueness</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin_Side_User"
+  },
+  {
+    "type": "delete",
+    "url": "/admin/user/:user_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "Admin_Side_User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin_Side_User"
+  },
+  {
+    "type": "get",
+    "url": "/admin/user",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "Admin_Side_User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "users",
+            "description": "<p>Array of users document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin_Side_User"
+  },
+  {
+    "type": "put",
+    "url": "/admin/user/:user_id",
+    "title": "Update",
+    "name": "Update",
+    "group": "Admin_Side_User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "firstName",
+            "description": "<p>First name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "lastName",
+            "description": "<p>Last name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email address</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "mobileNumber",
+            "description": "<p>mobileNumber</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "gender",
+            "description": "<p>gender | Possible Values ('male', 'female', 'transgender')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": true,
+            "field": "dateOfBirth",
+            "description": "<p>Date of Birth</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": true,
+            "field": "goals",
+            "description": "<p>goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": true,
+            "field": "user_img",
+            "description": "<p>avatar</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "aboutMe",
+            "description": "<p>aboutMe</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "status",
+            "description": "<p>status</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Array of users document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin_Side_User"
+  },
+  {
+    "type": "post",
+    "url": "/admin/user/filter",
+    "title": "User Filter",
+    "name": "User_User_Filter",
+    "group": "Admin_Side_User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilter",
+            "description": "<p>columnFilter Object for filter data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnSort",
+            "description": "<p>columnSort Object for Sorting Data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilterEqual",
+            "description": "<p>columnFilterEqual Object for select box</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>pageSize</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>page number</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "filtered_users",
+            "description": "<p>filtered details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin_Side_User"
+  },
+  {
+    "type": "get",
+    "url": "/admin/user/user_id",
+    "title": "Get by ID",
+    "name": "Users_by_ID",
+    "group": "Admin_Side_User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Array of user document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "Admin_Side_User"
+  },
+  {
     "type": "get",
     "url": "/auth0_user_sync",
     "title": "Auth0 User Sync",
@@ -35,6 +466,284 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/index.js",
     "groupTitle": "Auth0_User_Sync"
+  },
+  {
+    "type": "post",
+    "url": "/admin/badge_category",
+    "title": "Add",
+    "name": "Add",
+    "group": "Badge_Category",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of badge_category</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "badge_category",
+            "description": "<p>added badge_category detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/badge_category.js",
+    "groupTitle": "Badge_Category"
+  },
+  {
+    "type": "delete",
+    "url": "/admin/badge_category/:badge_category_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "Badge_Category",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/badge_category.js",
+    "groupTitle": "Badge_Category"
+  },
+  {
+    "type": "get",
+    "url": "/admin/badge_category/badge_category_id",
+    "title": "Get by ID",
+    "name": "Get_Badge_Category_by_ID",
+    "group": "Badge_Category",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "badge_category",
+            "description": "<p>Array of badge_category document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/badge_category.js",
+    "groupTitle": "Badge_Category"
+  },
+  {
+    "type": "get",
+    "url": "/admin/badge_category",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "Badge_Category",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "badge_categories",
+            "description": "<p>Array of badge_category document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/badge_category.js",
+    "groupTitle": "Badge_Category"
+  },
+  {
+    "type": "put",
+    "url": "/admin/badge_category",
+    "title": "Update",
+    "name": "Update",
+    "group": "Badge_Category",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of badge category</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "badge_category",
+            "description": "<p>Array of badge_category document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/badge_category.js",
+    "groupTitle": "Badge_Category"
   },
   {
     "type": "post",
@@ -3869,55 +4578,6 @@ define({ "api": [
     "groupTitle": "Nutrition_Preferences"
   },
   {
-    "type": "get",
-    "url": "/user/nutrition_preferences/:userid",
-    "title": "Get by User ID",
-    "name": "Get_by_User_ID",
-    "group": "Nutrition_Preferences",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "nutrition_preference",
-            "description": "<p>nutrition_preferences's document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/nutrition_preferences.js",
-    "groupTitle": "Nutrition_Preferences"
-  },
-  {
     "type": "put",
     "url": "/admin/nutrition_preferences/:nutrition_preferences_id",
     "title": "Update",
@@ -4012,103 +4672,6 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/admin/nutrition_preferences.js",
-    "groupTitle": "Nutrition_Preferences"
-  },
-  {
-    "type": "put",
-    "url": "/user/nutrition_preferences/:nutrition_preferences_id",
-    "title": "Update",
-    "name": "Update",
-    "group": "Nutrition_Preferences",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>userId of User</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Enum-Array",
-            "optional": false,
-            "field": "dietaryRestrictedRecipieTypes",
-            "description": "<p>| Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Enum-Array",
-            "optional": false,
-            "field": "recipieDifficulty",
-            "description": "<p>recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Array",
-            "optional": false,
-            "field": "nutritionTargets",
-            "description": "<p>nutritionTargets  [title:{title},start:{start value},end:{end value}]</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Array",
-            "optional": false,
-            "field": "maxRecipieTime",
-            "description": "<p>Description [{dayDrive : enum, time : 'value'}] | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "nutrition_preference",
-            "description": "<p>nutrition_preference details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/nutrition_preferences.js",
     "groupTitle": "Nutrition_Preferences"
   },
   {
@@ -4947,166 +5510,6 @@ define({ "api": [
     "groupTitle": "Shopping_Cart"
   },
   {
-    "type": "post",
-    "url": "/admin/user/checkemail",
-    "title": "Check Unique",
-    "name": "Check_Unique",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "email",
-            "description": "<p>email to be check uniqueness</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/users.js",
-    "groupTitle": "User"
-  },
-  {
-    "type": "delete",
-    "url": "/admin/user/:user_id",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/users.js",
-    "groupTitle": "User"
-  },
-  {
-    "type": "get",
-    "url": "/admin/user",
-    "title": "Get all",
-    "name": "Get_all",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "users",
-            "description": "<p>Array of users document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/users.js",
-    "groupTitle": "User"
-  },
-  {
     "type": "put",
     "url": "/user/profile",
     "title": "Profile - Update",
@@ -5232,277 +5635,6 @@ define({ "api": [
     "groupTitle": "User"
   },
   {
-    "type": "put",
-    "url": "/admin/user/:user_id",
-    "title": "Update",
-    "name": "Update",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "firstName",
-            "description": "<p>First name of user</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "lastName",
-            "description": "<p>Last name of user</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "email",
-            "description": "<p>Email address</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": true,
-            "field": "mobileNumber",
-            "description": "<p>mobileNumber</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Enum",
-            "optional": false,
-            "field": "gender",
-            "description": "<p>gender | Possible Values ('male', 'female', 'transgender')</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Date",
-            "optional": true,
-            "field": "dateOfBirth",
-            "description": "<p>Date of Birth</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Enum-Array",
-            "optional": true,
-            "field": "goals",
-            "description": "<p>goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "File",
-            "optional": true,
-            "field": "user_img",
-            "description": "<p>avatar</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "aboutMe",
-            "description": "<p>aboutMe</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Boolean",
-            "optional": false,
-            "field": "status",
-            "description": "<p>status</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "user",
-            "description": "<p>Array of users document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/users.js",
-    "groupTitle": "User"
-  },
-  {
-    "type": "post",
-    "url": "/admin/user/filter",
-    "title": "User Filter",
-    "name": "User_User_Filter",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnFilter",
-            "description": "<p>columnFilter Object for filter data</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnSort",
-            "description": "<p>columnSort Object for Sorting Data</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnFilterEqual",
-            "description": "<p>columnFilterEqual Object for select box</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "pageSize",
-            "description": "<p>pageSize</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "page",
-            "description": "<p>page number</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "filtered_users",
-            "description": "<p>filtered details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/users.js",
-    "groupTitle": "User"
-  },
-  {
-    "type": "get",
-    "url": "/admin/user/user_id",
-    "title": "Get by ID",
-    "name": "Users_by_ID",
-    "group": "User",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "user",
-            "description": "<p>Array of user document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/users.js",
-    "groupTitle": "User"
-  },
-  {
     "type": "get",
     "url": "/user/equipment",
     "title": "Get User's all Equipment",
@@ -5529,7 +5661,7 @@ define({ "api": [
             "type": "Array",
             "optional": false,
             "field": "equipments",
-            "description": "<p>Array of equipments document</p>"
+            "description": "<p>Array of equipments document.</p> <pre><code>Response Data: <br>{<br>     \"status\": 1,<br>     \"message\": \"Record founds\",<br>     \"equipments\": {<br>         \"user_equipments\": {},<br>         \"all_equipments\": []<br>     }<br> }</code></pre>"
           }
         ]
       }
@@ -5616,9 +5748,9 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/measurement",
-    "title": "Get LogDates of User Measurement",
-    "name": "Get_LogDates_of_User_Measurement",
+    "url": "/user/measurement/get_log_dates_by_date",
+    "title": "Get Logs of User Measurement",
+    "name": "Get_Logs_of_User_Measurement",
     "group": "User_Measurement",
     "header": {
       "fields": {
@@ -5647,8 +5779,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "Number",
             "optional": false,
-            "field": "logMonth",
-            "description": "<p>logMonth of Measurement</p>"
+            "field": "logDate",
+            "description": "<p>logDate of user's Measurement</p>"
           }
         ]
       }
@@ -5904,5 +6036,145 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/measurement.js",
     "groupTitle": "User_Measurement"
+  },
+  {
+    "type": "get",
+    "url": "/user/nutrition_preferences",
+    "title": "Get by User ID",
+    "name": "Get_by_User_ID",
+    "group": "User_Nutrition_Preferences",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>nutrition_preferences's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/nutrition_preferences.js",
+    "groupTitle": "User_Nutrition_Preferences"
+  },
+  {
+    "type": "post",
+    "url": "/user/nutrition_preferences/save",
+    "title": "Save Nutrition Preference",
+    "name": "Save",
+    "group": "User_Nutrition_Preferences",
+    "description": "<p>Add Nutrition Preference if not exists else update existing document</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "dietaryRestrictedRecipieTypes",
+            "description": "<p>| Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "recipieDifficulty",
+            "description": "<p>recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "nutritionTargets",
+            "description": "<p>nutritionTargets  [title:{title},start:{start value},end:{end value}]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "maxRecipieTime",
+            "description": "<p>Description [{dayDrive : enum, time : 'value'}] | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>nutrition_preference details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/nutrition_preferences.js",
+    "groupTitle": "User_Nutrition_Preferences"
   }
 ] });

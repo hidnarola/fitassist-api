@@ -16,6 +16,7 @@ var ingredient = require("./admin/ingredients");
 var recipes = require("./admin/recipes");
 var shoppingcart = require("./admin/shoppingcart");
 var nutrition_preferences = require("./admin/nutrition_preferences");
+var badge_category = require("./admin/badge_category");
 // var item = require("./admin/item");
 
 router.use("/nutrition", auth, authorization, nutrition);
@@ -30,6 +31,7 @@ router.use("/ingredient", auth, authorization, ingredient);
 router.use("/recipes", auth, authorization, recipes);
 router.use("/shoppingcart", auth, authorization, shoppingcart);
 router.use("/nutrition_preferences", auth, authorization, nutrition_preferences);
+router.use("/badge_category", auth, authorization, badge_category);
 
 
 module.exports = router;

@@ -17,7 +17,15 @@ var equipment_helper = require("../../helpers/equipment_helper");
  *
  * @apiHeader {String}  authorization user's unique access-key
  *
- * @apiSuccess (Success 200) {Array} equipments Array of equipments document
+ * @apiSuccess (Success 200) {Array} equipments Array of equipments document.
+ * <pre><code>Response Data: <br>{<br>
+    "status": 1,<br>
+    "message": "Record founds",<br>
+    "equipments": {<br>
+        "user_equipments": {},<br>
+        "all_equipments": []<br>
+    }<br>
+}</code></pre>
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {

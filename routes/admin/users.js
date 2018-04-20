@@ -14,7 +14,7 @@ var common_helper = require("../../helpers/common_helper");
 /**
  * @api {post} /admin/user/filter User Filter
  * @apiName User User Filter
- * @apiGroup User
+ * @apiGroup Admin Side User
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -43,7 +43,7 @@ router.post("/filter", async (req, res) => {
 /**
  * @api {get} /admin/user Get all
  * @apiName Get all
- * @apiGroup User
+ * @apiGroup Admin Side User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} users Array of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -63,7 +63,7 @@ router.get("/", async (req, res) => {
 /**
  * @api {get} /admin/user/user_id Get by ID
  * @apiName Users by ID
- * @apiGroup User
+ * @apiGroup Admin Side User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} user Array of user document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -84,7 +84,7 @@ router.get("/:user_id", async (req, res) => {
 /**
  * @api {put} /admin/user/:user_id Update
  * @apiName Update
- * @apiGroup User
+ * @apiGroup Admin Side User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} firstName First name of user
  * @apiParam {String} lastName Last name of user
@@ -227,7 +227,7 @@ router.put("/:user_id", async (req, res) => {
 /**
  * @api {delete} /admin/user/:user_id Delete
  * @apiName Delete
- * @apiGroup User
+ * @apiGroup Admin Side User
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {String} Success message
@@ -253,7 +253,7 @@ router.delete("/:user_id", async (req, res) => {
 /**
  * @api {post} /admin/user/checkemail Check Unique
  * @apiName Check Unique
- * @apiGroup User
+ * @apiGroup Admin Side User
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} email email to be check uniqueness

@@ -100,8 +100,7 @@ nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid 
         $match: { userId: userid }
       }
     ]);
-    console.log("resp:_-----> ",resp.obj);
-    if (!resp || resp.length<=0) {
+    if (!resp || resp.length==0) {
       return { status: 2, message: "Nutrition Preferences not found" };
     } else {
       return {
@@ -126,7 +125,6 @@ nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid 
  * @developed by "amc"
  */
 nutrition_preferences_helper.insert_nutrition_preference = async nutrition_preferences_object => {
-  console.log("obj = ", nutrition_preferences_object);
   let nutrition_preference = new NutritionPreferences(
     nutrition_preferences_object
   );

@@ -8,9 +8,9 @@ var jwtDecode = require("jwt-decode");
 var nutrition_preferences_helper = require("../../helpers/nutrition_preferences_helper");
 
 /**
- * @api {get} /user/nutrition_preferences/:userid Get by User ID
+ * @api {get} /user/nutrition_preferences Get by User ID
  * @apiName Get by User ID
- * @apiGroup Nutrition Preferences
+ * @apiGroup User Nutrition Preferences
  *
  * @apiHeader {String}  authorization user's unique access-key
  *
@@ -37,10 +37,10 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {post} /user/nutrition_preferences/save Update
- * @apiName Update
- * @apiGroup Nutrition Preferences
- *
+ * @api {post} /user/nutrition_preferences/save Save Nutrition Preference
+ * @apiName Save
+ * @apiGroup User Nutrition Preferences
+ * @apiDescription Add Nutrition Preference if not exists else update existing document
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {Enum-Array} dietaryRestrictedRecipieTypes | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
@@ -58,19 +58,19 @@ router.put("/save", async (req, res) => {
   var nutrition_preference_obj = {
     userId: authUserId,
     dietaryRestrictedRecipieTypes: req.body.dietaryRestrictedRecipieTypes
-      ? JSON.parse(req.body.dietaryRestrictedRecipieTypes)
+      ? req.body.dietaryRestrictedRecipieTypes
       : null,
     recipieDifficulty: req.body.recipieDifficulty
       ? req.body.recipieDifficulty
       : null,
     maxRecipieTime: req.body.maxRecipieTime
-      ? JSON.parse(req.body.maxRecipieTime)
+      ? req.body.maxRecipieTime
       : null,
     nutritionTargets: req.body.nutritionTargets
-      ? JSON.parse(req.body.nutritionTargets)
+      ? req.body.nutritionTargets
       : null,
     excludeIngredients: req.body.excludeIngredients
-      ? JSON.parse(req.body.excludeIngredients)
+      ? req.body.excludeIngredients
       : null
   };
 
@@ -81,31 +81,32 @@ router.put("/save", async (req, res) => {
   var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_user_id(
     authUserId
   );
-  // console.log(resp_data);
-  if (resp_data.status == 2) {
+   console.log(resp_data);
+  if (resp_data.status == 1) {
 
-      let nutrition_preference_data = await nutrition_preferences_helper.insert_nutrition_preference(nutrition_preference_obj);
-      if (nutrition_preference_data.status === 0) {
-          logger.error("Error while inserting nutrition preference = ", nutrition_preference_data);
-          res.status(config.BAD_REQUEST).json({ nutrition_preference_data });
-      } else {
-          res.status(config.OK_STATUS).json(nutrition_preference_data);
-      }
-
-  } else if (resp_data.status == 1) {
     let nutrition_predata_data = await nutrition_preferences_helper.update_nutrition_preference_by_userid(
       authUserId,
       nutrition_preference_obj
     );
     if (nutrition_predata_data.status === 0) {
       logger.error(
-        "Error while updating nutrition preference = ",
+        "Error while updating nutrition preferences = ",
         nutrition_predata_data
       );
       res.status(config.BAD_REQUEST).json({ nutrition_predata_data });
     } else {
       res.status(config.OK_STATUS).json(nutrition_predata_data);
     }
+
+  } else if (resp_data.status == 2) {
+    let nutrition_preference_data = await nutrition_preferences_helper.insert_nutrition_preference(nutrition_preference_obj);
+    if (nutrition_preference_data.status === 0) {
+        logger.error("Error while inserting nutrition preferences = ", nutrition_preference_data);
+        res.status(config.BAD_REQUEST).json({ nutrition_preference_data });
+    } else {
+        res.status(config.OK_STATUS).json(nutrition_preference_data);
+    }
+   
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
