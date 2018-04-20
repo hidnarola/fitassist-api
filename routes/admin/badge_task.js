@@ -187,6 +187,7 @@ router.post("/", async (req, res) => {
  * @apiParam {String} name Name of badge_task
  * @apiParam {String} [description] description of badge_task
  * @apiParam {String} unit Unit of task activity | <code>["kms","kgs"]</code>
+ * @apiParam {String} unit status of status task
  * @apiSuccess (Success 200) {Array} badge_task Array of badge_task document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -205,7 +206,7 @@ router.put("/:badge_task_id", async (req, res) => {
         errorMessage: "Unit must be from kgs or kms"
       },
       errorMessage: "Unit is required"
-    }
+    },
   };
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -214,7 +215,8 @@ router.put("/:badge_task_id", async (req, res) => {
     var badge_task_obj = {
       name: req.body.name,
       unit: req.body.unit,
-      description: req.body.description ? req.body.description : null
+      description: req.body.description ? req.body.description : null,
+      status:req.body.status
     };
 
     let badge_task_data = await badge_task_helper.update_badge_task_by_id(

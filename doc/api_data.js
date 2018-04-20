@@ -809,6 +809,13 @@ define({ "api": [
             "optional": false,
             "field": "name",
             "description": "<p>Name of badge category</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>status of badge category</p>"
           }
         ]
       }

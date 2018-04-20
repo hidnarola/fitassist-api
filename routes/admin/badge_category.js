@@ -150,6 +150,7 @@ router.post("/", async (req, res) => {
  * @apiGroup  Badge Category
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name Name of badge category
+ * @apiParam {String} status status of badge category 
  * @apiSuccess (Success 200) {Array} badge_category Array of badge_category document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -168,6 +169,7 @@ router.put("/:badge_category_id", async (req, res) => {
     if (!errors) {
         var badge_category_obj = {
             "name": req.body.name,
+            "status":req.body.status
             };
 
             let badge_category_data = await badge_category_helper.update_badge_category_by_id(badge_category_id,badge_category_obj);
