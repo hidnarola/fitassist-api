@@ -21,6 +21,7 @@ var nutritionTargetsSchema = new Schema({
   start: { type: Number, default: null },
   end: { type: Number, default: null }
 });
+
 var NutritionPreferenceSchema = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },

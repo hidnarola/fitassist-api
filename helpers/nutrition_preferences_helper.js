@@ -101,7 +101,7 @@ nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid 
       }
     ]);
     console.log(resp);
-    if (!resp) {
+    if (!resp || resp.length<=0) {
       return { status: 2, message: "Nutrition Preferences not found" };
     } else {
       return {
@@ -165,6 +165,48 @@ nutrition_preferences_helper.update_nutrition_preference_by_id = async (
   try {
     let nutrition_preference = await NutritionPreferences.findOneAndUpdate(
       { _id: nutrition_preference_id },
+      nutrition_preferences_object,
+      { new: true }
+    );
+    if (!nutrition_preference) {
+      return { status: 2, message: "Record has not updated" };
+    } else {
+      return {
+        status: 1,
+        message: "Record has been updated",
+        nutrition_preference: nutrition_preference
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating nutrition_preference",
+      error: err
+    };
+  }
+};
+
+
+
+/*
+ * update_nutrition_preference_by_userid is used to update nutrition_preference data based on user_id
+ * 
+ * @param   user_id         String  user_id of nutrition that need to be update
+ * @param   nutrition_preferences_object     JSON    object consist of all property that need to update
+ * 
+ * @return  status  0 - If any error occur in updating nutrition preference, with error
+ *          status  1 - If Nutrition preference pr updated successfully, with appropriate message
+ *          status  2 - If Nutrition preference not updated, with appropriate message
+ * 
+ * @developed by "amc"
+ */
+nutrition_preferences_helper.update_nutrition_preference_by_userid = async (
+  user_id,
+  nutrition_preferences_object
+) => {
+  try {
+    let nutrition_preference = await NutritionPreferences.findOneAndUpdate(
+      { userId: user_id },
       nutrition_preferences_object,
       { new: true }
     );

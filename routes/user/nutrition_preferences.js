@@ -37,14 +37,12 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {post} /user/nutrition_preferences/ Update
+ * @api {post} /user/nutrition_preferences/save Update
  * @apiName Update
  * @apiGroup Nutrition Preferences
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- *
- * @apiParam {String} userId userId of User
  * @apiParam {Enum-Array} dietaryRestrictedRecipieTypes | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
  * @apiParam {Enum-Array} recipieDifficulty recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')
  * @apiParam {Array} nutritionTargets nutritionTargets  [title:{title},start:{start value},end:{end value}]
@@ -53,42 +51,50 @@ router.get("/", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} nutrition_preference nutrition_preference details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/:nutrition_preferences_id", async (req, res) => {
-  var schema = {
-    userId: {
-      notEmpty: true,
-      errorMessage: "User ID is required"
-    }
+router.put("/save", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var nutrition_preference_obj = {
+    userId: authUserId,
+    dietaryRestrictedRecipieTypes: req.body.dietaryRestrictedRecipieTypes
+      ? JSON.parse(req.body.dietaryRestrictedRecipieTypes)
+      : null,
+    recipieDifficulty: req.body.recipieDifficulty
+      ? req.body.recipieDifficulty
+      : null,
+    maxRecipieTime: req.body.maxRecipieTime
+      ? JSON.parse(req.body.maxRecipieTime)
+      : null,
+    nutritionTargets: req.body.nutritionTargets
+      ? JSON.parse(req.body.nutritionTargets)
+      : null,
+    excludeIngredients: req.body.excludeIngredients
+      ? JSON.parse(req.body.excludeIngredients)
+      : null
   };
 
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-  if (!errors) {
-    var nutrition_preference_obj = {
-      userId: req.body.userId,
-      dietaryRestrictedRecipieTypes: req.body.dietaryRestrictedRecipieTypes
-        ? JSON.parse(req.body.dietaryRestrictedRecipieTypes)
-        : null,
-      recipieDifficulty: req.body.recipieDifficulty
-        ? req.body.recipieDifficulty
-        : null,
-      maxRecipieTime: req.body.maxRecipieTime
-        ? JSON.parse(req.body.maxRecipieTime)
-        : null,
-      nutritionTargets: req.body.nutritionTargets
-        ? JSON.parse(req.body.nutritionTargets)
-        : null,
-      excludeIngredients: req.body.excludeIngredients
-        ? JSON.parse(req.body.excludeIngredients)
-        : null
-    };
+  if (req.body.description) {
+    nutrition_obj.description = req.body.description;
+  }
 
-    if (req.body.description) {
-      nutrition_obj.description = req.body.description;
-    }
+  var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_user_id(
+    authUserId
+  );
+  console.log(resp_data);
+  if (resp_data.status == 2) {
 
-    let nutrition_predata_data = await nutrition_preferences_helper.update_nutrition_preference_by_id(
-      req.params.nutrition_preferences_id,
+      let nutrition_preference_data = await nutrition_preferences_helper.insert_nutrition_preference(nutrition_preference_obj);
+      if (nutrition_preference_data.status === 0) {
+          logger.error("Error while inserting nutrition preference = ", nutrition_preference_data);
+          res.status(config.BAD_REQUEST).json({ nutrition_preference_data });
+      } else {
+          res.status(config.OK_STATUS).json(nutrition_preference_data);
+      }
+
+  } else if (resp_data.status == 1) {
+    let nutrition_predata_data = await nutrition_preferences_helper.update_nutrition_preference_by_userid(
+      authUserId,
       nutrition_preference_obj
     );
     if (nutrition_predata_data.status === 0) {
@@ -101,9 +107,10 @@ router.put("/:nutrition_preferences_id", async (req, res) => {
       res.status(config.OK_STATUS).json(nutrition_predata_data);
     }
   } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
+
+  
 });
 
 module.exports = router;

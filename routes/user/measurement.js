@@ -257,8 +257,9 @@ router.post("/get_log_dates_by_date", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
+
     var authUserId = decoded.sub;
-    var check = await moment(req.body.logDate);
+    var check = moment(req.body.logDate);
     var dateMonth = parseInt(check.format("M"));
     var dateYear = parseInt(check.format("Y"));
 
