@@ -27,7 +27,7 @@ router.post("/get_by_id_logdate", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logDate = req.body.logDate;
-console.log("Logdate: ",logDate);
+  console.log("Logdate: ", logDate);
   var schema = {
     logDate: {
       notEmpty: true,
@@ -44,18 +44,14 @@ console.log("Logdate: ",logDate);
   if (!errors) {
     // var startdate = moment(logDate).utcOffset(0);
     var startdate = moment(logDate);
-    
-    // startdate.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+    startdate.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     startdate.toISOString();
     startdate.format();
-    console.log("startdate: ",startdate);
 
-    var enddate = moment(logDate).add(1,'days');
-    
-    // enddate.set({ hour: 23, minute: 59, second: 59, millisecond: 99 });
+    var enddate = moment(logDate);
+    enddate.set({ hour: 23, minute: 59, second: 59, millisecond: 99 });
     enddate.toISOString();
     enddate.format();
-    console.log("enddate: ",enddate);
 
     logger.trace("Get measurement by authUserId and logDate API called");
     var resp_data = await measurement_helper.get_body_measurement_id({
