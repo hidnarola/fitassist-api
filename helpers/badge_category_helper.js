@@ -111,8 +111,6 @@ badge_category_helper.delete_badge_category_by_id = async (badge_category_id) =>
     }
 }
 
-
-
 /*
  * get_filtered_records is used to fetch all filtered data
  * 
@@ -120,7 +118,7 @@ badge_category_helper.delete_badge_category_by_id = async (badge_category_id) =>
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message
  */
-exercise_helper.get_filtered_records = async filter_obj => {
+badge_category_helper.get_filtered_records = async filter_obj => {
     console.log(filter_obj);
     skip = filter_obj.pageSize * filter_obj.page;
     try {

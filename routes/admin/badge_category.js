@@ -9,6 +9,7 @@ var config = require("../../config");
 var logger = config.logger;
 
 var badge_category_helper = require("../../helpers/badge_category_helper");
+var common_helper = require("../../helpers/common_helper");
 
 
 /**
@@ -30,7 +31,7 @@ var badge_category_helper = require("../../helpers/badge_category_helper");
 
 router.post("/filter", async (req, res) => {
     filter_object = common_helper.changeObject(req.body);
-    let filtered_data = await exercise_helper.get_filtered_records(filter_object);
+    let filtered_data = await badge_category_helper.get_filtered_records(filter_object);
     if (filtered_data.status === 0) {
       logger.error("Error while fetching searched data = ", filtered_data);
       return res.status(config.BAD_REQUEST).json({ filtered_data });
