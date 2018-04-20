@@ -70,7 +70,8 @@ measurement_helper.get_body_measurement_by_userid = async (id) => {
  */
 measurement_helper.get_logdata_by_userid = async (id) => {
     try {
-        var logdata = await Measurement.aggregate(id);
+        var logdata = await Measurement.find(id);
+//        var logdata = await Measurement.aggregate(id);
         if (logdata) {
             return { "status": 1, "message": "logdata found", "logdates": logdata };
         } else {
