@@ -100,7 +100,7 @@ nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid 
         $match: { userId: userid }
       }
     ]);
-    console.log(resp);
+    console.log("resp:_-----> ",resp.obj);
     if (!resp || resp.length<=0) {
       return { status: 2, message: "Nutrition Preferences not found" };
     } else {

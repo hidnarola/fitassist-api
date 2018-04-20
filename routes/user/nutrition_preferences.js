@@ -81,7 +81,7 @@ router.put("/save", async (req, res) => {
   var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_user_id(
     authUserId
   );
-  console.log(resp_data);
+  // console.log(resp_data);
   if (resp_data.status == 2) {
 
       let nutrition_preference_data = await nutrition_preferences_helper.insert_nutrition_preference(nutrition_preference_obj);
