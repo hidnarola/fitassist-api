@@ -2,11 +2,11 @@ var BadgeCategory = require("./../models/badge_category");
 var badge_category_helper = {};
 
 /*
- * get_all_body_parts is used to fetch all body_parts data
+ * get_badge_categories is used to fetch all badge_categories data
  * 
- * @return  status 0 - If any internal error occured while fetching body_parts data, with error
- *          status 1 - If body_parts data found, with body_parts object
- *          status 2 - If body_parts not found, with appropriate message
+ * @return  status 0 - If any internal error occured while fetching badge_categories data, with error
+ *          status 1 - If badge_categories data found, with badge_categories object
+ *          status 2 - If badge_categories not found, with appropriate message
  */
 badge_category_helper.get_badge_categories = async () => {
     try {
@@ -22,11 +22,11 @@ badge_category_helper.get_badge_categories = async () => {
 }
 
 /*
- * get_body_part_id is used to fetch Body Part by ID
+ * get_badge_category_id is used to fetch badge_category by ID
  * 
- * @return  status 0 - If any internal error occured while fetching body part data, with error
- *          status 1 - If Body parts data found, with body part object
- *          status 2 - If Body parts data not found, with appropriate message
+ * @return  status 0 - If any internal error occured while fetching badge_category data, with error
+ *          status 1 - If badge_category data found, with badge_category object
+ *          status 2 - If badge_category data not found, with appropriate message
  */
 badge_category_helper.get_badge_category_id = async (id) => {
     try {
@@ -42,12 +42,12 @@ badge_category_helper.get_badge_category_id = async (id) => {
 }
 
 /*
- * insert_body_part is used to insert into bodyparts collection
+ * insert_badge_category_part is used to insert into badge_category collection
  * 
- * @param   body_part_obj     JSON object consist of all property that need to insert in collection
+ * @param   badge_category_obj     JSON object consist of all property that need to insert in collection
  * 
- * @return  status  0 - If any error occur in inserting Body part, with error
- *          status  1 - If Body part inserted, with inserted Body part document and appropriate message
+ * @return  status  0 - If any error occur in inserting badge_category, with error
+ *          status  1 - If badge_category inserted, with inserted badge_category document and appropriate message
  * 
  * @developed by "amc"
  */
@@ -63,14 +63,14 @@ badge_category_helper.insert_badge_category_part = async (badge_category_obj) =>
 };
 
 /*
- * update_bodypart_by_id is used to update bodypart data based on body_part_id
+ * update_badge_category_by_id is used to update badge_category data based on badge_category_id
  * 
- * @param   body_part_id         String  _id of bodypart that need to be update
- * @param   body_part_obj     JSON    object consist of all property that need to update
+ * @param   badge_category_id         String  _id of badge_category that need to be update
+ * @param   badge_category_obj     JSON    object consist of all property that need to update
  * 
- * @return  status  0 - If any error occur in updating bodypart, with error
- *          status  1 - If bodypart updated successfully, with appropriate message
- *          status  2 - If bodypart not updated, with appropriate message
+ * @return  status  0 - If any error occur in updating badge_category, with error
+ *          status  1 - If badge_category updated successfully, with appropriate message
+ *          status  2 - If badge_category not updated, with appropriate message
  * 
  * @developed by "amc"
  */
@@ -89,12 +89,12 @@ badge_category_helper.update_badge_category_by_id = async (badge_category_id, ba
 };
 
 /*
- * delete_bodypart_by_id is used to delete bodypart from database
+ * delete_badge_category_by_id is used to delete badge_category from database
  * 
- * @param   bodypart_id String  _id of bodypart that need to be delete
+ * @param   badge_category_id String  _id of badge_category that need to be delete
  * 
- * @return  status  0 - If any error occur in deletion of bodypart, with error
- *          status  1 - If bodypart deleted successfully, with appropriate message
+ * @return  status  0 - If any error occur in deletion of badge_category, with error
+ *          status  1 - If badge_category deleted successfully, with appropriate message
  * 
  * @developed by "amc"
  */
@@ -111,4 +111,53 @@ badge_category_helper.delete_badge_category_by_id = async (badge_category_id) =>
     }
 }
 
+
+
+/*
+ * get_filtered_records is used to fetch all filtered data
+ * 
+ * @return  status 0 - If any internal error occured while fetching filtered data, with error
+ *          status 1 - If filtered data found, with filtered object
+ *          status 2 - If filtered not found, with appropriate message
+ */
+exercise_helper.get_filtered_records = async filter_obj => {
+    console.log(filter_obj);
+    skip = filter_obj.pageSize * filter_obj.page;
+    try {
+      var searched_record_count = await BadgeCategory.aggregate([
+        {
+          $match: filter_object.columnFilter
+        }
+      ]);
+      var filtered_data = await BadgeCategory.aggregate([
+        {
+          $match: filter_object.columnFilter
+        },      
+        { $skip: skip },
+        { $limit: filter_object.pageSize },
+        { $sort: filter_obj.columnSort }
+      ]);
+  
+  
+      if (filtered_data) {
+        return {
+          status: 1,
+          message: "filtered data is found",
+          count: searched_record_count.length,
+          filtered_total_pages: Math.ceil(
+            searched_record_count.length / filter_obj.pageSize
+          ),
+          filtered_badge_categories: filtered_data
+        };
+      } else {
+        return { status: 2, message: "No filtered data available" };
+      }
+    } catch (err) {
+      return {
+        status: 0,
+        message: "Error occured while filtering data",
+        error: err
+      };
+    }
+  };  
 module.exports = badge_category_helper;
