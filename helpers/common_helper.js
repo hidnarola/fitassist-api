@@ -44,11 +44,6 @@ common_helper.changeObject = function(data, callback) {
     columnSort["_id"] = -1;
   }
 
-  //   async.forEach(data.columnFilterEqual, function(val, next) {
-  //     var key = val.id;
-  //     var value = val.value;
-  //     columnFilterEqual[key] = value;
-  //   });
   data = {
     pageSize: data.pageSize,
     page: data.page,

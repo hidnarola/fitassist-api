@@ -196,4 +196,5 @@ badge_helper.get_filtered_records = async filter_obj => {
     };
   }
 };
+
 module.exports = badge_helper;

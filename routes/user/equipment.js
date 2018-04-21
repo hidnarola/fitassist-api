@@ -24,8 +24,7 @@ var equipment_helper = require("../../helpers/equipment_helper");
     "equipments": {<br>
         "user_equipments": {},<br>
         "all_equipments": []<br>
-    }<br>
-}</code></pre>
+    }<br>}</code></pre>
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
@@ -48,13 +47,14 @@ router.get("/", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     user_equipment_obj.equipments.user_equipments = resp_data.user_equipments;
-    var all_equipments_data = await equipment_helper.get_all_equipment();
+    var all_equipments_data = await user_equipment_helper.get_all_equipment();
     user_equipment_obj.equipments.all_equipments =
       all_equipments_data.equipments;
     logger.trace("user equipments got successfully = ", user_equipment_obj);
     res.status(config.OK_STATUS).json(user_equipment_obj);
   }
 });
+
 
 /**
  * @api {post} /user/equipment/ Save User Equipment
@@ -78,7 +78,7 @@ router.post("/", async (req, res) => {
   var resp_data = await user_equipment_helper.get_all_user_equipment(
     authUserId
   );
-  console.log(resp_data.user_equipments);
+  console.log(resp_data);
   if (resp_data.status == 2) {
     let user_equipment_data = await user_equipment_helper.insert_user_equipment(
       user_equipment_obj
@@ -94,7 +94,7 @@ router.post("/", async (req, res) => {
     }
   } else if (resp_data.status == 1) {
     let user_equipment_data = await user_equipment_helper.update_user_equipment(
-      resp_data.user_equipments._id,
+      authUserId,
       user_equipment_obj
     );
     if (user_equipment_data.status === 0) {
@@ -110,5 +110,7 @@ router.post("/", async (req, res) => {
     return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
+
+
 
 module.exports = router;

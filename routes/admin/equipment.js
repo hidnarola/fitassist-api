@@ -246,9 +246,6 @@ router.put("/:equipment_id", async (req, res) => {
         }
     };
 
-    // Coming in few minutes
-    // ok
-
     req.checkBody(schema);
     var errors = req.validationErrors();
     if (!errors) {
