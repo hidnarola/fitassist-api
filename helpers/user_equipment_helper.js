@@ -12,9 +12,9 @@ var user_equipments_helper = {};
  */
 user_equipments_helper.get_all_user_equipment = async user_auth_id => {
   try {
-    var user_equipment = await UserEquipments.aggregate([
-      { $match: { userId: user_auth_id } }
-    ]);
+    var user_equipment = await UserEquipments.findOne({
+      userId: user_auth_id
+    });
     console.log(user_equipment);
     if (user_equipment && user_equipment.length != 0) {
       return {

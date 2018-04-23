@@ -8,6 +8,7 @@ var UserProgressPhotosSchema = new Schema({
     userId: {type:String, ref: "users", field:"authUserId", required: true},
     description: {type:String,default:null},
     image: {type:String,required:true},
+    date: {type: Date, default: Date.now},
     status:{type:Number,default:1},
     isDeleted:{type:Number,default:0},
     createdAt: {type: Date, default: Date.now},

@@ -137,7 +137,7 @@ ingredients_helper.delete_ingredient_by_id = async ingredient_id => {
     try {
         var ingredient_obj = 
     {
-        "isDelete": 0,            
+        "isDelete": 1,            
     };
         let ingredient = await Ingredients.findOneAndUpdate({ _id: ingredient_id }, ingredient_obj);
         if (!ingredient) {

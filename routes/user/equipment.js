@@ -46,7 +46,8 @@ router.get("/", async (req, res) => {
     logger.error("Error occured while fetching user equipments = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    user_equipment_obj.equipments.user_equipments = resp_data.user_equipments;
+    
+    user_equipment_obj.equipments.user_equipments = resp_data.user_equipments.equipmentIds;
     var all_equipments_data = await user_equipment_helper.get_all_equipment();
     user_equipment_obj.equipments.all_equipments =
       all_equipments_data.equipments;
@@ -62,7 +63,7 @@ router.get("/", async (req, res) => {
  * @apiGroup User Equipment
  * @apiDescription Save User Equipment API is for save and update User Equipment. if record is exists it would update else insert.
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {String[]} equipmentsId equipmentsId of equipments
+ * @apiParam {String[]} equipmentIds equipmentIds of equipments
  * @apiSuccess (Success 200) {Array} user_equipments Array of user's equipments document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -72,7 +73,7 @@ router.post("/", async (req, res) => {
 
   var user_equipment_obj = {
     userId: authUserId,
-    equipmentsId: req.body.equipmentsId
+    equipmentIds: req.body.equipmentIds
   };
 
   var resp_data = await user_equipment_helper.get_all_user_equipment(

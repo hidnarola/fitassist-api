@@ -89,7 +89,8 @@ router.post("/", async (req, res) => {
     var user_progress_photo_obj = {
 	  userId: authUserId,
 	  date:req.body.date
-    };
+	};
+	
     if (req.body.description) {
       user_progress_photo_obj.description = req.body.description;
     }
@@ -150,7 +151,7 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /user/progress_photo/:user_photo_id Update
+ * @api {put} /user/progress_photo/ Update
  * @apiName Update
  * @apiGroup User Progress Photo
  *
@@ -161,7 +162,7 @@ router.post("/", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} user_progress_photo user_progress_photo details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/:user_photo_id", async (req, res) => {
+router.put("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
@@ -195,17 +196,7 @@ router.put("/:user_photo_id", async (req, res) => {
         } else {
           logger.trace("image has been uploaded. Image name = ", filename);
 
-          var resp_data = user_progress_photos_helper.get_user_progress_photos();
-          if (resp_data.status == 0) {
-            logger.error(
-              "Error occured while fetching get all user progress photos = ",
-              resp_data
-            );
-            res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-          } else {
-            logger.trace("user progress photos got successfully = ", resp_data);
-            res.status(config.OK_STATUS).json(resp_data);
-          }
+		 
 
           //return res.send(200, "null");
         }
@@ -222,11 +213,19 @@ router.put("/:user_photo_id", async (req, res) => {
     //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
   }
   if (filename) {
-    user_progress_photo_obj.image = "uploads/user_progress/" + filename;
+	user_progress_photo_obj.image = "uploads/user_progress/" + filename;
+	var resp_data =await user_progress_photos_helper.get_user_progress_photos({userId:authUserId});
+	if (resp_data.status == 1) {
+		fs.unlink(resp_data.user_progress_photos[0].image,function(err,Success){
+			if(err) throw err;
+			console.log('image is deleted');
+		});
+	} 
   }
 
-  let user_progress_photo_data = await user_progress_photos_helper.insert_user_progress_photo(
-    user_progress_photo_obj
+  let user_progress_photo_data = await user_progress_photos_helper.update_user_progress_photo(
+	authUserId,
+	user_progress_photo_obj
   );
   if (user_progress_photo_data.status === 0) {
     logger.error(
@@ -240,7 +239,7 @@ router.put("/:user_photo_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/progress_photo/:user_photo_id Delete
+ * @api {delete} /user/progress_photo/ Delete
  * @apiName Delete
  * @apiGroup User Progress Photo
  *
@@ -249,13 +248,16 @@ router.put("/:user_photo_id", async (req, res) => {
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/:user_photo_id", async (req, res) => {
+router.delete("/:photo_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   logger.trace(
     "Delete Nutrition Preference API - Id = ",
     req.params.user_photo_id
   );
-  let nutrition_predata_data = await user_progress_photos_helper.delete_nutrition_preference_by_id(
-    req.params.user_photo_id
+  let nutrition_predata_data = await user_progress_photos_helper.delete_user_progress_photo(
+    { userId: authUserId ,_id:req.params.photo_id},
+      { isDeleted: 1 }
   );
 
   if (nutrition_predata_data.status === 0) {
