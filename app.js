@@ -7,7 +7,7 @@ var favicon = require("serve-favicon");
 var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
-var moment = require('moment');
+var moment = require("moment");
 
 var fileUpload = require("express-fileupload");
 var expressValidator = require("express-validator");
@@ -51,7 +51,10 @@ app.use(function(req, res, next) {
   );
 
   // Request headers you wish to allow
-  res.setHeader("Access-Control-Allow-Headers", "x-access-token,content-type,authorization");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "x-access-token,content-type,authorization"
+  );
 
   // Set to true if you need the website to include cookies in the requests sent to the API (e.g. in case you use sessions)
   res.setHeader("Access-Control-Allow-Credentials", true);
@@ -63,9 +66,6 @@ app.use(function(req, res, next) {
     next();
   }
 });
-
-
-
 
 var static_data = require("./routes/static");
 var index = require("./routes/index");

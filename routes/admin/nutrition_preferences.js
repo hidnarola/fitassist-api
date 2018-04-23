@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
  */
 router.get('/:nutrition_preferences_id', async (req, res) => {
     logger.trace("Get nutrition preference by ID API called : ",req.params.nutrition_preferences_id);
-    var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_id(req.params.nutrition_preferences_id);
+    var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_id({_id:req.params.nutrition_preferences_id});
     if(resp_data.status == 0){
         logger.error("Error occured while fetching nutrition preference = ",resp_data)
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);

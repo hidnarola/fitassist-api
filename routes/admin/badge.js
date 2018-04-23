@@ -8,7 +8,7 @@ var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
 
-var badge_helper = require("../../helpers/badge");
+var badge_helper = require("../../helpers/badge_helper");
 var common_helper = require("../../helpers/common_helper");
 
 /**
@@ -53,7 +53,7 @@ router.post("/filter", async (req, res) => {
   let filtered_data = await badge_helper.get_filtered_records(filter_object);
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.BAD_REQUEST).json(filtered_data);
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }

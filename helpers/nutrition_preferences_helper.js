@@ -36,11 +36,9 @@ nutrition_preferences_helper.get_all_nutrition_preferences = async () => {
  *          status 1 - If nutrition_preference data found, with nutrition_preference object
  *          status 2 - If nutrition_preference data not found, with appropriate message
  */
-nutrition_preferences_helper.get_nutrition_preference_by_id = async nutrition_preference_id => {
+nutrition_preferences_helper.get_nutrition_preference_by_id = async id => {
   try {
-    let resp = await NutritionPreferences.findOne({
-      _id: nutrition_preference_id
-    });
+    let resp = await NutritionPreferences.findOne(id);
     if (!resp) {
       return { status: 2, message: "Nutrition Preferences not found" };
     } else {

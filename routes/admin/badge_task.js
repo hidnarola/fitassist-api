@@ -79,7 +79,7 @@ router.post("/filter", async (req, res) => {
   );
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.BAD_REQUEST).json(filtered_data);
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
@@ -169,7 +169,7 @@ router.post("/", async (req, res) => {
     );
     if (badge_task_data.status === 0) {
       logger.error("Error while inserting badge_task data = ", badge_task_data);
-      return res.status(config.BAD_REQUEST).json({ badge_task_data });
+      return res.status(config.BAD_REQUEST).json(badge_task_data);
     } else {
       return res.status(config.OK_STATUS).json(badge_task_data);
     }
@@ -225,7 +225,7 @@ router.put("/:badge_task_id", async (req, res) => {
     );
     if (badge_task_data.status === 0) {
       logger.error("Error while updating badge_task data = ", badge_task_data);
-      return res.status(config.BAD_REQUEST).json({ badge_task_data });
+      return res.status(config.BAD_REQUEST).json(badge_task_data);
     } else {
       return res.status(config.OK_STATUS).json(badge_task_data);
     }

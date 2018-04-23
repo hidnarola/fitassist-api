@@ -56,7 +56,7 @@ router.post("/filter", async (req, res) => {
     let filtered_data = await badge_category_helper.get_filtered_records(filter_object);
     if (filtered_data.status === 0) {
       logger.error("Error while fetching searched data = ", filtered_data);
-      return res.status(config.BAD_REQUEST).json({ filtered_data });
+      return res.status(config.BAD_REQUEST).json(filtered_data);
     } else {
       return res.status(config.OK_STATUS).json(filtered_data);
     }
@@ -134,7 +134,7 @@ router.post("/", async (req, res) => {
             let badge_category_data = await badge_category_helper.insert_badge_category_part(badge_category_obj);
             if (badge_category_data.status === 0) {
                 logger.error("Error while inserting badge_category data = ", badge_category_data);
-                return res.status(config.BAD_REQUEST).json({ badge_category_data });
+                return res.status(config.BAD_REQUEST).json(badge_category_data);
             } else {
                 return res.status(config.OK_STATUS).json(badge_category_data);
             }
@@ -175,7 +175,7 @@ router.put("/:badge_category_id", async (req, res) => {
             let badge_category_data = await badge_category_helper.update_badge_category_by_id(badge_category_id,badge_category_obj);
             if (badge_category_data.status === 0) {
                 logger.error("Error while updating badge_category data = ", badge_category_data);
-                return res.status(config.BAD_REQUEST).json({ badge_category_data });
+                return res.status(config.BAD_REQUEST).json(badge_category_data);
             } else {
                 return res.status(config.OK_STATUS).json(badge_category_data);
             }

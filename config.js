@@ -15,6 +15,7 @@ module.exports = {
     "audience":"https://fitassist.eu.auth0.com/api/v2/",
     "issuer":"https://fitassist.eu.auth0.com/",
     "algorithms":"RS256",
+    
     // Database config
     "database": "mongodb://fitassist:jP3gnc4fW9@167.99.90.169/fitassist",
 
@@ -33,6 +34,4 @@ module.exports = {
     "VALIDATION_FAILURE_STATUS": 417,
     "DATABASE_ERROR_STATUS": 422,
     "INTERNAL_SERVER_ERROR": 500,
-
-    
 };

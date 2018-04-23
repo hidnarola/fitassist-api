@@ -506,14 +506,14 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "descriptionCompleted",
             "description": "<p>descriptionCompleted of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "descriptionInCompleted",
             "description": "<p>descriptionInCompleted of badge</p>"
           },
@@ -536,7 +536,7 @@
             "type": "Enum",
             "optional": false,
             "field": "timeType",
-            "description": "<p>timeType of badge | <code>Possible Values[&quot;standard&quot;,&quot;time_window&quot;,&quot;timed&quot;]</code></p>"
+            "description": "<p>[timeType] of badge | <code>Possible Values[&quot;standard&quot;,&quot;time_window&quot;,&quot;timed&quot;]</code></p>"
           },
           {
             "group": "Parameter",
@@ -551,6 +551,13 @@
             "optional": false,
             "field": "category",
             "description": "<p>categories of badge</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "tags",
+            "description": "<p>tags of badge</p>"
           }
         ]
       }
@@ -5670,7 +5677,7 @@
     "groupTitle": "Nutrition_Preferences"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5809,7 +5816,7 @@
     "groupTitle": "Recipes"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -6657,7 +6664,7 @@
             "type": "Array",
             "optional": false,
             "field": "equipments",
-            "description": "<p>Array of equipments document.</p> <pre><code>Response Data: <br>{<br>     \"status\": 1,<br>     \"message\": \"Record founds\",<br>     \"equipments\": {<br>         \"user_equipments\": {},<br>         \"all_equipments\": []<br>     }<br> }</code></pre>"
+            "description": "<p>Array of equipments document.</p> <pre><code>Response Data: <br>{<br>     \"status\": 1,<br>     \"message\": \"Record founds\",<br>     \"equipments\": {<br>         \"user_equipments\": {},<br>         \"all_equipments\": []<br>     }<br>}</code></pre>"
           }
         ]
       }
@@ -6741,6 +6748,216 @@
     "version": "0.0.0",
     "filename": "routes/user/equipment.js",
     "groupTitle": "User_Equipment"
+  },
+  {
+    "type": "get",
+    "url": "/user/exercise_preference",
+    "title": "Get by User ID",
+    "name": "Get_by_User_ID",
+    "group": "User_Exercise_Preferences",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "exercise_preference",
+            "description": "<p>exercise_preference's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/exercise_preference.js",
+    "groupTitle": "User_Exercise_Preferences"
+  },
+  {
+    "type": "get",
+    "url": "/user/exercise_preference/reset",
+    "title": "Reset Exercise Preferences",
+    "name": "Reset_Exercise_Preferences",
+    "group": "User_Exercise_Preferences",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "exercise_preference",
+            "description": "<p>exercise_preference's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/exercise_preference.js",
+    "groupTitle": "User_Exercise_Preferences"
+  },
+  {
+    "type": "post",
+    "url": "/user/exercise_preference/save",
+    "title": "Save exercise Preference",
+    "name": "Save",
+    "group": "User_Exercise_Preferences",
+    "description": "<p>Add exercise Preference if not exists else update existing document</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "workoutIntensity",
+            "description": "<p>workout Intensity of user exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "exerciseExperience",
+            "description": "<p>exercise Experience</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "excludeExercise",
+            "description": "<p>exclude Exercise ref ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "excludeExerciseType",
+            "description": "<p>exclude Exercise Type ref ID of exercise type</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String[]",
+            "optional": false,
+            "field": "existingInjuries",
+            "description": "<p>existing Injuries ref ID of body part collection</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "workoutscheduletype",
+            "description": "<p>workout schedule type <br><code>1 for Automatic <br>2 for manual</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "timeSchedule",
+            "description": "<p>timeSchedule of exercise preference <br><code>{ &quot;monday&quot;:10, &quot;tuesday&quot;:20, &quot;wednesday&quot;:40, &quot;thursday&quot;:103, &quot;friday&quot;:40, &quot;saturday&quot;:50, &quot;sunday&quot;:70 }</code></p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "exercise_preference",
+            "description": "<p>exercise_preference details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/exercise_preference.js",
+    "groupTitle": "User_Exercise_Preferences"
   },
   {
     "type": "post",
@@ -7035,10 +7252,10 @@
   },
   {
     "type": "get",
-    "url": "/user/nutrition_preferences",
+    "url": "/user/nutrition_preference",
     "title": "Get by User ID",
     "name": "Get_by_User_ID",
-    "group": "User_Nutrition_Preferences",
+    "group": "User_Nutrition_Preference",
     "header": {
       "fields": {
         "Header": [
@@ -7060,7 +7277,7 @@
             "type": "Array",
             "optional": false,
             "field": "nutrition_preference",
-            "description": "<p>nutrition_preferences's document</p>"
+            "description": "<p>nutrition_preference's document</p>"
           }
         ]
       }
@@ -7080,14 +7297,63 @@
     },
     "version": "0.0.0",
     "filename": "routes/user/nutrition_preferences.js",
-    "groupTitle": "User_Nutrition_Preferences"
+    "groupTitle": "User_Nutrition_Preference"
+  },
+  {
+    "type": "get",
+    "url": "/user/nutrition_preference/reset",
+    "title": "Reset Nutrition Preference",
+    "name": "Reset_Nutrition_Preference",
+    "group": "User_Nutrition_Preference",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>nutrition_preference's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/nutrition_preferences.js",
+    "groupTitle": "User_Nutrition_Preference"
   },
   {
     "type": "post",
-    "url": "/user/nutrition_preferences/save",
+    "url": "/user/nutrition_preference/save",
     "title": "Save Nutrition Preference",
     "name": "Save",
-    "group": "User_Nutrition_Preferences",
+    "group": "User_Nutrition_Preference",
     "description": "<p>Add Nutrition Preference if not exists else update existing document</p>",
     "header": {
       "fields": {
@@ -7112,6 +7378,103 @@
     "parameter": {
       "fields": {
         "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "dietaryRestrictedRecipieTypes",
+            "description": "<p>| Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "recipieDifficulty",
+            "description": "<p>recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "nutritionTargets",
+            "description": "<p>nutritionTargets  [title:{title},start:{start value},end:{end value}]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "maxRecipieTime",
+            "description": "<p>max Recipie Time <code>[{dayDrive : enum, time : 'value'}]</code> | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>nutrition_preference details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/nutrition_preferences.js",
+    "groupTitle": "User_Nutrition_Preference"
+  },
+  {
+    "type": "post",
+    "url": "/user/progress_photo",
+    "title": "Add",
+    "name": "Add",
+    "group": "User_Progress_Photo",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>userId of User</p>"
+          },
           {
             "group": "Parameter",
             "type": "Enum-Array",
@@ -7170,7 +7533,251 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/nutrition_preferences.js",
-    "groupTitle": "User_Nutrition_Preferences"
+    "filename": "routes/user/user_progress_photos.js",
+    "groupTitle": "User_Progress_Photo"
+  },
+  {
+    "type": "delete",
+    "url": "/user/progress_photo/:user_photo_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Progress_Photo",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_progress_photos.js",
+    "groupTitle": "User_Progress_Photo"
+  },
+  {
+    "type": "get",
+    "url": "/user/progress_photo",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Progress_Photo",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user_progress_photos",
+            "description": "<p>Array of user's progress_photos 's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_progress_photos.js",
+    "groupTitle": "User_Progress_Photo"
+  },
+  {
+    "type": "get",
+    "url": "/user/progress_photo/:user_photo_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "User_Progress_Photo",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>progress_photo's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_progress_photos.js",
+    "groupTitle": "User_Progress_Photo"
+  },
+  {
+    "type": "put",
+    "url": "/user/progress_photo/:user_photo_id",
+    "title": "Update",
+    "name": "Update",
+    "group": "User_Progress_Photo",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>userId of User</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "dietaryRestrictedRecipieTypes",
+            "description": "<p>| Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "recipieDifficulty",
+            "description": "<p>recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "nutritionTargets",
+            "description": "<p>nutritionTargets  [title:{title},start:{start value},end:{end value}]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "maxRecipieTime",
+            "description": "<p>Description [{dayDrive : enum, time : 'value'}] | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "nutrition_preference",
+            "description": "<p>nutrition_preference details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_progress_photos.js",
+    "groupTitle": "User_Progress_Photo"
   }
 ]

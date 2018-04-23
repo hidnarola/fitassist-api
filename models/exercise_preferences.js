@@ -6,18 +6,18 @@ var Schema = mongoose.Schema;
 
 var TimeSchema = new Schema(
     {
-            monday:{type:String,default:"0"},
-            tuesday:{type:String,default:"0"},
-            wednesday:{type:String,default:"0"},
-            thursday:{type:String,default:"0"},
-            friday:{type:String,default:"0"},
-            saturday:{type:String,default:"0"},
-            sunday:{type:String,default:"0"},   
+            monday:{type:Number,default:0},
+            tuesday:{type:Number,default:0},
+            wednesday:{type:Number,default:0},
+            thursday:{type:Number,default:0},
+            friday:{type:Number,default:0},
+            saturday:{type:Number,default:0},
+            sunday:{type:Number,default:0},   
     });
 
 
 var ExercisePreferenceSchema = new Schema({
-    userId: {type: mongoose.Schema.Types.ObjectId, ref: "users", required: true},
+    userId: {type:String, ref: "users", field:"authUserId", required: true},
     workoutIntensity: {type: Number,default:0},
     exerciseExperience : {type: Number,default:0},
     excludeExercise : [{type: mongoose.Schema.Types.ObjectId, ref: "exercise", default:null}],

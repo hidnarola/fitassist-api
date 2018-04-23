@@ -13,8 +13,7 @@ var user_equipments_helper = {};
 user_equipments_helper.get_all_user_equipment = async user_auth_id => {
   try {
     var user_equipment = await UserEquipments.aggregate([
-      { $match: { userId: user_auth_id } },
-      
+      { $match: { userId: user_auth_id } }
     ]);
     console.log(user_equipment);
     if (user_equipment && user_equipment.length != 0) {
@@ -35,7 +34,6 @@ user_equipments_helper.get_all_user_equipment = async user_auth_id => {
   }
 };
 
-
 /*
  * get_all_equipment is used to fetch all equipment
  * 
@@ -47,9 +45,6 @@ user_equipments_helper.get_all_equipment = async () => {
   try {
     var equipment = await EquipmentCategory.aggregate([
       {
-        $project:{_id:1,name:1}
-      },
-      {
         $lookup: {
           from: "equipments",
           localField: "_id",
@@ -57,17 +52,16 @@ user_equipments_helper.get_all_equipment = async () => {
           as: "equipments"
         }
       },
-      {$unwind:"$equipments"},
+      { $unwind: "$equipments" },
       {
         $group: {
           _id: "$_id",
-          equipments: { $addToSet: "$equipments" },
-         
+          name: { $first: "$name" },
+          equipments: { $addToSet: "$equipments" }
         }
-      },
-      
+      }
     ]);
-    console.log("data",equipment);
+    console.log("data", equipment);
     if (equipment) {
       return { status: 1, message: "Equipments found", equipments: equipment };
     } else {
@@ -136,7 +130,7 @@ user_equipments_helper.update_user_equipment = async (
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while updating Exercise Types",
+      message: "Error occured while updating ",
       error: err
     };
   }

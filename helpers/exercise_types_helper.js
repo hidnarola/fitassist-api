@@ -24,7 +24,6 @@ exercise_types_helper.get_all_exercise_types = async () => {
     }
 }
 
-
 /*
  * exercise_type_id is used to fetch exercise type by ID
  * 
