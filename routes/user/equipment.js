@@ -17,7 +17,7 @@ var equipment_helper = require("../../helpers/equipment_helper");
  *
  * @apiHeader {String}  authorization user's unique access-key
  *
- * @apiSuccess (Success 200) {Array} equipments Array of equipments document.
+ * @apiSuccess (Success 200) {JSON} equipments Array of equipments document.
  * <pre><code>Response Data: <br>{<br>
     "status": 1,<br>
     "message": "Record founds",<br>
@@ -64,7 +64,7 @@ router.get("/", async (req, res) => {
  * @apiDescription Save User Equipment API is for save and update User Equipment. if record is exists it would update else insert.
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {String[]} equipmentIds equipmentIds of equipments
- * @apiSuccess (Success 200) {Array} user_equipments Array of user's equipments document
+ * @apiSuccess (Success 200) {JSON} user_equipments Array of user's equipments document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {

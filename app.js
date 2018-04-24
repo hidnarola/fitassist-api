@@ -1,25 +1,23 @@
-var express = require("express");
+var express           = require("express");
+var path              = require("path");
+var fs                = require("fs");
+var favicon           = require("serve-favicon");
+var logger            = require("morgan");
+var cookieParser      = require("cookie-parser");
+var bodyParser        = require("body-parser");
+var moment            = require("moment");
 
-var path = require("path");
-var fs = require("fs");
-
-var favicon = require("serve-favicon");
-var logger = require("morgan");
-var cookieParser = require("cookie-parser");
-var bodyParser = require("body-parser");
-var moment = require("moment");
-
-var fileUpload = require("express-fileupload");
-var expressValidator = require("express-validator");
+var fileUpload        = require("express-fileupload");
+var expressValidator  = require("express-validator");
 
 // Create cluster environment
-var cluster = require("cluster");
-var numCPUs = require("os").cpus().length;
+var cluster           = require("cluster");
+var numCPUs           = require("os").cpus().length;
 
 /* config files */
-var config = require("./config");
-var dbConnect = require("./database/mongoDbConnection");
-var socket = require("./socket/socketServer");
+var config            = require("./config");
+var dbConnect         = require("./database/mongoDbConnection");
+var socket            = require("./socket/socketServer");
 
 var app = express();
 app.use(fileUpload());

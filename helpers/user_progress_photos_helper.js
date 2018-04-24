@@ -45,7 +45,7 @@ user_progress_photo_helper.get_user_progress_photo_by_id = async id => {
       return {
         status: 1,
         message: "User progress photos found",
-        user_progress_photos: user_progress_photos
+        user_progress_photo: user_progress_photos
       };
     } else {
       return { status: 2, message: "No user progress photos available" };
@@ -127,10 +127,14 @@ user_progress_photo_helper.update_user_progress_photo = async (
  *          status 1 - If user's progress photos data updated, with user's progress photos object
  *          status 2 - If user's progress photos not updated, with appropriate message
  */
-user_progress_photo_helper.delete_user_progress_photo = async (id,user_progress_photo_obj) => {
+user_progress_photo_helper.delete_user_progress_photo = async (
+  id,
+  user_progress_photo_obj
+) => {
   try {
     let user_progress_photo = await UserProgressPhotos.findOneAndUpdate(
-      id,user_progress_photo_obj
+      id,
+      user_progress_photo_obj
     );
     if (!user_progress_photo) {
       return { status: 2, message: "Record has not deleted" };
