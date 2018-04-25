@@ -48,8 +48,10 @@ exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
       {
         $group: {
           _id: "$_id",
+          workoutIntensity:{ $first: "$workoutIntensity" },
+          exerciseExperience:{ $first: "$exerciseExperience" },
           excludeExercise:{ $addToSet: {"_id":"$excludeExercise._id","name":"$excludeExercise.name"}},
-          excludeExerciseType:{ $addToSet: {"_id":"$excludeExercise._id","name":"$excludeExercise.name"} },
+          excludeExerciseType:{ $addToSet: {"_id":"$excludeExerciseType._id","name":"$excludeExerciseType.name"} },
           existingInjuries:{ $addToSet: {"_id":"$existingInjuries._id","bodypart":"$existingInjuries.bodypart"} },
           workoutscheduletype: { $first: "$workoutscheduletype" },
           userId: { $first: "$userId" },
