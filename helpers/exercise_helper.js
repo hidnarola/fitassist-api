@@ -26,6 +26,99 @@ exercise_helper.get_all_exercise = async () => {
 };
 
 /*
+ * get_all_exercise_for_user is used to fetch all exercise data
+ * 
+ * @return  status 0 - If any internal error occured while fetching exercise data, with error
+ *          status 1 - If exercise data found, with exercise object
+ *          status 2 - If exercise not found, with appropriate message
+ */
+exercise_helper.get_all_exercise_for_user = async () => {
+  try {
+    var exercise = await Exercise.aggregate([
+      { $unwind: "$otherMuscleGroup" },
+      { $unwind: "$detailedMuscleGroup" },
+      {
+        $lookup: {
+          from: "bodyparts",
+          localField: "mainMuscleGroup",
+          foreignField: "_id",
+          as: "mainMuscle"
+        }
+      },
+      {
+        $unwind: "$mainMuscle"
+      },
+      {
+        $lookup: {
+          from: "bodyparts",
+          localField: "otherMuscleGroup",
+          foreignField: "_id",
+          as: "otherMuscle"
+        }
+      },
+      {
+        $unwind: "$otherMuscle"
+      },
+      {
+        $lookup: {
+          from: "bodyparts",
+          localField: "detailedMuscleGroup",
+          foreignField: "_id",
+          as: "detailedMuscle"
+        }
+      },
+      {
+        $unwind: "$detailedMuscle"
+      },
+      {
+        $lookup: {
+          from: "exercise_types",
+          localField: "type",
+          foreignField: "_id",
+          as: "type"
+        }
+      },
+      {
+        $unwind: "$type"
+      },
+      
+      {
+        $group: {
+          _id: "$_id",
+          name: { $push: "$name" },
+          // cols:filter_object.columnFilter,
+          otherMuscle: { $addToSet: "$otherMuscle" },
+          detailedMuscle: { $addToSet: "$detailedMuscle" },
+          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup" },
+          type: { $addToSet: "$type" },
+          mainMuscle: { $first: "$mainMuscle" },
+          name: { $first: "$name" },
+          description: { $first: "$description" },
+          mainMuscleGroup: { $first: "$mainMuscleGroup" },
+          otherMuscleGroup: { $addToSet: "$otherMuscleGroup" },
+          mechanics: { $first: "$mechanics" },
+          difficltyLevel: { $first: "$difficltyLevel" },
+          measures: { $first: "$measures" },
+          type: { $first: "$type" }
+        }
+      }
+    ]);
+
+    if (exercise) {
+      return { status: 1, message: "Exercise found", exercises: exercise };
+    } else {
+      return { status: 2, message: "No exercise available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding exercise",
+      error: err
+    };
+  }
+};
+
+/*
  * get_exercise_id is used to fetch exercise by ID
  * 
  * @return  status 0 - If any internal error occured while fetching exercise data, with error

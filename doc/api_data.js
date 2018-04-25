@@ -5677,7 +5677,7 @@ define({ "api": [
     "groupTitle": "Nutrition_Preferences"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5816,7 +5816,7 @@ define({ "api": [
     "groupTitle": "Recipes"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -6639,6 +6639,55 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/user/bodypart",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Body_Parts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "bodyparts",
+            "description": "<p>Array of bodyparts document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/bodyparts.js",
+    "groupTitle": "User_Body_Parts"
+  },
+  {
+    "type": "get",
     "url": "/user/equipment",
     "title": "Get User's all Equipment",
     "name": "Get_all_User_s_Equipment",
@@ -6748,6 +6797,55 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/equipment.js",
     "groupTitle": "User_Equipment"
+  },
+  {
+    "type": "get",
+    "url": "/user/exercise",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Exercise",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "exercise",
+            "description": "<p>Array of exercise_types's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/exercise.js",
+    "groupTitle": "User_Exercise"
   },
   {
     "type": "get",

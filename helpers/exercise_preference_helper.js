@@ -59,7 +59,6 @@ exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
         }
       },
       {$match:{ userId: id }},      
-  
     ]);
     if (exercise_preference) {
       return {
