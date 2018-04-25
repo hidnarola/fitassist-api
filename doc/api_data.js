@@ -5677,7 +5677,7 @@ define({ "api": [
     "groupTitle": "Nutrition_Preferences"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5816,7 +5816,7 @@ define({ "api": [
     "groupTitle": "Recipes"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -6958,6 +6958,55 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/exercise_preference.js",
     "groupTitle": "User_Exercise_Preferences"
+  },
+  {
+    "type": "get",
+    "url": "/user/exercise_type",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Exercise_Type",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "exercise_types",
+            "description": "<p>Array of exercise_types's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/exercise_type.js",
+    "groupTitle": "User_Exercise_Type"
   },
   {
     "type": "post",
