@@ -57,13 +57,13 @@ exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
         }
       },
       {$match:{ userId: id }},      
-      
+  
     ]);
     if (exercise_preference) {
       return {
         status: 1,
         message: "exercise_preference found",
-        exercise_preference: exercise_preference
+        exercise_preference: exercise_preference[0]
       };
     } else {
       return { status: 2, message: "exercise_preference not available" };
