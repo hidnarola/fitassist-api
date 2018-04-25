@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {post} /user/exercise_preference/save Save exercise Preference
+ * @api {post} /user/exercise_preference Save exercise Preference
  * @apiName Save
  * @apiGroup User Exercise Preferences
  * @apiDescription Add exercise Preference if not exists else update existing document
@@ -63,7 +63,7 @@ router.get("/", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} exercise_preference exercise_preference details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post("/save", async (req, res) => {
+router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 

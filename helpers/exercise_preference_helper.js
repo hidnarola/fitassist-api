@@ -10,7 +10,55 @@ var exercise_preference_helper = {};
  */
 exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
   try {
-    var exercise_preference = await Exercise_preference.findOne({ userId: id });
+    var exercise_preference = await Exercise_preference.aggregate([
+      { $unwind: "$excludeExercise" },
+      { $unwind: "$excludeExerciseType" },
+      { $unwind: "$existingInjuries" },
+      {
+        $lookup: {
+          from: "exercise",
+          localField: "excludeExercise",
+          foreignField: "_id",
+          as: "excludeExercise"
+        }
+      },
+      {$unwind:"$excludeExercise"},
+      {
+        $lookup: {
+          from: "exercise_types",
+          localField: "excludeExerciseType",
+          foreignField: "_id",
+          as: "excludeExerciseType"
+        }
+      },
+      {
+        $unwind: "$excludeExerciseType"
+      },
+      {
+        $lookup: {
+          from: "bodyparts",
+          localField: "existingInjuries",
+          foreignField: "_id",
+          as: "existingInjuries"
+        }
+      },
+      {
+        $unwind: "$existingInjuries"
+      },
+      {
+        $group: {
+          _id: "$_id",
+          excludeExercise:{ $addToSet: {"_id":"$excludeExercise._id","name":"$excludeExercise.name"}},
+          excludeExerciseType:{ $addToSet: {"_id":"$excludeExercise._id","name":"$excludeExercise.name"} },
+          existingInjuries:{ $addToSet: {"_id":"$existingInjuries._id","bodypart":"$existingInjuries.bodypart"} },
+          workoutscheduletype: { $first: "$workoutscheduletype" },
+          userId: { $first: "$userId" },
+          timeSchedule: { $first: "$timeSchedule" }, 
+        }
+      },
+      {$match:{ userId: id }},      
+      
+    ]);
     if (exercise_preference) {
       return {
         status: 1,

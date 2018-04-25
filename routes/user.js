@@ -17,7 +17,7 @@ var profile = require("./user/profile");
 var equipment = require("./user/equipment");
 var exercise_preference = require("./user/exercise_preference");
 var user_progress_photos = require("./user/user_progress_photos");
-var user_gallery_photos = require("./user/user_gallery_photos");
+var user_posts = require("./user/user_posts");
 
 // router.use("/nutrition", auth, nutrition);
 // router.use("/equipment_category", auth, equipment_category);
@@ -34,6 +34,6 @@ router.use("/profile", auth, profile);
 router.use("/equipment", auth, equipment);
 router.use("/exercise_preference", auth, exercise_preference);
 router.use("/user_progress_photo", auth, user_progress_photos);
-router.use("/user_gallery_photo", auth, user_gallery_photos);
+router.use("/user_post", auth, user_posts);
 
 module.exports = router;

@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {post} /user/nutrition_preference/save Save Nutrition Preference
+ * @api {post} /user/nutrition_preference Save Nutrition Preference
  * @apiName Save
  * @apiGroup User Nutrition Preference
  * @apiDescription Add Nutrition Preference if not exists else update existing document
@@ -52,7 +52,7 @@ router.get("/", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} nutrition_preference nutrition_preference details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/save", async (req, res) => {
+router.put("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
