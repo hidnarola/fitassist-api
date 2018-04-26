@@ -256,7 +256,6 @@ router.post("/", async (req, res) => {
  * @apiParam {String} description Description of Image
  * @apiParam {Number} privacy privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiParam {Number} status status of Image <br><code>1 for Active<br>2 for Inactive</code>
- * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","post"]</code>
  *
  * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo details
  * @apiError (Error 4xx) {String} message Validation or error message.

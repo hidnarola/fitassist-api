@@ -8,7 +8,6 @@ var auth = require("../middlewares/user_auth");
 // var exercise = require("./user/exercise");
 // var ingredient = require("./user/ingredients");
 // var recipes = require("./user/recipes");
-// var shoppingcart = require("./user/shoppingcart");
 // // var item = require("./user/item");
 var body_measurement = require("./user/measurement");
 var nutrition_preference = require("./user/nutrition_preferences");
@@ -20,6 +19,7 @@ var user_posts = require("./user/user_posts");
 var exercise_types = require("./user/exercise_type");
 var exercise = require("./user/exercise");
 var bodypart = require("./user/bodyparts");
+var shoppingcart = require("./user/shoppingcart");
 
 
 // router.use("/nutrition", auth, nutrition);
@@ -29,7 +29,6 @@ var bodypart = require("./user/bodyparts");
 // router.use("/exercise", auth, exercise);
 // router.use("/ingredient", auth, ingredient);
 // router.use("/recipes", auth, recipes);
-// router.use("/shoppingcart", auth, shoppingcart);
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
 router.use("/profile", auth, profile);
@@ -40,5 +39,6 @@ router.use("/user_post", auth, user_posts);
 router.use("/exercise_type", auth, exercise_types);
 router.use("/exercise", auth, exercise);
 router.use("/bodypart", auth, bodypart);
+router.use("/shoppingcart", auth, shoppingcart);
 
 module.exports = router;

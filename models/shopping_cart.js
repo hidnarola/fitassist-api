@@ -12,11 +12,7 @@ var ShoppingCartSchema = new Schema(
       required: true
     },
     qty: { type: Number, required: true },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
-      required: true
-    },
+    userId: {type: String, ref: "users", field:"authUserId", required: true},
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },

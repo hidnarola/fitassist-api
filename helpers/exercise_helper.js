@@ -35,8 +35,26 @@ exercise_helper.get_all_exercise = async () => {
 exercise_helper.get_all_exercise_for_user = async () => {
   try {
     var exercise = await Exercise.aggregate([
-      { $unwind: "$otherMuscleGroup" },
-      { $unwind: "$detailedMuscleGroup" },
+      // { $unwind: "$otherMuscleGroup" },
+      // { $unwind: "$detailedMuscleGroup" },
+      {
+        $unwind: {
+          path: "$otherMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$detailedMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$mainMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
       {
         $lookup: {
           from: "bodyparts",
@@ -46,7 +64,10 @@ exercise_helper.get_all_exercise_for_user = async () => {
         }
       },
       {
-        $unwind: "$mainMuscle"
+        $unwind: {
+          path: "$mainMuscle",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $lookup: {
@@ -57,7 +78,10 @@ exercise_helper.get_all_exercise_for_user = async () => {
         }
       },
       {
-        $unwind: "$otherMuscle"
+        $unwind: {
+          path: "$otherMuscle",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $lookup: {
@@ -68,7 +92,10 @@ exercise_helper.get_all_exercise_for_user = async () => {
         }
       },
       {
-        $unwind: "$detailedMuscle"
+        $unwind: {
+          path: "$detailedMuscle",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $lookup: {
@@ -79,9 +106,11 @@ exercise_helper.get_all_exercise_for_user = async () => {
         }
       },
       {
-        $unwind: "$type"
+        $unwind: {
+          path: "$type",
+          preserveNullAndEmptyArrays: true
+        }
       },
-      
       {
         $group: {
           _id: "$_id",
@@ -105,11 +134,16 @@ exercise_helper.get_all_exercise_for_user = async () => {
     ]);
 
     if (exercise) {
-      return { status: 1, message: "Exercise found", exercises: exercise };
+      return {
+        status: 1,
+        message: "Exercise found",
+        exercises: exercise
+      };
     } else {
       return { status: 2, message: "No exercise available" };
     }
   } catch (err) {
+    console.log("Error:",err);
     return {
       status: 0,
       message: "Error occured while finding exercise",
@@ -178,7 +212,10 @@ exercise_helper.insert_exercise = async exercise_object => {
  * 
  * @developed by "amc"
  */
-exercise_helper.update_exercise_by_id = async (exercise_id,exercise_object) => {
+exercise_helper.update_exercise_by_id = async (
+  exercise_id,
+  exercise_object
+) => {
   try {
     let exercise = await Exercise.findOneAndUpdate(
       { _id: exercise_id },
@@ -293,7 +330,7 @@ exercise_helper.get_filtered_records = async filter_obj => {
       {
         $unwind: "$type"
       },
-      
+
       {
         $group: {
           _id: "$_id",
@@ -316,12 +353,11 @@ exercise_helper.get_filtered_records = async filter_obj => {
       },
       {
         $match: filter_object.columnFilter
-      },      
+      },
       { $skip: skip },
       { $limit: filter_object.pageSize },
       { $sort: filter_obj.columnSort }
     ]);
-
 
     if (filtered_data) {
       return {
