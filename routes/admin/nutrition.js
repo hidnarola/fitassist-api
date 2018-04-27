@@ -177,7 +177,7 @@ router.put('/:nutrition_id', async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete('/:nutrition_id', async (req, res) => {
-    logger.trace("Delete Nutrition API - Id = ", req.query.id);
+    logger.trace("Delete Nutrition API - Id = ", req.params.nutrition_id);
     let nutrition_data = await nutrition_helper.delete_nutrition_by_id(req.params.nutrition_id);
 
     if (nutrition_data.status === 0) {

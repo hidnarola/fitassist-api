@@ -155,7 +155,7 @@ router.put('/:equipment_category_id', async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete('/:equipment_category_id', async (req, res) => {
-    logger.trace("Delete equipment category API - Id = ", req.query.id);
+    logger.trace("Delete equipment category API - Id = ", req.params.equipment_category_id);
     let equipment_category_data = await equipment_category_helper.delete_equipment_category_by_id(req.params.equipment_category_id);
 
     if (equipment_category_data.status === 0) {

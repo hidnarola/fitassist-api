@@ -16,7 +16,7 @@ user_equipments_helper.get_all_user_equipment = async user_auth_id => {
       userId: user_auth_id
     });
     console.log(user_equipment);
-    if (user_equipment && user_equipment.length != 0) {
+    if (user_equipment) {
       return {
         status: 1,
         message: "User Equipments found",

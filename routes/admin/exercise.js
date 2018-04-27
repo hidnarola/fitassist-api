@@ -458,7 +458,7 @@ router.put("/:exercise_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:exercise_id", async (req, res) => {
-  logger.trace("Delete Exercise API - Id = ", req.query.id);
+  logger.trace("Delete Exercise API - Id = ", req.params.exercise_id);
 
   var resp_data = await exercise_helper.get_exercise_id(req.params.exercise_id);
   images = resp_data.exercise.images;

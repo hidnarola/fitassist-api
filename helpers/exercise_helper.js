@@ -56,16 +56,42 @@ exercise_helper.get_all_exercise_for_user = async () => {
         }
       },
       {
-        $lookup: {
-          from: "bodyparts",
-          localField: "mainMuscleGroup",
-          foreignField: "_id",
-          as: "mainMuscle"
+        $unwind: {
+          path: "$type",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
         $unwind: {
-          path: "$mainMuscle",
+          path: "$equipments",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "equipments",
+          localField: "equipments",
+          foreignField: "_id",
+          as: "equipments"
+        }
+      },
+      {
+        $unwind: {
+          path: "$equipments",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "bodyparts",
+          localField: "mainMuscleGroup",
+          foreignField: "_id",
+          as: "mainMuscleGroup"
+        }
+      },
+      {
+        $unwind: {
+          path: "$mainMuscleGroup",
           preserveNullAndEmptyArrays: true
         }
       },
@@ -74,12 +100,12 @@ exercise_helper.get_all_exercise_for_user = async () => {
           from: "bodyparts",
           localField: "otherMuscleGroup",
           foreignField: "_id",
-          as: "otherMuscle"
+          as: "otherMuscleGroup"
         }
       },
       {
         $unwind: {
-          path: "$otherMuscle",
+          path: "$otherMuscleGroup",
           preserveNullAndEmptyArrays: true
         }
       },
@@ -88,12 +114,12 @@ exercise_helper.get_all_exercise_for_user = async () => {
           from: "bodyparts",
           localField: "detailedMuscleGroup",
           foreignField: "_id",
-          as: "detailedMuscle"
+          as: "detailedMuscleGroup"
         }
       },
       {
         $unwind: {
-          path: "$detailedMuscle",
+          path: "$detailedMuscleGroup",
           preserveNullAndEmptyArrays: true
         }
       },
@@ -116,19 +142,17 @@ exercise_helper.get_all_exercise_for_user = async () => {
           _id: "$_id",
           name: { $push: "$name" },
           // cols:filter_object.columnFilter,
-          otherMuscle: { $addToSet: "$otherMuscle" },
-          detailedMuscle: { $addToSet: "$detailedMuscle" },
-          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup" },
-          type: { $addToSet: "$type" },
-          mainMuscle: { $first: "$mainMuscle" },
+          otherMuscleGroup: { $addToSet: "$otherMuscleGroup.bodypart" },
+          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
+          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
+          equipments: { $addToSet: "$equipments.name" },
+          type: { $first: "$type.name" },
+          mainMuscleGroup: { $first: "$mainMuscleGroup.bodypart" },
           name: { $first: "$name" },
           description: { $first: "$description" },
-          mainMuscleGroup: { $first: "$mainMuscleGroup" },
-          otherMuscleGroup: { $addToSet: "$otherMuscleGroup" },
           mechanics: { $first: "$mechanics" },
           difficltyLevel: { $first: "$difficltyLevel" },
-          measures: { $first: "$measures" },
-          type: { $first: "$type" }
+          measures: { $first: "$measures" }
         }
       }
     ]);
@@ -143,7 +167,7 @@ exercise_helper.get_all_exercise_for_user = async () => {
       return { status: 2, message: "No exercise available" };
     }
   } catch (err) {
-    console.log("Error:",err);
+    console.log("Error:", err);
     return {
       status: 0,
       message: "Error occured while finding exercise",

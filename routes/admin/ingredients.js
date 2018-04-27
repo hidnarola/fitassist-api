@@ -308,7 +308,7 @@ router.put("/:ingredient_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:ingredient_id", async (req, res) => {
-  logger.trace("Delete Ingredient API - Id = ", req.query.id);
+  logger.trace("Delete Ingredient API - Id = ", req.params.ingredient_id);
   var resp_data = await ingredients_helper.get_ingredient_id(
     req.params.ingredient_id
   );

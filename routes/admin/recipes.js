@@ -326,7 +326,7 @@ router.put("/:recipe_id", async (req, res) => {
  */
 router.delete("/:recipe_id", async (req, res) => {
     
-    logger.trace("Delete recipe API - Id = ", req.query.id);
+    logger.trace("Delete recipe API - Id = ", req.params.recipe_id);
 
     let recipe = await recipes_helper.delete_recipes_by_id(
         req.params.recipe_id

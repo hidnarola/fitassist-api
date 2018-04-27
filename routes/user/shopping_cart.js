@@ -20,8 +20,12 @@ var shopping_cart_helper = require("../../helpers/shopping_cart_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   logger.trace("Get all shoppingcart API called");
-  var resp_data = await shopping_cart_helper.get_all_shoppingcart();
+  var resp_data = await shopping_cart_helper.get_all_shoppingcart({
+    userId: authUserId
+  });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching shopping cart = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -40,11 +44,14 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:shopping_cart_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   shopping_cart_id = req.params.shopping_cart_id;
   logger.trace("Get all shopping cart API called");
-  var resp_data = await shopping_cart_helper.get_shopping_cart_id(
-    shopping_cart_id
-  );
+  var resp_data = await shopping_cart_helper.get_shopping_cart_id({
+    _id: shopping_cart_id,
+    userId: authUserId
+  });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching shopping cart = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -62,7 +69,7 @@ router.get("/:shopping_cart_id", async (req, res) => {
  * @apiHeader {String}  x-access-token User's unique access-key
  * @apiParam {String} itemId ingredients  ID
  * @apiParam {Number} qty Quantity of ingredients
- * @apiSuccess (Success 200) {JSON} shopping_cart added shoppingcart detail
+ * @apiSuccess (Success 200) {JSON} shopping_cart added shopping cart detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
@@ -115,7 +122,7 @@ router.post("/", async (req, res) => {
  * @apiHeader {String}  x-access-token User's unique access-key
  * @apiParam {String} itemId ingredients  ID
  * @apiParam {Number} qty Quantity of ingredients
- * @apiSuccess (Success 200) {JSON} shopping_cart updated shoppingcart detail
+ * @apiSuccess (Success 200) {JSON} shopping_cart updated shopping cart detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:shopping_cart_id", async (req, res) => {
@@ -143,7 +150,7 @@ router.put("/:shopping_cart_id", async (req, res) => {
     };
 
     let shopping_cart_data = await shopping_cart_helper.update_shopping_cart_by_id(
-      shopping_cart_id,
+      { _id: shopping_cart_id, userId: authUserId },
       shopping_cart_obj
     );
     if (shopping_cart_data.status === 0) {
@@ -172,9 +179,11 @@ router.put("/:shopping_cart_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:shopping_cart_id", async (req, res) => {
-  logger.trace("Delete shopping cart API - Id = ", req.query.id);
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  logger.trace("Delete shopping cart API - Id = ", req.params.shopping_cart_id);
   let shopping_cart_data = await shopping_cart_helper.delete_shopping_cart_by_id(
-    req.params.shopping_cart_id
+    {_id:req.params.shopping_cart_id,userId:authUserId}
   );
 
   if (shopping_cart_data.status === 0) {

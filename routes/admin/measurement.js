@@ -296,7 +296,7 @@ router.put("/:measurement_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:measurement_id", async (req, res) => {
-  logger.trace("Delete Measurement API - Id = ", req.query.id);
+  logger.trace("Delete Measurement API - Id = ", req.params.measurement_id);
   let measurement_data = await measurement_helper.delete_measurement_by_id(
     req.params.measurement_id
   );

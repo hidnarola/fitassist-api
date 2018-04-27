@@ -5677,7 +5677,7 @@
     "groupTitle": "Nutrition_Preferences"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5816,7 +5816,7 @@
     "groupTitle": "Recipes"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -6201,7 +6201,7 @@
   },
   {
     "type": "post",
-    "url": "/admin/shoppingcart",
+    "url": "/user/shoppingcart",
     "title": "Add",
     "name": "Add",
     "group": "Shopping_Cart",
@@ -6220,7 +6220,7 @@
             "type": "String",
             "optional": false,
             "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
+            "description": "<p>User's unique access-key</p>"
           }
         ]
       }
@@ -6241,13 +6241,6 @@
             "optional": false,
             "field": "qty",
             "description": "<p>Quantity of ingredients</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>User ID</p>"
           }
         ]
       }
@@ -6260,7 +6253,7 @@
             "type": "JSON",
             "optional": false,
             "field": "shopping_cart",
-            "description": "<p>added shoppingcart detail</p>"
+            "description": "<p>added shopping cart detail</p>"
           }
         ]
       }
@@ -6279,12 +6272,12 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shoppingcart.js",
+    "filename": "routes/user/shopping_cart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
     "type": "delete",
-    "url": "/admin/shoppingcart/:shopping_cart_id",
+    "url": "/user/shoppingcart/:shopping_cart_id",
     "title": "Delete",
     "name": "Delete",
     "group": "Shopping_Cart",
@@ -6296,7 +6289,7 @@
             "type": "String",
             "optional": false,
             "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
+            "description": "<p>User's unique access-key</p>"
           }
         ]
       }
@@ -6328,12 +6321,12 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shoppingcart.js",
+    "filename": "routes/user/shopping_cart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
     "type": "get",
-    "url": "/admin/shoppingcart",
+    "url": "/user/shoppingcart",
     "title": "Get all",
     "name": "Get_all",
     "group": "Shopping_Cart",
@@ -6345,7 +6338,7 @@
             "type": "String",
             "optional": false,
             "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
+            "description": "<p>User's unique access-key</p>"
           }
         ]
       }
@@ -6377,12 +6370,12 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shoppingcart.js",
+    "filename": "routes/user/shopping_cart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
     "type": "get",
-    "url": "/admin/shoppingcart/shopping_cart_id",
+    "url": "/user/shoppingcart/shopping_cart_id",
     "title": "Get by ID",
     "name": "Get_by_ID",
     "group": "Shopping_Cart",
@@ -6394,7 +6387,7 @@
             "type": "String",
             "optional": false,
             "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
+            "description": "<p>User's unique access-key</p>"
           }
         ]
       }
@@ -6426,12 +6419,12 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shoppingcart.js",
+    "filename": "routes/user/shopping_cart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
     "type": "put",
-    "url": "/admin/shoppingcart",
+    "url": "/user/shoppingcart",
     "title": "Update",
     "name": "Update",
     "group": "Shopping_Cart",
@@ -6450,7 +6443,7 @@
             "type": "String",
             "optional": false,
             "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
+            "description": "<p>User's unique access-key</p>"
           }
         ]
       }
@@ -6471,13 +6464,6 @@
             "optional": false,
             "field": "qty",
             "description": "<p>Quantity of ingredients</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userId",
-            "description": "<p>User ID</p>"
           }
         ]
       }
@@ -6490,7 +6476,7 @@
             "type": "JSON",
             "optional": false,
             "field": "shopping_cart",
-            "description": "<p>updated shoppingcart detail</p>"
+            "description": "<p>updated shopping cart detail</p>"
           }
         ]
       }
@@ -6509,7 +6495,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/admin/shoppingcart.js",
+    "filename": "routes/user/shopping_cart.js",
     "groupTitle": "Shopping_Cart"
   },
   {
@@ -7879,13 +7865,6 @@
             "optional": false,
             "field": "status",
             "description": "<p>status of Image <br><code>1 for Active<br>2 for Inactive</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "postType",
-            "description": "<p>post Type of Post <br><code>Enum=[&quot;timeline&quot;,&quot;post&quot;]</code></p>"
           }
         ]
       }

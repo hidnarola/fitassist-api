@@ -143,7 +143,7 @@ router.put("/:body_part_id", async (req, res) => {
  */
 router.delete("/:body_part_id", async (req, res) => {
 
-  logger.trace("Delete Body Part API - Id = ", req.query.id);
+  logger.trace("Delete Body Part API - Id = ", req.params.body_part_id);
   let bodypart_data = await body_part_helper.delete_bodypart_by_id(
     req.params.body_part_id
   );

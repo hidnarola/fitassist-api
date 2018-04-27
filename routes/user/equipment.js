@@ -45,15 +45,20 @@ router.get("/", async (req, res) => {
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user equipments = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    
-    user_equipment_obj.equipments.user_equipments = resp_data.user_equipments.equipmentIds;
+  } 
+  else if(resp_data.status == 2)
+    {
+      user_equipment_obj.equipments.user_equipments = [];
+    }
+    else{
+      user_equipment_obj.equipments.user_equipments = resp_data.user_equipments.equipmentIds;
+    }
     var all_equipments_data = await user_equipment_helper.get_all_equipment();
     user_equipment_obj.equipments.all_equipments =
       all_equipments_data.equipments;
     logger.trace("user equipments got successfully = ", user_equipment_obj);
     res.status(config.OK_STATUS).json(user_equipment_obj);
-  }
+  
 });
 
 

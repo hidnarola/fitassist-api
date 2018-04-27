@@ -219,7 +219,7 @@ router.put('/:exercise_type_id', async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete('/:exercise_type_id', async (req, res) => {
-    logger.trace("Delete Exercise Type  API - Id = ", req.query.id);
+    logger.trace("Delete Exercise Type  API - Id = ", req.params.exercise_type_id);
     let exercise_type_data = await exercise_types_helper.delete_exercise_type_by_id(req.params.exercise_type_id);
 
     if (exercise_type_data.status === 0) {

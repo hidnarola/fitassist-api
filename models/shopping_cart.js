@@ -20,10 +20,10 @@ var ShoppingCartSchema = new Schema(
 );
 
 // Compile model from schema
-var BodyPart = mongoose.model(
-  "shoppingcart",
+var ShoppingCart = mongoose.model(
+  "shopping_cart",
   ShoppingCartSchema,
-  "shoppingcart"
+  "shopping_cart"
 );
 
-module.exports = BodyPart;
+module.exports = ShoppingCart;

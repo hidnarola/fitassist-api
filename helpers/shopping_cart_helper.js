@@ -11,9 +11,9 @@ var shopping_cart_helper = {};
  * @developed by "amc"
 
  */
-shopping_cart_helper.get_all_shoppingcart = async () => {
+shopping_cart_helper.get_all_shoppingcart = async (id) => {
     try {
-        var shopping_cart = await ShoppingCart.find();
+        var shopping_cart = await ShoppingCart.find(id);
         if (shopping_cart) {
             return { "status": 1, "message": "shopping cart found", "shopping_carts": shopping_cart };
         } else {
@@ -23,7 +23,6 @@ shopping_cart_helper.get_all_shoppingcart = async () => {
         return { "status": 0, "message": "Error occured while finding shopping cart", "error": err }
     }
 }
-
 
 /*
  * shopping_cart_id is used to fetch shopping cart by ID
@@ -36,7 +35,7 @@ shopping_cart_helper.get_all_shoppingcart = async () => {
  */
 shopping_cart_helper.get_shopping_cart_id = async (id) => {
     try {
-        var shopping_cart = await ShoppingCart.findOne({_id:id});
+        var shopping_cart = await ShoppingCart.findOne(id);
         if (shopping_cart) {
             return { "status": 1, "message": "Shopping Cart  found", "shopping_cart": shopping_cart };
         } else {
@@ -80,9 +79,9 @@ shopping_cart_helper.insert_shopping_cart = async (shopping_cart_object) => {
  * 
  * @developed by "amc"
  */
-shopping_cart_helper.update_shopping_cart_by_id = async (shopping_cart_id, shopping_cart_object) => {
+shopping_cart_helper.update_shopping_cart_by_id = async (id, shopping_cart_object) => {
     try {
-        let shoppingcart_data = await ShoppingCart.findOneAndUpdate({ _id: shopping_cart_id }, shopping_cart_object, { new: true });
+        let shoppingcart_data = await ShoppingCart.findOneAndUpdate(id, shopping_cart_object, { new: true });
         if (!shoppingcart_data) {
             return { "status": 2, "message": "Record has not updated" };
         } else {
@@ -103,9 +102,9 @@ shopping_cart_helper.update_shopping_cart_by_id = async (shopping_cart_id, shopp
  * 
  * @developed by "amc"
  */
-shopping_cart_helper.delete_shopping_cart_by_id = async (shopping_cart_id) => {
+shopping_cart_helper.delete_shopping_cart_by_id = async (id) => {
     try {
-        let resp = await ShoppingCart.findOneAndRemove({ _id: shopping_cart_id });
+        let resp = await ShoppingCart.findOneAndRemove(id);
         if (!resp) {
             return { "status": 2, "message": "shopping cart not found" };
         } else {

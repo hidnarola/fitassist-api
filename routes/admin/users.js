@@ -234,7 +234,7 @@ router.put("/:user_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:user_id", async (req, res) => {
-  logger.trace("Delete user API - Id = ", req.query.id);
+  logger.trace("Delete user API - Id = ", req.params.user_id);
   var user_obj = {
     isDelete: 1
   };
