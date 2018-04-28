@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 var config = require("../config");
-var constant = require("../constant");
 var user = require("../models/users");
 var jwt = require("jsonwebtoken");
 var moment = require("moment");
@@ -350,9 +349,6 @@ router.post("/user_signup", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/auth0_user_sync", async (req, res) => {
-  exercise_preference_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
-          exercise_preference_obj.userId = response.sub;
-          console.log("exercise_preference_obj",exercise_preference_obj);
   logger.trace("API - auth0_user_sync called");
   logger.debug("req.body = ", req.body);
 
@@ -376,8 +372,6 @@ router.get("/auth0_user_sync", async (req, res) => {
             avatar: response.picture
           };
           var user_data = await user_helper.insert_user(user_obj);
-          
-          var exercise_preference_data = await exercise_preference_helper.insert_exercise_prefernece(exercise_preference_obj);
           res.status(config.OK_STATUS).json(user_data);
         } else {
           let data = await user_helper.get_user_by_email_authID(
@@ -410,6 +404,7 @@ router.get("/auth0_user_sync", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/nutritional_label/:type", async (req, res) => {
+
   logger.trace("Get all nutritional label API called");
   var resp_data = await common_helper.get_nutritional_labels({
     type: req.params.type
@@ -418,6 +413,7 @@ router.get("/nutritional_label/:type", async (req, res) => {
     logger.error("Error occured while nutritional label = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
+
     logger.trace("nutritional label got successfully = ", resp_data);
 
     res.status(config.OK_STATUS).json(resp_data);
@@ -427,12 +423,13 @@ router.get("/nutritional_label/:type", async (req, res) => {
 /**
  * @api {get} /nutrition/ Get all
  * @apiName Get all
- * @apiGroup Common Nutrition
+ * @apiGroup Common Nutrition 
  * @apiHeader {String}  x-access-token Admin's or User's unique access-key
  * @apiSuccess (Success 200) {Array} nutritions Array of nutrition's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/nutrition/", async (req, res) => {
+
   logger.trace("Get all nutritions API called");
   var resp_data = await common_helper.get_nutritions({
     type: req.params.type
@@ -441,6 +438,7 @@ router.get("/nutrition/", async (req, res) => {
     logger.error("Error occured while nutritions = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
+
     logger.trace("nutritions got successfully = ", resp_data);
 
     res.status(config.OK_STATUS).json(resp_data);
