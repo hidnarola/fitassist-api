@@ -11,6 +11,7 @@ var logger = config.logger;
 
 var friend_helper = require("../../helpers/friend_helper");
 
+//#region Get All Friends
 /**
  * @api {get} /user/friend Get all
  * @apiName Get all
@@ -37,6 +38,8 @@ router.get("/", async (req, res) => {
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
+//#endregion
+
 
 /**
  * @api {get} /user/friend/request_id Get by ID

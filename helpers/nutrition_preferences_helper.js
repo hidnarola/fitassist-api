@@ -65,38 +65,75 @@ nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid 
     // look up aggregate mongoose
     let resp = await NutritionPreferences.aggregate([
       {
-        $unwind: "$excludeIngredients"
+        $match: userid
       },
       {
-        $lookup: {
-          from: "ingredients",
-          localField: "excludeIngredients",
-          foreignField: "_id",
-          as: "excludeIngredients"
+        $unwind: {
+          path: "$dietRestrictionLabels",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
-        $unwind: "$excludeIngredients"
+        $unwind: {
+          path: "$healthRestrictionLabels",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
-        $unwind: "$dietaryRestrictedRecipieTypes"
+        $lookup: {
+          from: "nutritional_labels",
+          localField: "dietRestrictionLabels",
+          foreignField: "_id",
+          as: "dietRestrictionLabels"
+        }
+      },
+      {
+        $unwind: {
+          path: "$dietRestrictionLabels",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "nutritional_labels",
+          localField: "healthRestrictionLabels",
+          foreignField: "_id",
+          as: "healthRestrictionLabels"
+        }
+      },
+      {
+        $unwind: {
+          path: "$healthRestrictionLabels",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "exercise_types",
+          localField: "type",
+          foreignField: "_id",
+          as: "type"
+        }
+      },
+      {
+        $unwind: {
+          path: "$type",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $group: {
           _id: "$_id",
-          dietaryRestrictedRecipieTypes: {
-            $addToSet: "$dietaryRestrictedRecipieTypes"
-          },
-          recipieDifficulty: { $first: "$recipieDifficulty" },
+          userId: { $first: "$userId" },
           maxRecipieTime: { $first: "$maxRecipieTime" },
           nutritionTargets: { $first: "$nutritionTargets" },
-          excludeIngredients: { $addToSet: "$excludeIngredients" },
-          userId: { $first: "$userId" }
+          // cols:filter_object.columnFilter,
+          dietRestrictionLabels: { $addToSet: "$dietRestrictionLabels" },
+          healthRestrictionLabels: { $addToSet: "$healthRestrictionLabels" },
+
         }
-      },
-      {
-        $match: { userId: userid }
       }
+     
     ]);
     if (!resp || resp.length==0) {
       return { status: 2, message: "Nutrition Preferences not found" };

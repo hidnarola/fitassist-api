@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
   var authUserId = decoded.sub;
   logger.trace("Get nutrition preference by ID API called : ", authUserId);
   var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_user_id(
-    authUserId
+    {userId:authUserId}
   );
   if (resp_data.status == 0) {
     logger.error(
@@ -52,31 +52,25 @@ router.get("/", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} nutrition_preference nutrition_preference details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/", async (req, res) => {
+router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
   var nutrition_preference_obj = {
     userId: authUserId,
-    dietaryRestrictedRecipieTypes: req.body.dietaryRestrictedRecipieTypes
-      ? req.body.dietaryRestrictedRecipieTypes
-      : null,
-    recipieDifficulty: req.body.recipieDifficulty
-      ? req.body.recipieDifficulty
-      : null,
-    maxRecipieTime: req.body.maxRecipieTime
-      ? req.body.maxRecipieTime
-      : null,
-    nutritionTargets: req.body.nutritionTargets
-      ? req.body.nutritionTargets
-      : null,
-    excludeIngredients: req.body.excludeIngredients
-      ? req.body.excludeIngredients
-      : null
   };
 
-  if (req.body.description) {
-    nutrition_obj.description = req.body.description;
+  if (req.body.dietRestrictionLabels) {
+    nutrition_preference_obj.dietRestrictionLabels = req.body.dietRestrictionLabels;
+  }
+  if (req.body.healthRestrictionLabels) {
+    nutrition_preference_obj.healthRestrictionLabels = req.body.healthRestrictionLabels;
+  }
+  if (req.body.nutritionTargets) {
+    nutrition_preference_obj.nutritionTargets = req.body.nutritionTargets;
+  }
+  if (req.body.maxRecipieTime) {
+    nutrition_preference_obj.maxRecipieTime = req.body.maxRecipieTime;
   }
 
   var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_id(

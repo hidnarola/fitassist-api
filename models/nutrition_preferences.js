@@ -14,10 +14,6 @@ var maxRecipieTimeSchema = new Schema({
 });
 
 var nutritionTargetsSchema = new Schema({
-  title: {
-    type: String,
-    required: true
-  },
   start: { type: Number, default: null },
   end: { type: Number, default: null }
 });
@@ -25,39 +21,10 @@ var nutritionTargetsSchema = new Schema({
 var NutritionPreferenceSchema = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },
-
-    dietaryRestrictedRecipieTypes: [
-      {
-        type: String,
-        enum: [
-          "vegetarian",
-          "vegan",
-          "dairy-free",
-          "kosher",
-          "islam",
-          "coeliac",
-          "paleo",
-          "pescaterian"
-        ],
-        required: true
-      }
-    ],
-    recipieDifficulty: [
-      {
-        type: String,
-        enum: ["easy", "medium", "hard"],
-        required: true
-      }
-    ],
+    dietRestrictionLabels: [{ type: mongoose.Schema.Types.ObjectId, ref: "nutritional_labels" }],
     maxRecipieTime: [maxRecipieTimeSchema],
     nutritionTargets: [nutritionTargetsSchema],
-    excludeIngredients: [
-      {
-        type: String,
-        default: null
-      }
-    ],
-
+    healthRestrictionLabels: [{ type: mongoose.Schema.Types.ObjectId, ref: "nutritional_labels" }],
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },
