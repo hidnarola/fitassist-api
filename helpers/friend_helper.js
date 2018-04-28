@@ -15,9 +15,6 @@ friend_helper.get_friends = async id => {
         $match:id
       },
       {
-        $match:{status:1}
-      },
-      {
         $unwind:"$friendId"
       },
       {
@@ -34,9 +31,9 @@ friend_helper.get_friends = async id => {
       {
         $group: {
           _id: "$userId",
-          // cols:filter_object.columnFilter,
-          friends: { $addToSet: "$friends" },
-          
+          status:{$first:"$status"},
+          friends: { $addToSet: {authUserId:"$friends.authUserId",_id:"$friends._id",firstName:"$friends.firstName"}},
+                
         }
       }
     ]);

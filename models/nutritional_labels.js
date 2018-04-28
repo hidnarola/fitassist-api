@@ -14,6 +14,6 @@ var NutritionalLabelSchema = new Schema({
 }, {versionKey: false});
 
 // Compile model from schema
-var NutritionalLabels = mongoose.model('nutritional_labels', NutritionalLabelSchema, 'nutritional_labels');
+var NutritionalLabels = mongoose.model('    ', NutritionalLabelSchema, 'nutritional_labels');
 
 module.exports = NutritionalLabels;

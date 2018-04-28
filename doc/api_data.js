@@ -7293,7 +7293,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -7342,7 +7342,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -7380,7 +7380,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/friend",
+    "url": "/user/friend/:type",
     "title": "Get all",
     "name": "Get_all",
     "group": "User_Friends",
@@ -7391,8 +7391,21 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "type",
+            "description": "<p>type of friends <br><code>1 for pending friends,<br>2 for approved friends</code></p>"
           }
         ]
       }
@@ -7440,7 +7453,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -7467,7 +7480,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "message",
-            "description": "<p>Validation or error message.</p>"
+            "description": "<p>Validation or error message. router.get(&quot;/:request_id&quot;, async (req, res) =&gt; { var decoded = jwtDecode(req.headers[&quot;authorization&quot;]); var authUserId = decoded.sub; request_id = req.params.request_id; logger.trace(&quot;Get all friend API called&quot;); var resp_data = await friend_helper.get_shopping_cart_id({ _id: request_id, userId: authUserId }); if (resp_data.status == 0) { logger.error(&quot;Error occured while fetching friend = &quot;, resp_data); res.status(config.INTERNAL_SERVER_ERROR).json(resp_data); } else { logger.trace(&quot;friend got successfully = &quot;, resp_data); res.status(config.OK_STATUS).json(resp_data); } });</p>"
           }
         ]
       }
@@ -7496,7 +7509,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]

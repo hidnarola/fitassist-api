@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
   var authUserId = decoded.sub;
   logger.trace("Get exercise preference by ID API called : ", authUserId);
   var resp_data = await exercise_preference_helper.get_exercise_preference_by_user_id(
-    authUserId
+    {userId:authUserId}
   );
   if (resp_data.status == 0) {
     logger.error(
@@ -108,8 +108,10 @@ router.post("/", async (req, res) => {
   }
 
   var resp_data = await exercise_preference_helper.get_exercise_preference_by_user_id(
-    authUserId
+    { userId: authUserId }
   );
+  console.log("resp_data",resp_data);
+
   if (resp_data.status == 1) {
     let exercise_preference_data = await exercise_preference_helper.update_exercise_preference_by_userid(
       authUserId,

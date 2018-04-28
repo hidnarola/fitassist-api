@@ -58,9 +58,9 @@ exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
       //     timeSchedule: { $first: "$timeSchedule" }, 
       //   }
       // },
-      {$match:{ userId: id }},      
+      {$match:id},      
     ]);
-    if (exercise_preference) {
+    if (exercise_preference && exercise_preference.length>0) {
       return {
         status: 1,
         message: "exercise_preference found",

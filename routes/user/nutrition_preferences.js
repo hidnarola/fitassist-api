@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
  * @apiParam {Enum-Array} healthRestrictionLabels healthRestrictionLabels
  * @apiParam {Enum-Array} excludeIngredients excludeIngredients
  * @apiParam {Array} nutritionTargets nutritionTargets  [title:{title},start:{start value},end:{end value}]
- * @apiParam {Array} maxRecipieTime max Recipie Time <code>[{dayDrive : enum, time : 'value'}]</code> | Possible Values ("breakfast", "lunch", "dinner","Snacks")
+ * @apiParam {Array} maxRecipeTime max Recipe Time <code>[{dayDrive : enum, time : 'value'}]</code> | Possible Values ("breakfast", "lunch", "dinner","Snacks")
  *
  * @apiSuccess (Success 200) {JSON} nutrition_preference nutrition_preference details
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -70,8 +70,8 @@ router.post("/", async (req, res) => {
   if (req.body.nutritionTargets) {
     nutrition_preference_obj.nutritionTargets = req.body.nutritionTargets;
   }
-  if (req.body.maxRecipieTime) {
-    nutrition_preference_obj.maxRecipieTime = req.body.maxRecipieTime;
+  if (req.body.maxRecipeTime) {
+    nutrition_preference_obj.maxRecipeTime = req.body.maxRecipeTime;
   }
   if (req.body.excludeIngredients) {
     nutrition_preference_obj.excludeIngredients = req.body.excludeIngredients;

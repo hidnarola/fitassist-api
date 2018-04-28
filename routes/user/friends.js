@@ -13,20 +13,23 @@ var friend_helper = require("../../helpers/friend_helper");
 
 //#region Get All Friends
 /**
- * @api {get} /user/friend Get all
+ * @api {get} /user/friend/:type Get all
  * @apiName Get all
  * @apiGroup  User Friends
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Number}  type type of friends <br><code>1 for pending friends,<br>2 for approved friends</code>
  * @apiSuccess (Success 200) {Array} friends Array of friends document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/", async (req, res) => {
+router.get("/:type", async (req, res) => {
   
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var type =  parseInt(req.params.type);
   logger.trace("Get all friends API called");
   var resp_data = await friend_helper.get_friends({
-	userId: authUserId,
+  userId: authUserId,
+  status:type
 	
   });
   if (resp_data.status == 0) {
@@ -45,7 +48,7 @@ router.get("/", async (req, res) => {
  * @api {get} /user/friend/request_id Get by ID
  * @apiName Get by ID
  * @apiGroup  User Friends
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} friend Array of friends document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -72,7 +75,7 @@ router.get("/:request_id", async (req, res) => {
  * @apiName Send request
  * @apiGroup  User Friends
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} friendId Id fo friend
  * @apiSuccess (Success 200) {JSON} friend request sent in friends detail
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -115,7 +118,7 @@ router.post("/", async (req, res) => {
  * @apiName Approve request
  * @apiGroup  User Friends
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {JSON} friend approved friend detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -129,7 +132,7 @@ router.put("/:request_id", async (req, res) => {
   };
 
   let friend_data = await friend_helper.approve_friend(
-    { _id: request_id, userId: authUserId },
+    { _id: req.params.request_id, userId: authUserId },
     friend_obj
   );
   if (friend_data.status === 0) {
@@ -145,7 +148,7 @@ router.put("/:request_id", async (req, res) => {
  * @apiName Delete request
  * @apiGroup  User Friends
  *
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
