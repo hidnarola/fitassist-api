@@ -20,6 +20,7 @@ var exercise_types = require("./user/exercise_type");
 var exercise = require("./user/exercise");
 var bodypart = require("./user/bodyparts");
 var shoppingcart = require("./user/shopping_cart");
+var friends = require("./user/friends");
 var comment = require("./user/comment");
 var like = require("./user/like");
 
@@ -41,6 +42,7 @@ router.use("/user_post", auth, user_posts);
 router.use("/exercise_type", auth, exercise_types);
 router.use("/exercise", auth, exercise);
 router.use("/bodypart", auth, bodypart);
+router.use("/friend", auth, friends);
 router.use("/comment", auth, comment);
 router.use("/like", auth, like);
 

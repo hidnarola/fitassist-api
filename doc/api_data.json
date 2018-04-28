@@ -4130,6 +4130,75 @@
   },
   {
     "type": "post",
+    "url": "/user/like",
+    "title": "Add",
+    "name": "Add_Comment",
+    "group": "Likes",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "postId",
+            "description": "<p>postId of post</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "like",
+            "description": "<p>added like detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/like.js",
+    "groupTitle": "Likes"
+  },
+  {
+    "type": "post",
     "url": "/admin_login",
     "title": "Admin Login",
     "name": "Admin_Login",
@@ -5677,6 +5746,69 @@
     "groupTitle": "Nutrition_Preferences"
   },
   {
+    "type": "get",
+    "url": "/nutritional_label/:type",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "Nutritional_labels",
+    "description": "<p>parameter type can be diet or health</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's or User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>type of nutritional_label <code>diet or health </code></p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "labels",
+            "description": "<p>Array of nutritional_labels's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/index.js",
+    "groupTitle": "Nutritional_labels"
+  },
+  {
     "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
@@ -7093,6 +7225,278 @@
     "groupTitle": "User_Exercise_Type"
   },
   {
+    "type": "put",
+    "url": "/user/friend",
+    "title": "Approve request",
+    "name": "Approve_request",
+    "group": "User_Friends",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "friend",
+            "description": "<p>approved friend detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/friends.js",
+    "groupTitle": "User_Friends"
+  },
+  {
+    "type": "delete",
+    "url": "/user/friend/:request_id",
+    "title": "Delete request",
+    "name": "Delete_request",
+    "group": "User_Friends",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/friends.js",
+    "groupTitle": "User_Friends"
+  },
+  {
+    "type": "get",
+    "url": "/user/friend",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Friends",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "friends",
+            "description": "<p>Array of friends document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/friends.js",
+    "groupTitle": "User_Friends"
+  },
+  {
+    "type": "get",
+    "url": "/user/friend/request_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "User_Friends",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "friend",
+            "description": "<p>Array of friends document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/friends.js",
+    "groupTitle": "User_Friends"
+  },
+  {
+    "type": "post",
+    "url": "/user/friend",
+    "title": "Send request",
+    "name": "Send_request",
+    "group": "User_Friends",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "friendId",
+            "description": "<p>Id fo friend</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "friend",
+            "description": "<p>request sent in friends detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/friends.js",
+    "groupTitle": "User_Friends"
+  },
+  {
     "type": "post",
     "url": "/user/measurement/get_log_dates_by_date",
     "title": "Get Logs of User Measurement",
@@ -7898,6 +8302,207 @@
     "version": "0.0.0",
     "filename": "routes/user/user_posts.js",
     "groupTitle": "User_Post"
+  },
+  {
+    "type": "post",
+    "url": "/user/comment",
+    "title": "Add",
+    "name": "Add",
+    "group": "User_Post_Comment",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "comment",
+            "description": "<p>comment of post</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "postId",
+            "description": "<p>postId of post</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "comment",
+            "description": "<p>added comment detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/comment.js",
+    "groupTitle": "User_Post_Comment"
+  },
+  {
+    "type": "delete",
+    "url": "/user/comment/:comment_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Post_Comment",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/comment.js",
+    "groupTitle": "User_Post_Comment"
+  },
+  {
+    "type": "put",
+    "url": "/user/comment/:comment_id",
+    "title": "Update",
+    "name": "Update",
+    "group": "User_Post_Comment",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "comment",
+            "description": "<p>comment of post</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "postId",
+            "description": "<p>postId of post</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "comment",
+            "description": "<p>updated comment detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/comment.js",
+    "groupTitle": "User_Post_Comment"
   },
   {
     "type": "post",

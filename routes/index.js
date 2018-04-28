@@ -393,4 +393,31 @@ router.get("/auth0_user_sync", async (req, res) => {
   }
 });
 
+/**
+ * @api {get} /nutritional_label/:type Get all
+ * @apiName Get all
+ * @apiGroup Nutritional labels
+ * @apiDescription  parameter type can be diet or health
+ * @apiHeader {String}  x-access-token Admin's or User's unique access-key
+ * @apiParam {String} type type of nutritional_label <code>diet or health </code>
+ * @apiSuccess (Success 200) {Array} labels Array of nutritional_labels's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/nutritional_label/:type", async (req, res) => {
+
+  logger.trace("Get all nutritional label API called");
+  var resp_data = await common_helper.get_nutritional_labels({
+    type: req.params.type
+  });
+  if (resp_data.status == 0) {
+    logger.error("Error occured while nutritional label = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+
+    logger.trace("nutritional label got successfully = ", resp_data);
+
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
 module.exports = router;

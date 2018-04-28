@@ -2,6 +2,7 @@ var bcrypt = require("bcrypt");
 var common_helper = {};
 var async = require("async");
 var _ = require("underscore");
+var NutritionalLabels = require("./../models/nutritional_labels");
 
 common_helper.hashPassword = function(callback) {
   console.log("in hash password");
@@ -54,4 +55,32 @@ common_helper.changeObject = function(data, callback) {
   return data;
 };
 
+
+/*
+ * get_nutritional_labels is used to fetch all health_label data
+ * 
+ * @return  status 0 - If any internal error occured while fetching get_nutritional_labels data, with error
+ *          status 1 - If get_nutritional_labels data found, with get_nutritional_labels object
+ *          status 2 - If get_nutritional_labels not found, with appropriate message
+ */
+common_helper.get_nutritional_labels = async (type) => {
+  try {
+    var nutritional_labels_data = await NutritionalLabels.find(type);
+    if (nutritional_labels_data) {
+      return {
+        status: 1,
+        message: "nutritional labels found",
+        labels: nutritional_labels_data
+      };
+    } else {
+      return { status: 2, message: "No nutritional labels available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding nutritional labels",
+      error: err
+    };
+  }
+};
 module.exports = common_helper;

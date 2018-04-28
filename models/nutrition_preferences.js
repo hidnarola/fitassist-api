@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 var maxRecipieTimeSchema = new Schema({
   dayDrive: {
     type: String,
-    enum: ["breakfast", "lunch", "dinner", "Snacks"],
+    enum: ["breakfast", "lunch", "dinner", "snacks"],
     required: true
   },
   time: { type: Number, default: null }
@@ -53,8 +53,7 @@ var NutritionPreferenceSchema = new Schema(
     nutritionTargets: [nutritionTargetsSchema],
     excludeIngredients: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "ingredients",
+        type: String,
         default: null
       }
     ],
