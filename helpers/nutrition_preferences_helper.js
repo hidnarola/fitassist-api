@@ -63,78 +63,9 @@ nutrition_preferences_helper.get_nutrition_preference_by_id = async id => {
 nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid => {
   try {
     // look up aggregate mongoose
-    let resp = await NutritionPreferences.aggregate([
-      {
-        $match: userid
-      },
-      {
-        $unwind: {
-          path: "$dietRestrictionLabels",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$healthRestrictionLabels",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $lookup: {
-          from: "nutritional_labels",
-          localField: "dietRestrictionLabels",
-          foreignField: "_id",
-          as: "dietRestrictionLabels"
-        }
-      },
-      {
-        $unwind: {
-          path: "$dietRestrictionLabels",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $lookup: {
-          from: "nutritional_labels",
-          localField: "healthRestrictionLabels",
-          foreignField: "_id",
-          as: "healthRestrictionLabels"
-        }
-      },
-      {
-        $unwind: {
-          path: "$healthRestrictionLabels",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $lookup: {
-          from: "exercise_types",
-          localField: "type",
-          foreignField: "_id",
-          as: "type"
-        }
-      },
-      {
-        $unwind: {
-          path: "$type",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $group: {
-          _id: "$_id",
-          userId: { $first: "$userId" },
-          maxRecipieTime: { $first: "$maxRecipieTime" },
-          nutritionTargets: { $first: "$nutritionTargets" },
-          // cols:filter_object.columnFilter,
-          dietRestrictionLabels: { $addToSet: "$dietRestrictionLabels" },
-          healthRestrictionLabels: { $addToSet: "$healthRestrictionLabels" },
-
-        }
-      }
-     
-    ]);
+    let resp = await NutritionPreferences.findOne(
+     userid
+    );
     if (!resp || resp.length==0) {
       return { status: 2, message: "Nutrition Preferences not found" };
     } else {
