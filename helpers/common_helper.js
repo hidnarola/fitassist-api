@@ -3,6 +3,7 @@ var common_helper = {};
 var async = require("async");
 var _ = require("underscore");
 var NutritionalLabels = require("./../models/nutritional_labels");
+var Nutritions = require("./../models/nutritions");
 
 common_helper.hashPassword = function(callback) {
   console.log("in hash password");
@@ -83,4 +84,25 @@ common_helper.get_nutritional_labels = async (type) => {
     };
   }
 };
+
+
+/*
+ * get_nutritions is used to fetch all nutrition
+ * 
+ * @return  status 0 - If any internal error occured while fetching nutrition data, with error
+ *          status 1 - If nutrition data found, with nutrition object
+ *          status 2 - If nutrition not found, with appropriate message
+ */
+common_helper.get_nutritions = async () => {
+  try {
+      var nutrition = await Nutritions.find();
+      if (nutrition) {
+          return { "status": 1, "message": "Nutrition's details found", "nutritions": nutrition };
+      } else {
+          return { "status": 2, "message": "No nutrition available" };
+      }
+  } catch (err) {
+      return { "status": 0, "message": "Error occured while finding nutrition", "error": err }
+  }
+}
 module.exports = common_helper;

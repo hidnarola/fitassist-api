@@ -44,8 +44,9 @@ router.get("/", async (req, res) => {
  * @apiDescription Add Nutrition Preference if not exists else update existing document
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {Enum-Array} dietaryRestrictedRecipieTypes | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
- * @apiParam {Enum-Array} recipieDifficulty recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')
+ * @apiParam {Enum-Array} dietRestrictionLabels dietRestrictionLabels 
+ * @apiParam {Enum-Array} healthRestrictionLabels healthRestrictionLabels
+ * @apiParam {Enum-Array} excludeIngredients excludeIngredients
  * @apiParam {Array} nutritionTargets nutritionTargets  [title:{title},start:{start value},end:{end value}]
  * @apiParam {Array} maxRecipieTime max Recipie Time <code>[{dayDrive : enum, time : 'value'}]</code> | Possible Values ("breakfast", "lunch", "dinner","Snacks")
  *
@@ -72,6 +73,10 @@ router.post("/", async (req, res) => {
   if (req.body.maxRecipieTime) {
     nutrition_preference_obj.maxRecipieTime = req.body.maxRecipieTime;
   }
+  if (req.body.excludeIngredients) {
+    nutrition_preference_obj.excludeIngredients = req.body.excludeIngredients;
+  }
+  
 
   var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_id(
     {

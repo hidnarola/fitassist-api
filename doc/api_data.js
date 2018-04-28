@@ -2021,6 +2021,55 @@ define({ "api": [
     "groupTitle": "Body_Parts"
   },
   {
+    "type": "get",
+    "url": "/nutrition/",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "Common_Nutrition",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's or User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "nutritions",
+            "description": "<p>Array of nutrition's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/index.js",
+    "groupTitle": "Common_Nutrition"
+  },
+  {
     "type": "post",
     "url": "/admin/equipment",
     "title": "Add",
@@ -5809,7 +5858,7 @@ define({ "api": [
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5948,7 +5997,7 @@ define({ "api": [
     "groupTitle": "Recipes"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -7919,15 +7968,22 @@ define({ "api": [
             "group": "Parameter",
             "type": "Enum-Array",
             "optional": false,
-            "field": "dietaryRestrictedRecipieTypes",
-            "description": "<p>| Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')</p>"
+            "field": "dietRestrictionLabels",
+            "description": "<p>dietRestrictionLabels</p>"
           },
           {
             "group": "Parameter",
             "type": "Enum-Array",
             "optional": false,
-            "field": "recipieDifficulty",
-            "description": "<p>recipieDifficulty level |  Possible Values ('easy', 'medium', 'hard')</p>"
+            "field": "healthRestrictionLabels",
+            "description": "<p>healthRestrictionLabels</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum-Array",
+            "optional": false,
+            "field": "excludeIngredients",
+            "description": "<p>excludeIngredients</p>"
           },
           {
             "group": "Parameter",

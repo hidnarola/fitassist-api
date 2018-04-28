@@ -24,7 +24,7 @@ var NutritionPreferenceSchema = new Schema(
     dietRestrictionLabels: [{ type: mongoose.Schema.Types.ObjectId, ref: "nutritional_labels" }],
     maxRecipieTime: [maxRecipieTimeSchema],
     nutritionTargets: [nutritionTargetsSchema],
-    healthRestrictionLabels: [{ type: mongoose.Schema.Types.ObjectId, ref: "nutritional_labels" }],
+    excludeIngredients: [{ type: String}],
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },

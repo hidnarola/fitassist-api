@@ -420,4 +420,29 @@ router.get("/nutritional_label/:type", async (req, res) => {
   }
 });
 
+/**
+ * @api {get} /nutrition/ Get all
+ * @apiName Get all
+ * @apiGroup Common Nutrition 
+ * @apiHeader {String}  x-access-token Admin's or User's unique access-key
+ * @apiSuccess (Success 200) {Array} nutritions Array of nutrition's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/nutrition/", async (req, res) => {
+
+  logger.trace("Get all nutritions API called");
+  var resp_data = await common_helper.get_nutritions({
+    type: req.params.type
+  });
+  if (resp_data.status == 0) {
+    logger.error("Error occured while nutritions = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+
+    logger.trace("nutritions got successfully = ", resp_data);
+
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
 module.exports = router;
