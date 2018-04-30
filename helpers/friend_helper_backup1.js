@@ -26,7 +26,7 @@ friend_helper.get_friends = async id => {
         }
       },
       {
-        $unwind: {path: "$friends"}
+        $unwind:"$friendId"
       },
       {
         $group: {

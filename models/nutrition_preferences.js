@@ -22,6 +22,7 @@ var NutritionPreferenceSchema = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },
     dietRestrictionLabels: [{ type: mongoose.Schema.Types.ObjectId, ref: "nutritional_labels" }],
+    healthRestrictionLabels: [{ type: mongoose.Schema.Types.ObjectId, ref: "nutritional_labels" }],
     maxRecipeTime: [maxRecipieTimeSchema],
     nutritionTargets: [nutritionTargetsSchema],
     excludeIngredients: [{ type: String}],
