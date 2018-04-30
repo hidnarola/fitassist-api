@@ -45,21 +45,20 @@ router.get("/:type", async (req, res) => {
 
 
 /**
- * @api {get} /user/friend/request_id Get by ID
+ * @api {get} /user/friend/:username Get by ID
  * @apiName Get by ID
  * @apiGroup  User Friends
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} friend Array of friends document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:request_id", async (req, res) => {
+router.get("/username/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  request_id = req.params.request_id;
+  username = req.params.username;
   logger.trace("Get all friend API called");
-  var resp_data = await friend_helper.get_shopping_cart_id({
-    _id: request_id,
-    userId: authUserId
+  var resp_data = await friend_helper.get_friend_by_username({
+    username
   });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching friend = ", resp_data);

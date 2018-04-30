@@ -8,6 +8,9 @@ var NutritionSchema = new Schema({
     name: {type: String, required:true, unique:true},
     ntrCode: {type: String, required:true,unique:true},
     unit: {type: String, required:true},
+    min:{type:Number,required:true,default:0},
+    max:{type:Number,required:true},
+    step:{type:Number,required:true,default:1},
     createdAt: {type: Date, default: Date.now},
     modifiedAt: {type: Date, default: Date.now}
 }, {versionKey: false});

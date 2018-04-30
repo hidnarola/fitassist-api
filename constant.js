@@ -19,13 +19,28 @@ module.exports = {
     },
 
     NUTRITION_PREFERENCE_DEFUALT_VALUE: {
-        "dietaryRestrictedRecipieTypes": ["vegetarian"],
-        "recipieDifficulty": [
-            "easy"
+        "dietRestrictionLabels" : [],
+        "excludeIngredients" : [],
+        "nutritionTargets" : [],
+        "maxRecipeTime" : [ 
+            {
+                "time" : 0,
+                "dayDrive" : "breakfast"
+            }, 
+            {
+                "time" : 0,
+                "dayDrive" : "lunch"
+            },
+            {
+                "time" : 0,
+                "dayDrive" : "dinner"
+            },
+            {
+                "time" : 0,
+                "dayDrive" : "snacks"
+            },
         ],
-        "excludeIngredients": [],
-        "maxRecipieTime": [],
-        "nutritionTargets": []
+        "healthRestrictionLabels" : []
     }
 
 };

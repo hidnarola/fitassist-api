@@ -212,23 +212,23 @@ user_helper.get_filtered_records = async filter_obj => {
 };
 
 /*
- * check_email_uniqueness is used to check email uniqueness
+ * checkvalue is used to check value uniqueness
  * 
- * @params  email     email field of user email
+ * @params  value     value  
  * 
- * @return  status 0 - If any internal error occured while checking uniqueness email, with error
- *          status 1 - If email unique, with email
- *          status 2 - If email unique not found, with appropriate message
+ * @return  status 0 - If any internal error occured while checking uniqueness value, with error
+ *          status 1 - If value unique, with value
+ *          status 2 - If value unique not found, with appropriate message
  */
-user_helper.check_email = async email => {
+user_helper.checkvalue = async value => {
   try {
-    var count = await User.find({ email: email }).count();
+    var count = await User.find(value).count();
     if (count == 0) {
-      return { status: 1, message: "Email is not exists", count: count };
+      return { status: 1, message: "Value is not exists", count: count };
     } else if (count == 1) {
-      return { status: 1, message: "Email is Unique", count: count };
+      return { status: 1, message: "Value is Unique", count: count };
     } else {
-      return { status: 2, message: "Email is not Unique", count: count };
+      return { status: 2, message: "Value is not Unique", count: count };
     }
   } catch (err) {
     return {

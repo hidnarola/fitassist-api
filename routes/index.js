@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var config = require("../config");
+var constant = require("../constant");
 var user = require("../models/users");
 var jwt = require("jsonwebtoken");
 var moment = require("moment");
@@ -11,6 +12,7 @@ var common_helper = require("./../helpers/common_helper");
 var admin_helper = require("./../helpers/admin_helper");
 var measurement_helper = require("./../helpers/measurement_helper");
 var exercise_preference_helper = require("./../helpers/exercise_preference_helper");
+var nutrition_preferences_helper = require("./../helpers/nutrition_preferences_helper");
 
 var logger = config.logger;
 
@@ -363,7 +365,7 @@ router.get("/auth0_user_sync", async (req, res) => {
       var response = await request(options);
       response = JSON.parse(response);
       if (response.email && typeof response.email !== "undefined") {
-        let data = await user_helper.check_email(response.email);
+        let data = await user_helper.checkvalue({ email: response.email });
         if (data.count <= 0) {
           var user_obj = {
             authUserId: response.sub,
@@ -371,7 +373,40 @@ router.get("/auth0_user_sync", async (req, res) => {
             email: response.email,
             avatar: response.picture
           };
+
+          var username = response.email.split("@")[0];
+          data = await user_helper.checkvalue({ username: username });
+          if (data.count <= 0) {
+            user_obj.username = username;
+          } else {
+            username = username + Math.floor(Math.random() * 100 + 1);
+
+            var tmp = true;
+            while (tmp) {
+              data = await user_helper.checkvalue({ username: username });
+              if (data.count <= 0) {
+                user_obj.username = username;
+                tmp = false;
+              }
+            }
+          }
+          
           var user_data = await user_helper.insert_user(user_obj);
+          console.log(user_data);
+          exercise_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
+          exercise_obj.userId = response.sub;
+          nutrition_obj = constant.NUTRITION_PREFERENCE_DEFUALT_VALUE;
+          nutrition_obj.userId = response.sub;
+         
+          
+          var exercise_data = await exercise_preference_helper.insert_exercise_prefernece(
+             exercise_obj
+           );
+
+          var nutrition_data = await nutrition_preferences_helper.insert_nutrition_preference(
+            nutrition_obj
+          );
+
           res.status(config.OK_STATUS).json(user_data);
         } else {
           let data = await user_helper.get_user_by_email_authID(
@@ -404,7 +439,6 @@ router.get("/auth0_user_sync", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/nutritional_label/:type", async (req, res) => {
-
   logger.trace("Get all nutritional label API called");
   var resp_data = await common_helper.get_nutritional_labels({
     type: req.params.type
@@ -413,7 +447,6 @@ router.get("/nutritional_label/:type", async (req, res) => {
     logger.error("Error occured while nutritional label = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-
     logger.trace("nutritional label got successfully = ", resp_data);
 
     res.status(config.OK_STATUS).json(resp_data);
@@ -423,13 +456,12 @@ router.get("/nutritional_label/:type", async (req, res) => {
 /**
  * @api {get} /nutrition/ Get all
  * @apiName Get all
- * @apiGroup Common Nutrition 
+ * @apiGroup Common Nutrition
  * @apiHeader {String}  x-access-token Admin's or User's unique access-key
  * @apiSuccess (Success 200) {Array} nutritions Array of nutrition's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/nutrition/", async (req, res) => {
-
   logger.trace("Get all nutritions API called");
   var resp_data = await common_helper.get_nutritions({
     type: req.params.type
@@ -438,7 +470,6 @@ router.get("/nutrition/", async (req, res) => {
     logger.error("Error occured while nutritions = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-
     logger.trace("nutritions got successfully = ", resp_data);
 
     res.status(config.OK_STATUS).json(resp_data);

@@ -31,9 +31,58 @@ friend_helper.get_friends = async id => {
       {
         $group: {
           _id: "$userId",
-          status:{$first:"$status"},
-          friends: { $addToSet: {authUserId:"$friends.authUserId",_id:"$_id",firstName:"$friends.firstName"}},
+          friends: { $addToSet: {authUserId:"$friends.authUserId",_id:"$_id",firstName:"$friends.firstName",avatar:"$friends.avatar"}},
                 
+        }
+      }
+    ]);
+    console.log("friends:--> ",friends);
+    if (friends && friends.length>0) {
+      return {
+        status: 1,
+        message: "friends found",
+        friends: friends[0].friends
+      };
+    } else {
+      return { status: 2, message: "No friends available",friends: [] };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding friends",
+      error: err
+    };
+  }
+};
+
+/*
+ * get_friends is used to fetch all friends data
+ * 
+ * @return  status 0 - If any internal error occured while fetching friends data, with error
+ *          status 1 - If friends data found, with friends object
+ *          status 2 - If friends not found, with appropriate message
+ */
+friend_helper.get_friend_by_username = async username => {
+  try {
+    var friends = await Friends.aggregate([
+      {
+        $unwind:"$userId"
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "authUserId",
+          as: "friends"
+        }
+      },
+      {
+        $unwind: {path: "$friends"}
+      },
+      {
+        $group:{
+          _id:"$_id",
+          username:{$addToSet:"$friends"}
         }
       }
     ]);
@@ -153,7 +202,6 @@ friend_helper.reject_friend = async (id) => {
     };
   }
 };
-
 ;
 
 
