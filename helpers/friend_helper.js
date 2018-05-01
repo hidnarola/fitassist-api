@@ -1,4 +1,5 @@
 var Friends = require("./../models/friends");
+var Users = require("./../models/users");
 var friend_helper = {};
 
 /*
@@ -12,10 +13,10 @@ friend_helper.get_friends = async id => {
   try {
     var friends = await Friends.aggregate([
       {
-        $match:id
+        $match: id
       },
       {
-        $unwind:"$friendId"
+        $unwind: "$friendId"
       },
       {
         $lookup: {
@@ -26,25 +27,31 @@ friend_helper.get_friends = async id => {
         }
       },
       {
-        $unwind: {path: "$friends"}
+        $unwind: { path: "$friends" }
       },
       {
         $group: {
           _id: "$userId",
-          friends: { $addToSet: {authUserId:"$friends.authUserId",_id:"$_id",firstName:"$friends.firstName",avatar:"$friends.avatar"}},
-                
+          friends: {
+            $addToSet: {
+              username: "$friends.username",
+              authUserId: "$friends.authUserId",
+              _id: "$_id",
+              firstName: "$friends.firstName",
+              avatar: "$friends.avatar"
+            }
+          }
         }
       }
     ]);
-    console.log("friends:--> ",friends);
-    if (friends && friends.length>0) {
+    if (friends && friends.length > 0) {
       return {
         status: 1,
         message: "friends found",
         friends: friends[0].friends
       };
     } else {
-      return { status: 2, message: "No friends available",friends: [] };
+      return { status: 2, message: "No friends available", friends: [] };
     }
   } catch (err) {
     return {
@@ -64,36 +71,51 @@ friend_helper.get_friends = async id => {
  */
 friend_helper.get_friend_by_username = async username => {
   try {
-    var friends = await Friends.aggregate([
+    var friends = await Users.aggregate([
       {
-        $unwind:"$userId"
+        $match:username
       },
       {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "authUserId",
-          as: "friends"
+        $project:{
+          _id:false,
+          authUserId:true         
         }
       },
       {
-        $unwind: {path: "$friends"}
+        $unwind:"$authUserId"
+      },
+      {
+        $lookup:{
+          from:"friends",
+          localField:"authUserId",
+          foreignField:"userId",
+          as:"demo"
+        }
+      },
+      {
+        $unwind:"$demo"
       },
       {
         $group:{
           _id:"$_id",
-          username:{$addToSet:"$friends"}
+          "data":{$addToSet:"$$ROOT"}
         }
       }
+      
+
+
+      
+
     ]);
-    if (friends && friends.length>0) {
+    console.log(friends);
+    if (friends || friends.length > 0) {
       return {
         status: 1,
-        message: "friends found",
+        message: "username found",
         friends: friends
       };
     } else {
-      return { status: 2, message: "No friends available",friends: [] };
+      return { status: 2, message: "No username available", friends: [] };
     }
   } catch (err) {
     return {
@@ -147,11 +169,7 @@ friend_helper.send_friend_request = async friend_obj => {
  */
 friend_helper.approve_friend = async (id, friend_obj) => {
   try {
-    let friend = await Friends.findOneAndUpdate(
-      id,
-      friend_obj,
-      { new: true }
-    );
+    let friend = await Friends.findOneAndUpdate(id, friend_obj, { new: true });
     if (!friend) {
       return { status: 2, message: "Friend request not found" };
     } else {
@@ -182,16 +200,16 @@ friend_helper.approve_friend = async (id, friend_obj) => {
  * 
  * @developed by "amc"
  */
-friend_helper.reject_friend = async (id) => {
+friend_helper.reject_friend = async id => {
   try {
     let friend = await Friends.remove(id);
-    
-    if (!friend && friend.n===0) {
+
+    if (!friend && friend.n === 0) {
       return { status: 2, message: "Friend request not found" };
     } else {
       return {
         status: 1,
-        message: "Friend request rejected",
+        message: "Friend request rejected"
       };
     }
   } catch (err) {
@@ -202,9 +220,6 @@ friend_helper.reject_friend = async (id) => {
     };
   }
 };
-;
-
-
 /*
  * get_filtered_records is used to fetch all filtered data
  * 
