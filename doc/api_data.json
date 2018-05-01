@@ -5858,7 +5858,7 @@
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5997,7 +5997,7 @@
     "groupTitle": "Recipes"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -6678,6 +6678,42 @@
     "version": "0.0.0",
     "filename": "routes/user/shopping_cart.js",
     "groupTitle": "Shopping_Cart"
+  },
+  {
+    "type": "get",
+    "url": "/user/profile/username",
+    "title": "Get User Profile by username",
+    "name": "Get_Profile_by_username",
+    "group": "User",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Array of users document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/profile.js",
+    "groupTitle": "User"
   },
   {
     "type": "put",
@@ -7403,9 +7439,9 @@
           {
             "group": "Parameter",
             "type": "Number",
-            "optional": false,
+            "optional": true,
             "field": "type",
-            "description": "<p>type of friends <br><code>1 for pending friends,<br>2 for approved friends</code></p>"
+            "description": "<p>type of friends <br><code>1 for pending friends,<br>2 for approved friends(default : 2)</code></p>"
           }
         ]
       }
@@ -7441,10 +7477,10 @@
     "groupTitle": "User_Friends"
   },
   {
-    "type": "get",
-    "url": "/user/friend/request_id",
-    "title": "Get by ID",
-    "name": "Get_by_ID",
+    "type": "post",
+    "url": "/user/friend/:username",
+    "title": "Get by Username",
+    "name": "Get_by_Username",
     "group": "User_Friends",
     "header": {
       "fields": {
@@ -7480,7 +7516,7 @@
             "type": "String",
             "optional": false,
             "field": "message",
-            "description": "<p>Validation or error message. router.get(&quot;/:request_id&quot;, async (req, res) =&gt; { var decoded = jwtDecode(req.headers[&quot;authorization&quot;]); var authUserId = decoded.sub; request_id = req.params.request_id; logger.trace(&quot;Get all friend API called&quot;); var resp_data = await friend_helper.get_shopping_cart_id({ _id: request_id, userId: authUserId }); if (resp_data.status == 0) { logger.error(&quot;Error occured while fetching friend = &quot;, resp_data); res.status(config.INTERNAL_SERVER_ERROR).json(resp_data); } else { logger.trace(&quot;friend got successfully = &quot;, resp_data); res.status(config.OK_STATUS).json(resp_data); } });</p>"
+            "description": "<p>Validation or error message.</p>"
           }
         ]
       }
@@ -8009,8 +8045,8 @@
             "group": "Parameter",
             "type": "Array",
             "optional": false,
-            "field": "maxRecipieTime",
-            "description": "<p>max Recipie Time <code>[{dayDrive : enum, time : 'value'}]</code> | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
+            "field": "maxRecipeTime",
+            "description": "<p>max Recipe Time <code>[{dayDrive : enum, time : 'value'}]</code> | Possible Values (&quot;breakfast&quot;, &quot;lunch&quot;, &quot;dinner&quot;,&quot;Snacks&quot;)</p>"
           }
         ]
       }

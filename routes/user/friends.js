@@ -56,6 +56,24 @@ router.post("/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   username = req.params.username;
+  var returnObject = {
+    self:0,
+    friendStatus:1,
+  };
+
+  var userdata = await friend_helper.find({
+    username: username
+  });
+
+  if (userdata.friends.authUserId && typeof userdata.friends.authUserId !== 'undefined') {
+    requestedUserNameAuthId = userdata.friends.authUserId;
+    if (requestedUserNameAuthId === authUserId) {
+      returnObject.self=1;
+    }
+    logger.trace("friend got successfully = ", returnObject);
+    //return res.status(config.OK_STATUS).json(userdata);
+  }
+
   logger.trace("Get all friend API called");
   var resp_data = await friend_helper.get_friend_by_username({
     username: username
@@ -64,8 +82,12 @@ router.post("/:username", async (req, res) => {
     logger.error("Error occured while fetching friend = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.trace("friend got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
+    returnObject.status=userdata.status;
+    returnObject.message=userdata.message;
+    returnObject.friends=userdata.friends;
+    
+    logger.trace("friend got successfully = ", returnObject);
+    res.status(config.OK_STATUS).json(returnObject);
   }
 });
 

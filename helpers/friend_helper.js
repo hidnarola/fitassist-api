@@ -71,19 +71,9 @@ friend_helper.get_friends = async id => {
  */
 friend_helper.get_friend_by_username = async username => {
   try {
-    var friends = await Users.aggregate([      
+    var friends = await Users.aggregate([
       {
-        $project:{
-          gender:true,
-          username:true,
-          avatar:true,
-          email:true,
-          firstName:true, 
-          authUserId:true         
-        }
-      },
-      {
-        $match:username
+        $match: username
       },
       {
         $lookup:{
@@ -97,27 +87,36 @@ friend_helper.get_friend_by_username = async username => {
         $unwind:"$friendList"
       },
       {
+        $lookup:{
+          from:"users",
+          localField:"friendList.friendId",
+          foreignField:"authUserId",
+          as:"friendListDetails"
+        }
+      },
+      {
+        $unwind:"$friendListDetails"
+      },
+      {
         $group:{
-          _id:"_id",
-          friendList:{$addToSet:"$friendList"}
+          _id:"$_id",
+          "friendListDetails":{$push:"$friendListDetails"}
         }
       },
       {
         $project:{
-          friendList:true
+          friendListDetails:true
         }
       }
-      
     ]);
-    console.log(friends);
     if (friends || friends.length > 0) {
       return {
         status: 1,
-        message: "username found",
-        friends: friends
+        message: " found",
+        friends: friends[0].friendListDetails
       };
     } else {
-      return { status: 2, message: "No username available", friends: [] };
+      return { status: 2, message: "No  available", friends: [] };
     }
   } catch (err) {
     return {
@@ -264,6 +263,35 @@ friend_helper.get_filtered_records = async filter_obj => {
     return {
       status: 0,
       message: "Error occured while filtering data",
+      error: err
+    };
+  }
+};
+
+
+/*
+ * find is used to fetch all friends data
+ * 
+ * @return  status 0 - If any internal error occured while fetching friends data, with error
+ *          status 1 - If friends data found, with friends object
+ *          status 2 - If friends not found, with appropriate message
+ */
+friend_helper.find = async id => {
+  try {
+    var friends = await Users.findOne(id);
+    if (friends && friends !=null) {
+      return {
+        status: 1,
+        message: "friends found",
+        friends: friends
+      };
+    } else {
+      return { status: 2, message: "No friends available", friends: [] };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding friends",
       error: err
     };
   }
