@@ -52,9 +52,9 @@ user_helper.get_user_by_id = async user_id => {
 };
 
 /*
- * get_user_by_email is used to fetch single user by email address
+ * get_user_by is used to fetch single user by condition
  * 
- * @param   email   Specify email address of user
+ * @param   searchObject   Specify search object of user
  * 
  * @return  status  0 - If any error occur in finding user, with error
  *          status  1 - If User found, with found user document
@@ -62,9 +62,9 @@ user_helper.get_user_by_id = async user_id => {
  * 
  * @developed by "ar"
  */
-user_helper.get_user_by_email_authID = async (email, authid) => {
+user_helper.get_user_by = async (searchObject) => {
   try {
-    var user = await User.findOne({ email: email, authUserId: authid });
+    var user = await User.findOne(searchObject);
     if (user) {
       return { status: 1, message: "User details found", user: user };
     } else {

@@ -71,41 +71,43 @@ friend_helper.get_friends = async id => {
  */
 friend_helper.get_friend_by_username = async username => {
   try {
-    var friends = await Users.aggregate([
-      {
-        $match:username
-      },
+    var friends = await Users.aggregate([      
       {
         $project:{
-          _id:false,
+          gender:true,
+          username:true,
+          avatar:true,
+          email:true,
+          firstName:true, 
           authUserId:true         
         }
       },
       {
-        $unwind:"$authUserId"
+        $match:username
       },
       {
         $lookup:{
           from:"friends",
           localField:"authUserId",
           foreignField:"userId",
-          as:"demo"
+          as:"friendList"
         }
       },
       {
-        $unwind:"$demo"
+        $unwind:"$friendList"
       },
       {
         $group:{
-          _id:"$_id",
-          "data":{$addToSet:"$$ROOT"}
+          _id:"_id",
+          friendList:{$addToSet:"$friendList"}
+        }
+      },
+      {
+        $project:{
+          friendList:true
         }
       }
       
-
-
-      
-
     ]);
     console.log(friends);
     if (friends || friends.length > 0) {

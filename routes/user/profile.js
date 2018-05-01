@@ -12,6 +12,34 @@ var user_helper = require("../../helpers/user_helper");
 
 
 
+
+/**
+ * @api {get} /user/profile/username Get User Profile by username
+ * @apiName Get Profile by username
+ * @apiGroup User
+ * @apiSuccess (Success 200) {Array} user Array of users document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/:username", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  logger.trace("Get user profile by ID API called : ", authUserId,req.params.username);
+  var resp_data = await user_helper.get_user_by(
+    {username:req.params.username}
+  );
+  if (resp_data.status == 0) {
+    logger.error(
+      "Error occured while fetching user profile = ",
+      resp_data
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("user profile got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+
 /**
  * @api {put} /user/profile Profile - Update
  * @apiName Profile - Update
