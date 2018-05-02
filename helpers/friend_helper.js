@@ -107,16 +107,17 @@ friend_helper.get_friend_by_username = async username => {
         $project:{
           friendListDetails:true
         }
-      }
+      },
+      
     ]);
-    if (friends || friends.length > 0) {
+    if (friends && friends.length > 0) {
       return {
         status: 1,
         message: " found",
         friends: friends[0].friendListDetails
       };
     } else {
-      return { status: 2, message: "No  available", friends: [] };
+      return { status: 2, message: "No friend available", friends: [] };
     }
   } catch (err) {
     return {
@@ -293,6 +294,36 @@ friend_helper.find = async id => {
       status: 0,
       message: "Error occured while finding friends",
       error: err
+    };
+  }
+};
+
+
+/*
+ * checkFriend is used to checkf friend 
+ * 
+ * @return  status 0 - If any internal error occured while checking friend data, with error
+ *          status 1 - If checking friend data found, with checking friend object
+ *          status 2 - If checking friend not found, with appropriate message
+ */
+friend_helper.checkFriend = async id => {
+  try {
+    var friends = await Friends.find(id).count();
+    if (friends) {
+      return {
+        status: 1,
+        message: "friends found",
+        count: friends
+      };
+    } else {
+      return { status: 2, message: "No friends available", count:0 };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding friends",
+      error: err,
+      count : 0
     };
   }
 };

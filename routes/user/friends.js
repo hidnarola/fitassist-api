@@ -21,27 +21,27 @@ var friend_helper = require("../../helpers/friend_helper");
  * @apiSuccess (Success 200) {Array} friends Array of friends document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:type?", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var type = 2;
-  if (req.params.type) {
-    type = parseInt(req.params.type);
-  }
-  logger.trace("Get all friends API called");
-  var resp_data = await friend_helper.get_friends({
-    userId: authUserId,
-    status: type
-  });
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching friend = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("friend got successfully = ", resp_data);
+// router.get("/:type?", async (req, res) => {
+//   var decoded = jwtDecode(req.headers["authorization"]);
+//   var authUserId = decoded.sub;
+//   var type = 2;
+//   if (req.params.type) {
+//     type = parseInt(req.params.type);
+//   }
+//   logger.trace("Get all friends API called");
+//   var resp_data = await friend_helper.get_friends({
+//     userId: authUserId,
+//     status: type
+//   });
+//   if (resp_data.status == 0) {
+//     logger.error("Error occured while fetching friend = ", resp_data);
+//     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+//   } else {
+//     logger.trace("friend got successfully = ", resp_data);
 
-    res.status(config.OK_STATUS).json(resp_data);
-  }
-});
+//     res.status(config.OK_STATUS).json(resp_data);
+//   }
+// });
 //#endregion
 
 /**
@@ -52,40 +52,68 @@ router.get("/:type?", async (req, res) => {
  * @apiSuccess (Success 200) {Array} friend Array of friends document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post("/:username", async (req, res) => {
+router.get("/:username?/:type?", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  username = req.params.username;
+
+
+  var type = req.params.type ? req.params.type : 1;
+  
+  var userdata = await friend_helper.find({
+    authUserId: authUserId
+  });
+  var username = userdata.friends.username;
+
+  username = req.params.username?req.params.username:username;
+
+
+    console.log("USERNAME :  ",username);
+  
   var returnObject = {
     self:0,
-    friendStatus:1,
+    isFriend:0
   };
 
-  var userdata = await friend_helper.find({
+  userdata = await friend_helper.find({
     username: username
   });
 
-  if (userdata.friends.authUserId && typeof userdata.friends.authUserId !== 'undefined') {
-    requestedUserNameAuthId = userdata.friends.authUserId;
-    if (requestedUserNameAuthId === authUserId) {
-      returnObject.self=1;
+  var userAuthId = userdata.friends.authUserId;
+  if (userAuthId && typeof userAuthId !== "undefined") {
+    if (userAuthId === authUserId) {
+      returnObject.self = 1;
     }
-    logger.trace("friend got successfully = ", returnObject);
-    //return res.status(config.OK_STATUS).json(userdata);
+    else{
+      friendcount = await friend_helper.checkFriend({
+        friendId:userAuthId,
+        userId:authUserId,
+        status:2
+      });
+    
+      if (friendcount.count==1) 
+      {
+        returnObject.isFriend = 1;
+      }
+      else{
+        returnObject.isFriend = 0;
+      }
+    }
   }
-
-  logger.trace("Get all friend API called");
+ 
+  
   var resp_data = await friend_helper.get_friend_by_username({
     username: username
   });
+
+
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching friend = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    returnObject.status=userdata.status;
-    returnObject.message=userdata.message;
-    returnObject.friends=userdata.friends;
-    
+    returnObject.status = resp_data.status;
+    returnObject.message = resp_data.message;
+    returnObject.friends = resp_data.friends;
+
     logger.trace("friend got successfully = ", returnObject);
     res.status(config.OK_STATUS).json(returnObject);
   }
