@@ -45,11 +45,21 @@ var friend_helper = require("../../helpers/friend_helper");
 //#endregion
 
 /**
- * @api {post} /user/friend/:username Get by Username
+ * @api {post} /user/friend/:username/:type? Get by Username
  * @apiName Get by Username
  * @apiGroup  User Friends
+ * @apiDescription Get friends by Username second parameter is used to get by status of friend 1 for pending friends and 2 for approved friend
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} friend Array of friends document
+ * @apiExample Response 
+ *   "self": 1,
+ *   "isFriend": 0,
+ *   "status": 1,
+ *   "message": " found",
+ *   "friends": [
+ *       {
+ *       }
+ *     ]
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:username?/:type?", async (req, res) => {

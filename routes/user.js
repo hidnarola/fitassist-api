@@ -38,7 +38,7 @@ router.use("/nutrition_preference", auth, nutrition_preference);
 router.use("/profile", auth, profile);
 router.use("/equipment", auth, equipment);
 router.use("/exercise_preference", auth, exercise_preference);
-router.use("/user_progress_photo", auth, user_progress_photos);
+router.use("/progress_photo", auth, user_progress_photos);
 router.use("/user_post", auth, user_posts);
 router.use("/exercise_type", auth, exercise_types);
 router.use("/exercise", auth, exercise);

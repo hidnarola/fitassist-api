@@ -7478,10 +7478,11 @@
   },
   {
     "type": "post",
-    "url": "/user/friend/:username",
+    "url": "/user/friend/:username/:type?",
     "title": "Get by Username",
     "name": "Get_by_Username",
     "group": "User_Friends",
+    "description": "<p>Get friends by Username second parameter is used to get by status of friend 1 for pending friends and 2 for approved friend</p>",
     "header": {
       "fields": {
         "Header": [
@@ -7508,6 +7509,13 @@
         ]
       }
     },
+    "examples": [
+      {
+        "title": "Response ",
+        "content": "\"self\": 1,\n\"isFriend\": 0,\n\"status\": 1,\n\"message\": \" found\",\n\"friends\": [\n    {\n    }\n  ]",
+        "type": "json"
+      }
+    ],
     "error": {
       "fields": {
         "Error 4xx": [
@@ -8651,6 +8659,13 @@
             "optional": false,
             "field": "description",
             "description": "<p>Description of progress</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "date",
+            "description": "<p>date of progress photo</p>"
           }
         ]
       }

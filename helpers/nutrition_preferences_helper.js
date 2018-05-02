@@ -10,7 +10,59 @@ var nutrition_preferences_helper = {};
  */
 nutrition_preferences_helper.get_all_nutrition_preferences = async () => {
   try {
-    var nutrition_preferences = await NutritionPreferences.find();
+    var nutrition_preferences = await NutritionPreferences.aggregate([
+      {
+        $unwind: {
+          path: "$dietRestrictionLabels",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$healthRestrictionLabels",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "nutritional_labels",
+          localField: "dietRestrictionLabels",
+          foreignField: "_id",
+          as: "dietRestrictionLabels"
+        }
+      },
+      {
+        $unwind: {
+          path: "$dietRestrictionLabels",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "nutritional_labels",
+          localField: "healthRestrictionLabels",
+          foreignField: "_id",
+          as: "healthRestrictionLabels"
+        }
+      },
+      {
+        $unwind: {
+          path: "$healthRestrictionLabels",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          dietRestrictionLabels: { $addToSet: "$dietRestrictionLabels.parameter" },
+          healthRestrictionLabels: { $addToSet: "$healthRestrictionLabels.parameter" },
+          excludeIngredients: { $addToSet: "$excludeIngredients" },
+          nutritionTargets: { $addToSet: "$nutritionTargets" },
+          maxRecipeTime: { $addToSet: "$maxRecipeTime" },
+          userId: { $first: "$userId" }
+        }
+      }
+    ]);
     if (nutrition_preferences) {
       return {
         status: 1,
