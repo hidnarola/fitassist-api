@@ -55,9 +55,7 @@ var friend_helper = require("../../helpers/friend_helper");
 router.get("/:username?/:type?", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
-
-  var type = req.params.type ? req.params.type : 1;
+  var friendStatus = parseInt(req.params.type ? req.params.type : 2);
   
   var userdata = await friend_helper.find({
     authUserId: authUserId
@@ -65,15 +63,10 @@ router.get("/:username?/:type?", async (req, res) => {
   var username = userdata.friends.username;
 
   username = req.params.username?req.params.username:username;
-
-
-    console.log("USERNAME :  ",username);
-  
   var returnObject = {
     self:0,
     isFriend:0
   };
-
   userdata = await friend_helper.find({
     username: username
   });
@@ -99,12 +92,11 @@ router.get("/:username?/:type?", async (req, res) => {
       }
     }
   }
- 
-  
+console.log(friendStatus);
   var resp_data = await friend_helper.get_friend_by_username({
     username: username
-  });
-
+  },
+  friendStatus);
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching friend = ", resp_data);

@@ -69,7 +69,7 @@ friend_helper.get_friends = async id => {
  *          status 1 - If friends data found, with friends object
  *          status 2 - If friends not found, with appropriate message
  */
-friend_helper.get_friend_by_username = async username => {
+friend_helper.get_friend_by_username = async (username,statusType) => {
   try {
     var friends = await Users.aggregate([
       {
@@ -87,6 +87,11 @@ friend_helper.get_friend_by_username = async username => {
         $unwind:"$friendList"
       },
       {
+        $match:{
+          "friendList.status":statusType
+        }
+      },
+      {
         $lookup:{
           from:"users",
           localField:"friendList.friendId",
@@ -100,7 +105,7 @@ friend_helper.get_friend_by_username = async username => {
       {
         $group:{
           _id:"$_id",
-          "friendListDetails":{$push:"$friendListDetails"}
+          "friendListDetails":{$push:"$friendListDetails" },
         }
       },
       {
