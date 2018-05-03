@@ -9,24 +9,30 @@ var logger = config.logger;
 
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
+
 /**
- * @api {get} /user/progress_photo Get all
- * @apiName Get all
+ * @api {get} /user/progress_photo/username/latest_month_wise/:limit? Get all Latest
+ * @apiName Get all Latest
  * @apiGroup User Progress Photo
- *
+ * @apiDescription  limit is use to limit the records. default is : 10
  * @apiHeader {String}  x-access-token user's unique access-key
  *
  * @apiSuccess (Success 200) {Array} user_progress_photos Array of user's progress_photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/", async (req, res) => {
+router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+
+  var limit = parseInt(req.params.limit ? req.params.limit : 10);
+
   logger.trace("Get all user's progress_photo API called");
-  var resp_data = await user_progress_photos_helper.get_user_progress_photos({
-    userId: authUserId,
+  var resp_data = await user_progress_photos_helper.get_user_progress_photos_month_wise({
+    username: req.params.username,
     isDeleted: 0
-  });
+  },
+  { $limit: limit },
+);
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching get all user progress photos = ",
@@ -38,6 +44,46 @@ router.get("/", async (req, res) => {
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
+
+
+/**
+ * @api {get} /user/progress_photo/:username/:start?/:limit? Get all 
+ * @apiName Get all
+ * @apiGroup User Progress Photo
+ * @apiDescription  username: user's username, start use for skip record. default is 0, limit is use to limit the records. default is : 10
+ * @apiHeader {String}  x-access-token user's unique access-key
+ *
+ * @apiSuccess (Success 200) {Array} user_progress_photos Array of user's progress_photos 's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/:username/:start?/:limit?", async (req, res) => {
+	console.log('snjdfkgnhsd');
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var start = parseInt(req.params.start ? req.params.start : 0);
+  var limit = parseInt(req.params.limit ? req.params.limit : 10);
+
+  logger.trace("Get all user's progress_photo API called");
+  var resp_data = await user_progress_photos_helper.get_user_progress_photos({
+    username: req.params.username,
+    isDeleted: 0
+  },
+  { $skip: start },
+  { $limit: limit },
+);
+  if (resp_data.status == 0) {
+    logger.error(
+      "Error occured while fetching get all user progress photos = ",
+      resp_data
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("user progress photos got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
 
 /**
  * @api {get} /user/progress_photo/:user_photo_id Get by ID

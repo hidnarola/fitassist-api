@@ -51,7 +51,7 @@ var friend_helper = require("../../helpers/friend_helper");
  * @apiDescription Get friends by Username second parameter is used to get by status of friend 1 for pending friends and 2 for approved friend
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} friend Array of friends document
- * @apiExample Response 
+ * @apiExample Response
  *   "self": 1,
  *   "isFriend": 0,
  *   "status": 1,
@@ -66,16 +66,16 @@ router.get("/:username?/:type?", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var friendStatus = parseInt(req.params.type ? req.params.type : 2);
-  
+
   var userdata = await friend_helper.find({
     authUserId: authUserId
   });
   var username = userdata.friends.username;
 
-  username = req.params.username?req.params.username:username;
+  username = req.params.username ? req.params.username : username;
   var returnObject = {
-    self:0,
-    isFriend:0
+    self: 0,
+    isFriend: 0
   };
   userdata = await friend_helper.find({
     username: username
@@ -85,35 +85,32 @@ router.get("/:username?/:type?", async (req, res) => {
   if (userAuthId && typeof userAuthId !== "undefined") {
     if (userAuthId === authUserId) {
       returnObject.self = 1;
-    }
-    else{
+    } else {
       friendcount = await friend_helper.checkFriend({
-        friendId:userAuthId,
-        userId:authUserId,
-        status:2
+        friendId: userAuthId,
+        userId: authUserId,
+        status: 2
       });
-    
-      if (friendcount.count==1) 
-      {
+
+      if (friendcount.count == 1) {
         returnObject.isFriend = 1;
-      }
-      else{
+      } else {
         returnObject.isFriend = 0;
       }
     }
   }
-console.log(friendStatus);
-  var resp_data = await friend_helper.get_friend_by_username({
-    username: username
-  },
-  friendStatus);
+  console.log(friendStatus);
+  var resp_data = await friend_helper.get_friend_by_username(
+    {
+      username: username
+    },
+    friendStatus
+  );
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching friend = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    
-
     logger.trace("friend got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
@@ -133,20 +130,44 @@ console.log(friendStatus);
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+
   var schema = {
     friendId: {
       notEmpty: true,
       errorMessage: "friendId is required to send friend request"
     }
   };
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
   if (!errors) {
+    
+    if (authUserId === req.body.friendId) {
+      return res
+        .status(config.BAD_REQUEST)
+        .json({ message: "Can not send friend request itself" });
+    }
+
+    friends_data = await friend_helper.checkFriend({
+      $or: [
+        { $and: [{ userId: authUserId }, { friendId: req.body.friendId }] },
+        { $and: [{ userId: req.body.friendId }, { friendId: authUserId }] }
+      ]
+    });
+    console.log("LENGTH: -->  ", friends_data.friends.length);
+    if (friends_data.status == 1) {
+      if (friends_data.friends.length !== 0) {
+        return res
+          .status(config.BAD_REQUEST)
+          .json({ message: "Record already Exist" });
+      }
+    }
+
     var friend_obj = {
+      userId: authUserId,
       friendId: req.body.friendId,
-      status: 1,
-      userId: authUserId
+      status: 1
     };
 
     let friend_data = await friend_helper.send_friend_request(friend_obj);

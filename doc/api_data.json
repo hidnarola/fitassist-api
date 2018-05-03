@@ -7511,7 +7511,7 @@
     },
     "examples": [
       {
-        "title": "Response ",
+        "title": "Response",
         "content": "\"self\": 1,\n\"isFriend\": 0,\n\"status\": 1,\n\"message\": \" found\",\n\"friends\": [\n    {\n    }\n  ]",
         "type": "json"
       }
@@ -8751,10 +8751,11 @@
   },
   {
     "type": "get",
-    "url": "/user/progress_photo",
+    "url": "/user/progress_photo/:username/:start?/:limit?",
     "title": "Get all",
     "name": "Get_all",
     "group": "User_Progress_Photo",
+    "description": "<p>username: user's username, start use for skip record. default is 0, limit is use to limit the records. default is : 10</p>",
     "header": {
       "fields": {
         "Header": [

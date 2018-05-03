@@ -8,10 +8,39 @@ var user_progress_photo_helper = {};
  *          status 1 - If user's progress photos data found, with user's progress photos object
  *          status 2 - If user's progress photos not found, with appropriate message
  */
-user_progress_photo_helper.get_user_progress_photos = async user_auth_id => {
+user_progress_photo_helper.get_user_progress_photos = async (
+  search_obj,
+  start,
+  limit
+) => {
   try {
     var user_progress_photos = await UserProgressPhotos.aggregate([
-      { $match: user_auth_id }
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "authUserId",
+          as: "username"
+        }
+      },
+      {
+        $unwind: "$username"
+      },
+      {
+        $group: {
+          _id:"$_id",
+          description:{$first:"$description"},
+          status:{$first:"$status"},
+          isDeleted:{$first:"$isDeleted"},
+          userId:{$first:"$userId"},
+          date:{$first:"$date"},
+          image:{$first:"$image"},
+          username:{$first:"$username.username"},
+        }
+      },
+      { $match:search_obj},
+      start,
+      limit
     ]);
     if (user_progress_photos && user_progress_photos.length != 0) {
       return {
@@ -30,6 +59,65 @@ user_progress_photo_helper.get_user_progress_photos = async user_auth_id => {
     };
   }
 };
+
+/*
+ * get_user_progress_photos_month_wise is used to fetch all user's progress photos by month wise
+ * 
+ * @return  status 0 - If any internal error occured while fetching user's progress photos data, with error
+ *          status 1 - If user's progress photos by month wise data found, with user's progress photos by month wise object
+ *          status 2 - If user's progress photos by month wise not found, with appropriate message
+ */
+user_progress_photo_helper.get_user_progress_photos_month_wise = async (
+  search_obj,
+  limit
+) => {
+  try {
+    var user_progress_photos = await UserProgressPhotos.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "authUserId",
+          as: "username"
+        }
+      },
+      {
+        $unwind: "$username"
+      },
+      {
+        $group: {
+          _id:"$_id",
+          description:{$first:"$description"},
+          status:{$first:"$status"},
+          isDeleted:{$first:"$isDeleted"},
+          userId:{$first:"$userId"},
+          date:{$first:"$date"},
+          image:{$first:"$image"},
+          username:{$first:"$username.username"},
+        }
+      },
+      { $match:search_obj},
+      limit
+    ]);
+    if (user_progress_photos && user_progress_photos.length != 0) {
+      return {
+        status: 1,
+        message: "User progress photos found",
+        user_progress_photos: user_progress_photos
+      };
+    } else {
+      return { status: 2, message: "No user progress photos available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user progress photos",
+      error: err
+    };
+  }
+};
+
+
 
 /*
  * get_user_progress_photo_by_id is used to fetch all user's progress photos
