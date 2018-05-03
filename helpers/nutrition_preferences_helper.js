@@ -24,6 +24,12 @@ nutrition_preferences_helper.get_all_nutrition_preferences = async () => {
         }
       },
       {
+        $unwind: {
+          path: "$nutritionTargets",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $lookup: {
           from: "nutritional_labels",
           localField: "dietRestrictionLabels",
@@ -52,12 +58,37 @@ nutrition_preferences_helper.get_all_nutrition_preferences = async () => {
         }
       },
       {
+        $lookup: {
+          from: "nutritions",
+          localField: "nutritionTargets.nutritionId",
+          foreignField: "_id",
+          as: "nutritionTargetsDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$nutritionTargetsDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $group: {
           _id: "$_id",
-          dietRestrictionLabels: { $addToSet: "$dietRestrictionLabels.parameter" },
-          healthRestrictionLabels: { $addToSet: "$healthRestrictionLabels.parameter" },
-          excludeIngredients: { $addToSet: "$excludeIngredients" },
-          nutritionTargets: { $addToSet: "$nutritionTargets" },
+          dietRestrictionLabels: {
+            $addToSet: "$dietRestrictionLabels.parameter"
+          },
+          healthRestrictionLabels: {
+            $addToSet: "$healthRestrictionLabels.parameter"
+          },
+          excludeIngredients: { $first: "$excludeIngredients" },
+          nutritionTargets: {
+            $addToSet: {
+              start: "$nutritionTargets.start",
+              end: "$nutritionTargets.end",
+              ntrCode: "$nutritionTargetsDetails.ntrCode",
+              type: "$nutritionTargetsDetails.type"
+            }
+          },
           maxRecipeTime: { $addToSet: "$maxRecipeTime" },
           userId: { $first: "$userId" }
         }
@@ -115,10 +146,8 @@ nutrition_preferences_helper.get_nutrition_preference_by_id = async id => {
 nutrition_preferences_helper.get_nutrition_preference_by_user_id = async userid => {
   try {
     // look up aggregate mongoose
-    let resp = await NutritionPreferences.findOne(
-     userid
-    );
-    if (!resp || resp.length==0) {
+    let resp = await NutritionPreferences.findOne(userid);
+    if (!resp || resp.length == 0) {
       return { status: 2, message: "Nutrition Preferences not found" };
     } else {
       return {
@@ -201,8 +230,6 @@ nutrition_preferences_helper.update_nutrition_preference_by_id = async (
     };
   }
 };
-
-
 
 /*
  * update_nutrition_preference_by_userid is used to update nutrition_preference data based on user_id

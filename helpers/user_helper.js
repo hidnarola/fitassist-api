@@ -64,7 +64,7 @@ user_helper.get_user_by_id = async user_id => {
  */
 user_helper.get_user_by = async (searchObject) => {
   try {
-    var user = await User.findOne(searchObject);
+    var user = await User.findOne(searchObject).lean();
     if (user) {
       return { status: 1, message: "User details found", user: user };
     } else {

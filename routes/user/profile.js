@@ -9,9 +9,7 @@ var config = require("../../config");
 var logger = config.logger;
 
 var user_helper = require("../../helpers/user_helper");
-
-
-
+var friend_helper = require("../../helpers/friend_helper");
 
 /**
  * @api {get} /user/profile/username Get User Profile by username
@@ -23,22 +21,53 @@ var user_helper = require("../../helpers/user_helper");
 router.get("/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Get user profile by ID API called : ", authUserId,req.params.username);
-  var resp_data = await user_helper.get_user_by(
-    {username:req.params.username}
+  var returnObject = {
+    self: 0,
+    isFriend: 0,
+    unknown: 0
+  };
+
+  var userdata = await friend_helper.find({
+    username: req.params.username
+  });
+
+  var userAuthId = userdata.friends.authUserId;
+  if (userAuthId && typeof userAuthId !== "undefined") {
+    if (userAuthId === authUserId) {
+      returnObject.self = 1;
+    } else {
+      friendcount = await friend_helper.checkFriend({
+        friendId: userAuthId,
+        userId: authUserId,
+        status: 2
+      });
+
+      if (friendcount.count == 1) {
+        returnObject.isFriend = 1;
+      } else {
+        returnObject.isFriend = 0;
+      }
+    }
+  }
+
+  logger.trace(
+    "Get user profile by ID API called : ",
+    authUserId,
+    req.params.username
   );
+  var resp_data = await user_helper.get_user_by({
+    username: req.params.username
+  });
   if (resp_data.status == 0) {
-    logger.error(
-      "Error occured while fetching user profile = ",
-      resp_data
-    );
+    logger.error("Error occured while fetching user profile = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
+    resp_data.user.self=returnObject.self;
+    resp_data.user.isFriend=returnObject.isFriend;
     logger.trace("user profile got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
-
 
 /**
  * @api {put} /user/profile Profile - Update
@@ -59,7 +88,6 @@ router.get("/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
-  
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
@@ -115,14 +143,16 @@ router.put("/", async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
-      mobileNumber: req.body.mobileNumber?req.body.mobileNumber:null,
+      mobileNumber: req.body.mobileNumber ? req.body.mobileNumber : null,
       gender: req.body.gender,
-      dateOfBirth: req.body.dateOfBirth?req.body.dateOfBirth:null,
-      height: req.body.height?req.body.height:null,
-      weight: req.body.weight?req.body.weight:null,
+      dateOfBirth: req.body.dateOfBirth ? req.body.dateOfBirth : null,
+      height: req.body.height ? req.body.height : null,
+      weight: req.body.weight ? req.body.weight : null,
       aboutMe: req.body.aboutMe,
-      goals: req.body.goals?req.body.goals:null,
-      workoutLocation:req.body.workoutLocation?req.body.workoutLocation:null,
+      goals: req.body.goals ? req.body.goals : null,
+      workoutLocation: req.body.workoutLocation
+        ? req.body.workoutLocation
+        : null
     };
 
     //image upload

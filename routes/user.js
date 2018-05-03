@@ -23,7 +23,7 @@ var shoppingcart = require("./user/shopping_cart");
 var friends = require("./user/friends");
 var comment = require("./user/comment");
 var like = require("./user/like");
-var user_recipe_assign = require("./user/user_recipe_assign");
+var recipe_assign = require("./user/user_recipe_assign");
 
 
 // router.use("/nutrition", auth, nutrition);
@@ -46,6 +46,6 @@ router.use("/bodypart", auth, bodypart);
 router.use("/friend", auth, friends);
 router.use("/comment", auth, comment);
 router.use("/like", auth, like);
-router.use("/user_recipe_assign", user_recipe_assign);
+router.use("/recipe_assign", recipe_assign);
 
 module.exports = router;

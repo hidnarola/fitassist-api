@@ -1,5 +1,4 @@
 module.exports = {
-
     EXERCISE_PREFERENCE_DEFUALT_VALUE:{
         "workoutIntensity": 0,
         "exerciseExperience": 0,

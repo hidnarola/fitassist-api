@@ -112,12 +112,10 @@ console.log(friendStatus);
     logger.error("Error occured while fetching friend = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    returnObject.status = resp_data.status;
-    returnObject.message = resp_data.message;
-    returnObject.friends = resp_data.friends;
+    
 
-    logger.trace("friend got successfully = ", returnObject);
-    res.status(config.OK_STATUS).json(returnObject);
+    logger.trace("friend got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
