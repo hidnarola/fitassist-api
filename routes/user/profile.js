@@ -21,11 +21,7 @@ var friend_helper = require("../../helpers/friend_helper");
 router.get("/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var returnObject = {
-    self: 0,
-    isFriend: 0,
-    unknown: 0
-  };
+  var friendshipStatus = "";
 
   var userdata = await friend_helper.find({
     username: req.params.username
@@ -34,18 +30,21 @@ router.get("/:username", async (req, res) => {
   var userAuthId = userdata.friends.authUserId;
   if (userAuthId && typeof userAuthId !== "undefined") {
     if (userAuthId === authUserId) {
-      returnObject.self = 1;
+      friendshipStatus = "self";
     } else {
-      friendcount = await friend_helper.checkFriend({
+      friend_data = await friend_helper.checkFriend({
         friendId: userAuthId,
-        userId: authUserId,
-        status: 2
+        userId: authUserId
       });
 
-      if (friendcount.count == 1) {
-        returnObject.isFriend = 1;
+      if (friend_data.friends.length == 1) {
+        if (friend_data.friends.status === 1) {
+          friendshipStatus = "request_pending";
+        } else {
+          friendshipStatus = "friend";
+        }
       } else {
-        returnObject.isFriend = 0;
+        friendshipStatus = "unknown";
       }
     }
   }
@@ -62,8 +61,7 @@ router.get("/:username", async (req, res) => {
     logger.error("Error occured while fetching user profile = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    resp_data.user.self=returnObject.self;
-    resp_data.user.isFriend=returnObject.isFriend;
+    resp_data.user.friendshipStatus=friendshipStatus;
     logger.trace("user profile got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }

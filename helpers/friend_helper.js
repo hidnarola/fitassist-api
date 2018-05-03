@@ -313,15 +313,15 @@ friend_helper.find = async id => {
  */
 friend_helper.checkFriend = async id => {
   try {
-    var friends = await Friends.find(id).count();
+    var friends = await Friends.find(id);
     if (friends) {
       return {
         status: 1,
         message: "friends found",
-        count: friends
+        friends: friends
       };
     } else {
-      return { status: 2, message: "No friends available", count:0 };
+      return { status: 2, message: "No friends available", friends:[] };
     }
   } catch (err) {
     return {

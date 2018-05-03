@@ -66,7 +66,7 @@ router.get("/", async (req, res) => {
           nutritionTargetsSearch += "&"+ nutritionTarget.ntrCode  +"=" + nutritionTarget.start+ "&"+ nutritionTarget.ntrCode  +"=" + nutritionTarget.end;        
         }
         else{          
-          nutritionTargetsSearch += "&calories=500-200";
+          nutritionTargetsSearch += "&calories="+  +"-";
         }
       });
       console.log('------------------------------------------------------------------------------------------------------------------------------------------------------------');
