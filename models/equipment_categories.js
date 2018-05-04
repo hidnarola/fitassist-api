@@ -11,7 +11,7 @@ var EquipmentCategorySchema = new Schema({
     modifiedAt: {type: Date, default: Date.now}
 }, {versionKey: false});
 
-// Compile model from schema
+// Compile model from schema    
 var Equipment_category = mongoose.model('equipment_category', EquipmentCategorySchema, 'equipment_category');
 
 module.exports = Equipment_category;

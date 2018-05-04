@@ -48,7 +48,7 @@ friend_helper.get_friends = async id => {
       return {
         status: 1,
         message: "friends found",
-        friends: friends[0].friends
+        friends: friends[0].friendListDetails
       };
     } else {
       return { status: 2, message: "No friends available", friends: [] };
@@ -69,51 +69,89 @@ friend_helper.get_friends = async id => {
  *          status 1 - If friends data found, with friends object
  *          status 2 - If friends not found, with appropriate message
  */
-friend_helper.get_friend_by_username = async (username,statusType) => {
+friend_helper.get_friend_by_username = async (username, statusType) => {
+  console.log(username);
   try {
     var friends = await Users.aggregate([
       {
         $match: username
       },
       {
-        $lookup:{
-          from:"friends",
-          localField:"authUserId",
-          foreignField:"userId",
-          as:"friendList"
+        $lookup: {
+          from: "friends",
+          localField: "authUserId",
+          foreignField: "userId",
+          as: "friendList"
         }
       },
       {
-        $unwind:"$friendList"
-      },
-      {
-        $match:{
-          "friendList.status":statusType
+        $unwind: {
+          path: "$friendList",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
-        $lookup:{
-          from:"users",
-          localField:"friendList.friendId",
-          foreignField:"authUserId",
-          as:"friendListDetails"
+        $lookup: {
+          from: "friends",
+          localField: "authUserId",
+          foreignField: "friendId",
+          as: "friendList2"
         }
       },
       {
-        $unwind:"$friendListDetails"
-      },
-      {
-        $group:{
-          _id:"$_id",
-          "friendListDetails":{$push:"$friendListDetails" },
+        $unwind: {
+          path: "$friendList2",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
-        $project:{
-          friendListDetails:true
+        $group: {
+          _id: "$_id",
+          authUserId: { $first: "$authUserId" },
+          friendList: { $addToSet: "$friendList.friendId" },
+          friendList2: { $addToSet: "$friendList2.userId" }
         }
       },
-      
+      {
+        $addFields: {
+          friendIds: { $concatArrays: ["$friendList", "$friendList2"] }
+        }
+      },
+      {
+        $unwind: {
+          path: "$friendIds",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "friendIds",
+          foreignField: "authUserId",
+          as: "friendListDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$friendListDetails",
+          preserveNullAndEmptyArrays: false
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          friendListDetails: {
+            $addToSet: {
+              userId: "$friendIds",
+              firstName: "$friendListDetails.firstName",
+              avatar: "$friendListDetails.avatar",
+              username: "$friendListDetails.username",
+              firstName: "$friendListDetails.firstName",
+
+            }
+          }
+        }
+      }
     ]);
     if (friends && friends.length > 0) {
       return {
@@ -274,7 +312,6 @@ friend_helper.get_filtered_records = async filter_obj => {
   }
 };
 
-
 /*
  * find is used to fetch all friends data
  * 
@@ -285,7 +322,7 @@ friend_helper.get_filtered_records = async filter_obj => {
 friend_helper.find = async id => {
   try {
     var friends = await Users.findOne(id);
-    if (friends && friends !=null) {
+    if (friends && friends != null) {
       return {
         status: 1,
         message: "friends found",
@@ -302,7 +339,6 @@ friend_helper.find = async id => {
     };
   }
 };
-
 
 /*
  * checkFriend is used to checkf friend 
@@ -321,14 +357,14 @@ friend_helper.checkFriend = async id => {
         friends: friends
       };
     } else {
-      return { status: 2, message: "No friends available", friends:[] };
+      return { status: 2, message: "No friends available", friends: [] };
     }
   } catch (err) {
     return {
       status: 0,
       message: "Error occured while finding friends",
       error: err,
-      count : 0
+      count: 0
     };
   }
 };
