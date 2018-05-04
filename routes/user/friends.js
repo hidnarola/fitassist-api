@@ -149,25 +149,28 @@ router.post("/", async (req, res) => {
         .json({ message: "Can not send friend request itself" });
     }
 
-    friends_data = await friend_helper.checkFriend({
+    check_friend_data = await friend_helper.checkFriend({
       $or: [
         { $and: [{ userId: authUserId }, { friendId: req.body.friendId }] },
         { $and: [{ userId: req.body.friendId }, { friendId: authUserId }] }
       ]
     });
-    console.log("LENGTH: -->  ", friends_data.friends.length);
-    if (friends_data.status == 1) {
-      if (friends_data.friends.length !== 0) {
+    var msg="is already friend";
+    if (check_friend_data.status == 1) {
+      if (check_friend_data.friends.length !== 0) {
+        if(check_friend_data.friends[0].status==1)
+        {
+          msg="request is already in pending";
+        }
         return res
           .status(config.BAD_REQUEST)
-          .json({ message: "Record already Exist" });
+          .json({ message: msg });
       }
     }
 
     var friend_obj = {
       userId: authUserId,
       friendId: req.body.friendId,
-      status: 1
     };
 
     let friend_data = await friend_helper.send_friend_request(friend_obj);

@@ -32,13 +32,18 @@ router.get("/:username", async (req, res) => {
     if (userAuthId === authUserId) {
       friendshipStatus = "self";
     } else {
+      // friend_data = await friend_helper.checkFriend({
+      //   friendId: userAuthId,
+      //   userId: authUserId
+      // });
       friend_data = await friend_helper.checkFriend({
-        friendId: userAuthId,
-        userId: authUserId
+        $or: [
+          { $and: [{ userId: authUserId }, { friendId: userAuthId }] },
+          { $and: [{ userId: userAuthId }, { friendId: authUserId }] }
+        ]
       });
-
       if (friend_data.friends.length == 1) {
-        if (friend_data.friends.status === 1) {
+        if (friend_data.friends[0].status == 1) {
           friendshipStatus = "request_pending";
         } else {
           friendshipStatus = "friend";

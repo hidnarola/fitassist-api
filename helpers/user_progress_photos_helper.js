@@ -72,33 +72,64 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
   limit
 ) => {
   try {
-    var user_progress_photos = await UserProgressPhotos.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "authUserId",
-          as: "username"
-        }
-      },
-      {
-        $unwind: "$username"
-      },
-      {
-        $group: {
-          _id:"$_id",
-          description:{$first:"$description"},
-          status:{$first:"$status"},
-          isDeleted:{$first:"$isDeleted"},
-          userId:{$first:"$userId"},
-          date:{$first:"$date"},
-          image:{$first:"$image"},
-          username:{$first:"$username.username"},
-        }
-      },
-      { $match:search_obj},
-      limit
-    ]);
+    var user_progress_photos = await UserProgressPhotos.aggregate([{
+      "$project": {
+          "y": {
+              "$year": "$date"
+          },
+          "m": {
+              "$month": "$date"
+          },
+          
+      }
+  },
+  {
+      "$group": {
+          "_id": {
+              "year": "$y",
+              "month": "$m",
+          },
+          
+          month:{$first:"$m"},
+          count: {
+              "$sum": 1
+          }
+      }
+  },
+  {
+      $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+          "_id.day": 1
+      }
+  }]);
+    // var user_progress_photos = await UserProgressPhotos.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       localField: "userId",
+    //       foreignField: "authUserId",
+    //       as: "username"
+    //     }
+    //   },
+    //   {
+    //     $unwind: "$username"
+    //   },
+    //   {
+    //     $group: {
+    //       _id:"$_id",
+    //       description:{$first:"$description"},
+    //       status:{$first:"$status"},
+    //       isDeleted:{$first:"$isDeleted"},
+    //       userId:{$first:"$userId"},
+    //       date:{$first:"$date"},
+    //       image:{$first:"$image"},
+    //       username:{$first:"$username.username"},
+    //     }
+    //   },
+    //   { $match:search_obj},
+    //   limit
+    // ]);
     if (user_progress_photos && user_progress_photos.length != 0) {
       return {
         status: 1,

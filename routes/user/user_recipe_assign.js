@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
     });
     var recipeUrl = config.RECIPE_API_URL;
     //console.log("recipeUrl:-->  ", recipeUrl);
-    var recipeName = "&q=chicken";
+    var recipeName = "&q=";
     var Maximum_number_of_ingredients = "&ingr=5";
     var dietSearch = "";
 
@@ -63,10 +63,10 @@ router.get("/", async (req, res) => {
       user_preferences.nutritionTargets.forEach(nutritionTarget => {
         if(nutritionTarget.type==="nutrient")
         {
-          nutritionTargetsSearch += "&"+ nutritionTarget.ntrCode  +"=" + nutritionTarget.start+ "&"+ nutritionTarget.ntrCode  +"=" + nutritionTarget.end;        
+          nutritionTargetsSearch += "&nutrient["+ nutritionTarget.ntrCode  +"]=" + nutritionTarget.start+ "&nutrient["+ nutritionTarget.ntrCode  +"]=" + nutritionTarget.end;        
         }
         else{          
-          nutritionTargetsSearch += "&calories="+  +"-";
+          nutritionTargetsSearch += "&calories="+ nutritionTarget.start +"-"+nutritionTarget.end;
         }
       });
       console.log('------------------------------------------------------------------------------------------------------------------------------------------------------------');
@@ -76,7 +76,6 @@ router.get("/", async (req, res) => {
           recipeName +
           dietSearch +
           Maximum_number_of_ingredients +
-          calories +
           healthSearch +
           excludedSearch+
           nutritionTargetsSearch
