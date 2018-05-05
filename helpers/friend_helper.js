@@ -72,92 +72,202 @@ friend_helper.get_friends = async id => {
 friend_helper.get_friend_by_username = async (username, statusType) => {
   console.log(username);
   try {
-    var friends = await Users.aggregate([
-      {
-        $match: username
-      },
-      {
-        $lookup: {
-          from: "friends",
-          localField: "authUserId",
-          foreignField: "userId",
-          as: "friendList"
-        }
-      },
-      {
-        $unwind: {
-          path: "$friendList",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $lookup: {
-          from: "friends",
-          localField: "authUserId",
-          foreignField: "friendId",
-          as: "friendList2"
-        }
-      },
-      {
-        $unwind: {
-          path: "$friendList2",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $group: {
-          _id: "$_id",
-          authUserId: { $first: "$authUserId" },
-          friendList: { $addToSet: "$friendList.friendId" },
-          friendList2: { $addToSet: "$friendList2.userId" }
-        }
-      },
-      {
-        $addFields: {
-          friendIds: { $concatArrays: ["$friendList", "$friendList2"] }
-        }
-      },
-      {
-        $unwind: {
-          path: "$friendIds",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "friendIds",
-          foreignField: "authUserId",
-          as: "friendListDetails"
-        }
-      },
-      {
-        $unwind: {
-          path: "$friendListDetails",
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $group: {
-          _id: "$_id",
-          friendListDetails: {
-            $addToSet: {
-              userId: "$friendIds",
-              firstName: "$friendListDetails.firstName",
-              avatar: "$friendListDetails.avatar",
-              username: "$friendListDetails.username",
-              firstName: "$friendListDetails.firstName",
-
+    var friends;
+    if (statusType == 1) {
+      friends = await Users.aggregate([
+        {
+          $match: username
+        },
+        {
+          $lookup: {
+            from: "friends",
+            localField: "authUserId",
+            foreignField: "userId",
+            as: "friendList"
+          }
+        },
+        {
+          $unwind: "$friendList"
+        },
+        
+        {
+          $project: {
+            _id: 1,
+            authUserId: 1,
+            friendList: {
+              $mergeObjects: [
+                "$friendList",
+                { fetch_id: "$friendList.friendId" }
+              ]
             }
           }
+        },
+        {
+          $lookup: {
+            from: "friends",
+            localField: "authUserId",
+            foreignField: "friendId",
+            as: "friendList2"
+          }
+        },
+        {
+          $unwind: "$friendList2"
+        },
+        {
+          $match: {
+            "friendList2.status": 1
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            authUserId: 1,
+            friendList: 1,
+            friendList2: {
+              $mergeObjects: [
+                "$friendList2",
+                { fetch_id: "$friendList2.userId" }
+              ]
+            }
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            authUserId: { $first: "$authUserId" },
+            friendList: { $addToSet: "$friendList" },
+            friendList2: { $addToSet: "$friendList2" }
+          }
+        },
+        {
+          $addFields: {
+            friendIds: { $concatArrays: ["$friendList", "$friendList2"] }
+          }
+        },
+        {
+          $unwind: "$friendIds"
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "friendIds.fetch_id",
+            foreignField: "authUserId",
+            as: "user"
+          }
+        },
+        {
+          $unwind: "$user"
+        },
+        {
+          $group: {
+            _id: "authUserId",
+            user: { $push: "$user" }
+          }
         }
-      }
-    ]);
+      ]);
+    } else {
+      friends = await Users.aggregate([
+        {
+          $match: username
+        },
+        {
+          $lookup: {
+            from: "friends",
+            localField: "authUserId",
+            foreignField: "userId",
+            as: "friendList"
+          }
+        },
+        {
+          $unwind: "$friendList"
+        },
+        {
+          $match: {
+            "friendList.status": 2
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            authUserId: 1,
+            friendList: {
+              $mergeObjects: [
+                "$friendList",
+                { fetch_id: "$friendList.friendId" }
+              ]
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: "friends",
+            localField: "authUserId",
+            foreignField: "friendId",
+            as: "friendList2"
+          }
+        },
+        {
+          $unwind: "$friendList2"
+        },
+        {
+          $match: {
+            "friendList2.status": 2
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            authUserId: 1,
+            friendList: 1,
+            friendList2: {
+              $mergeObjects: [
+                "$friendList2",
+                { fetch_id: "$friendList2.userId" }
+              ]
+            }
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            authUserId: { $first: "$authUserId" },
+            friendList: { $addToSet: "$friendList" },
+            friendList2: { $addToSet: "$friendList2" }
+          }
+        },
+        {
+          $addFields: {
+            friendIds: { $concatArrays: ["$friendList", "$friendList2"] }
+          }
+        },
+        {
+          $unwind: "$friendIds"
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "friendIds.fetch_id",
+            foreignField: "authUserId",
+            as: "user"
+          }
+        },
+        {
+          $unwind: "$user"
+        },
+        {
+          $group: {
+            _id: "authUserId",
+            user: { $push: "$user" }
+          }
+        }
+      ]);
+    }
+
     if (friends && friends.length > 0) {
       return {
         status: 1,
         message: " found",
-        friends: friends[0].friendListDetails
+        friends: friends[0].user
       };
     } else {
       return { status: 2, message: "No friend available", friends: [] };

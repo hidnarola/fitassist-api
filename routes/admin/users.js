@@ -61,17 +61,17 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/user/user_id Get by ID
- * @apiName Users by ID
+ * @api {get} /admin/user/:authUserId Get by authUserId
+ * @apiName Users by authUserId
  * @apiGroup Admin Side User
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} user Array of user document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:user_id", async (req, res) => {
-  user_id = req.params.user_id;
+router.get("/:authUserId", async (req, res) => {
+  authUserId = req.params.authUserId;
   logger.trace("Get user by id API called");
-  var resp_data = await user_helper.get_user_by_id(user_id);
+  var resp_data = await user_helper.get_user_by_id(authUserId);
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -82,7 +82,7 @@ router.get("/:user_id", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/user/:user_id Update
+ * @api {put} /admin/user/:authUserId Update
  * @apiName Update
  * @apiGroup Admin Side User
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -99,8 +99,8 @@ router.get("/:user_id", async (req, res) => {
  * @apiSuccess (Success 200) {Array} user Array of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/:user_id", async (req, res) => {
-  user_id = req.params.user_id;
+router.put("/:authUserId", async (req, res) => {
+  authUserId = req.params.authUserId;
 
   var schema = {
     firstName: {
@@ -154,15 +154,28 @@ router.put("/:user_id", async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
-      mobileNumber: req.body.mobileNumber,
       gender: req.body.gender,
-      height: req.body.height,
-      weight: req.body.weight,
-      dateOfBirth: req.body.dateOfBirth,
-      goals: req.body.goals,
-      aboutMe: req.body.aboutMe,
-      status: req.body.status
+      aboutMe: req.body.aboutMe
     };
+
+    if (req.body.mobileNumber) {
+      user_obj.mobileNumber = req.body.mobileNumber;
+    }
+    if (req.body.height) {
+      user_obj.height = req.body.height;
+    }
+    if (req.body.weight) {
+      user_obj.weight = req.body.weight;
+    }
+    if (req.body.dateOfBirth) {
+      user_obj.dateOfBirth = req.body.dateOfBirth;
+    }
+    if (req.body.goals) {
+      user_obj.goals = req.body.goals;
+    }
+    if (req.body.status) {
+      user_obj.status = req.body.status;
+    }
 
     //image upload
     var filename;
@@ -202,7 +215,7 @@ router.put("/:user_id", async (req, res) => {
     }
     if (filename) {
       user_obj.avatar = "uploads/user/" + filename;
-      resp_data = await user_helper.get_user_by_id(user_id);
+      resp_data = await user_helper.get_user_by_id(authUserId);
       try {
         fs.unlink(resp_data.user.avatar, function() {
           console.log("Image deleted");
@@ -211,7 +224,7 @@ router.put("/:user_id", async (req, res) => {
     }
     console.log(user_obj);
 
-    let user_data = await user_helper.update_user_by_id(user_id, user_obj);
+    let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
     if (user_data.status === 0) {
       logger.error("Error while updating user data = ", user_data);
       return res.status(config.BAD_REQUEST).json({ user_data });
@@ -225,7 +238,7 @@ router.put("/:user_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /admin/user/:user_id Delete
+ * @api {delete} /admin/user/:authUserId Delete
  * @apiName Delete
  * @apiGroup Admin Side User
  *
@@ -233,13 +246,13 @@ router.put("/:user_id", async (req, res) => {
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/:user_id", async (req, res) => {
-  logger.trace("Delete user API - Id = ", req.params.user_id);
+router.delete("/:authUserId", async (req, res) => {
+  logger.trace("Delete user API - Id = ", req.params.authUserId);
   var user_obj = {
-    isDelete: 1
+    isDeleted: 1
   };
   let userdata = await user_helper.delete_user_by_id(
-    req.params.user_id,
+    req.params.authUserId,
     user_obj
   );
 
@@ -264,7 +277,10 @@ router.post("/checkemail", async (req, res) => {
   logger.trace("Get check email API called");
   var resp_data = await user_helper.check_email_uniqueness(req.body.email);
   if (resp_data.status == 0) {
-    logger.error("Error occured while checking email uniqueness  = ", resp_data);
+    logger.error(
+      "Error occured while checking email uniqueness  = ",
+      resp_data
+    );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     logger.trace("Email is Unique found successfully = ", resp_data);

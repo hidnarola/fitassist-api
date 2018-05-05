@@ -20,7 +20,9 @@ var dbConnect         = require("./database/mongoDbConnection");
 var socket            = require("./socket/socketServer");
 
 var app = express();
-app.use(fileUpload());
+// app.use(fileUpload());
+app.use(fileUpload({  limits: { fileSize: 1 * 1024 * 1024 },}));
+
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

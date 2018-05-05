@@ -63,7 +63,7 @@
   },
   {
     "type": "delete",
-    "url": "/admin/user/:user_id",
+    "url": "/admin/user/:authUserId",
     "title": "Delete",
     "name": "Delete",
     "group": "Admin_Side_User",
@@ -161,7 +161,7 @@
   },
   {
     "type": "put",
-    "url": "/admin/user/:user_id",
+    "url": "/admin/user/:authUserId",
     "title": "Update",
     "name": "Update",
     "group": "Admin_Side_User",
@@ -383,7 +383,7 @@
   },
   {
     "type": "get",
-    "url": "/admin/user/user_id",
+    "url": "/admin/user/authUserId",
     "title": "Get by ID",
     "name": "Users_by_ID",
     "group": "Admin_Side_User",
@@ -8756,6 +8756,56 @@
     "name": "Get_all",
     "group": "User_Progress_Photo",
     "description": "<p>username: user's username, start use for skip record. default is 0, limit is use to limit the records. default is : 10</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user_progress_photos",
+            "description": "<p>Array of user's progress_photos 's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_progress_photos.js",
+    "groupTitle": "User_Progress_Photo"
+  },
+  {
+    "type": "get",
+    "url": "/user/progress_photo/username/latest_month_wise/:limit?",
+    "title": "Get all Latest",
+    "name": "Get_all_Latest",
+    "group": "User_Progress_Photo",
+    "description": "<p>limit is use to limit the records. default is : 10</p>",
     "header": {
       "fields": {
         "Header": [
