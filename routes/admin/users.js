@@ -1,3 +1,4 @@
+
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
@@ -101,55 +102,49 @@ router.get("/:authUserId", async (req, res) => {
  */
 router.put("/:authUserId", async (req, res) => {
   authUserId = req.params.authUserId;
-
+  
   var schema = {
     firstName: {
       notEmpty: true,
       errorMessage: "First name is required"
     },
-    lastName: {
+    status: {
       notEmpty: true,
-      errorMessage: "Last name is required"
+      errorMessage: "Status is required"
     },
     email: {
       notEmpty: true,
       errorMessage: "Email address is required",
       isEmail: { errorMessage: "Please enter valid email address" }
     },
-    gender: {
-      notEmpty: true,
-      isIn: {
-        options: [["male", "female", "transgender"]],
-        errorMessage: "Gender can be from male, female or transgender"
-      },
-      errorMessage: "Gender is required"
-    },
-    // goals: {
-    //   notEmpty: true,
-    //   matches: {
-    //     options: [
-    //       [
-    //         "gain_muscle",
-    //         "gain_flexibility",
-    //         "lose_fat",
-    //         "gain_strength",
-    //         "gain_power",
-    //         "increase_endurance"
-    //       ]
-    //     ],
-    //     errorMessage: "goals can be from Enum"
-    //   },
-    //   errorMessage: "goals is required"
-    // },
-    aboutMe: {
-      notEmpty: true,
-      errorMessage: "About me is required"
-    }
   };
+
+
+   req.checkBody('email', 'This email is already taken').isEmailAvailable(authUserId);
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
+  // var errors = req.asyncValidationErrors();
+
   if (!errors) {
+
+   
+    
+  //   var resp_data = await user_helper.get_user_by_id(authUserId);
+  //   if (resp_data.status ===1) {
+  //   if(resp_data.user.email!=req.body.email)
+  //   {
+  //     console.log('not same');
+  //     checkemaildata = await user_helper.checkvalue({email:req.body.email,authUserId:{$ne:authUserId},});
+  //     if(checkemaildata.count!=0)
+  //     {
+  //       return res.status(config.BAD_REQUEST).json({ });
+  //     }
+  //   }
+  // }
+
+    
     var user_obj = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -218,11 +213,10 @@ router.put("/:authUserId", async (req, res) => {
       resp_data = await user_helper.get_user_by_id(authUserId);
       try {
         fs.unlink(resp_data.user.avatar, function() {
-          console.log("Image deleted");
+          // console.log("Image deleted");
         });
       } catch (err) {}
     }
-    console.log(user_obj);
 
     let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
     if (user_data.status === 0) {
@@ -233,7 +227,7 @@ router.put("/:authUserId", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({message: errors });
   }
 });
 

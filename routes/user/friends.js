@@ -73,13 +73,13 @@ router.get("/:username?/:type?", async (req, res) => {
   var username = userdata.friends.username;
 
   username = req.params.username ? req.params.username : username;
+  userdata = await friend_helper.find({
+    username: username
+  });
   var returnObject = {
     self: 0,
     isFriend: 0
   };
-  userdata = await friend_helper.find({
-    username: username
-  });
 
   var userAuthId = userdata.friends.authUserId;
   if (userAuthId && typeof userAuthId !== "undefined") {

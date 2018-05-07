@@ -116,8 +116,6 @@ user_helper.insert_user = async user_object => {
  * @developed by "amc"
  */
 user_helper.update_user_by_id = async (user_id, user_obj) => {
-  console.log(user_id)
-  console.log(user_obj);
   try {
     let user = await User.findOneAndUpdate({ authUserId: user_id }, user_obj);
     if (!user) {

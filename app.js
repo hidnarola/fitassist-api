@@ -1,28 +1,31 @@
-var express           = require("express");
-var path              = require("path");
-var fs                = require("fs");
-var favicon           = require("serve-favicon");
-var logger            = require("morgan");
-var cookieParser      = require("cookie-parser");
-var bodyParser        = require("body-parser");
-var moment            = require("moment");
+var express = require("express");
+var path = require("path");
+var fs = require("fs");
+var favicon = require("serve-favicon");
+var logger = require("morgan");
+var cookieParser = require("cookie-parser");
+var bodyParser = require("body-parser");
+var moment = require("moment");
 
-var fileUpload        = require("express-fileupload");
-var expressValidator  = require("express-validator");
+var fileUpload = require("express-fileupload");
+var expressValidator = require("express-validator");
 
 // Create cluster environment
-var cluster           = require("cluster");
-var numCPUs           = require("os").cpus().length;
+var cluster = require("cluster");
+var numCPUs = require("os").cpus().length;
 
 /* config files */
-var config            = require("./config");
-var dbConnect         = require("./database/mongoDbConnection");
-var socket            = require("./socket/socketServer");
+var config = require("./config");
+var dbConnect = require("./database/mongoDbConnection");
+var socket = require("./socket/socketServer");
+
+//helper
+
+var user_helper = require("./helpers/user_helper");
 
 var app = express();
 // app.use(fileUpload());
-app.use(fileUpload({  limits: { fileSize: 1 * 1024 * 1024 },}));
-
+app.use(fileUpload({ limits: { fileSize: 15 * 1024 * 1024 } }));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -37,7 +40,25 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "doc")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use(expressValidator());
+app.use(
+  expressValidator({
+    customValidators: {
+		isEmailAvailable: async (email, authUserId) => {
+        var resp_data = await user_helper.get_user_by_id(authUserId);
+        if (resp_data.status === 1) {
+          if (resp_data.user.email != email) {
+
+            var checkemaildata = await user_helper.checkvalue({
+              email: email,
+              authUserId: { $ne: authUserId }
+			});
+			return checkemaildata.count==0;
+          }
+        }
+      }
+    }
+  })
+);
 
 // Support corss origin request
 app.use(function(req, res, next) {
