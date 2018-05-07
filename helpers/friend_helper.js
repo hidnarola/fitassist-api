@@ -87,7 +87,10 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
           }
         },
         {
-          $unwind: "$friendList"
+          $unwind: {
+            path: "$friendList",
+            preserveNullAndEmptyArrays: true
+          }
         },
         
         {
@@ -108,9 +111,11 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
           }
         },
         {
-          $unwind: "$friendList2"
+          $unwind: {
+            path: "$friendList2",
+            preserveNullAndEmptyArrays: true
+          }
         },
-        
         {
           $project: {
             _id: 1,
