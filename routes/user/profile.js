@@ -23,6 +23,7 @@ router.get("/:username", async (req, res) => {
   var authUserId = decoded.sub;
   var friendshipStatus = "";
   var friendshipStatus = "";
+  var friendshipId = "";
 
   var userdata = await friend_helper.find({
     username: req.params.username
@@ -54,15 +55,15 @@ router.get("/:username", async (req, res) => {
       });
 
       if (friend_data.friends.length == 1) {
+		friendshipId=friend_data.friends[0]._id;
         if (friend_data.friends[0].status == 1) {
           friend_data = await friend_helper.checkFriend({
             userId: authUserId,
             friendId: userAuthId
 		  });
-		  console.log('friend_data.friends.length 1 1  ',friend_data.friends.length);
 		  
           if (friend_data.friends.length == 1) {
-            friendshipStatus = "request sent";
+			friendshipStatus = "request sent";
 		  }
 		  else{
 			  friendshipStatus = "request recieved";
@@ -72,7 +73,6 @@ router.get("/:username", async (req, res) => {
             userId: authUserId,
             friendId: userAuthId
 		  });
-		  console.log('friend_data.friends.length 2 2 ',friend_data.friends.length);
         } else {
           friendshipStatus = "friend";
         }
@@ -95,6 +95,7 @@ router.get("/:username", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     resp_data.user.friendshipStatus = friendshipStatus;
+    resp_data.user.friendshipId = friendshipId;
     logger.trace("user profile got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
