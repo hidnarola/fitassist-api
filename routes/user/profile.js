@@ -22,10 +22,20 @@ router.get("/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var friendshipStatus = "";
+  var friendshipStatus = "";
 
   var userdata = await friend_helper.find({
     username: req.params.username
   });
+  if (userdata.status == 2) {
+    return res.status(config.OK_STATUS).json({
+      status: 1,
+      message: "No username available",
+      user: []
+    });
+  }
+
+  console.log("usedata", userdata);
 
   var userAuthId = userdata.friends.authUserId;
   if (userAuthId && typeof userAuthId !== "undefined") {
@@ -42,9 +52,27 @@ router.get("/:username", async (req, res) => {
           { $and: [{ userId: userAuthId }, { friendId: authUserId }] }
         ]
       });
+
       if (friend_data.friends.length == 1) {
         if (friend_data.friends[0].status == 1) {
-          friendshipStatus = "request_pending";
+          friend_data = await friend_helper.checkFriend({
+            userId: authUserId,
+            friendId: userAuthId
+		  });
+		  console.log('friend_data.friends.length 1 1  ',friend_data.friends.length);
+		  
+          if (friend_data.friends.length == 1) {
+            friendshipStatus = "request sent";
+		  }
+		  else{
+			  friendshipStatus = "request recieved";
+		  }
+
+          friend_data = await friend_helper.checkFriend({
+            userId: authUserId,
+            friendId: userAuthId
+		  });
+		  console.log('friend_data.friends.length 2 2 ',friend_data.friends.length);
         } else {
           friendshipStatus = "friend";
         }
@@ -66,7 +94,7 @@ router.get("/:username", async (req, res) => {
     logger.error("Error occured while fetching user profile = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    resp_data.user.friendshipStatus=friendshipStatus;
+    resp_data.user.friendshipStatus = friendshipStatus;
     logger.trace("user profile got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }

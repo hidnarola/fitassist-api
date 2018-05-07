@@ -1,4 +1,5 @@
 var UserProgressPhotos = require("./../models/users_progress_photos");
+var Users = require("./../models/users");
 var user_progress_photo_helper = {};
 
 /*
@@ -28,17 +29,17 @@ user_progress_photo_helper.get_user_progress_photos = async (
       },
       {
         $group: {
-          _id:"$_id",
-          description:{$first:"$description"},
-          status:{$first:"$status"},
-          isDeleted:{$first:"$isDeleted"},
-          userId:{$first:"$userId"},
-          date:{$first:"$date"},
-          image:{$first:"$image"},
-          username:{$first:"$username.username"},
+          _id: "$_id",
+          description: { $first: "$description" },
+          status: { $first: "$status" },
+          isDeleted: { $first: "$isDeleted" },
+          userId: { $first: "$userId" },
+          date: { $first: "$date" },
+          image: { $first: "$image" },
+          username: { $first: "$username.username" }
         }
       },
-      { $match:search_obj},
+      { $match: search_obj },
       start,
       limit
     ]);
@@ -71,65 +72,51 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
   search_obj,
   limit
 ) => {
+  console.log("Search", search_obj);
+  console.log("limit", limit);
+
   try {
-    var user_progress_photos = await UserProgressPhotos.aggregate([{
-      "$project": {
-          "y": {
-              "$year": "$date"
-          },
-          "m": {
-              "$month": "$date"
-          },
-          
+    var user_progress_photos = await Users.aggregate([
+      {
+        $match: { username: "amc" }
+	  },	 
+	  {
+		  lookup:
+		  {
+			  from: 'user_progress_photos',
+			  localField: 'local',
+			  foreignField: 'foreign',
+			  as: '<as>',
+		  }
+	  },
+	   
+      {
+        $match: { userId: authUserId }
+      },
+      {
+        $project: {
+          image: 1,
+          date: 1,
+          userId: 1,
+          description: 1,
+          year: { $year: "$date" },
+          month: { $month: "$date" },
+          day: { $dayOfMonth: "$date" }
+        }
+      },
+      {
+        $group: {
+          _id: "$month",
+          month: { $first: "$month" },
+          image: { $first: "$image" },
+          date: { $first: "$date" },
+          userId: { $first: "$userId" },
+          description: { $first: "$description" }
+        }
       }
-  },
-  {
-      "$group": {
-          "_id": {
-              "year": "$y",
-              "month": "$m",
-          },
-          
-          month:{$first:"$m"},
-          count: {
-              "$sum": 1
-          }
-      }
-  },
-  {
-      $sort: {
-          "_id.year": 1,
-          "_id.month": 1,
-          "_id.day": 1
-      }
-  }]);
-    // var user_progress_photos = await UserProgressPhotos.aggregate([
-    //   {
-    //     $lookup: {
-    //       from: "users",
-    //       localField: "userId",
-    //       foreignField: "authUserId",
-    //       as: "username"
-    //     }
-    //   },
-    //   {
-    //     $unwind: "$username"
-    //   },
-    //   {
-    //     $group: {
-    //       _id:"$_id",
-    //       description:{$first:"$description"},
-    //       status:{$first:"$status"},
-    //       isDeleted:{$first:"$isDeleted"},
-    //       userId:{$first:"$userId"},
-    //       date:{$first:"$date"},
-    //       image:{$first:"$image"},
-    //       username:{$first:"$username.username"},
-    //     }
-    //   },
-    //   { $match:search_obj},
-    //   limit
-    // ]);
+    ]);
+    console.log("user_progress_photos", user_progress_photos);
+
     if (user_progress_photos && user_progress_photos.length != 0) {
       return {
         status: 1,
@@ -147,8 +134,6 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
     };
   }
 };
-
-
 
 /*
  * get_user_progress_photo_by_id is used to fetch all user's progress photos

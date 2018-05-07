@@ -383,9 +383,9 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/admin/user/authUserId",
-    "title": "Get by ID",
-    "name": "Users_by_ID",
+    "url": "/admin/user/:authUserId",
+    "title": "Get by authUserId",
+    "name": "Users_by_authUserId",
     "group": "Admin_Side_User",
     "header": {
       "fields": {
@@ -8702,7 +8702,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/user/progress_photo/",
+    "url": "/user/progress_photo/:photo_id",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Progress_Photo",

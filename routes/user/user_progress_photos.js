@@ -289,7 +289,7 @@ router.put("/", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/progress_photo/ Delete
+ * @api {delete} /user/progress_photo/:photo_id Delete
  * @apiName Delete
  * @apiGroup User Progress Photo
  *

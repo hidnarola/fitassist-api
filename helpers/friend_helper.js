@@ -243,13 +243,13 @@ friend_helper.send_friend_request = async friend_obj => {
     let badge_task_data = await friend.save();
     return {
       status: 1,
-      message: "friend inserted",
+      message: "friend request sent",
       friend: badge_task_data
     };
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while inserting friend",
+      message: "Error occured while sending friend request",
       error: err
     };
   }
