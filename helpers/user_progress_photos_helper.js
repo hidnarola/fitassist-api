@@ -114,6 +114,7 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
           // month:"$month",
         }
       },
+      limit,
       {
         $sort:{"date":-1}
       }
