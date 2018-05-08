@@ -79,43 +79,46 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
     var user_progress_photos = await Users.aggregate([
       {
         $match: { username: "amc" }
-	  },	 
-	  {
-		  lookup:
-		  {
-			  from: 'user_progress_photos',
-			  localField: 'local',
-			  foreignField: 'foreign',
-			  as: '<as>',
-		  }
-	  },
-	   
-      {
-        $match: { userId: authUserId }
       },
+      {
+        $lookup: {
+          from: "user_progress_photos",
+          localField: "authUserId",
+          foreignField: "userId",
+          as: "user_progress_photos"
+        }
+      },
+      {
+        $unwind: "$user_progress_photos"
+      },
+
       {
         $project: {
-          image: 1,
-          date: 1,
-          userId: 1,
-          description: 1,
-          year: { $year: "$date" },
-          month: { $month: "$date" },
-          day: { $dayOfMonth: "$date" }
+          "user_progress_photos": 1,
+          // user_progress_photos: 1,
+          // userId: 1,
+          // description: 1,
+          //  "year": { $year: "date" },
+           "month": { $month: "$user_progress_photos.date" },
+          // day: { $dayOfMonth: "$date" }
         }
       },
       {
-        $group: {
-          _id: "$month",
-          month: { $first: "$month" },
-          image: { $first: "$image" },
-          date: { $first: "$date" },
-          userId: { $first: "$userId" },
-          description: { $first: "$description" }
+        $group:{
+
+          _id:"$month",
+          "description":{$first:"$user_progress_photos.description"},
+          "image":{$first:"$user_progress_photos.image"},
+          "date":{$first:"$user_progress_photos.date"},
+          "userId":{$first:"$user_progress_photos.userId"},
+          // month:"$month",
         }
+      },
+      {
+        $sort:{"date":-1}
       }
+     
     ]);
-    console.log("user_progress_photos", user_progress_photos);
 
     if (user_progress_photos && user_progress_photos.length != 0) {
       return {
