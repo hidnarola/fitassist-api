@@ -72,8 +72,7 @@ friend_helper.get_friends = async id => {
 friend_helper.get_friend_by_username = async (username, statusType) => {
   console.log(username);
   try {
-    if(statusType==2)
-    {
+    if (statusType == 2) {
       var friends = await Users.aggregate([
         {
           $match: username
@@ -92,13 +91,16 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
             preserveNullAndEmptyArrays: true
           }
         },
-        
+
         {
           $project: {
             _id: 1,
             authUserId: 1,
             friendList: {
-              $mergeObjects: ["$friendList", { fetch_id: "$friendList.friendId" }]
+              $mergeObjects: [
+                "$friendList",
+                { fetch_id: "$friendList.friendId" }
+              ]
             }
           }
         },
@@ -122,7 +124,10 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
             authUserId: 1,
             friendList: 1,
             friendList2: {
-              $mergeObjects: ["$friendList2", { fetch_id: "$friendList2.userId" }]
+              $mergeObjects: [
+                "$friendList2",
+                { fetch_id: "$friendList2.userId" }
+              ]
             }
           }
         },
@@ -159,14 +164,20 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
           $unwind: "$user"
         },
         {
+          $project: {
+            users: {
+              $mergeObjects: ["$user", { friendshipId: "$friendIds._id" }]
+            }
+          }
+        },
+        {
           $group: {
             _id: "authUserId",
-            user: { $push: "$user" }
+            user: { $push: "$users" }
           }
         }
       ]);
-    }
-    else{
+    } else {
       var friends = await Users.aggregate([
         {
           $match: username
@@ -199,15 +210,21 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
           $unwind: "$user"
         },
         {
+          $project: {
+            users: {
+              $mergeObjects: ["$user", { friendshipId: "$friendList._id" }]
+            }
+          }
+        },
+        {
           $group: {
             _id: "authUserId",
-            user: { $push: "$user" }
+            user: { $push: "$users" }
           }
         }
       ]);
     }
-    
-    
+
     if (friends && friends.length > 0) {
       return {
         status: 1,

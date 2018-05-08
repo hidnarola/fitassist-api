@@ -43,16 +43,18 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   expressValidator({
     customValidators: {
-		isEmailAvailable: async (email, authUserId) => {
+      isEmailAvailable: async (email, authUserId) => {
         var resp_data = await user_helper.get_user_by_id(authUserId);
+        console.log("resp = ",resp_data);
+        console.log("email = ",email);
         if (resp_data.status === 1) {
           if (resp_data.user.email != email) {
-
             var checkemaildata = await user_helper.checkvalue({
               email: email,
               authUserId: { $ne: authUserId }
-			});
-			return checkemaildata.count==0;
+            });
+            console.log("in isEmailAvailable = ",checkemaildata);
+            return checkemaildata.count == 0;
           }
         }
       }

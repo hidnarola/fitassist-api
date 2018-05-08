@@ -110,8 +110,14 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
           "description":{$first:"$user_progress_photos.description"},
           "image":{$first:"$user_progress_photos.image"},
           "date":{$first:"$user_progress_photos.date"},
+          "isDeleted":{$first:"$user_progress_photos.isDeleted"},
           "userId":{$first:"$user_progress_photos.userId"},
           // month:"$month",
+        }
+      },
+      {
+        $match:{
+          isDeleted:0
         }
       },
       limit,
