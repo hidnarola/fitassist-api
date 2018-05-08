@@ -232,7 +232,10 @@ router.delete("/:request_id", async (req, res) => {
   logger.trace("Delete friend API - Id = ", req.params.request_id);
   let friend_data = await friend_helper.reject_friend({
     _id: req.params.request_id,
-    userId: authUserId
+    $or: [
+      { userId: authUserId },
+      { friendId: authUserId }
+    ]
   });
 
   if (friend_data.status === 0) {

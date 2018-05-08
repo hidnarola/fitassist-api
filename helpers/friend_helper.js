@@ -321,9 +321,10 @@ friend_helper.reject_friend = async id => {
   try {
     let friend = await Friends.remove(id);
 
-    if (!friend && friend.n === 0) {
+    if (friend && friend.n === 0) {
       return { status: 2, message: "Friend request not found" };
     } else {
+      console.log("'count'",friend);
       return {
         status: 1,
         message: "Friend request rejected"
