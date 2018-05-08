@@ -7311,7 +7311,7 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/user/friend",
+    "url": "/user/friend/:request_id",
     "title": "Approve request",
     "name": "Approve_request",
     "group": "User_Friends",

@@ -187,7 +187,7 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /user/friend  Approve request
+ * @api {put} /user/friend/:request_id  Approve request
  * @apiName Approve request
  * @apiGroup  User Friends
  * @apiHeader {String}  Content-Type application/json
@@ -205,7 +205,7 @@ router.put("/:request_id", async (req, res) => {
   };
 
   let friend_data = await friend_helper.approve_friend(
-    { _id: req.params.request_id, userId: authUserId },
+    { _id: req.params.request_id, friendId: authUserId },
     friend_obj
   );
   if (friend_data.status === 0) {
