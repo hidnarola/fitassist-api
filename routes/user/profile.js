@@ -66,7 +66,7 @@ router.get("/:username", async (req, res) => {
 			friendshipStatus = "request_sent";
 		  }
 		  else{
-			  friendshipStatus = "request_recieved";
+			  friendshipStatus = "request_received";
 		  }
 
           friend_data = await friend_helper.checkFriend({

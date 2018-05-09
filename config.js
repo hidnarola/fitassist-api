@@ -6,7 +6,7 @@ log4js.configure({
 
 module.exports = {
     //API url for search recipe
-    RECIPE_API_URL:"https://api.edamam.com/search?app_id=b55ed2b8&app_key=791594812dac61912e88ba6af2dd73b7&from=0&to=50",
+    RECIPE_API_URL:"https://api.edamam.com/search?app_id=b55ed2b8&app_key=791594812dac61912e88ba6af2dd73b7",
 
     // App config
     "node_port": 3300,

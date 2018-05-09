@@ -365,7 +365,9 @@ router.get("/auth0_user_sync", async (req, res) => {
       var response = await request(options);
       response = JSON.parse(response);
       if (response.email && typeof response.email !== "undefined") {
-        let data = await user_helper.checkvalue({ email: response.email });
+        let data = await user_helper.checkvalue({ authUserId:response.sub });
+        console.log('data',data);
+        
         if (data.count <= 0) {
           var user_obj = {
             authUserId: response.sub,

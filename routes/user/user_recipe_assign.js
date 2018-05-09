@@ -37,6 +37,8 @@ router.get("/", async (req, res) => {
       all_user_preferences.push(recipe_search_object);
     });
     var recipeUrl = config.RECIPE_API_URL;
+    var randomStrat = Math.random()
+    var toFrom = "&from=" + randomStrat + "&to=50";
     //console.log("recipeUrl:-->  ", recipeUrl);
     var recipeName = "&q=";
     var Maximum_number_of_ingredients = "&ingr=5";
@@ -50,7 +52,7 @@ router.get("/", async (req, res) => {
       healthSearch = "";
       excludedSearch = "";
       nutritionTargetsSearch = "";
-      
+
       user_preferences.dietRestrictionLabels.forEach(diet => {
         dietSearch += "&diet=" + diet;
       });
@@ -61,15 +63,24 @@ router.get("/", async (req, res) => {
         excludedSearch += "&excluded=" + excluded;
       });
       user_preferences.nutritionTargets.forEach(nutritionTarget => {
-        if(nutritionTarget.type==="nutrient")
-        {
-          nutritionTargetsSearch += "&nutrient["+ nutritionTarget.ntrCode  +"]=" + nutritionTarget.start+ "&nutrient["+ nutritionTarget.ntrCode  +"]=" + nutritionTarget.end;        
-        }
-        else{          
-          nutritionTargetsSearch += "&calories="+ nutritionTarget.start +"-"+nutritionTarget.end;
+        if (nutritionTarget.type === "nutrient") {
+          nutritionTargetsSearch +=
+            "&nutrient[" +
+            nutritionTarget.ntrCode +
+            "]=" +
+            nutritionTarget.start +
+            "&nutrient[" +
+            nutritionTarget.ntrCode +
+            "]=" +
+            nutritionTarget.end;
+        } else {
+          nutritionTargetsSearch +=
+            "&calories=" + nutritionTarget.start + "-" + nutritionTarget.end;
         }
       });
-      console.log('------------------------------------------------------------------------------------------------------------------------------------------------------------');
+      console.log(
+        "------------------------------------------------------------------------------------------------------------------------------------------------------------"
+      );
       console.log(
         "URL for :->   " + user_preferences._id,
         recipeUrl +
@@ -77,11 +88,13 @@ router.get("/", async (req, res) => {
           dietSearch +
           Maximum_number_of_ingredients +
           healthSearch +
-          excludedSearch+
+          excludedSearch +
           nutritionTargetsSearch
       );
     });
-    console.log('------------------------------------------------------------------------------------------------------------------------------------------------------------');
+    console.log(
+      "------------------------------------------------------------------------------------------------------------------------------------------------------------"
+    );
 
     logger.trace(
       "All user's Nutrition Preference got successfully = ",
