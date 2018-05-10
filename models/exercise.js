@@ -36,7 +36,7 @@ var ExerciseSchema = new Schema(
       enum: ["compound", "isolation"],
       required: false
     },
-    equipments: { type: mongoose.Schema.Types.ObjectId, default: [], required: true },
+    equipments: [{ type: mongoose.Schema.Types.ObjectId, default: [], required: true }],
     difficltyLevel: {
       type: String,
       enum: ["beginner", "intermediate", "expert"],

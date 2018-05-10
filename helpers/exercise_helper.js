@@ -211,7 +211,6 @@ exercise_helper.get_exercise_id = async id => {
  * @developed by "amc"
  */
 exercise_helper.insert_exercise = async exercise_object => {
-  console.log(exercise_object);
   let exercise = new Exercise(exercise_object);
   try {
     let exercise_data = await exercise.save();

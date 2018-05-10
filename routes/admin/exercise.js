@@ -2,7 +2,7 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 var async = require("async");
-
+var mongoose = require("mongoose");
 var router = express.Router();
 
 var config = require("../../config");
@@ -135,8 +135,6 @@ router.get("/:exercise_id", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
-  console.log(req.files);
-
   var schema = {
     name: {
       notEmpty: true,
@@ -162,6 +160,29 @@ router.post("/", async (req, res) => {
 
   req.checkBody(schema);
   var errors = req.validationErrors();
+  typeData = mongoose.Types.ObjectId(req.body.type);
+  mainMuscleGroupData = mongoose.Types.ObjectId(req.body.mainMuscleGroup);
+  detailedMuscleGroupData = [];
+  equipmentsData = [];
+  otherMuscleGroupData = [];
+
+  if (req.body.otherMuscleGroup) {
+
+    JSON.parse(req.body.otherMuscleGroup).forEach(element => {
+      otherMuscleGroupData.push(mongoose.Types.ObjectId(element));
+    });
+  }
+  if (req.body.detailedMuscleGroup) {
+    JSON.parse(req.body.detailedMuscleGroup).forEach(element => {
+      detailedMuscleGroupData.push(mongoose.Types.ObjectId(element));
+    });
+  }
+  if (req.body.equipments) {
+    JSON.parse(req.body.equipments).forEach(element => {
+      equipmentsData.push(mongoose.Types.ObjectId(element));
+    });
+  }
+  console.log("equipmentsData",equipmentsData);
 
   if (!errors) {
     //console.log("Data = ",req.body);
@@ -169,16 +190,18 @@ router.post("/", async (req, res) => {
     var exercise_obj = {
       name: req.body.name,
       description: req.body.description,
-      mainMuscleGroup: req.body.mainMuscleGroup,
-      otherMuscleGroup: req.body.otherMuscleGroup ? JSON.parse(req.body.otherMuscleGroup) : null,
-      detailedMuscleGroup:  req.body.detailedMuscleGroup ? JSON.parse(req.body.detailedMuscleGroup) : null,
-      type: req.body.type,
+      mainMuscleGroup: mainMuscleGroupData,
+      otherMuscleGroup: otherMuscleGroupData ? otherMuscleGroupData : [],
+      detailedMuscleGroup: detailedMuscleGroupData
+        ? detailedMuscleGroupData
+        : [],
+      type: typeData,
       mechanics: req.body.mechanics,
-      equipments: req.body.equipments ? JSON.parse(req.body.equipments) : null,
+      equipments: equipmentsData ? equipmentsData : [],
       difficltyLevel: req.body.difficltyLevel,
-      steps: req.body.steps ? JSON.parse(req.body.steps) : null,
-      tips: req.body.tips ? JSON.parse(req.body.tips) : null,
-      measures: req.body.measures
+      steps: req.body.steps ? JSON.parse(req.body.steps) : [],
+      tips: req.body.tips ? JSON.parse(req.body.tips) : [],
+      measures: req.body.measures ? req.body.measures : "beginner"
     };
 
     console.log(exercise_obj);
@@ -250,6 +273,7 @@ router.post("/", async (req, res) => {
       async (err, file_path_array) => {
         //End image upload
         exercise_obj.images = file_path_array;
+        console.log("exercise:", exercise_obj);
         let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
         if (exercise_data.status === 0) {
           logger.error("Error while inserting exercise data = ", exercise_data);
@@ -323,8 +347,12 @@ router.put("/:exercise_id", async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       mainMuscleGroup: req.body.mainMuscleGroup,
-      otherMuscleGroup: req.body.otherMuscleGroup ? JSON.parse(req.body.otherMuscleGroup) : null,
-      detailedMuscleGroup:  req.body.detailedMuscleGroup ? JSON.parse(req.body.detailedMuscleGroup) : null,
+      otherMuscleGroup: req.body.otherMuscleGroup
+        ? JSON.parse(req.body.otherMuscleGroup)
+        : null,
+      detailedMuscleGroup: req.body.detailedMuscleGroup
+        ? JSON.parse(req.body.detailedMuscleGroup)
+        : null,
       type: req.body.type,
       mechanics: req.body.mechanics,
       equipments: req.body.equipments ? JSON.parse(req.body.equipments) : null,

@@ -6,6 +6,8 @@ var constant = require("../../constant");
 var logger = config.logger;
 var jwtDecode = require("jwt-decode");
 var request = require("request-promise");
+var async = require("async");
+
 
 var nutrition_preferences_helper = require("../../helpers/nutrition_preferences_helper");
 
@@ -37,7 +39,7 @@ router.get("/", async (req, res) => {
       all_user_preferences.push(recipe_search_object);
     });
     var recipeUrl = config.RECIPE_API_URL;
-    var randomStrat = Math.random()
+    var randomStrat = Math.floor(Math.random() * 100 + 1);
     var toFrom = "&from=" + randomStrat + "&to=50";
     //console.log("recipeUrl:-->  ", recipeUrl);
     var recipeName = "&q=";
@@ -47,6 +49,8 @@ router.get("/", async (req, res) => {
     var healthSearch = "";
     var excludedSearch = "";
 
+    var response;
+    var options;
     all_user_preferences.forEach(user_preferences => {
       dietSearch = "";
       healthSearch = "";
@@ -74,28 +78,34 @@ router.get("/", async (req, res) => {
             "]=" +
             nutritionTarget.end;
         } else {
-          nutritionTargetsSearch +=
-            "&calories=" + nutritionTarget.start + "-" + nutritionTarget.end;
+          if (nutritionTarget.start && nutritionTarget.end) {
+            nutritionTargetsSearch +=
+              "&calories=" + nutritionTarget.start + "-" + nutritionTarget.end;
+          }
         }
       });
-      console.log(
-        "------------------------------------------------------------------------------------------------------------------------------------------------------------"
-      );
-      console.log(
-        "URL for :->   " + user_preferences._id,
-        recipeUrl +
-          recipeName +
-          dietSearch +
-          Maximum_number_of_ingredients +
-          healthSearch +
-          excludedSearch +
-          nutritionTargetsSearch
-      );
-    });
-    console.log(
-      "------------------------------------------------------------------------------------------------------------------------------------------------------------"
-    );
 
+      // options = {
+      //   url: recipeUrl +
+      //   recipeName +
+      //   dietSearch +
+      //   Maximum_number_of_ingredients +
+      //   healthSearch +
+      //   excludedSearch +
+      //   nutritionTargetsSearch,
+      //   headers: {
+      //     authorization: req.headers["x-access-token"]
+      //   }
+      // };
+  
+      // response = await request(options);
+      // response = JSON.parse(response);
+      // console.log(response);
+     
+    });
+    
+
+    
     logger.trace(
       "All user's Nutrition Preference got successfully = ",
       resp_data

@@ -17,7 +17,6 @@ var nutritionTargetsSchema = new Schema({
   start: { type: Number, default: null },
   end: { type: Number, default: null },
   nutritionId: { type: mongoose.Schema.Types.ObjectId, ref: "nutritions", required: true },
-
 });
 
 var NutritionPreferenceSchema = new Schema(
