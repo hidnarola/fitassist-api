@@ -179,7 +179,7 @@ test_exercise_helper.get_filtered_records = async filter_obj => {
         filtered_total_pages: Math.ceil(
           searched_record_count.length / filter_obj.pageSize
         ),
-        filtered_badge_tasks: filtered_data
+        filtered_test_exercises: filtered_data
       };
     } else {
       return { status: 2, message: "No filtered data available" };
