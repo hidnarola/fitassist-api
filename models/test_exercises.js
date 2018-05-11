@@ -18,17 +18,15 @@ var TestExerciesSchema = new Schema(
       required: true
     },
     description: { type: String, default: null },
-    image: { type: String, default: null },
     instructions: { type: String, default: null },
     format: {
       type: String,
-      enum: ["max_rep", "multiselect", "text_field", "a_or_b"],
+      enum: ["max_rep", "multiselect", "a_or_b"],
       required: true
     },
-    max_rep: { type: Array, default: [] },
-    multiselect: { type: Array, default: [] },
-    text_field: { type: Array, default: [] },
-    a_or_b: { type: Array, default: [] },
+    max_rep: [],
+    multiselect: [],
+    a_or_b: [],
     status: { type: Number, default: 1 },
     isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },

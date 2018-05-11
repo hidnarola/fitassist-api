@@ -69,7 +69,18 @@ var common_helper = require("../../helpers/common_helper");
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
  * @apiParam {Number} page page number
- * @apiSuccess (Success 200) {JSON} filtered_badge_tasks filtered details
+ * @apiSuccess (Success 200) {JSON} filtered_test_exercises filtered details
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *  "status": 1,
+ *  "message": "filtered data is found",
+ *  "count": 2,
+ *  "filtered_total_pages": 1,
+ *  "filtered_test_exercises": 
+ *  [
+ *    object array of data
+ *  ]
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/filter", async (req, res) => {
@@ -115,9 +126,10 @@ router.get("/", async (req, res) => {
 router.get("/:test_exercise_id", async (req, res) => {
   test_exercise_id = req.params.test_exercise_id;
   logger.trace("Get all test exercise API called");
-  var resp_data = await test_exercise_helper.get_test_exercise_id(
-    test_exercise_id
-  );
+  var resp_data = await test_exercise_helper.get_test_exercise_id({
+    _id: test_exercise_id,
+    isDeleted: 0
+  });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching test exercise = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -139,10 +151,9 @@ router.get("/:test_exercise_id", async (req, res) => {
  * @apiParam {String} [description] description of test_exercise
  * @apiParam {File} image image of test_exercise
  * @apiParam {String} instructions instructions of test_exercise
- * @apiParam {Enum} format format of test_exercise<code>Enum:["max_rep", "multiselect", "text_field", "a_or_b"]</code>
+ * @apiParam {Enum} format format of test_exercise<code>Enum:["max_rep", "multiselect", "a_or_b"]</code>
  * @apiParam {Object[]} [max_rep] max_rep of test_exercise
  * @apiParam {Object[]} [multiselect] multiselect of test_exercise
- * @apiParam {Object} [text_field] text_field of test_exercise
  * @apiParam {Object[]} [a_or_b] a_or_b of test_exercise
  * @apiSuccess (Success 200) {JSON} test_exercise added test_exercise detail
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -179,9 +190,8 @@ router.post("/", async (req, res) => {
     format: {
       notEmpty: true,
       isIn: {
-        options: [["max_rep", "multiselect", "text_field", "a_or_b"]],
-        errorMessage:
-          "format must be from max_rep, multiselect, text_field or a_or_b"
+        options: [["max_rep", "multiselect", "a_or_b"]],
+        errorMessage: "format must be from max_rep, multiselect or a_or_b"
       },
       errorMessage: "format is required"
     }
@@ -197,17 +207,12 @@ router.post("/", async (req, res) => {
       instructions: req.body.instructions,
       format: req.body.format
     };
+
     if (req.body.description) {
       test_exercise_obj.description = req.body.description;
     }
-    if (req.body.max_rep) {
-      test_exercise_obj.max_rep = JSON.parse(req.body.max_rep);
-    }
-    if (req.body.text_field) {
-      test_exercise_obj.text_field = JSON.parse(req.body.text_field);
-    }
 
-    if (req.body.format == "max_rep" || req.body.format == "text_field") {
+    if (req.body.format == "max_rep") {
       if (req.body.max_rep) {
         test_exercise_obj.max_rep = JSON.parse(req.body.max_rep);
       }
@@ -216,6 +221,7 @@ router.post("/", async (req, res) => {
       }
       // console.log(test_exercise_obj);
       // return;
+
       let test_exercise_data = await test_exercise_helper.insert_test_exercise(
         test_exercise_obj
       );
@@ -229,7 +235,6 @@ router.post("/", async (req, res) => {
         return res.status(config.OK_STATUS).json(test_exercise_data);
       }
     } else {
-      return res.send("else");
       async.waterfall(
         [
           function(callback) {
@@ -238,7 +243,7 @@ router.post("/", async (req, res) => {
               var file_path_array = [];
               // var files = req.files['images'];
               var files = [].concat(req.files.images);
-              var dir = "./uploads/exercise";
+              var dir = "./uploads/test_exercise";
               var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
               // assuming openFiles is an array of file names
@@ -251,7 +256,8 @@ router.post("/", async (req, res) => {
                       fs.mkdirSync(dir);
                     }
                     extention = path.extname(file.name);
-                    filename = "exercise_" + new Date().getTime() + extention;
+                    filename =
+                      "test_exercise_" + new Date().getTime() + extention;
                     file.mv(dir + "/" + filename, function(err) {
                       if (err) {
                         logger.error("There was an issue in uploading image");
@@ -296,18 +302,34 @@ router.post("/", async (req, res) => {
         ],
         async (err, file_path_array) => {
           //End image upload
-          exercise_obj.images = file_path_array;
-          let exercise_data = await exercise_helper.insert_exercise(
-            exercise_obj
+          var data = [];
+          var obj = {};
+
+          var titles = JSON.parse(req.body.title);
+          for (let i = 0; i < titles.length; i++) {
+            obj = {
+              title: titles[i],
+              image: file_path_array[i]
+            };
+            data.push(obj);
+          }
+          if (req.body.format && req.body.format == "multiselect") {
+            test_exercise_obj.multiselect = data;
+          }
+          if (req.body.format && req.body.format == "a_or_b") {
+            test_exercise_obj.a_or_b = data;
+          }
+          let test_exercise_data = await test_exercise_helper.insert_test_exercise(
+            test_exercise_obj
           );
-          if (exercise_data.status === 0) {
+          if (test_exercise_data.status === 0) {
             logger.error(
-              "Error while inserting exercise data = ",
-              exercise_data
+              "Error while inserting test exercise  data = ",
+              test_exercise_data
             );
-            return res.status(config.BAD_REQUEST).json({ exercise_data });
+            return res.status(config.BAD_REQUEST).json(test_exercise_data);
           } else {
-            return res.status(config.OK_STATUS).json(exercise_data);
+            return res.status(config.OK_STATUS).json(test_exercise_data);
           }
         }
       );
@@ -330,29 +352,50 @@ router.post("/", async (req, res) => {
  * @apiParam {String} [description] description of test_exercise
  * @apiParam {File} image image of test_exercise
  * @apiParam {String} instructions instructions of test_exercise
- * @apiParam {Enum} format format of test_exercise<code>Enum:["max_rep", "multiselect", "text_field", "a_or_b"]</code>
+ * @apiParam {Enum} format format of test_exercise<code>Enum:["max_rep", "multiselect", "a_or_b"]</code>
  * @apiParam {Object[]} [max_rep] max_rep of test_exercise
  * @apiParam {Object[]} [multiselect] multiselect of test_exercise
- * @apiParam {Object} [text_field] text_field of test_exercise
  * @apiParam {Object[]} [a_or_b] a_or_b of test_exercise
- * @apiSuccess (Success 200) {JSON} test_exercise added test_exercise detail
+ * @apiParam {Number[]} [deleteIndex] deleteIndex of test_exercise's image records
+ * @apiSuccess (Success 200) {JSON} test_exercise updated test_exercise detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:test_exercise_id", async (req, res) => {
   test_exercise_id = req.params.test_exercise_id;
-  console.log(test_exercise_id);
   var schema = {
     name: {
       notEmpty: true,
-      errorMessage: "Name of Task is required"
+      errorMessage: "Name of test exercies is required"
     },
-    unit: {
+    category: {
       notEmpty: true,
       isIn: {
-        options: [["kgs", "kms"]],
-        errorMessage: "Unit must be from kgs or kms"
+        options: [["strength", "flexibility", "posture", "cardio"]],
+        errorMessage:
+          "Category must be from strength, flexibility, posture or cardio"
       },
-      errorMessage: "Unit is required"
+      errorMessage: "category of test exercies is required"
+    },
+    subCategory: {
+      notEmpty: true,
+      isIn: {
+        options: [["upper_body", "side", "lower_body", "cardio"]],
+        errorMessage:
+          "Sub category must be from upper_body, side, lower_body or cardio"
+      },
+      errorMessage: "subCategory of test exercies is required"
+    },
+    instructions: {
+      notEmpty: true,
+      errorMessage: "instructions of test exercies is required"
+    },
+    format: {
+      notEmpty: true,
+      isIn: {
+        options: [["max_rep", "multiselect", "a_or_b"]],
+        errorMessage: "format must be from max_rep, multiselect or a_or_b"
+      },
+      errorMessage: "format is required"
     }
   };
   req.checkBody(schema);
@@ -361,23 +404,172 @@ router.put("/:test_exercise_id", async (req, res) => {
   if (!errors) {
     var test_exercise_obj = {
       name: req.body.name,
-      unit: req.body.unit,
-      description: req.body.description ? req.body.description : null,
-      status: req.body.status
+      category: req.body.category,
+      subCategory: req.body.subCategory,
+      instructions: req.body.instructions,
+      format: req.body.format
     };
+    if (req.body.description) {
+      test_exercise_obj.description = req.body.description;
+    }
 
-    let test_exercise_data = await test_exercise_helper.update_badge_task_by_id(
-      test_exercise_id,
-      test_exercise_obj
-    );
-    if (test_exercise_data.status === 0) {
-      logger.error(
-        "Error while updating test_exercises data = ",
-        test_exercise_data
+    if (req.body.format == "max_rep") {
+      if (req.body.max_rep) {
+        test_exercise_obj.max_rep = JSON.parse(req.body.max_rep);
+      }
+      if (req.body.title) {
+        test_exercise_obj.title = JSON.parse(req.body.title);
+      }
+      // console.log(test_exercise_obj);
+      // return;
+
+      let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id(
+        test_exercise_id,
+        test_exercise_obj
       );
-      return res.status(config.BAD_REQUEST).json(test_exercise_data);
+      if (test_exercise_data.status === 0) {
+        logger.error(
+          "Error while inserting test exercise  data = ",
+          test_exercise_data
+        );
+        return res.status(config.BAD_REQUEST).json(test_exercise_data);
+      } else {
+        return res.status(config.OK_STATUS).json(test_exercise_data);
+      }
     } else {
-      return res.status(config.OK_STATUS).json(test_exercise_data);
+      async.waterfall(
+        [
+          function(callback) {
+            //image upload
+            if (req.files && req.files["images"]) {
+              var file_path_array = [];
+              // var files = req.files['images'];
+              var files = [].concat(req.files.images);
+              var dir = "./uploads/test_exercise";
+              var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+
+              // assuming openFiles is an array of file names
+              async.eachSeries(
+                files,
+                function(file, loop_callback) {
+                  var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+                  if (mimetype.indexOf(file.mimetype) != -1) {
+                    if (!fs.existsSync(dir)) {
+                      fs.mkdirSync(dir);
+                    }
+                    extention = path.extname(file.name);
+                    filename =
+                      "test_exercise_" + new Date().getTime() + extention;
+                    file.mv(dir + "/" + filename, function(err) {
+                      if (err) {
+                        logger.error("There was an issue in uploading image");
+                        loop_callback({
+                          status: config.MEDIA_ERROR_STATUS,
+                          err: "There was an issue in uploading image"
+                        });
+                      } else {
+                        logger.trace(
+                          "image has been uploaded. Image name = ",
+                          filename
+                        );
+                        location = "uploads/exercise/" + filename;
+                        file_path_array.push(location);
+                        loop_callback();
+                      }
+                    });
+                  } else {
+                    logger.error("Image format is invalid");
+                    loop_callback({
+                      status: config.VALIDATION_FAILURE_STATUS,
+                      err: "Image format is invalid"
+                    });
+                  }
+                },
+                function(err) {
+                  // if any of the file processing produced an error, err would equal that error
+                  if (err) {
+                    res.status(err.status).json(err);
+                  } else {
+                    callback(null, file_path_array);
+                  }
+                }
+              );
+            } else {
+              logger.info(
+                "Image not available to upload. Executing next instruction"
+              );
+              callback(null, []);
+            }
+          }
+        ],
+        async (err, file_path_array) => {
+          //End image upload
+          var data = [];
+          var obj = {};
+          var oldData = {};
+
+          var resp_data = await test_exercise_helper.get_test_exercise_id({
+            _id: test_exercise_id,
+            isDeleted: 0
+          });
+          if (resp_data.status == 1) {
+            if (req.body.format == "multiselect") {
+              oldData = resp_data.test_exercise.multiselect;
+            } else {
+              oldData = resp_data.test_exercise.a_or_b;
+            }
+
+            if (req.body.deleteIndex) {
+              var deleteIndex = JSON.parse(req.body.deleteIndex);
+
+              oldData.forEach(function(value, i) {
+                if (deleteIndex.indexOf(i) >= 0) {
+                  console.log("Found----------->", value);
+                } else {
+                  console.log("Not found");
+                }
+              });
+            }
+
+            // console.log("afyer oldata:",oldData);
+            var titles = JSON.parse(req.body.title);
+
+            for (let i = 0; i < titles.length; i++) {
+              obj = {
+                title: titles[i],
+                image: file_path_array[i]
+              };
+              oldData.push(obj);
+            }
+            console.log("-----------------------------------");
+            oldData.forEach(element => {
+              console.log("Element -:> ", element);
+            });
+            // console.log(oldData)
+            return;
+
+            if (req.body.format && req.body.format == "multiselect") {
+              test_exercise_obj.multiselect = oldData;
+            }
+            if (req.body.format && req.body.format == "a_or_b") {
+              test_exercise_obj.a_or_b = oldData;
+            }
+            let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id(
+              test_exercise_id,
+              test_exercise_obj
+            );
+            if (test_exercise_data.status === 0) {
+              logger.error(
+                "Error while updating test exercise  data = ",
+                test_exercise_data
+              );
+              return res.status(config.BAD_REQUEST).json(test_exercise_data);
+            } else {
+              return res.status(config.OK_STATUS).json(test_exercise_data);
+            }
+          }
+        }
+      );
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -396,7 +588,7 @@ router.put("/:test_exercise_id", async (req, res) => {
  */
 router.delete("/:test_exercise_id", async (req, res) => {
   logger.trace("Delete test_exercises API - Id = ", req.body.test_exercise_id);
-  let test_exercise_data = await test_exercise_helper.delete_badge_task_by_id(
+  let test_exercise_data = await test_exercise_helper.delete_test_exercise_by_id(
     req.params.test_exercise_id
   );
 

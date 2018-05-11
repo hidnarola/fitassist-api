@@ -6755,7 +6755,7 @@ define({ "api": [
             "type": "Enum",
             "optional": false,
             "field": "format",
-            "description": "<p>format of test_exercise<code>Enum:[&quot;max_rep&quot;, &quot;multiselect&quot;, &quot;text_field&quot;, &quot;a_or_b&quot;]</code></p>"
+            "description": "<p>format of test_exercise<code>Enum:[&quot;max_rep&quot;, &quot;multiselect&quot;, &quot;a_or_b&quot;]</code></p>"
           },
           {
             "group": "Parameter",
@@ -6770,13 +6770,6 @@ define({ "api": [
             "optional": true,
             "field": "multiselect",
             "description": "<p>multiselect of test_exercise</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": true,
-            "field": "text_field",
-            "description": "<p>text_field of test_exercise</p>"
           },
           {
             "group": "Parameter",
@@ -6796,7 +6789,7 @@ define({ "api": [
             "type": "JSON",
             "optional": false,
             "field": "test_exercise",
-            "description": "<p>added test_exercises detail</p>"
+            "description": "<p>added test_exercise detail</p>"
           }
         ]
       }
@@ -6942,11 +6935,18 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "filtered_badge_tasks",
+            "field": "filtered_test_exercises",
             "description": "<p>filtered details</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n \"status\": 1,\n \"message\": \"filtered data is found\",\n \"count\": 2,\n \"filtered_total_pages\": 1,\n \"filtered_test_exercises\": \n [\n   object array of data\n ]",
+          "type": "json"
+        }
+      ]
     },
     "error": {
       "fields": {
@@ -7065,13 +7065,20 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/admin/test_exercise/:test_exercise_id",
+    "url": "/admin/test_exercise",
     "title": "Update",
     "name": "Update",
     "group": "Test_Exercises",
     "header": {
       "fields": {
         "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
           {
             "group": "Header",
             "type": "String",
@@ -7090,21 +7097,77 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of test_exercises</p>"
+            "description": "<p>Name of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "category",
+            "description": "<p>category of test_exercise<code>Enum:[&quot;strength&quot;, &quot;flexibility&quot;, &quot;posture&quot;, &quot;cardio&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "subCategory",
+            "description": "<p>subCategory of test_exercise<code>Enum:[&quot;upper_body&quot;, &quot;side&quot;, &quot;lower_body&quot;, &quot;cardio&quot;]</code></p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": true,
             "field": "description",
-            "description": "<p>description of test_exercises</p>"
+            "description": "<p>description of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": false,
+            "field": "image",
+            "description": "<p>image of test_exercise</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "unit",
-            "description": "<p>Unit of task activity | <code>[&quot;kms&quot;,&quot;kgs&quot;]</code></p>"
+            "field": "instructions",
+            "description": "<p>instructions of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "format",
+            "description": "<p>format of test_exercise<code>Enum:[&quot;max_rep&quot;, &quot;multiselect&quot;, &quot;a_or_b&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": true,
+            "field": "max_rep",
+            "description": "<p>max_rep of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": true,
+            "field": "multiselect",
+            "description": "<p>multiselect of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": true,
+            "field": "a_or_b",
+            "description": "<p>a_or_b of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number[]",
+            "optional": true,
+            "field": "deleteIndex",
+            "description": "<p>deleteIndex of test_exercise's image records</p>"
           }
         ]
       }
@@ -7114,10 +7177,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Array",
+            "type": "JSON",
             "optional": false,
-            "field": "test_exercises",
-            "description": "<p>Array of test_exercises document</p>"
+            "field": "test_exercise",
+            "description": "<p>updated test_exercise detail</p>"
           }
         ]
       }
