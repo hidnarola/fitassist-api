@@ -305,13 +305,16 @@ router.post("/", async (req, res) => {
           var data = [];
           var obj = {};
 
-          var titles = JSON.parse(req.body.title);
-          for (let i = 0; i < titles.length; i++) {
-            obj = {
-              title: titles[i],
-              image: file_path_array[i]
-            };
-            data.push(obj);
+          if(req.body.title && req.body.title!=null){
+            var titles = JSON.parse(req.body.title);
+            for (let i = 0; i < titles.length; i++) {
+              obj = {
+                title: titles[i],
+                image: file_path_array[i]
+              };
+              data.push(obj);
+            }
+
           }
           if (req.body.format && req.body.format == "multiselect") {
             test_exercise_obj.multiselect = data;
@@ -518,41 +521,46 @@ router.put("/:test_exercise_id", async (req, res) => {
             } else {
               oldData = resp_data.test_exercise.a_or_b;
             }
-
-            if (req.body.deleteIndex) {
+            
+            if (req.body.deleteIndex && req.body.deleteIndex!=null) {
+              
               var deleteIndex = JSON.parse(req.body.deleteIndex);
 
+              console.log('deleteIndex',deleteIndex);
+              
               oldData.forEach(function(value, i) {
+                // console.log('value',value);
+                // console.log('index',i);
+                
+                
                 if (deleteIndex.indexOf(i) >= 0) {
-                  console.log("Found----------->", value);
+                  console.log("DELETE------------------------------------->\n", i,value);
                 } else {
-                  console.log("Not found");
+                  //console.log("Not found");
+                  data.push(value)
                 }
               });
             }
 
-            // console.log("afyer oldata:",oldData);
-            var titles = JSON.parse(req.body.title);
+            if(req.body.title)
+            {
+              var titles = JSON.parse(req.body.title);
 
-            for (let i = 0; i < titles.length; i++) {
-              obj = {
-                title: titles[i],
-                image: file_path_array[i]
-              };
-              oldData.push(obj);
+              for (let i = 0; i < titles.length; i++) {
+                obj = {
+                  title: titles[i],
+                  image: file_path_array[i]
+                };
+                data.push(obj);
+              }
+               
             }
-            console.log("-----------------------------------");
-            oldData.forEach(element => {
-              console.log("Element -:> ", element);
-            });
-            // console.log(oldData)
-            return;
 
             if (req.body.format && req.body.format == "multiselect") {
-              test_exercise_obj.multiselect = oldData;
+              test_exercise_obj.multiselect = data;
             }
             if (req.body.format && req.body.format == "a_or_b") {
-              test_exercise_obj.a_or_b = oldData;
+              test_exercise_obj.a_or_b = data;
             }
             let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id(
               test_exercise_id,
