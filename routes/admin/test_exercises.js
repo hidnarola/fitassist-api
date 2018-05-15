@@ -184,8 +184,7 @@ router.post("/", async (req, res) => {
           "Sub category must be from upper_body, side, lower_body or cardio"
       },
       errorMessage: "subCategory of test exercies is required"
-    },
-    
+    },    
     format: {
       notEmpty: true,
       isIn: {
@@ -196,6 +195,7 @@ router.post("/", async (req, res) => {
       errorMessage: "format is required"
     }
   };
+  
   req.checkBody(schema);
   var errors = req.validationErrors();
 
@@ -222,9 +222,7 @@ router.post("/", async (req, res) => {
       if (req.body.title) {
         test_exercise_obj.title = JSON.parse(req.body.title);
       }
-      // console.log(test_exercise_obj);
-      // return;
-
+     
       let test_exercise_data = await test_exercise_helper.insert_test_exercise(
         test_exercise_obj
       );
@@ -258,25 +256,16 @@ router.post("/", async (req, res) => {
                   if (err) {
                     logger.error(
                       "There was an issue in uploading feature Image"
-                    );
-                    // res.send({
-                    //   status: config.MEDIA_ERROR_STATUS,
-                    //   err: "There was an issue in uploading image"
-                    // });
+                    );                  
                   } else {
                     logger.trace(
                       "feature Image has been uploaded. Image name = ",
                       filename
-                    );
-                    //return res.send(200, "null");
+                    );                    
                   }
                 });
               } else {
-                logger.error("feature Image format is invalid");
-                // res.send({
-                //   status: config.VALIDATION_FAILURE_STATUS,
-                //   err: "Image format is invalid"
-                // });
+                logger.error("feature Image format is invalid");                
               }
             }
             if (filename) {
@@ -340,7 +329,7 @@ router.post("/", async (req, res) => {
                   }
                 }
               );
-            } else {
+            } else {  
               logger.info(
                 "Image not available to upload. Executing next instruction"
               );
@@ -413,6 +402,9 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:test_exercise_id", async (req, res) => {
+
+  console.log('Riddhu',req.files);
+
   test_exercise_id = req.params.test_exercise_id;
   var schema = {
     name: {

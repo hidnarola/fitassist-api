@@ -6,7 +6,8 @@ var Schema = mongoose.Schema;
 
 var TestExerciesImageSchema = new Schema(
   {
-    image: { type: String, required: true },
+    title: { type: String, required: true },
+    image: { type: String }
   },
   { versionKey: false }
 );
@@ -28,12 +29,12 @@ var TestExerciesSchema = new Schema(
     instructions: { type: String, default: null },
     format: {
       type: String,
-      enum: ["max_rep", "multiselect", "a_or_b","text_field"],
+      enum: ["max_rep", "multiselect", "a_or_b", "text_field"],
       required: true
     },
     max_rep: [],
     multiselect: [TestExerciesImageSchema],
-    a_or_b: [TestExerciesImageSchema],
+    a_or_b: [],
     status: { type: Number, default: 1 },
     isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },

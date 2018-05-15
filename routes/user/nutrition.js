@@ -10,9 +10,31 @@ var moment = require("moment");
 user_recipe_helper = require("../../helpers/user_recipe_helper");
 
 /**
+ * @api {get} /user/nutrition/recipe/:recipe_id Get recipe by ID
+ * @apiName Get by recipe ID
+ * @apiGroup User recipes
+ * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiSuccess (Success 200) {Array} user_recipe Array of user_recipes 's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/recipe/:recipe_id", async (req, res) => {
+  console.log('recipe',req.params.recipe_id);
+  
+  logger.trace("Get recipe API called");
+  var resp_data = await user_recipe_helper.get_user_recipe_by_recipe_id({_id:req.params.recipe_id});
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching user recipe = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("user recipe got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
  * @api {post} /user/nutrition/todays_meal Get User recipe by Date
- * @apiName Get User Measurement by Date
- * @apiGroup Get User recipe by Date
+ * @apiName Get User recipes by Date
+ * @apiGroup User recipes
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {Date} date date of recipe
@@ -43,7 +65,8 @@ router.post("/todays_meal", async (req, res) => {
 
     startdate.format();
 
-    var enddate = moment(startdate)
+    var enddate = moment(date)
+      .utcOffset(0)
       .add(23, "hours")
       .add(59, "minutes");
     enddate.format();

@@ -24,71 +24,56 @@ var common_helper = require("../../helpers/common_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/get_by_id_logdate", async (req, res) => {
-    var decoded = jwtDecode(req.headers["authorization"]);
-    var authUserId = decoded.sub;
-    logDate = req.body.logDate;
-    console.log("Logdate: ", logDate);
-    var schema = {
-        logDate: {
-            notEmpty: true,
-            errorMessage: "Log Date is required"
-        }
-    };
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-    var measurement_obj = {
-        status: 1,
-        message: "",
-        measurement: {}
-    };
-    if (!errors) {
-        // var startdate = moment(logDate).utcOffset(0);
-        var startdate = moment(logDate);
-        startdate.set({hour: 0, minute: 0, second: 0, millisecond: 0});
-        startdate.toISOString();
-        startdate.format();
-
-        var enddate = moment(logDate);
-        enddate.set({hour: 23, minute: 59, second: 59, millisecond: 99});
-        enddate.toISOString();
-        enddate.format();
-
-        logger.trace("Get measurement by authUserId and logDate API called");
-        var resp_data = await measurement_helper.get_body_measurement_id({
-            userId: authUserId,
-            logDate: {
-                $gte: startdate,
-                $lte: enddate
-            }
-        });
-        if (resp_data.status == 1 || resp_data.status == 2) {
-            measurement_obj.status = resp_data.status;
-            measurement_obj.message = resp_data.message;
-            if (resp_data.measurement) {
-                measurement_obj.measurement = resp_data.measurement;
-            }
-
-            // var check = await moment(req.body.logDate);
-            // var dateMonth = parseInt(check.format("M"));
-
-            // var log_data = await measurement_helper.get_logdata_by_userid([
-            //   { $match: { userId: authUserId } },
-            //   { $project: { month: { $month: "$logDate" }, date: "$logDate" } },
-            //   { $match: { month: dateMonth } }
-            // ]);
-
-            // if (log_data.status != 0) {
-            //   measurement_obj.measurement_logs.logdates = log_data.logdata;
-            // } else {
-            //   measurement_obj.measurement_logs.logdates = log_data.message;
-            // }
-
-            res.status(config.OK_STATUS).json(measurement_obj);
-        }
-    } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.BAD_REQUEST).json({message: errors});
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  logDate = req.body.logDate;
+  console.log("Logdate: ", logDate);
+  var schema = {
+    logDate: {
+      notEmpty: true,
+      errorMessage: "Log Date is required"
     }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  var measurement_obj = {
+    status: 1,
+    message: "",
+    measurement: {}
+  };
+  if (!errors) {
+    var startdate = moment(logDate).utcOffset(0);
+    startdate.toISOString();
+    startdate.format();
+
+    var enddate = moment(logDate)
+      .utcOffset(0)
+      .add(23, "hours")
+      .add(59, "minutes");
+    enddate.toISOString();
+    enddate.format();
+
+    logger.trace("Get measurement by authUserId and logDate API called");
+    var resp_data = await measurement_helper.get_body_measurement_id({
+      userId: authUserId,
+      logDate: {
+        $gte: startdate,
+        $lte: enddate
+      }
+    });
+    if (resp_data.status == 1 || resp_data.status == 2) {
+      measurement_obj.status = resp_data.status;
+      measurement_obj.message = resp_data.message;
+      if (resp_data.measurement) {
+        measurement_obj.measurement = resp_data.measurement;
+      }
+
+      res.status(config.OK_STATUS).json(measurement_obj);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.BAD_REQUEST).json({ message: errors });
+  }
 });
 
 /**
@@ -117,119 +102,121 @@ router.post("/get_by_id_logdate", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
-    var decoded = jwtDecode(req.headers["authorization"]);
-    var authUserId = decoded.sub;
-    var logDate = req.body.logDate;
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var logDate = req.body.logDate;
 
-    var startdate = moment(logDate);
-    startdate.set({hour: 0, minute: 0, second: 0, millisecond: 0});
-    startdate.toISOString();
-    startdate.format();
+  var startdate = moment(logDate).utcOffset(0);
+  startdate.toISOString();
+  startdate.format();
 
-    var enddate = moment(logDate);
-    enddate.set({hour: 23, minute: 59, second: 59, millisecond: 99});
-    enddate.toISOString();
-    enddate.format();
-    logger.trace("Get measurement by authUserId and logDate API called");
-    var resp_data = await measurement_helper.get_body_measurement_id({
-        userId: authUserId,
-        logDate: {
-            $gte: startdate,
-            $lte: enddate
-        }
-    });
-    if (resp_data.status == 2) {
-        var schema = {
-            logDate: {
-                notEmpty: true,
-                errorMessage: "Log Date is required"
-            }
-        };
+  var enddate = moment(logDate)
+    .utcOffset(0)
+    .add(23, "hours")
+    .add(59, "minutes");
+  enddate.toISOString();
+  enddate.format();
 
-        req.checkBody(schema);
-        var errors = req.validationErrors();
-
-        if (!errors) {
-            var measurement_obj = {
-                userId: authUserId,
-                logDate: req.body.logDate ? req.body.logDate : 0,
-                neck: req.body.neck ? req.body.neck : 0,
-                shoulders: req.body.shoulders ? req.body.shoulders : 0,
-                chest: req.body.chest ? req.body.chest : 0,
-                upperArm: req.body.upperArm ? req.body.upperArm : 0,
-                waist: req.body.waist ? req.body.waist : 0,
-                forearm: req.body.forearm ? req.body.forearm : 0,
-                hips: req.body.hips ? req.body.hips : 0,
-                thigh: req.body.thigh ? req.body.thigh : 0,
-                calf: req.body.calf ? req.body.calf : 0,
-                weight: req.body.weight ? req.body.weight : 0,
-                height: req.body.height ? req.body.height : 0
-            };
-
-            let measurement_data = await measurement_helper.insert_body_measurement(
-                    measurement_obj
-                    );
-            if (measurement_data.status === 0) {
-                logger.error(
-                        "Error while inserting measurement data = ",
-                        measurement_data
-                        );
-                return res.status(config.BAD_REQUEST).json({measurement_data});
-            } else {
-                return res.status(config.OK_STATUS).json(measurement_data);
-            }
-        } else {
-            logger.error("Validation Error = ", errors);
-            res.status(config.BAD_REQUEST).json({message: errors});
-        }
-    } else if (resp_data.status == 1) {
-        var schema = {
-            logDate: {
-                notEmpty: true,
-                errorMessage: "Log Date is required"
-            }
-        };
-        req.checkBody(schema);
-        var errors = req.validationErrors();
-
-        if (!errors) {
-            var measurement_obj = {
-                userId: authUserId,
-                logDate: req.body.logDate ? req.body.logDate : 0,
-                neck: req.body.neck ? req.body.neck : 0,
-                shoulders: req.body.shoulders ? req.body.shoulders : 0,
-                chest: req.body.chest ? req.body.chest : 0,
-                upperArm: req.body.upperArm ? req.body.upperArm : 0,
-                waist: req.body.waist ? req.body.waist : 0,
-                forearm: req.body.forearm ? req.body.forearm : 0,
-                hips: req.body.hips ? req.body.hips : 0,
-                thigh: req.body.thigh ? req.body.thigh : 0,
-                calf: req.body.calf ? req.body.calf : 0,
-                weight: req.body.weight ? req.body.weight : 0,
-                height: req.body.height ? req.body.height : 0
-            };
-
-            console.log(resp_data.measurement._id);
-            let measurement_data = await measurement_helper.update_body_measurement(
-                    resp_data.measurement._id,
-                    measurement_obj
-                    );
-            if (measurement_data.status === 0) {
-                logger.error(
-                        "Error while inserting measurement data = ",
-                        measurement_data
-                        );
-                return res.status(config.BAD_REQUEST).json({measurement_data});
-            } else {
-                return res.status(config.OK_STATUS).json(measurement_data);
-            }
-        } else {
-            logger.error("Validation Error = ", errors);
-            res.status(config.BAD_REQUEST).json({message: errors});
-        }
-    } else {
-        return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  logger.trace("Get measurement by authUserId and logDate API called");
+  var resp_data = await measurement_helper.get_body_measurement_id({
+    userId: authUserId,
+    logDate: {
+      $gte: startdate,
+      $lte: enddate
     }
+  });
+  if (resp_data.status == 2) {
+    var schema = {
+      logDate: {
+        notEmpty: true,
+        errorMessage: "Log Date is required"
+      }
+    };
+
+    req.checkBody(schema);
+    var errors = req.validationErrors();
+
+    if (!errors) {
+      var measurement_obj = {
+        userId: authUserId,
+        logDate: req.body.logDate ? req.body.logDate : 0,
+        neck: req.body.neck ? req.body.neck : 0,
+        shoulders: req.body.shoulders ? req.body.shoulders : 0,
+        chest: req.body.chest ? req.body.chest : 0,
+        upperArm: req.body.upperArm ? req.body.upperArm : 0,
+        waist: req.body.waist ? req.body.waist : 0,
+        forearm: req.body.forearm ? req.body.forearm : 0,
+        hips: req.body.hips ? req.body.hips : 0,
+        thigh: req.body.thigh ? req.body.thigh : 0,
+        calf: req.body.calf ? req.body.calf : 0,
+        weight: req.body.weight ? req.body.weight : 0,
+        height: req.body.height ? req.body.height : 0
+      };
+
+      let measurement_data = await measurement_helper.insert_body_measurement(
+        measurement_obj
+      );
+      if (measurement_data.status === 0) {
+        logger.error(
+          "Error while inserting measurement data = ",
+          measurement_data
+        );
+        return res.status(config.BAD_REQUEST).json({ measurement_data });
+      } else {
+        return res.status(config.OK_STATUS).json(measurement_data);
+      }
+    } else {
+      logger.error("Validation Error = ", errors);
+      res.status(config.BAD_REQUEST).json({ message: errors });
+    }
+  } else if (resp_data.status == 1) {
+    var schema = {
+      logDate: {
+        notEmpty: true,
+        errorMessage: "Log Date is required"
+      }
+    };
+    req.checkBody(schema);
+    var errors = req.validationErrors();
+
+    if (!errors) {
+      var measurement_obj = {
+        userId: authUserId,
+        logDate: req.body.logDate ? req.body.logDate : 0,
+        neck: req.body.neck ? req.body.neck : 0,
+        shoulders: req.body.shoulders ? req.body.shoulders : 0,
+        chest: req.body.chest ? req.body.chest : 0,
+        upperArm: req.body.upperArm ? req.body.upperArm : 0,
+        waist: req.body.waist ? req.body.waist : 0,
+        forearm: req.body.forearm ? req.body.forearm : 0,
+        hips: req.body.hips ? req.body.hips : 0,
+        thigh: req.body.thigh ? req.body.thigh : 0,
+        calf: req.body.calf ? req.body.calf : 0,
+        weight: req.body.weight ? req.body.weight : 0,
+        height: req.body.height ? req.body.height : 0
+      };
+
+      console.log(resp_data.measurement._id);
+      let measurement_data = await measurement_helper.update_body_measurement(
+        resp_data.measurement._id,
+        measurement_obj
+      );
+      if (measurement_data.status === 0) {
+        logger.error(
+          "Error while inserting measurement data = ",
+          measurement_data
+        );
+        return res.status(config.BAD_REQUEST).json({ measurement_data });
+      } else {
+        return res.status(config.OK_STATUS).json(measurement_data);
+      }
+    } else {
+      logger.error("Validation Error = ", errors);
+      res.status(config.BAD_REQUEST).json({ message: errors });
+    }
+  } else {
+    return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
 });
 
 /**
@@ -246,42 +233,39 @@ router.post("/", async (req, res) => {
  */
 
 router.post("/get_log_dates_by_date", async (req, res) => {
-    var decoded = jwtDecode(req.headers["authorization"]);
-    var schema = {
-        logDate: {
-            notEmpty: true,
-            errorMessage: "log Date is required"
-        }
-    };
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-
-
-    if (!errors) {
-        var authUserId = decoded.sub;
-        var check = await moment(req.body.logDate).utc(0);
-        var startCheck = await moment(check).subtract(2, 'month');
-        var endCheck = await moment(check).add(2, 'month');
-        
-        var log_data = await measurement_helper.get_logdata_by_userid(
-                {
-                    userId: authUserId,
-                    logDate: {
-                        $gte: startCheck,
-                        $lte: endCheck
-                    }
-                }
-        );
-
-        if (log_data.status != 0) {
-            res.status(config.OK_STATUS).json(log_data);
-        } else {
-            return res.status(config.BAD_REQUEST).json({log_data});
-        }
-    } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.BAD_REQUEST).json({message: errors});
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var schema = {
+    logDate: {
+      notEmpty: true,
+      errorMessage: "log Date is required"
     }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+
+  if (!errors) {
+    var authUserId = decoded.sub;
+    var check = await moment(req.body.logDate).utc(0);
+    var startCheck = await moment(check).subtract(2, "month");
+    var endCheck = await moment(check).add(2, "month");
+
+    var log_data = await measurement_helper.get_logdata_by_userid({
+      userId: authUserId,
+      logDate: {
+        $gte: startCheck,
+        $lte: endCheck
+      }
+    });
+
+    if (log_data.status != 0) {
+      res.status(config.OK_STATUS).json(log_data);
+    } else {
+      return res.status(config.BAD_REQUEST).json({ log_data });
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.BAD_REQUEST).json({ message: errors });
+  }
 });
 
 module.exports = router;

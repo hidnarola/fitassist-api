@@ -12,7 +12,7 @@ users_recipe_helper.get_user_recipe_by_id = async (id) => {
     try {
         var user_recipe = await UsersRecipe.find(id);
         if (user_recipe && user_recipe.length>0) {
-            return { "status": 1, "message": "user's recipe details found", "user_recipes": user_recipe };
+            return { "status": 1, "message": "user's recipe details found", "todays_meal": user_recipe };
         } else {
             return { "status": 2, "message": "No user's recipe available" };
         }
@@ -21,6 +21,26 @@ users_recipe_helper.get_user_recipe_by_id = async (id) => {
     }
 }
 
+/*
+ * get_user_recipe_by_recipe_id is used to fetch all user_recipe by recipe ID
+ * 
+ * @return  status 0 - If any internal error occured while fetching user's recipe data, with error
+ *          status 1 - If user's recipe data found, with user's recipe object
+ *          status 2 - If user's recipe not found, with appropriate message
+ */
+users_recipe_helper.get_user_recipe_by_recipe_id = async (id) => {
+    try {
+        var user_recipe = await UsersRecipe.findOne(id);
+        console.log(user_recipe);
+        if (user_recipe) {
+            return { "status": 1, "message": "user's recipe details found", "user_recipe": user_recipe };
+        } else {
+            return { "status": 2, "message": "No user's recipe available" };
+        }
+    } catch (err) {
+        return { "status": 0, "message": "Error occured while finding user's recipe", "error": err }
+    }
+}
 /*
  * insert_user_recipe is used to insert into user_recipes collection
  * 
