@@ -22,7 +22,7 @@ var TestExerciesSchema = new Schema(
     instructions: { type: String, default: null },
     format: {
       type: String,
-      enum: ["max_rep", "multiselect", "a_or_b"],
+      enum: ["max_rep", "multiselect", "a_or_b","text_field"],
       required: true
     },
     max_rep: [],

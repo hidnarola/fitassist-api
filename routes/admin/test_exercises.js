@@ -192,8 +192,9 @@ router.post("/", async (req, res) => {
     format: {
       notEmpty: true,
       isIn: {
-        options: [["max_rep", "multiselect", "a_or_b"]],
-        errorMessage: "format must be from max_rep, multiselect or a_or_b"
+        options: [["max_rep", "multiselect", "a_or_b", "text_field"]],
+        errorMessage:
+          "format must be from max_rep, multiselect, text_field or a_or_b"
       },
       errorMessage: "format is required"
     }
@@ -320,7 +321,7 @@ router.post("/", async (req, res) => {
                           "image has been uploaded. Image name = ",
                           filename
                         );
-                        location = "uploads/exercise/" + filename;
+                        location = "uploads/test_exercise/" + filename;
                         file_path_array.push(location);
                         loop_callback();
                       }
