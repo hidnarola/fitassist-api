@@ -185,10 +185,7 @@ router.post("/", async (req, res) => {
       },
       errorMessage: "subCategory of test exercies is required"
     },
-    instructions: {
-      notEmpty: true,
-      errorMessage: "instructions of test exercies is required"
-    },
+    
     format: {
       notEmpty: true,
       isIn: {
@@ -440,10 +437,7 @@ router.put("/:test_exercise_id", async (req, res) => {
       },
       errorMessage: "subCategory of test exercies is required"
     },
-    instructions: {
-      notEmpty: true,
-      errorMessage: "instructions of test exercies is required"
-    },
+    
     format: {
       notEmpty: true,
       isIn: {
