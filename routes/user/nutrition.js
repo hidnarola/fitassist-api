@@ -84,8 +84,8 @@ router.post("/todays_meal", async (req, res) => {
     if (resp_data.status == 1) {
       recipe_obj.status = resp_data.status;
       recipe_obj.message = resp_data.message;
-      if (resp_data.user_recipes) {
-        recipe_obj.todays_meal = resp_data.user_recipes;
+      if (resp_data.todays_meal) {
+        recipe_obj.todays_meal = resp_data.todays_meal;
       }
       res.status(config.OK_STATUS).json(recipe_obj);
     } else {
