@@ -3741,75 +3741,6 @@
   },
   {
     "type": "post",
-    "url": "/user/nutrition",
-    "title": "Get User recipe by Date",
-    "name": "Get_User_Measurement_by_Date",
-    "group": "Get_User_recipe_by_Date",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Date",
-            "optional": false,
-            "field": "date",
-            "description": "<p>date of recipe</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "user_recipes",
-            "description": "<p>data of user_recipes document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/nutrition.js",
-    "groupTitle": "Get_User_recipe_by_Date"
-  },
-  {
-    "type": "post",
     "url": "/admin/ingredient",
     "title": "Add",
     "name": "Add",
@@ -5927,7 +5858,7 @@
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -6066,7 +5997,7 @@
     "groupTitle": "Recipes"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -9593,5 +9524,123 @@
     "version": "0.0.0",
     "filename": "routes/user/user_progress_photos.js",
     "groupTitle": "User_Progress_Photo"
+  },
+  {
+    "type": "post",
+    "url": "/user/nutrition/todays_meal",
+    "title": "Get User recipe by Date",
+    "name": "Get_User_recipes_by_Date",
+    "group": "User_recipes",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "date",
+            "description": "<p>date of recipe</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "todays_meal",
+            "description": "<p>data of user_recipes document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/nutrition.js",
+    "groupTitle": "User_recipes"
+  },
+  {
+    "type": "get",
+    "url": "/user/nutrition/recipe/:recipe_id",
+    "title": "Get recipe by ID",
+    "name": "Get_by_recipe_ID",
+    "group": "User_recipes",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user_recipe",
+            "description": "<p>Array of user_recipes 's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/nutrition.js",
+    "groupTitle": "User_recipes"
   }
 ]
