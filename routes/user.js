@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 var auth = require("../middlewares/user_auth");
 
-// var nutrition = require("./user/nutrition");
 // var equipment_category = require("./user/equipment_category");
 // var exercise_type = require("./user/exercise_types");
 // var exercise = require("./user/exercise");
@@ -24,9 +23,9 @@ var friends = require("./user/friends");
 var comment = require("./user/comment");
 var like = require("./user/like");
 var recipe_assign = require("./user/user_recipe_assign");
+var nutrition = require("./user/nutrition");
 
 
-// router.use("/nutrition", auth, nutrition);
 // router.use("/equipment_category", auth, equipment_category);
 // router.use("/equipment", auth, equipment);
 // router.use("/exercise_type", auth, exercise_type);
@@ -47,5 +46,6 @@ router.use("/friend", auth, friends);
 router.use("/comment", auth, comment);
 router.use("/like", auth, like);
 router.use("/recipe_assign",auth, recipe_assign);
+router.use("/nutrition", auth, nutrition );
 
 module.exports = router;

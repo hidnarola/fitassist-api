@@ -3741,9 +3741,9 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/user_recipe_assign",
+    "url": "/user/nutrition",
     "title": "Get User recipe by Date",
-    "name": "Get_User_Measurement_by_User_Id_and_LogDate",
+    "name": "Get_User_Measurement_by_Date",
     "group": "Get_User_recipe_by_Date",
     "header": {
       "fields": {
@@ -3805,7 +3805,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_recipe_assign.js",
+    "filename": "routes/user/nutrition.js",
     "groupTitle": "Get_User_recipe_by_Date"
   },
   {
@@ -5927,7 +5927,7 @@ define({ "api": [
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -6066,7 +6066,7 @@ define({ "api": [
     "groupTitle": "Recipes"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",

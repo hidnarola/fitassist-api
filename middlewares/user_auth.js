@@ -17,5 +17,4 @@ const auth = jwt({
   algorithms: [config.algorithms]
 });
 
-
 module.exports= auth;
