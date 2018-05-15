@@ -110,7 +110,7 @@ router.get("/", async (req, res) => {
       };
 
       request(options)
-        .then(async (repos)=> {
+        .then(async repos => {
           let recipes_data = repos.hits;
           let user_meal = {
             breakfast: recipes_data[Math.floor(Math.random() * 100 + 1)].recipe,
@@ -145,20 +145,19 @@ router.get("/", async (req, res) => {
 
             //  console.log('recipeObj',recipeObj);
             insertDataArray.push(recipeObj);
-
           });
-          console.log("data:->",insertDataArray);
-              let recipe_data = await user_recipe_helper.insert_user_recipe(
-                insertDataArray
-              );
-              // console.log('\nRESPONSE',recipe_data);
-  
-              if (recipe_data.status === 0) {
-                logger.error("Error while inserting user recipe = ", recipe_data);
-                //return res.status(config.BAD_REQUEST).json({ recipe_data });
-              } else {
-                //return res.status(config.OK_STATUS).json(recipe_data);
-              }
+          console.log("data:->", insertDataArray);
+          let recipe_data = await user_recipe_helper.insert_user_recipe(
+            insertDataArray
+          );
+          // console.log('\nRESPONSE',recipe_data);
+
+          if (recipe_data.status === 0) {
+            logger.error("Error while inserting user recipe = ", recipe_data);
+            //return res.status(config.BAD_REQUEST).json({ recipe_data });
+          } else {
+            //return res.status(config.OK_STATUS).json(recipe_data);
+          }
 
           //   return res.send({"single_user_recipe_meal":single_user_recipe_meal});
         })
@@ -181,61 +180,65 @@ router.get("/", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {Date} date date of recipe
- * @apiSuccess (Success 200) {Array}  user_recipe  data of user_recipes document
+ * @apiSuccess (Success 200) {Array}  user_recipes  data of user_recipes document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   date = req.body.date;
-  console.log("Logdate: ", date);
+  console.log("Date: ", date);
   var schema = {
     date: {
-          notEmpty: true,
-          errorMessage: "Date is required"
-      }
+      notEmpty: true,
+      errorMessage: "Date is required"
+    }
   };
   req.checkBody(schema);
   var errors = req.validationErrors();
   var recipe_obj = {
-      status: 1,
-      message: "",
-      user_recipe: {}
+    status: 1,
+    message: "",
+    user_recipe:[]
   };
   if (!errors) {
-      // var startdate = moment(logDate).utcOffset(0);
-      var startdate = moment(date);
-      startdate.set({hour: 0, minute: 0, second: 0, millisecond: 0});
-      startdate.toISOString();
-      startdate.format();
+    // var startdate = moment(logDate).utcOffset(0);
+    var startdate = moment(date);
+    startdate.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+    startdate.toISOString();
+    startdate.format();
 
-      var enddate = moment(date);
-      enddate.set({hour: 23, minute: 59, second: 59, millisecond: 99});
-      enddate.toISOString();
-      enddate.format();
+    var enddate = moment(date);
+    enddate.set({ hour: 23, minute: 59, second: 59, millisecond: 99 });
+    enddate.toISOString();
+    enddate.format();
 
-      logger.trace("Get user_recipe by date API called");
-      var resp_data = await user_recipe_helper.get_user_recipe_by_id({
-          userId: authUserId,
-          date: {
-              $gte: startdate,
-              $lte: enddate
-          }
-      });
-      if (resp_data.status == 1 || resp_data.status == 2) {
-          recipe_obj.status = resp_data.status;
-          recipe_obj.message = resp_data.message;
-          if (resp_data.user_recipe) {
-              recipe_obj.user_recipe = resp_data.user_recipe;
-          }
-          res.status(config.OK_STATUS).json(recipe_obj);
+    logger.trace("Get user_recipe by date API called");
+    var resp_data = await user_recipe_helper.get_user_recipe_by_id({
+      userId: authUserId,
+      date: {
+        $gte: startdate,
+        $lte: enddate
       }
+    });
+    console.log('DATA: ',resp_data);
+    
+    if (resp_data.status == 1) {
+      recipe_obj.status = resp_data.status;
+      recipe_obj.message = resp_data.message;
+      if (resp_data.user_recipes) {
+        recipe_obj.user_recipes = resp_data.user_recipes;
+      }
+      res.status(config.OK_STATUS).json(recipe_obj);
+    } else {
+      recipe_obj.status = resp_data.status;
+      recipe_obj.message = resp_data.message;
+      res.status(config.OK_STATUS).json(recipe_obj);
+    }
   } else {
-      logger.error("Validation Error = ", errors);
-      res.status(config.BAD_REQUEST).json({message: errors});
+    logger.error("Validation Error = ", errors);
+    res.status(config.BAD_REQUEST).json({ message: errors });
   }
 });
-
-
 
 module.exports = router;

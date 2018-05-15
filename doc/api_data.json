@@ -3741,6 +3741,75 @@
   },
   {
     "type": "post",
+    "url": "/user/user_recipe_assign",
+    "title": "Get User recipe by Date",
+    "name": "Get_User_Measurement_by_User_Id_and_LogDate",
+    "group": "Get_User_recipe_by_Date",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "date",
+            "description": "<p>date of recipe</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user_recipes",
+            "description": "<p>data of user_recipes document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_recipe_assign.js",
+    "groupTitle": "Get_User_recipe_by_Date"
+  },
+  {
+    "type": "post",
     "url": "/admin/ingredient",
     "title": "Add",
     "name": "Add",
@@ -5858,7 +5927,7 @@
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5997,7 +6066,7 @@
     "groupTitle": "Recipes"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
