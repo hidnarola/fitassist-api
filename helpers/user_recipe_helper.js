@@ -11,7 +11,7 @@ var users_recipe_helper = {};
 users_recipe_helper.get_user_recipe_by_id = async (id) => {
     try {
         var user_recipe = await UsersRecipe.find(id);
-        if (user_recipe) {
+        if (user_recipe && user_recipe.length>0) {
             return { "status": 1, "message": "user's recipe details found", "user_recipes": user_recipe };
         } else {
             return { "status": 2, "message": "No user's recipe available" };
