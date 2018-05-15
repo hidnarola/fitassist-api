@@ -41,16 +41,18 @@ router.post("/todays_meal", async (req, res) => {
   };
   if (!errors) {
     // var startdate = moment(logDate).utcOffset(0);
-    var startdate = moment(date);
-    startdate.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-    startdate.toISOString();
+    var startdate = moment(date).utcOffset(0);
+    console.log('startdate',startdate);
+    // startdate.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+    // startdate.toISOString();
     startdate.format();
 
-    var enddate = moment(date);
-    enddate.set({ hour: 23, minute: 59, second: 59, millisecond: 99 });
-    enddate.toISOString();
-    enddate.format();
+var enddate = moment(startdate).add(23,'hours').add(59,'minutes');
+// enddate.set({ hour: 23, minute: 59, second: 59, millisecond: 99 });
+// enddate.toISOString();
+enddate.format();
 
+console.log('enddate',enddate);
     logger.trace("Get user_recipe by date API called");
     var resp_data = await user_recipe_helper.get_user_recipe_by_id({
       userId: authUserId,
@@ -59,7 +61,6 @@ router.post("/todays_meal", async (req, res) => {
         $lte: enddate
       }
     });
-    console.log("DATA: ", resp_data);
 
     if (resp_data.status == 1) {
       recipe_obj.status = resp_data.status;
