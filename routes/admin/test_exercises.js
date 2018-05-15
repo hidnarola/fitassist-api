@@ -441,8 +441,8 @@ router.put("/:test_exercise_id", async (req, res) => {
     format: {
       notEmpty: true,
       isIn: {
-        options: [["max_rep", "multiselect", "a_or_b"]],
-        errorMessage: "format must be from max_rep, multiselect or a_or_b"
+        options: [["max_rep", "multiselect", "a_or_b","text_field"]],
+        errorMessage: "format must be from max_rep, multiselect ,text_field or a_or_b"
       },
       errorMessage: "format is required"
     }

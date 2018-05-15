@@ -4,6 +4,12 @@ var mongoose = require("mongoose");
 //Define a schema
 var Schema = mongoose.Schema;
 
+var TestExerciesImageSchema = new Schema(
+  {
+    image: { type: String, required: true },
+  },
+  { versionKey: false }
+);
 var TestExerciesSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -26,8 +32,8 @@ var TestExerciesSchema = new Schema(
       required: true
     },
     max_rep: [],
-    multiselect: [],
-    a_or_b: [],
+    multiselect: [TestExerciesImageSchema],
+    a_or_b: [TestExerciesImageSchema],
     status: { type: Number, default: 1 },
     isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
