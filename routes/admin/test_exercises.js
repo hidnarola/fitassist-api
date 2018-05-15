@@ -149,12 +149,14 @@ router.get("/:test_exercise_id", async (req, res) => {
  * @apiParam {Enum} category category of test_exercise<code>Enum:["strength", "flexibility", "posture", "cardio"]</code>
  * @apiParam {Enum} subCategory subCategory of test_exercise<code>Enum:["upper_body", "side", "lower_body", "cardio"]</code>
  * @apiParam {String} [description] description of test_exercise
- * @apiParam {File} image image of test_exercise
+ * @apiParam {File} images image of test_exercise
+ * @apiParam {File} featureImage feature Image of test_exercise
  * @apiParam {String} instructions instructions of test_exercise
  * @apiParam {Enum} format format of test_exercise<code>Enum:["max_rep", "multiselect", "a_or_b"]</code>
  * @apiParam {Object[]} [max_rep] max_rep of test_exercise
  * @apiParam {Object[]} [multiselect] multiselect of test_exercise
  * @apiParam {Object[]} [a_or_b] a_or_b of test_exercise
+ * @apiParam {String} [textField] text Field of test_exercise
  * @apiSuccess (Success 200) {JSON} test_exercise added test_exercise detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -211,6 +213,9 @@ router.post("/", async (req, res) => {
     if (req.body.description) {
       test_exercise_obj.description = req.body.description;
     }
+    if (req.body.textField) {
+      test_exercise_obj.textField = req.body.textField;
+    }
 
     if (req.body.format == "max_rep") {
       if (req.body.max_rep) {
@@ -238,6 +243,51 @@ router.post("/", async (req, res) => {
       async.waterfall(
         [
           function(callback) {
+            //image upload
+            var filename;
+            if (req.files && req.files["featureImage"]) {
+              var file = req.files["featureImage"];
+              var dir = "./uploads/test_exercise";
+              var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+
+              if (mimetype.indexOf(file.mimetype) != -1) {
+                if (!fs.existsSync(dir)) {
+                  fs.mkdirSync(dir);
+                }
+                extention = path.extname(file.name);
+                filename = "feature_image_" + new Date().getTime() + extention;
+                file.mv(dir + "/" + filename, function(err) {
+                  if (err) {
+                    logger.error(
+                      "There was an issue in uploading feature Image"
+                    );
+                    // res.send({
+                    //   status: config.MEDIA_ERROR_STATUS,
+                    //   err: "There was an issue in uploading image"
+                    // });
+                  } else {
+                    logger.trace(
+                      "feature Image has been uploaded. Image name = ",
+                      filename
+                    );
+                    //return res.send(200, "null");
+                  }
+                });
+              } else {
+                logger.error("feature Image format is invalid");
+                // res.send({
+                //   status: config.VALIDATION_FAILURE_STATUS,
+                //   err: "Image format is invalid"
+                // });
+              }
+            }
+            if (filename) {
+              test_exercise_obj.featureImage =
+                "uploads/test_exercise/" + filename;
+            }
+
+            //End image upload
+
             //image upload
             if (req.files && req.files["images"]) {
               var file_path_array = [];
@@ -305,7 +355,7 @@ router.post("/", async (req, res) => {
           var data = [];
           var obj = {};
 
-          if(req.body.title && req.body.title!=null){
+          if (req.body.title && req.body.title != null) {
             var titles = JSON.parse(req.body.title);
             for (let i = 0; i < titles.length; i++) {
               obj = {
@@ -314,7 +364,6 @@ router.post("/", async (req, res) => {
               };
               data.push(obj);
             }
-
           }
           if (req.body.format && req.body.format == "multiselect") {
             test_exercise_obj.multiselect = data;
@@ -353,12 +402,14 @@ router.post("/", async (req, res) => {
  * @apiParam {Enum} category category of test_exercise<code>Enum:["strength", "flexibility", "posture", "cardio"]</code>
  * @apiParam {Enum} subCategory subCategory of test_exercise<code>Enum:["upper_body", "side", "lower_body", "cardio"]</code>
  * @apiParam {String} [description] description of test_exercise
- * @apiParam {File} image image of test_exercise
+ * @apiParam {File} [featureImage] feature Image of test_exercise
+ * @apiParam {File} images image of test_exercise
  * @apiParam {String} instructions instructions of test_exercise
  * @apiParam {Enum} format format of test_exercise<code>Enum:["max_rep", "multiselect", "a_or_b"]</code>
  * @apiParam {Object[]} [max_rep] max_rep of test_exercise
  * @apiParam {Object[]} [multiselect] multiselect of test_exercise
  * @apiParam {Object[]} [a_or_b] a_or_b of test_exercise
+ * @apiParam {String} [textField] text Field of test_exercise
  * @apiParam {Number[]} [deleteIndex] deleteIndex of test_exercise's image records
  * @apiSuccess (Success 200) {JSON} test_exercise updated test_exercise detail
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -415,6 +466,9 @@ router.put("/:test_exercise_id", async (req, res) => {
     if (req.body.description) {
       test_exercise_obj.description = req.body.description;
     }
+    if (req.body.textField) {
+      test_exercise_obj.textField = req.body.textField;
+    }
 
     if (req.body.format == "max_rep") {
       if (req.body.max_rep) {
@@ -443,6 +497,51 @@ router.put("/:test_exercise_id", async (req, res) => {
       async.waterfall(
         [
           function(callback) {
+            //image upload
+            var filename;
+            if (req.files && req.files["featureImage"]) {
+              var file = req.files["featureImage"];
+              var dir = "./uploads/test_exercise";
+              var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+
+              if (mimetype.indexOf(file.mimetype) != -1) {
+                if (!fs.existsSync(dir)) {
+                  fs.mkdirSync(dir);
+                }
+                extention = path.extname(file.name);
+                filename = "feature_image_" + new Date().getTime() + extention;
+                file.mv(dir + "/" + filename, function(err) {
+                  if (err) {
+                    logger.error(
+                      "There was an issue in uploading feature Image"
+                    );
+                    // res.send({
+                    //   status: config.MEDIA_ERROR_STATUS,
+                    //   err: "There was an issue in uploading image"
+                    // });
+                  } else {
+                    logger.trace(
+                      "feature Image has been uploaded. Image name = ",
+                      filename
+                    );
+                    //return res.send(200, "null");
+                  }
+                });
+              } else {
+                logger.error("feature Image format is invalid");
+                // res.send({
+                //   status: config.VALIDATION_FAILURE_STATUS,
+                //   err: "Image format is invalid"
+                // });
+              }
+            }
+            if (filename) {
+              test_exercise_obj.featureImage =
+                "uploads/test_exercise/" + filename;
+            }
+
+            //End image upload
+
             //image upload
             if (req.files && req.files["images"]) {
               var file_path_array = [];
@@ -475,7 +574,7 @@ router.put("/:test_exercise_id", async (req, res) => {
                           "image has been uploaded. Image name = ",
                           filename
                         );
-                        location = "uploads/exercise/" + filename;
+                        location = "uploads/test_exercise/" + filename;
                         file_path_array.push(location);
                         loop_callback();
                       }
@@ -515,35 +614,27 @@ router.put("/:test_exercise_id", async (req, res) => {
             _id: test_exercise_id,
             isDeleted: 0
           });
+
           if (resp_data.status == 1) {
             if (req.body.format == "multiselect") {
               oldData = resp_data.test_exercise.multiselect;
             } else {
               oldData = resp_data.test_exercise.a_or_b;
             }
-            
-            if (req.body.deleteIndex && req.body.deleteIndex!=null) {
-              
+
+            if (req.body.deleteIndex && req.body.deleteIndex != null) {
               var deleteIndex = JSON.parse(req.body.deleteIndex);
 
-              console.log('deleteIndex',deleteIndex);
-              
               oldData.forEach(function(value, i) {
-                // console.log('value',value);
-                // console.log('index',i);
-                
-                
-                if (deleteIndex.indexOf(i) >= 0) {
-                  console.log("DELETE------------------------------------->\n", i,value);
-                } else {
-                  //console.log("Not found");
-                  data.push(value)
+                if (deleteIndex.indexOf(i) < 0) {
+                  data.push(value);
                 }
               });
+            } else {
+              data = oldData;
             }
 
-            if(req.body.title)
-            {
+            if (req.body.title) {
               var titles = JSON.parse(req.body.title);
 
               for (let i = 0; i < titles.length; i++) {
@@ -553,7 +644,6 @@ router.put("/:test_exercise_id", async (req, res) => {
                 };
                 data.push(obj);
               }
-               
             }
 
             if (req.body.format && req.body.format == "multiselect") {

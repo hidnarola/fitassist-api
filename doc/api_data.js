@@ -6740,8 +6740,15 @@ define({ "api": [
             "group": "Parameter",
             "type": "File",
             "optional": false,
-            "field": "image",
+            "field": "images",
             "description": "<p>image of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": false,
+            "field": "featureImage",
+            "description": "<p>feature Image of test_exercise</p>"
           },
           {
             "group": "Parameter",
@@ -6777,6 +6784,13 @@ define({ "api": [
             "optional": true,
             "field": "a_or_b",
             "description": "<p>a_or_b of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "textField",
+            "description": "<p>text Field of test_exercise</p>"
           }
         ]
       }
@@ -7123,8 +7137,15 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "File",
+            "optional": true,
+            "field": "featureImage",
+            "description": "<p>feature Image of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "File",
             "optional": false,
-            "field": "image",
+            "field": "images",
             "description": "<p>image of test_exercise</p>"
           },
           {
@@ -7161,6 +7182,13 @@ define({ "api": [
             "optional": true,
             "field": "a_or_b",
             "description": "<p>a_or_b of test_exercise</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "textField",
+            "description": "<p>text Field of test_exercise</p>"
           },
           {
             "group": "Parameter",

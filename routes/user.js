@@ -46,6 +46,6 @@ router.use("/bodypart", auth, bodypart);
 router.use("/friend", auth, friends);
 router.use("/comment", auth, comment);
 router.use("/like", auth, like);
-router.use("/recipe_assign", recipe_assign);
+router.use("/recipe_assign",auth, recipe_assign);
 
 module.exports = router;

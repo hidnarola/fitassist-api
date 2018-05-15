@@ -8,9 +8,12 @@ var nutrition_preferences_helper = {};
  *          status 1 - If nutrition preferences data found, with nutrition preferences object
  *          status 2 - If nutrition preferences not found, with appropriate message
  */
-nutrition_preferences_helper.get_all_nutrition_preferences = async () => {
+nutrition_preferences_helper.get_all_nutrition_preferences = async (userid={}) => {
   try {
     var nutrition_preferences = await NutritionPreferences.aggregate([
+      {
+        $match:userid
+      },
       {
         $unwind: {
           path: "$dietRestrictionLabels",

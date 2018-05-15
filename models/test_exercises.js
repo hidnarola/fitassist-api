@@ -18,6 +18,7 @@ var TestExerciesSchema = new Schema(
       required: true
     },
     description: { type: String, default: null },
+    featureImage: { type: String, default: null },
     instructions: { type: String, default: null },
     format: {
       type: String,
