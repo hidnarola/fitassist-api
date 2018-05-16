@@ -7,7 +7,8 @@ var auth = require("../middlewares/user_auth");
 // var exercise = require("./user/exercise");
 // var ingredient = require("./user/ingredients");
 // var recipes = require("./user/recipes");
-// // var item = require("./user/item");
+// var item = require("./user/item");
+
 var body_measurement = require("./user/measurement");
 var nutrition_preference = require("./user/nutrition_preferences");
 var profile = require("./user/profile");
@@ -24,6 +25,7 @@ var comment = require("./user/comment");
 var like = require("./user/like");
 var recipe_assign = require("./user/user_recipe_assign");
 var nutrition = require("./user/nutrition");
+var test_exercises = require("./user/test_exercises");
 
 
 // router.use("/equipment_category", auth, equipment_category);
@@ -47,5 +49,8 @@ router.use("/comment", auth, comment);
 router.use("/like", auth, like);
 router.use("/recipe_assign",auth, recipe_assign);
 router.use("/nutrition", auth, nutrition );
+router.use("/test_exercise", auth, test_exercises);
+
+
 
 module.exports = router;

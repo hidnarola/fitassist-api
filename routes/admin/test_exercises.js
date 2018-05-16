@@ -453,7 +453,50 @@ router.put("/:test_exercise_id", async (req, res) => {
     if (req.body.textField) {
       test_exercise_obj.textField = req.body.textField;
     }
+    //image upload
+    var filename;
+    if (req.files && req.files["featureImage"]) {
+      var file = req.files["featureImage"];
+      var dir = "./uploads/test_exercise";
+      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
+      if (mimetype.indexOf(file.mimetype) != -1) {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+        extention = path.extname(file.name);
+        filename = "feature_image_" + new Date().getTime() + extention;
+        file.mv(dir + "/" + filename, function(err) {
+          if (err) {
+            logger.error(
+              "There was an issue in uploading feature Image"
+            );
+            // res.send({
+            //   status: config.MEDIA_ERROR_STATUS,
+            //   err: "There was an issue in uploading image"
+            // });
+          } else {
+            logger.trace(
+              "feature Image has been uploaded. Image name = ",
+              filename
+            );
+            //return res.send(200, "null");
+          }
+        });
+      } else {
+        logger.error("feature Image format is invalid");
+        // res.send({
+        //   status: config.VALIDATION_FAILURE_STATUS,
+        //   err: "Image format is invalid"
+        // });
+      }
+    }
+    if (filename) {
+      test_exercise_obj.featureImage =
+        "uploads/test_exercise/" + filename;
+    }
+
+    //End image upload
     if (req.body.format == "max_rep") {
       if (req.body.max_rep) {
         test_exercise_obj.max_rep = JSON.parse(req.body.max_rep);
@@ -481,50 +524,7 @@ router.put("/:test_exercise_id", async (req, res) => {
       async.waterfall(
         [
           function(callback) {
-            //image upload
-            var filename;
-            if (req.files && req.files["featureImage"]) {
-              var file = req.files["featureImage"];
-              var dir = "./uploads/test_exercise";
-              var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-
-              if (mimetype.indexOf(file.mimetype) != -1) {
-                if (!fs.existsSync(dir)) {
-                  fs.mkdirSync(dir);
-                }
-                extention = path.extname(file.name);
-                filename = "feature_image_" + new Date().getTime() + extention;
-                file.mv(dir + "/" + filename, function(err) {
-                  if (err) {
-                    logger.error(
-                      "There was an issue in uploading feature Image"
-                    );
-                    // res.send({
-                    //   status: config.MEDIA_ERROR_STATUS,
-                    //   err: "There was an issue in uploading image"
-                    // });
-                  } else {
-                    logger.trace(
-                      "feature Image has been uploaded. Image name = ",
-                      filename
-                    );
-                    //return res.send(200, "null");
-                  }
-                });
-              } else {
-                logger.error("feature Image format is invalid");
-                // res.send({
-                //   status: config.VALIDATION_FAILURE_STATUS,
-                //   err: "Image format is invalid"
-                // });
-              }
-            }
-            if (filename) {
-              test_exercise_obj.featureImage =
-                "uploads/test_exercise/" + filename;
-            }
-
-            //End image upload
+            
 
             //image upload
             if (req.files && req.files["images"]) {
@@ -601,7 +601,6 @@ router.put("/:test_exercise_id", async (req, res) => {
           if (test_exercise_obj.featureImage != null) {
             try {
               fs.unlink(resp_data.test_exercise.featureImage, function() {
-                // console.log("Image deleted");
               });
             } catch (err) {}
           }
@@ -647,27 +646,18 @@ router.put("/:test_exercise_id", async (req, res) => {
               var delete_multiselect_image_ids = req.body
                 .delete_multiselect_image_ids
                 ? JSON.parse(req.body.delete_multiselect_image_ids)
-				: [];
-				console.log('IDS',delete_multiselect_image_ids);
-				
-				console.log('OLD DATA',oldData);
+				: [];				
 				
               oldData.forEach((save_data, index) => {
-				console.log('save_data', save_data._id);
-				console.log("images ==-> ",delete_multiselect_image_ids);
-				console.log("Output ==> ",delete_multiselect_image_ids.indexOf(save_data._id.toString()));
+	
                 if (delete_multiselect_image_ids.indexOf(save_data._id.toString()) >= 0) {
-					// remove
 					try {
 						fs.unlink(save_data.image, function() {
-						  console.log("Image deleted");
 						});
 					  } catch (err) {}					
 				}
 				else{
-					// PUSH
 					data.push(save_data);	
-					console.log('out',);					
 				}
               });
               if (req.body.title) {
