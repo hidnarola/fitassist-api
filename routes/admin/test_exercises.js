@@ -184,7 +184,7 @@ router.post("/", async (req, res) => {
           "Sub category must be from upper_body, side, lower_body or cardio"
       },
       errorMessage: "subCategory of test exercies is required"
-    },    
+    },
     format: {
       notEmpty: true,
       isIn: {
@@ -195,7 +195,7 @@ router.post("/", async (req, res) => {
       errorMessage: "format is required"
     }
   };
-  
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
@@ -222,7 +222,7 @@ router.post("/", async (req, res) => {
       if (req.body.title) {
         test_exercise_obj.title = JSON.parse(req.body.title);
       }
-     
+
       let test_exercise_data = await test_exercise_helper.insert_test_exercise(
         test_exercise_obj
       );
@@ -256,16 +256,16 @@ router.post("/", async (req, res) => {
                   if (err) {
                     logger.error(
                       "There was an issue in uploading feature Image"
-                    );                  
+                    );
                   } else {
                     logger.trace(
                       "feature Image has been uploaded. Image name = ",
                       filename
-                    );                    
+                    );
                   }
                 });
               } else {
-                logger.error("feature Image format is invalid");                
+                logger.error("feature Image format is invalid");
               }
             }
             if (filename) {
@@ -329,7 +329,7 @@ router.post("/", async (req, res) => {
                   }
                 }
               );
-            } else {  
+            } else {
               logger.info(
                 "Image not available to upload. Executing next instruction"
               );
@@ -402,9 +402,6 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:test_exercise_id", async (req, res) => {
-
-  console.log('Riddhu',req.files);
-
   test_exercise_id = req.params.test_exercise_id;
   var schema = {
     name: {
@@ -429,12 +426,12 @@ router.put("/:test_exercise_id", async (req, res) => {
       },
       errorMessage: "subCategory of test exercies is required"
     },
-    
     format: {
       notEmpty: true,
       isIn: {
-        options: [["max_rep", "multiselect", "a_or_b","text_field"]],
-        errorMessage: "format must be from max_rep, multiselect ,text_field or a_or_b"
+        options: [["max_rep", "multiselect", "a_or_b", "text_field"]],
+        errorMessage:
+          "format must be from max_rep, multiselect ,text_field or a_or_b"
       },
       errorMessage: "format is required"
     }
@@ -608,29 +605,27 @@ router.put("/:test_exercise_id", async (req, res) => {
             } else {
               oldData = resp_data.test_exercise.a_or_b;
             }
-
-            if (req.body.deleteIndex && req.body.deleteIndex != null) {
-              var deleteIndex = JSON.parse(req.body.deleteIndex);
-
-              oldData.forEach(function(value, i) {
-                if (deleteIndex.indexOf(i) < 0) {
-                  data.push(value);
-                }
-              });
-            } else {
-              data = oldData;
-            }
-
-            if (req.body.title) {
+            if (req.body.format == "a_or_b") {
               var titles = JSON.parse(req.body.title);
+              var a_b_updateImageIndex = JSON.parse(
+                req.body.a_b_updateImageIndex
+              );
+              var a_b_updateImageIndexLength = a_b_updateImageIndex.length;
 
-              for (let i = 0; i < titles.length; i++) {
-                obj = {
-                  title: titles[i],
-                  image: file_path_array[i]
-                };
-                data.push(obj);
-              }
+              titles.forEach((title, index) => {
+                var url = oldData[index].image;
+                if (a_b_updateImageIndex.indexOf(index) >= 0) {
+                  if (a_b_updateImageIndexLength > 1) {
+                    url = file_path_array[index];
+                  } else if (a_b_updateImageIndexLength == 1) {
+                    url = file_path_array[0];
+                  }
+                }
+                data.push({
+                  title: title,
+                  image: url
+                });
+              });
             }
 
             if (req.body.format && req.body.format == "multiselect") {
