@@ -214,7 +214,41 @@ router.post("/", async (req, res) => {
     if (req.body.textField) {
       test_exercise_obj.textField = req.body.textField;
     }
+//image upload
+var filename;
+if (req.files && req.files["featureImage"]) {
+  var file = req.files["featureImage"];
+  var dir = "./uploads/test_exercise";
+  var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
+  if (mimetype.indexOf(file.mimetype) != -1) {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+    extention = path.extname(file.name);
+    filename = "feature_image_" + new Date().getTime() + extention;
+    file.mv(dir + "/" + filename, function(err) {
+      if (err) {
+        logger.error(
+          "There was an issue in uploading feature Image"
+        );
+      } else {
+        logger.trace(
+          "feature Image has been uploaded. Image name = ",
+          filename
+        );
+      }
+    });
+  } else {
+    logger.error("feature Image format is invalid");
+  }
+}
+if (filename) {
+  test_exercise_obj.featureImage =
+    "uploads/test_exercise/" + filename;
+}
+
+//End image upload
     if (req.body.format == "max_rep") {
       if (req.body.max_rep) {
         test_exercise_obj.max_rep = JSON.parse(req.body.max_rep);
@@ -239,41 +273,7 @@ router.post("/", async (req, res) => {
       async.waterfall(
         [
           function(callback) {
-            //image upload
-            var filename;
-            if (req.files && req.files["featureImage"]) {
-              var file = req.files["featureImage"];
-              var dir = "./uploads/test_exercise";
-              var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-
-              if (mimetype.indexOf(file.mimetype) != -1) {
-                if (!fs.existsSync(dir)) {
-                  fs.mkdirSync(dir);
-                }
-                extention = path.extname(file.name);
-                filename = "feature_image_" + new Date().getTime() + extention;
-                file.mv(dir + "/" + filename, function(err) {
-                  if (err) {
-                    logger.error(
-                      "There was an issue in uploading feature Image"
-                    );
-                  } else {
-                    logger.trace(
-                      "feature Image has been uploaded. Image name = ",
-                      filename
-                    );
-                  }
-                });
-              } else {
-                logger.error("feature Image format is invalid");
-              }
-            }
-            if (filename) {
-              test_exercise_obj.featureImage =
-                "uploads/test_exercise/" + filename;
-            }
-
-            //End image upload
+            
 
             //image upload
             if (req.files && req.files["images"]) {
