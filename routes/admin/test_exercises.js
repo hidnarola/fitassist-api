@@ -519,7 +519,7 @@ router.put("/:test_exercise_id", async (req, res) => {
                 // });
               }
             }
-            if (filename) {
+            if (filename) {			
               test_exercise_obj.featureImage =
                 "uploads/test_exercise/" + filename;
             }
@@ -598,7 +598,18 @@ router.put("/:test_exercise_id", async (req, res) => {
             _id: test_exercise_id,
             isDeleted: 0
           });
+		  if(test_exercise_obj.featureImage!=null)
+		  {
+			try{
+				fs.unlink(resp_data.test_exercise.featureImage,function(){
+					console.log("Image deleted");
+				   });
+			}
+			catch(err)
+			{
 
+			}
+		  }
           if (resp_data.status == 1) {
             if (req.body.format == "multiselect") {
               oldData = resp_data.test_exercise.multiselect;
@@ -615,6 +626,15 @@ router.put("/:test_exercise_id", async (req, res) => {
               titles.forEach((title, index) => {
                 var url = oldData[index].image;
                 if (a_b_updateImageIndex.indexOf(index) >= 0) {
+					try{
+						fs.unlink(oldData[index].image,function(){
+							console.log("Image deleted");
+						   });
+					}
+					catch(err)
+					{
+		
+					}
                   if (a_b_updateImageIndexLength > 1) {
                     url = file_path_array[index];
                   } else if (a_b_updateImageIndexLength == 1) {
