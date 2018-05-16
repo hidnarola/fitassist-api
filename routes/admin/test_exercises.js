@@ -397,7 +397,7 @@ router.post("/", async (req, res) => {
  * @apiParam {Object[]} [multiselect] multiselect of test_exercise
  * @apiParam {Object[]} [a_or_b] a_or_b of test_exercise
  * @apiParam {String} [textField] text Field of test_exercise
- * @apiParam {Number[]} [deleteIndex] deleteIndex of test_exercise's image records
+ * @apiParam {Number[]} [delete_multiselect_image_ids] delete multiselect image ids of test_exercise's image records
  * @apiSuccess (Success 200) {JSON} test_exercise updated test_exercise detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -519,7 +519,7 @@ router.put("/:test_exercise_id", async (req, res) => {
                 // });
               }
             }
-            if (filename) {			
+            if (filename) {
               test_exercise_obj.featureImage =
                 "uploads/test_exercise/" + filename;
             }
@@ -598,18 +598,13 @@ router.put("/:test_exercise_id", async (req, res) => {
             _id: test_exercise_id,
             isDeleted: 0
           });
-		  if(test_exercise_obj.featureImage!=null)
-		  {
-			try{
-				fs.unlink(resp_data.test_exercise.featureImage,function(){
-					console.log("Image deleted");
-				   });
-			}
-			catch(err)
-			{
-
-			}
-		  }
+          if (test_exercise_obj.featureImage != null) {
+            try {
+              fs.unlink(resp_data.test_exercise.featureImage, function() {
+                // console.log("Image deleted");
+              });
+            } catch (err) {}
+          }
           if (resp_data.status == 1) {
             if (req.body.format == "multiselect") {
               oldData = resp_data.test_exercise.multiselect;
@@ -618,36 +613,73 @@ router.put("/:test_exercise_id", async (req, res) => {
             }
             if (req.body.format == "a_or_b") {
               var titles = JSON.parse(req.body.title);
-              var a_b_updateImageIndex = JSON.parse(
-                req.body.a_b_updateImageIndex
-              );
-              var a_b_updateImageIndexLength = a_b_updateImageIndex.length;
+              if (req.body.a_b_updateImageIndex) {
+                var a_b_updateImageIndex = req.body.a_b_updateImageIndex
+                  ? JSON.parse(req.body.a_b_updateImageIndex)
+                  : [];
+                var a_b_updateImageIndexLength = a_b_updateImageIndex.length
+                  ? a_b_updateImageIndex.length
+                  : 0;
 
-              titles.forEach((title, index) => {
-                var url = oldData[index].image;
-                if (a_b_updateImageIndex.indexOf(index) >= 0) {
-					try{
-						fs.unlink(oldData[index].image,function(){
-							console.log("Image deleted");
-						   });
-					}
-					catch(err)
-					{
-		
-					}
-                  if (a_b_updateImageIndexLength > 1) {
-                    url = file_path_array[index];
-                  } else if (a_b_updateImageIndexLength == 1) {
-                    url = file_path_array[0];
+                titles.forEach((title, index) => {
+                  try {
+                    var url = oldData[index].image;
+                  } catch (error) {}
+                  if (a_b_updateImageIndex.indexOf(index) >= 0) {
+                    try {
+                      fs.unlink(oldData[index].image, async () => {
+                        console.log("Image deleted");
+                      });
+                    } catch (err) {}
+                    if (a_b_updateImageIndexLength > 1) {
+                      url = file_path_array[index];
+                    } else if (a_b_updateImageIndexLength == 1) {
+                      url = file_path_array[0];
+                    }
                   }
-                }
-                data.push({
-                  title: title,
-                  image: url
+                  data.push({
+                    title: title,
+                    image: url
+                  });
                 });
+              }
+            } else if (req.body.format == "multiselect") {
+              var delete_multiselect_image_ids = req.body
+                .delete_multiselect_image_ids
+                ? JSON.parse(req.body.delete_multiselect_image_ids)
+				: [];
+				console.log('IDS',delete_multiselect_image_ids);
+				
+				console.log('OLD DATA',oldData);
+				
+              oldData.forEach((save_data, index) => {
+				console.log('save_data', save_data._id);
+				console.log("images ==-> ",delete_multiselect_image_ids);
+				console.log("Output ==> ",delete_multiselect_image_ids.indexOf(save_data._id.toString()));
+                if (delete_multiselect_image_ids.indexOf(save_data._id.toString()) >= 0) {
+					// remove
+					try {
+						fs.unlink(save_data.image, function() {
+						  console.log("Image deleted");
+						});
+					  } catch (err) {}					
+				}
+				else{
+					// PUSH
+					data.push(save_data);	
+					console.log('out',);					
+				}
               });
+              if (req.body.title) {
+                var titles = JSON.parse(req.body.title);
+                titles.forEach((title, index) => {
+                  data.push({
+                    title: title,
+                    image: file_path_array[index]
+                  });
+                });
+              }
             }
-
             if (req.body.format && req.body.format == "multiselect") {
               test_exercise_obj.multiselect = data;
             }
