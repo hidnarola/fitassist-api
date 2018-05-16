@@ -214,41 +214,38 @@ router.post("/", async (req, res) => {
     if (req.body.textField) {
       test_exercise_obj.textField = req.body.textField;
     }
-//image upload
-var filename;
-if (req.files && req.files["featureImage"]) {
-  var file = req.files["featureImage"];
-  var dir = "./uploads/test_exercise";
-  var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+    //image upload
+    var filename;
+    if (req.files && req.files["featureImage"]) {
+      var file = req.files["featureImage"];
+      var dir = "./uploads/test_exercise";
+      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
-  if (mimetype.indexOf(file.mimetype) != -1) {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-    extention = path.extname(file.name);
-    filename = "feature_image_" + new Date().getTime() + extention;
-    file.mv(dir + "/" + filename, function(err) {
-      if (err) {
-        logger.error(
-          "There was an issue in uploading feature Image"
-        );
+      if (mimetype.indexOf(file.mimetype) != -1) {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+        extention = path.extname(file.name);
+        filename = "feature_image_" + new Date().getTime() + extention;
+        file.mv(dir + "/" + filename, function(err) {
+          if (err) {
+            logger.error("There was an issue in uploading feature Image");
+          } else {
+            logger.trace(
+              "feature Image has been uploaded. Image name = ",
+              filename
+            );
+          }
+        });
       } else {
-        logger.trace(
-          "feature Image has been uploaded. Image name = ",
-          filename
-        );
+        logger.error("feature Image format is invalid");
       }
-    });
-  } else {
-    logger.error("feature Image format is invalid");
-  }
-}
-if (filename) {
-  test_exercise_obj.featureImage =
-    "uploads/test_exercise/" + filename;
-}
+    }
+    if (filename) {
+      test_exercise_obj.featureImage = "uploads/test_exercise/" + filename;
+    }
 
-//End image upload
+    //End image upload
     if (req.body.format == "max_rep") {
       if (req.body.max_rep) {
         test_exercise_obj.max_rep = JSON.parse(req.body.max_rep);
@@ -273,8 +270,6 @@ if (filename) {
       async.waterfall(
         [
           function(callback) {
-            
-
             //image upload
             if (req.files && req.files["images"]) {
               var file_path_array = [];
@@ -468,9 +463,7 @@ router.put("/:test_exercise_id", async (req, res) => {
         filename = "feature_image_" + new Date().getTime() + extention;
         file.mv(dir + "/" + filename, function(err) {
           if (err) {
-            logger.error(
-              "There was an issue in uploading feature Image"
-            );
+            logger.error("There was an issue in uploading feature Image");
             // res.send({
             //   status: config.MEDIA_ERROR_STATUS,
             //   err: "There was an issue in uploading image"
@@ -492,8 +485,7 @@ router.put("/:test_exercise_id", async (req, res) => {
       }
     }
     if (filename) {
-      test_exercise_obj.featureImage =
-        "uploads/test_exercise/" + filename;
+      test_exercise_obj.featureImage = "uploads/test_exercise/" + filename;
     }
 
     //End image upload
@@ -506,7 +498,8 @@ router.put("/:test_exercise_id", async (req, res) => {
       }
       // console.log(test_exercise_obj);
       // return;
-
+      test_exercise_obj.multiselect = [];
+      test_exercise_obj.a_or_b = [];
       let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id(
         test_exercise_id,
         test_exercise_obj
@@ -524,8 +517,6 @@ router.put("/:test_exercise_id", async (req, res) => {
       async.waterfall(
         [
           function(callback) {
-            
-
             //image upload
             if (req.files && req.files["images"]) {
               var file_path_array = [];
@@ -600,8 +591,7 @@ router.put("/:test_exercise_id", async (req, res) => {
           });
           if (test_exercise_obj.featureImage != null) {
             try {
-              fs.unlink(resp_data.test_exercise.featureImage, function() {
-              });
+              fs.unlink(resp_data.test_exercise.featureImage, function() {});
             } catch (err) {}
           }
           if (resp_data.status == 1) {
@@ -612,6 +602,7 @@ router.put("/:test_exercise_id", async (req, res) => {
             }
             if (req.body.format == "a_or_b") {
               var titles = JSON.parse(req.body.title);
+              
               if (req.body.a_b_updateImageIndex) {
                 var a_b_updateImageIndex = req.body.a_b_updateImageIndex
                   ? JSON.parse(req.body.a_b_updateImageIndex)
@@ -619,12 +610,12 @@ router.put("/:test_exercise_id", async (req, res) => {
                 var a_b_updateImageIndexLength = a_b_updateImageIndex.length
                   ? a_b_updateImageIndex.length
                   : 0;
-
+              }
                 titles.forEach((title, index) => {
                   try {
                     var url = oldData[index].image;
                   } catch (error) {}
-                  if (a_b_updateImageIndex.indexOf(index) >= 0) {
+                  if (a_b_updateImageIndexLength > 0 && a_b_updateImageIndex.indexOf(index) >= 0) {
                     try {
                       fs.unlink(oldData[index].image, async () => {
                         console.log("Image deleted");
@@ -634,31 +625,32 @@ router.put("/:test_exercise_id", async (req, res) => {
                       url = file_path_array[index];
                     } else if (a_b_updateImageIndexLength == 1) {
                       url = file_path_array[0];
-                    }
+                    }                    
                   }
                   data.push({
                     title: title,
                     image: url
-                  });
-                });
-              }
+                  });                  
+                  console.log('DATA',data);
+                });                            
             } else if (req.body.format == "multiselect") {
               var delete_multiselect_image_ids = req.body
                 .delete_multiselect_image_ids
                 ? JSON.parse(req.body.delete_multiselect_image_ids)
-				: [];				
-				
+                : [];
+
               oldData.forEach((save_data, index) => {
-	
-                if (delete_multiselect_image_ids.indexOf(save_data._id.toString()) >= 0) {
-					try {
-						fs.unlink(save_data.image, function() {
-						});
-					  } catch (err) {}					
-				}
-				else{
-					data.push(save_data);	
-				}
+                if (
+                  delete_multiselect_image_ids.indexOf(
+                    save_data._id.toString()
+                  ) >= 0
+                ) {
+                  try {
+                    fs.unlink(save_data.image, function() {});
+                  } catch (err) {}
+                } else {
+                  data.push(save_data);
+                }
               });
               if (req.body.title) {
                 var titles = JSON.parse(req.body.title);
@@ -672,10 +664,20 @@ router.put("/:test_exercise_id", async (req, res) => {
             }
             if (req.body.format && req.body.format == "multiselect") {
               test_exercise_obj.multiselect = data;
+              test_exercise_obj.max_rep = [];
+              test_exercise_obj.a_or_b = [];
             }
             if (req.body.format && req.body.format == "a_or_b") {
               test_exercise_obj.a_or_b = data;
+              test_exercise_obj.max_rep = [];
+              test_exercise_obj.multiselect = [];
             }
+            if (req.body.format && req.body.format == "text_field") {
+              test_exercise_obj.a_or_b = [];
+              test_exercise_obj.max_rep = [];
+              test_exercise_obj.multiselect = [];
+            }
+
             let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id(
               test_exercise_id,
               test_exercise_obj

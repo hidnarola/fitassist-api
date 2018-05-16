@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   logger.trace("Get all test_exercises API called");
-  var resp_data = await test_exercise_helper.get_test_exercises();
+  var resp_data = await test_exercise_helper.get_all_test_exercises();
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching  test_exercises = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);

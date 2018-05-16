@@ -32,6 +32,43 @@ test_exercise_helper.get_test_exercises = async () => {
 };
 
 /*
+ * get_all_test_exercises is used to fetch all test_exercises data
+ * 
+ * @return  status 0 - If any internal error occured while fetching test_exercises data, with error
+ *          status 1 - If test_exercises data found, with test_exercises object
+ *          status 2 - If test_exercises not found, with appropriate message
+ */
+test_exercise_helper.get_all_test_exercises = async () => {
+  try {
+    var test_exercises = await TestExercies.aggregate([
+      {
+        $group:{
+          _id:"$_id", 
+          cat         
+        }
+      }
+
+
+    ]);
+    if (test_exercises) {
+      return {
+        status: 1,
+        message: "test exercises found",
+        test_exercises: test_exercises
+      };
+    } else {
+      return { status: 2, message: "No test exercises available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding test exercises",
+      error: err
+    };
+  }
+};
+
+/*
  * get_test_exerice_id is used to fetch test_exercise by ID
  * 
  * @return  status 0 - If any internal error occured while fetching test_exercise data, with error
