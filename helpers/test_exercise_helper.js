@@ -11,7 +11,7 @@ var test_exercise_helper = {};
 test_exercise_helper.get_test_exercises = async () => {
   try {
     var test_exercises = await TestExercies.find({
-      isDeleted:0
+      isDeleted: 0
     });
     if (test_exercises) {
       return {
@@ -42,12 +42,49 @@ test_exercise_helper.get_all_test_exercises = async () => {
   try {
     var test_exercises = await TestExercies.aggregate([
       {
+        $group: {
+          _id: {
+            "category": "$category",
+            "subCategory": "$subCategory"
+        },
+          
+        }
+      },
+      {
+        $unwind: {
+          path: "$_id.category"
+        }
+      },
+      {
+        $unwind: {
+          path: "$_id.subCategory"
+        }
+      },
+      {
         $group:{
-          _id:"$_id", 
-          cat         
+          _id:"$_id.category",
+          category:{$addToSet:"$_id.category"},
+          subCategory:{$addToSet:"$_id.subCategory"},
+        }
+      },
+      {
+        $unwind: {
+          path: "$category"
+        }
+      },
+      {
+        $project:{
+          _id:false,
+        }
+      },
+      {
+        $lookup: {
+          from: "test_exercises",
+          localField: "subCategory",
+          foreignField: "subCategory",
+          as: "sub_categories"
         }
       }
-
 
     ]);
     if (test_exercises) {
@@ -79,7 +116,11 @@ test_exercise_helper.get_test_exercise_id = async id => {
   try {
     var test_exercise = await TestExercies.findOne(id);
     if (test_exercise) {
-      return { status: 1, message: "test exercise found", test_exercise: test_exercise };
+      return {
+        status: 1,
+        message: "test exercise found",
+        test_exercise: test_exercise
+      };
     } else {
       return { status: 2, message: "No test exercise available" };
     }
@@ -104,13 +145,21 @@ test_exercise_helper.get_test_exercise_id = async id => {
  */
 test_exercise_helper.insert_test_exercise = async test_exercise_obj => {
   console.log(test_exercise_obj);
-    let test_exercise = new TestExercies(test_exercise_obj);
-    try {
-        let test_exercise_data = await test_exercise.save();
-        return { "status": 1, "message": "Test exercise inserted", "test_exercise": test_exercise_data };
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting test exercise", "error": err };
-    }
+  let test_exercise = new TestExercies(test_exercise_obj);
+  try {
+    let test_exercise_data = await test_exercise.save();
+    return {
+      status: 1,
+      message: "Test exercise inserted",
+      test_exercise: test_exercise_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting test exercise",
+      error: err
+    };
+  }
 };
 
 /*
