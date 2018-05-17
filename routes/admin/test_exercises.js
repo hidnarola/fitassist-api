@@ -128,7 +128,6 @@ router.get("/:test_exercise_id", async (req, res) => {
   logger.trace("Get all test exercise API called");
   var resp_data = await test_exercise_helper.get_test_exercise_id({
     _id: test_exercise_id,
-    isDeleted: 0
   });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching test exercise = ", resp_data);
@@ -370,7 +369,7 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -587,7 +586,6 @@ router.put("/:test_exercise_id", async (req, res) => {
 
           var resp_data = await test_exercise_helper.get_test_exercise_id({
             _id: test_exercise_id,
-            isDeleted: 0
           });
           if (test_exercise_obj.featureImage != null) {
             try {
@@ -697,7 +695,7 @@ router.put("/:test_exercise_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
