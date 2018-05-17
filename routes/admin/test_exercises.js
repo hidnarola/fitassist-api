@@ -128,7 +128,6 @@ router.get("/:test_exercise_id", async (req, res) => {
   logger.trace("Get all test exercise API called");
   var resp_data = await test_exercise_helper.get_test_exercise_id({
     _id: test_exercise_id,
-    isDeleted: 0
   });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching test exercise = ", resp_data);
@@ -587,7 +586,6 @@ router.put("/:test_exercise_id", async (req, res) => {
 
           var resp_data = await test_exercise_helper.get_test_exercise_id({
             _id: test_exercise_id,
-            isDeleted: 0
           });
           if (test_exercise_obj.featureImage != null) {
             try {
