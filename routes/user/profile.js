@@ -246,4 +246,46 @@ router.put("/", async (req, res) => {
   }
 });
 
+
+/**
+ * @api {patch} /user/profile Profile - Update
+ * @apiName Profile - Update
+ * @apiGroup User
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} firstName First name of user
+ * @apiParam {String} lastName Last name of user
+ * @apiParam {String} email Email address
+ * @apiParam {Number} [mobileNumber] mobileNumber
+ * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
+ * @apiParam {Date} [dateOfBirth] Date of Birth
+ * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')
+ * @apiParam {File} [user_img] avatar
+ * @apiParam {String} [aboutMe] aboutMe
+ * @apiParam {Boolean} status status
+ * @apiSuccess (Success 200) {Array} user Array of users document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.patch("/", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  console.log('DECODED:',decoded);
+  
+
+  var options = { method: 'PATCH',
+  url: 'https://fitassist.eu.auth0.com/api/v2/users/'+authUserId,
+  headers: 
+   { 'content-type': 'application/json',
+     authorization: 'Bearer '+decoded },
+  body: 
+   { user_metadata: { picture: 'https://example.com/some-image.png' } },
+  json: true };
+
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+
+  console.log(body);
+});
+});
+
+
 module.exports = router;
