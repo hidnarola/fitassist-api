@@ -5858,7 +5858,7 @@
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5997,7 +5997,7 @@
     "groupTitle": "Recipes"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -7194,8 +7194,8 @@
             "group": "Parameter",
             "type": "Number[]",
             "optional": true,
-            "field": "deleteIndex",
-            "description": "<p>deleteIndex of test_exercise's image records</p>"
+            "field": "delete_multiselect_image_ids",
+            "description": "<p>delete multiselect image ids of test_exercise's image records</p>"
           }
         ]
       }
@@ -9524,6 +9524,55 @@
     "version": "0.0.0",
     "filename": "routes/user/user_progress_photos.js",
     "groupTitle": "User_Progress_Photo"
+  },
+  {
+    "type": "get",
+    "url": "/user/test_exercise",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Test_Exercises",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "test_exercises",
+            "description": "<p>Array of test_exercises document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/test_exercises.js",
+    "groupTitle": "User_Test_Exercises"
   },
   {
     "type": "post",
