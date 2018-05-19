@@ -72,12 +72,27 @@ router.get("/", async (req, res) => {
  * @apiGroup User Test Exercise
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {Number} workoutIntensity workout Intensity of user exercise
- * @apiParam {Number} exerciseExperience exercise Experience
- * @apiParam {String[]} excludeExercise exclude Exercise ref ID
- * @apiParam {String[]} excludeExerciseType exclude Exercise Type ref ID of exercise type
- * @apiParam {String[]} existingInjuries existing Injuries ref ID of body part collection
- * @apiParam {Number} workoutscheduletype workout schedule type <br><code>1 for Automatic <br>2 for manual</code>
+ * @apiParamExample {JSON} Request-Example:
+ {
+	"user_test_exercises":{
+  < test exercise id >: {
+    "format": < format of test exercise >,
+    "value": < value of test exercise >
+  },
+  < test exercise id >: {
+    "format": < format of test exercise >,
+    "value": < value of test exercise >
+  },
+  < test exercise id >: {
+    "format": < format of test exercise >,
+    "value": < value of test exercise >
+  },
+  < test exercise id >: {
+    "format": < format of test exercise >,
+    "value": < value of test exercise >
+  }
+}
+}
  * @apiSuccess (Success 200) {JSON} user_test_exercies  user_test_exercies  details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

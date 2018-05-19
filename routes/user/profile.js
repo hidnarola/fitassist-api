@@ -4,6 +4,7 @@ var path = require("path");
 var async = require("async");
 var jwtDecode = require("jwt-decode");
 var router = express.Router();
+var request = require("request-promise");
 
 var config = require("../../config");
 var logger = config.logger;
@@ -55,24 +56,23 @@ router.get("/:username", async (req, res) => {
       });
 
       if (friend_data.friends.length == 1) {
-		friendshipId=friend_data.friends[0]._id;
+        friendshipId = friend_data.friends[0]._id;
         if (friend_data.friends[0].status == 1) {
           friend_data = await friend_helper.checkFriend({
             userId: authUserId,
             friendId: userAuthId
-		  });
-		  
+          });
+
           if (friend_data.friends.length == 1) {
-			friendshipStatus = "request_sent";
-		  }
-		  else{
-			  friendshipStatus = "request_received";
-		  }
+            friendshipStatus = "request_sent";
+          } else {
+            friendshipStatus = "request_received";
+          }
 
           friend_data = await friend_helper.checkFriend({
             userId: authUserId,
             friendId: userAuthId
-		  });
+          });
         } else {
           friendshipStatus = "friend";
         }
@@ -246,46 +246,103 @@ router.put("/", async (req, res) => {
   }
 });
 
-
 /**
- * @api {patch} /user/profile Profile - Update
- * @apiName Profile - Update
+ * @api {put} /user/profile/update_aboutme update aboutme - Update
+ * @apiName update aboutme - Update
  * @apiGroup User
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} firstName First name of user
- * @apiParam {String} lastName Last name of user
- * @apiParam {String} email Email address
- * @apiParam {Number} [mobileNumber] mobileNumber
- * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
- * @apiParam {Date} [dateOfBirth] Date of Birth
- * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')
- * @apiParam {File} [user_img] avatar
- * @apiParam {String} [aboutMe] aboutMe
- * @apiParam {Boolean} status status
- * @apiSuccess (Success 200) {Array} user Array of users document
+ * @apiParam {String} about about of user
+ * @apiParam {String} height height of user
+ * @apiParam {String} weight weight of user
+ * @apiSuccess (Success 200) {JSON} user JSON of users document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/update_aboutme", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var user_profile_obj = {};
+  if (req.body.aboutMe) {
+    user_profile_obj.aboutMe = req.body.aboutMe;
+  }
+  if (req.body.weight) {
+    user_profile_obj.weight = req.body.weight;
+  }
+  if (req.body.height) {
+    user_profile_obj.height = req.body.height;
+  }
+
+  let user_data = await user_helper.update_user_by_id(
+    authUserId,
+    user_profile_obj
+  );
+  if (user_data.status === 0) {
+    logger.error("Error while updating user data = ", user_data);
+    return res.status(config.BAD_REQUEST).json({ user_data });
+  } else {
+    return res.status(config.OK_STATUS).json(user_data);
+  }
+});
+
+/**
+ * @api {patch} /user/profile Profile Picture - Update
+ * @apiName Profile Picture - Update
+ * @apiGroup User
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {File} image image of user
+ * @apiSuccess (Success 200) {String} message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.patch("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  console.log('DECODED:',decoded);
-  
+  console.log("DECODED:", req.headers["authorization"]);
 
-  var options = { method: 'PATCH',
-  url: 'https://fitassist.eu.auth0.com/api/v2/users/'+authUserId,
-  headers: 
-   { 'content-type': 'application/json',
-     authorization: 'Bearer '+decoded },
-  body: 
-   { user_metadata: { picture: 'https://example.com/some-image.png' } },
-  json: true };
+  // generate token for update profile
+  var options = {
+    method: "PATCH",
+    url: "https://fitassist.eu.auth0.com/api/v2/users/" + authUserId,
+    headers: {
+      "content-type": "application/json",
+      authorization: req.headers["authorization"]
+    },
+    body: {
+      user_metadata: {
+        picture:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4uAfoapDbR_ycxF4hltMedCYIqj9bcOZB-ZuD8Sf89rdrGtTv"
+      }
+    },
+    json: true
+  };
 
-request(options, function (error, response, body) {
-  if (error) throw new Error(error);
+  request(options, function(error, response, body) {
+    if (error) throw new Error(error);
+    res.send(body);
+  });
+  // End
 
-  console.log(body);
+  // image update start
+  var options = {
+    method: "PATCH",
+    url: "https://fitassist.eu.auth0.com/api/v2/users/" + authUserId,
+    headers: {
+      "content-type": "application/json",
+      authorization: req.headers["authorization"]
+    },
+    body: {
+      user_metadata: {
+        picture:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4uAfoapDbR_ycxF4hltMedCYIqj9bcOZB-ZuD8Sf89rdrGtTv"
+      }
+    },
+    json: true
+  };
+
+  request(options, function(error, response, body) {
+    if (error) throw new Error(error);
+    res.send(body);
+  });
+  //image update end
 });
-});
-
 
 module.exports = router;
