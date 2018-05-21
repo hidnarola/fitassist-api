@@ -24,7 +24,7 @@ var shoppingcart = require("./user/shopping_cart");
 var friends = require("./user/friends");
 var comment = require("./user/comment");
 var like = require("./user/like");
-var recipe_assign = require("./user/user_recipe_assign");
+var recipe = require("./user/user_recipe");
 var nutrition = require("./user/nutrition");
 var test_exercises = require("./user/test_exercises");
 
@@ -49,7 +49,7 @@ router.use("/bodypart", auth, bodypart);
 router.use("/friend", auth, friends);
 router.use("/comment", auth, comment);
 router.use("/like", auth, like);
-router.use("/recipe_assign",auth, recipe_assign);
+router.use("/recipe",auth, recipe);
 router.use("/nutrition", auth, nutrition );
 router.use("/test_exercise", auth, test_exercises);
 

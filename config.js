@@ -3,16 +3,30 @@ log4js.configure({
   appenders: { development: { type: "file", filename: "log_file.log" } },
   categories: { default: { appenders: ["development"], level: "trace" } }
 });
+const dotenv = require("dotenv").config();
+
 
 module.exports = {
+  // BASE_URL:'http://' + window.location.hostname + ':3300/',
+
   //API url for search recipe
   RECIPE_API_URL:
     "https://api.edamam.com/search?app_id=b55ed2b8&app_key=791594812dac61912e88ba6af2dd73b7",
 
   // App config
-  node_port: 3300,
+  node_port: process.env.NODE_PORT,
   logger: log4js.getLogger("development"),
 
+  //Auth token generation body data
+  authTokenGenrationCredentials: {
+    grant_type: "client_credentials",
+    client_id: "lpiNJFwBeKI3PjUHmNV7Rp9SNQHbRZx0",
+    client_secret:
+      "ZALaNjSvLMtlR0ctmJ9wR6MShRDKQ9qrAT9klrsPzU5F4KhmGsLzEjrmoVD3B-p3",
+    audience: "https://fitassist.eu.auth0.com/api/v2/"
+  },
+  authTokenUrl: "https://fitassist.eu.auth0.com/oauth/token",
+  authUserApiUrl: "https://fitassist.eu.auth0.com/api/v2/users/",
   //Auth0 config
   jwksUri: "https://fitassist.eu.auth0.com/.well-known/jwks.json",
   audience: "https://fitassist.eu.auth0.com/api/v2/",

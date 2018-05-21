@@ -45,39 +45,40 @@ app.use(
     customValidators: {
       isEmailAvailable: async (email, authUserId) => {
         var resp_data = await user_helper.get_user_by_id(authUserId);
-        console.log("resp = ",resp_data);
-        console.log("email = ",email);
+        console.log("resp = ", resp_data);
+        console.log("email = ", email);
         if (resp_data.status === 1) {
           if (resp_data.user.email != email) {
             var checkemaildata = await user_helper.checkvalue({
               email: email,
               authUserId: { $ne: authUserId }
             });
-            console.log("in isEmailAvailable = ",checkemaildata);
+            console.log("in isEmailAvailable = ", checkemaildata);
             return checkemaildata.count == 0;
           }
         }
       }
     },
     isImage: function(value, filename) {
-  
-      var extension = (path.extname(filename)).toLowerCase();
+      var extension = path.extname(filename).toLowerCase();
       switch (extension) {
-          case '.jpg':
-              return '.jpg';
-          case '.jpeg':
-              return '.jpeg';
-          case  '.png':
-              return '.png';
-          default:
-              return false;
+        case ".jpg":
+          return ".jpg";
+        case ".jpeg":
+          return ".jpeg";
+        case ".png":
+          return ".png";
+        default:
+          return false;
       }
-  },
+    }
   })
 );
 
+
 // Support corss origin request
 app.use(function(req, res, next) {
+
   // Website you wish to allow to connect
   res.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -122,6 +123,12 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+var serverpath = "http://localhost:3300/";
+if (app.get("env") != "development") {
+  serverpath = "http://167.99.90.169:3300/";
+}
+
+const BASE_URL = serverpath;
 
 // development error handler, will print stacktrace
 if (app.get("env") === "development") {

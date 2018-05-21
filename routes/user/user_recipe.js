@@ -173,9 +173,90 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @api {post} /user/recipe/ Add
+ * @apiName Add
+ * @apiGroup User recipes
+ *
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Object} dietLabels logDate of user's recipe
+ * @apiParam {Object} healthLabels logDate of user's recipe
+ * @apiParam {Object} ingredientLines logDate of user's recipe
+ * @apiParam {Object} ingredients logDate of user's recipe
+ * @apiParam {Object} userId logDate of user's recipe
+ * @apiParam {Object} name logDate of user's recipe
+ * @apiParam {Object} image logDate of user's recipe
+ * @apiParam {Object} url logDate of user's recipe
+ * @apiParam {Object} totalWeight logDate of user's recipe
+ * @apiParam {Object} totalTime logDate of user's recipe
+ * @apiParam {Object} dayDriveType logDate of user's recipe
+ * @apiParam {Object} totalNutrients logDate of user's recipe
+ * @apiParam {Object} date logDate of user's recipe
+ * @apiParam {Object} date logDate of user's recipe
+ * @apiSuccess (Success 200) {JSON} logdates Measurement details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
 
+router.post("/get_log_dates_by_date", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var schema = {
+    logDate: {
+      notEmpty: true,
+      errorMessage: "log Date is required"
+    }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
 
+  if (!errors) {
+    var authUserId = decoded.sub;
+    var check = await moment(req.body.logDate).utc(0);
+    var startCheck = await moment(check).subtract(2, "month");
+    var endCheck = await moment(check).add(2, "month");
 
+    var log_data = await measurement_helper.get_logdata_by_userid({
+      userId: authUserId,
+      logDate: {
+        $gte: startCheck,
+        $lte: endCheck
+      }
+    });
 
+    if (log_data.status != 0) {
+      res.status(config.OK_STATUS).json(log_data);
+    } else {
+      return res.status(config.BAD_REQUEST).json({ log_data });
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.BAD_REQUEST).json({ message: errors });
+  }
+});
+
+/**
+ * @api {delete} /user/recipe/:recipe_id Delete
+ * @apiName Delete
+ * @apiGroup User recipes
+ *
+ * @apiHeader {String}  x-access-token user's unique access-key
+ *
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.delete("/:recipe_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  logger.trace("Delete user's recipe API - Id = ", req.params.recipe_id);
+  let user_recipe_data = await user_recipe_helper.delete_user_recipe({
+    _id: req.params.recipe_id
+  });
+
+  if (user_recipe_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(user_recipe_data);
+  } else {
+    res.status(config.OK_STATUS).json(user_recipe_data);
+  }
+});
 
 module.exports = router;

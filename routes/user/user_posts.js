@@ -82,7 +82,7 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiParam {File} images User's  Images
  * @apiParam {String} [description] Description of Images
  * @apiParam {Number} [priavacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
- * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","post"]</code>
+ * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","gallery"]</code>
  *
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
  * @apiError (Error 4xx) {String} message Validation or error message.

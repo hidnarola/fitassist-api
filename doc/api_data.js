@@ -7292,7 +7292,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "File",
             "optional": false,
-            "field": "image",
+            "field": "user_img",
             "description": "<p>image of user</p>"
           }
         ]
@@ -9084,7 +9084,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "postType",
-            "description": "<p>post Type of Post <br><code>Enum=[&quot;timeline&quot;,&quot;post&quot;]</code></p>"
+            "description": "<p>post Type of Post <br><code>Enum=[&quot;timeline&quot;,&quot;gallery&quot;]</code></p>"
           }
         ]
       }
@@ -10125,6 +10125,124 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/test_exercises.js",
     "groupTitle": "User_Test_Exercises"
+  },
+  {
+    "type": "post",
+    "url": "/user/recipe/",
+    "title": "Add",
+    "name": "Add",
+    "group": "User_recipes",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "logDate",
+            "description": "<p>logDate of user's Measurement</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "logdates",
+            "description": "<p>Measurement details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_recipe.js",
+    "groupTitle": "User_recipes"
+  },
+  {
+    "type": "delete",
+    "url": "/user/recipe/:recipe_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_recipes",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_recipe.js",
+    "groupTitle": "User_recipes"
   },
   {
     "type": "post",

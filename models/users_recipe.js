@@ -20,7 +20,7 @@ var UserRecipes = new Schema(
     totalNutrients: { type: Object},
     dayDriveType: { type: String,enum:["dinner","after_lunch_snacks","lunch","breakfast","pre_lunch_snacks"]},
     metaData:{type:Object},
-    date: { type: Date, required:true},
+    date: { type: Date, default: Date.now ,required:true},
     status: { type: Number, default: 1 },
     isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },

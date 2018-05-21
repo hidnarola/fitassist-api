@@ -261,26 +261,46 @@ router.put("/update_aboutme", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var user_profile_obj = {};
-  if (req.body.aboutMe) {
-    user_profile_obj.aboutMe = req.body.aboutMe;
-  }
-  if (req.body.weight) {
-    user_profile_obj.weight = req.body.weight;
-  }
-  if (req.body.height) {
-    user_profile_obj.height = req.body.height;
-  }
+  var schema = {
+    height: {
+      notEmpty: true,
+      errorMessage: "height is required",
+      isDecimal: { errorMessage: "Please enter numeric value" }
+    },
+    weight: {
+      notEmpty: true,
+      errorMessage: "weight is required",
+      isDecimal: { errorMessage: "Please enter numeric value" }
+    }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
 
-  let user_data = await user_helper.update_user_by_id(
-    authUserId,
-    user_profile_obj
-  );
-  if (user_data.status === 0) {
-    logger.error("Error while updating user data = ", user_data);
-    return res.status(config.BAD_REQUEST).json({ user_data });
+  if (!errors) {
+    var user_profile_obj = {};
+    if (req.body.aboutMe) {
+      user_profile_obj.aboutMe = req.body.aboutMe;
+    }
+    if (req.body.weight) {
+      user_profile_obj.weight = req.body.weight;
+    }
+    if (req.body.height) {
+      user_profile_obj.height = req.body.height;
+    }
+
+    let user_data = await user_helper.update_user_by_id(
+      authUserId,
+      user_profile_obj
+    );
+    if (user_data.status === 0) {
+      logger.error("Error while updating user data = ", user_data);
+      return res.status(config.BAD_REQUEST).json({ user_data });
+    } else {
+      return res.status(config.OK_STATUS).json(user_data);
+    }
   } else {
-    return res.status(config.OK_STATUS).json(user_data);
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -289,58 +309,110 @@ router.put("/update_aboutme", async (req, res) => {
  * @apiName Profile Picture - Update
  * @apiGroup User
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {File} image image of user
+ * @apiParam {File} user_img image of user
  * @apiSuccess (Success 200) {String} message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.patch("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  console.log("DECODED:", req.headers["authorization"]);
+  var user_obj={
+    avatar:''
+  };
+  base_url= req.headers.host;
+
+//image upload
+var filename;
+if (req.files && req.files["user_img"]) {
+  var file = req.files["user_img"];
+  var dir = "./uploads/user";
+  var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+
+  if (mimetype.indexOf(file.mimetype) != -1) {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+    extention = path.extname(file.name);
+    filename = "user_" + new Date().getTime() + extention;
+    file.mv(dir + "/" + filename, function(err) {
+      if (err) {
+        logger.error("There was an issue in uploading image");
+        res.send({
+          status: config.MEDIA_ERROR_STATUS,
+          err: "There was an issue in uploading image"
+        });
+      } else {
+        logger.trace("image has been uploaded. Image name = ", filename);
+        //return res.send(200, "null");
+      }
+    });
+  } else {
+    logger.error("Image format is invalid");
+    res.send({
+      status: config.VALIDATION_FAILURE_STATUS,
+      err: "Image format is invalid"
+    });
+  }
+} else {
+  logger.info("Image not available to upload. Executing next instruction");
+  //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+}
+if (filename) {
+  
+  user_obj.avatar = config.BASE_URL+"uploads/user/" + filename;
+  resp_data = await user_helper.get_user_by_id(authUserId);
+  try {
+    fs.unlink(resp_data.user.avatar, function() {
+      console.log("Image deleted");
+    });
+  } catch (err) {}
+  let user_data = await user_helper.update_user_by_id(
+    authUserId,
+    user_obj
+  );
+  if (user_data.status === 0) {
+    logger.error("Error while updating user avatar = ", user_data);
+    //res.status(config.BAD_REQUEST).json({ user_data });
+  } else {
+    //res.status(config.OK_STATUS).json(user_data);
+  }
+}
+
 
   // generate token for update profile
   var options = {
-    method: "PATCH",
-    url: "https://fitassist.eu.auth0.com/api/v2/users/" + authUserId,
+    method: "POST",
+    url: config.authTokenUrl,
     headers: {
-      "content-type": "application/json",
-      authorization: req.headers["authorization"]
+      "content-type": "application/json"
     },
-    body: {
-      user_metadata: {
-        picture:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4uAfoapDbR_ycxF4hltMedCYIqj9bcOZB-ZuD8Sf89rdrGtTv"
-      }
-    },
+    body: config.authTokenGenrationCredentials,
     json: true
   };
 
-  request(options, function(error, response, body) {
-    if (error) throw new Error(error);
-    res.send(body);
-  });
-  // End
-
+  var token = await request(options);
   // image update start
   var options = {
     method: "PATCH",
-    url: "https://fitassist.eu.auth0.com/api/v2/users/" + authUserId,
+    url: config.authUserApiUrl + authUserId,
     headers: {
       "content-type": "application/json",
-      authorization: req.headers["authorization"]
+      // authorization: "bearer "+token
+      authorization: `bearer ${token.access_token}`
     },
     body: {
       user_metadata: {
-        picture:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4uAfoapDbR_ycxF4hltMedCYIqj9bcOZB-ZuD8Sf89rdrGtTv"
+        picture:user_obj.avatar,
       }
     },
     json: true
   };
 
   request(options, function(error, response, body) {
-    if (error) throw new Error(error);
-    res.send(body);
+    if (error){
+      return res.send({ status: 2, message: "profile image is not updated" });
+    } 
+    return res.send({ status: 1, message: "profile image is updated" });
   });
   //image update end
 });
