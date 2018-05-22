@@ -50,8 +50,8 @@ router.post("/", async (req, res) => {
 
     start_date = await moment(start_date);
     end_date = await moment(end_date);
-console.log('startdate',start_date);
-console.log('enddate',end_date);
+    console.log("startdate", start_date);
+    console.log("enddate", end_date);
 
     let shopping_cart_data = await user_recipe_helper.get_user_recipe_by_id({
       userId: authUserId,
@@ -59,29 +59,6 @@ console.log('enddate',end_date);
         $gte: start_date,
         $lte: end_date
       }
-    });
-console.log('shopping_cart_data',shopping_cart_data.todays_meal,"length:",shopping_cart_data.todays_meal.length);
-
-    data = shopping_cart_data.todays_meal;
-    var keys = Object.keys(data);
-
-    keys.forEach(async key => {
-      single_ingredient = data[key].ingredients;
-      
-      single_ingredient.forEach(ingredient => {
-        // console.log('ingredient.food',ingredient.food);
-
-        console.log("parseInt(ingredient.weight)", parseInt(ingredient.weight));
-
-        if (visitedFood.indexOf(ingredient.food) < 0) {
-          ingredients[ingredient.food] = parseFloat(ingredient.weight);
-          visitedFood.push(ingredient.food);
-        } else {
-          ingredients[ingredient.food]=
-            parseFloat(ingredients[ingredient.food].value) +
-            parseFloat(ingredient.weight);
-        }
-      });
     });
 
     if (shopping_cart_data.status === 0) {
@@ -91,6 +68,32 @@ console.log('shopping_cart_data',shopping_cart_data.todays_meal,"length:",shoppi
       );
       return res.status(config.BAD_REQUEST).json({ shopping_cart_data });
     } else {
+
+      data = shopping_cart_data.todays_meal;
+      var keys = Object.keys(data);
+
+      keys.forEach(async key => {
+        single_ingredient = data[key].ingredients;
+
+        single_ingredient.forEach(ingredient => {
+          // console.log('ingredient.food',ingredient.food);
+
+          console.log(
+            "parseInt(ingredient.weight)",
+            parseInt(ingredient.weight)
+          );
+
+          if (visitedFood.indexOf(ingredient.food) < 0) {
+            ingredients[ingredient.food] = parseFloat(ingredient.weight);
+            visitedFood.push(ingredient.food);
+          } else {
+            ingredients[ingredient.food] =
+              parseFloat(ingredients[ingredient.food]) +
+              parseFloat(ingredient.weight);
+          }
+        });
+      });
+
       return res.status(config.OK_STATUS).json({
         status: 1,
         message: "user's recipe shopping cart data found",
