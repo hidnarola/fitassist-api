@@ -6382,7 +6382,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/shoppingcart",
+    "url": "/user/shopping_cart",
     "title": "Add",
     "name": "Add",
     "group": "Shopping_Cart",
@@ -6457,8 +6457,133 @@ define({ "api": [
     "groupTitle": "Shopping_Cart"
   },
   {
+    "type": "post",
+    "url": "/user/shoppingcart",
+    "title": "Add",
+    "name": "Add",
+    "group": "Shopping_Cart",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "itemId",
+            "description": "<p>ingredients  ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "qty",
+            "description": "<p>Quantity of ingredients</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "shopping_cart",
+            "description": "<p>added shopping cart detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/shopping_cart.backup.js",
+    "groupTitle": "Shopping_Cart"
+  },
+  {
     "type": "delete",
     "url": "/user/shoppingcart/:shopping_cart_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "Shopping_Cart",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/shopping_cart.backup.js",
+    "groupTitle": "Shopping_Cart"
+  },
+  {
+    "type": "delete",
+    "url": "/user/shopping_cart/:shopping_cart_id",
     "title": "Delete",
     "name": "Delete",
     "group": "Shopping_Cart",
@@ -6551,7 +6676,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/shopping_cart.js",
+    "filename": "routes/user/shopping_cart.backup.js",
     "groupTitle": "Shopping_Cart"
   },
   {
@@ -6600,7 +6725,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/shopping_cart.js",
+    "filename": "routes/user/shopping_cart.backup.js",
     "groupTitle": "Shopping_Cart"
   },
   {
@@ -6676,7 +6801,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/shopping_cart.js",
+    "filename": "routes/user/shopping_cart.backup.js",
     "groupTitle": "Shopping_Cart"
   },
   {
@@ -9916,6 +10041,173 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/user/recipe/",
+    "title": "Add",
+    "name": "Add",
+    "group": "User_Recipe",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "user_recipe",
+            "description": "<p>user recipe object</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_recipe",
+            "description": "<p>user_recipes details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_recipe.js",
+    "groupTitle": "User_Recipe"
+  },
+  {
+    "type": "delete",
+    "url": "/user/recipe/:recipe_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Recipe",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_recipe.js",
+    "groupTitle": "User_Recipe"
+  },
+  {
+    "type": "get",
+    "url": "/user/recipe/",
+    "title": "Get recipe",
+    "name": "Get",
+    "group": "User_Recipe",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user_recipe",
+            "description": "<p>Array of user_recipes 's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_recipe.js",
+    "groupTitle": "User_Recipe"
+  },
+  {
+    "type": "post",
     "url": "/user/test_exercise",
     "title": "Save exercise Preference",
     "name": "Save",
@@ -10125,124 +10417,6 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/test_exercises.js",
     "groupTitle": "User_Test_Exercises"
-  },
-  {
-    "type": "post",
-    "url": "/user/recipe/",
-    "title": "Add",
-    "name": "Add",
-    "group": "User_recipes",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "logDate",
-            "description": "<p>logDate of user's Measurement</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "logdates",
-            "description": "<p>Measurement details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_recipe.js",
-    "groupTitle": "User_recipes"
-  },
-  {
-    "type": "delete",
-    "url": "/user/recipe/:recipe_id",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_recipes",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_recipe.js",
-    "groupTitle": "User_recipes"
   },
   {
     "type": "post",

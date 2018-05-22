@@ -20,14 +20,13 @@ var gallery = require("./user/gallery");
 var exercise_types = require("./user/exercise_type");
 var exercise = require("./user/exercise");
 var bodypart = require("./user/bodyparts");
-var shoppingcart = require("./user/shopping_cart");
+var shopping_cart = require("./user/shopping_cart");
 var friends = require("./user/friends");
 var comment = require("./user/comment");
 var like = require("./user/like");
 var recipe = require("./user/user_recipe");
 var nutrition = require("./user/nutrition");
 var test_exercises = require("./user/test_exercises");
-
 
 // router.use("/equipment_category", auth, equipment_category);
 // router.use("/equipment", auth, equipment);
@@ -49,10 +48,9 @@ router.use("/bodypart", auth, bodypart);
 router.use("/friend", auth, friends);
 router.use("/comment", auth, comment);
 router.use("/like", auth, like);
-router.use("/recipe",auth, recipe);
-router.use("/nutrition", auth, nutrition );
+router.use("/recipe", auth, recipe);
+router.use("/nutrition", auth, nutrition);
 router.use("/test_exercise", auth, test_exercises);
-
-
+router.use("/shopping_cart", auth, shopping_cart);
 
 module.exports = router;

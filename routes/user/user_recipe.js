@@ -13,10 +13,17 @@ var moment = require("moment");
 var nutrition_preferences_helper = require("../../helpers/nutrition_preferences_helper");
 var user_recipe_helper = require("../../helpers/user_recipe_helper");
 
+/**
+ * @api {get} /user/recipe/ Get recipe
+ * @apiName Get 
+ * @apiGroup User Recipe
+ * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiSuccess (Success 200) {Array} user_recipe Array of user_recipes 's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
 router.get("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
   logger.trace("Get all nutrition preference API called : ");
   var resp_data = await nutrition_preferences_helper.get_all_nutrition_preferences(
     { userId: authUserId }
@@ -51,7 +58,7 @@ router.get("/", async (req, res) => {
     var toFrom = "&from=" + randomStrat + "&to=100";
     //console.log("recipeUrl:-->  ", recipeUrl);
     var recipeName = "&q=";
-    var Maximum_number_of_ingredients = "&ingr=5";
+    var Maximum_number_of_ingredients = "&ingr=10";
     var dietSearch = "";
 
     var healthSearch = "";
@@ -103,7 +110,8 @@ router.get("/", async (req, res) => {
         excludedSearch +
         toFrom +
         nutritionTargetsSearch;
-
+      console.log('url',url);
+      
       var options = {
         uri: url,
         json: true // Automatically parses the JSON string in the response
@@ -146,7 +154,6 @@ router.get("/", async (req, res) => {
             //  console.log('recipeObj',recipeObj);
             insertDataArray.push(recipeObj);
           });
-          console.log("data:->", insertDataArray);
           let recipe_data = await user_recipe_helper.insert_user_recipe(
             insertDataArray
           );
@@ -154,9 +161,9 @@ router.get("/", async (req, res) => {
 
           if (recipe_data.status === 0) {
             logger.error("Error while inserting user recipe = ", recipe_data);
-            //return res.status(config.BAD_REQUEST).json({ recipe_data });
+            return res.status(config.BAD_REQUEST).json({ recipe_data });
           } else {
-            //return res.status(config.OK_STATUS).json(recipe_data);
+            return res.status(config.OK_STATUS).json(recipe_data);
           }
 
           //   return res.send({"single_user_recipe_meal":single_user_recipe_meal});
@@ -176,68 +183,39 @@ router.get("/", async (req, res) => {
 /**
  * @api {post} /user/recipe/ Add
  * @apiName Add
- * @apiGroup User recipes
- *
+ * @apiGroup User Recipe
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Object} dietLabels logDate of user's recipe
- * @apiParam {Object} healthLabels logDate of user's recipe
- * @apiParam {Object} ingredientLines logDate of user's recipe
- * @apiParam {Object} ingredients logDate of user's recipe
- * @apiParam {Object} userId logDate of user's recipe
- * @apiParam {Object} name logDate of user's recipe
- * @apiParam {Object} image logDate of user's recipe
- * @apiParam {Object} url logDate of user's recipe
- * @apiParam {Object} totalWeight logDate of user's recipe
- * @apiParam {Object} totalTime logDate of user's recipe
- * @apiParam {Object} dayDriveType logDate of user's recipe
- * @apiParam {Object} totalNutrients logDate of user's recipe
- * @apiParam {Object} date logDate of user's recipe
- * @apiParam {Object} date logDate of user's recipe
- * @apiSuccess (Success 200) {JSON} logdates Measurement details
+ * @apiParam {Object} user_recipe user recipe object
+ * @apiSuccess (Success 200) {JSON} user_recipe user_recipes details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
-router.post("/get_log_dates_by_date", async (req, res) => {
+router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
-  var schema = {
-    logDate: {
-      notEmpty: true,
-      errorMessage: "log Date is required"
-    }
-  };
-  req.checkBody(schema);
-  var errors = req.validationErrors();
+  var authUserId = decoded.sub;
 
-  if (!errors) {
-    var authUserId = decoded.sub;
-    var check = await moment(req.body.logDate).utc(0);
-    var startCheck = await moment(check).subtract(2, "month");
-    var endCheck = await moment(check).add(2, "month");
+  var user_recipe_obj = req.body.user_recipe;
+  user_recipe_obj.userId=authUserId
 
-    var log_data = await measurement_helper.get_logdata_by_userid({
-      userId: authUserId,
-      logDate: {
-        $gte: startCheck,
-        $lte: endCheck
-      }
-    });
-
-    if (log_data.status != 0) {
-      res.status(config.OK_STATUS).json(log_data);
-    } else {
-      return res.status(config.BAD_REQUEST).json({ log_data });
-    }
+  let user_recipe_data = await user_recipe_helper.insert_user_recipe(
+    user_recipe_obj
+  );
+  if (user_recipe_data.status === 0) {
+    logger.error(
+      "Error while inserting user recipe = ",
+      user_recipe_data
+    );
+    res.status(config.BAD_REQUEST).json(user_recipe_data);
   } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.OK_STATUS).json(user_recipe_data);
   }
 });
 
 /**
  * @api {delete} /user/recipe/:recipe_id Delete
  * @apiName Delete
- * @apiGroup User recipes
+ * @apiGroup User Recipe
  *
  * @apiHeader {String}  x-access-token user's unique access-key
  *

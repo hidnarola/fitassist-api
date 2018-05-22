@@ -3,6 +3,7 @@ var fs = require("fs");
 var path = require("path");
 var async = require("async");
 var jwtDecode = require("jwt-decode");
+var moment = require("moment");
 
 var router = express.Router();
 
@@ -10,166 +11,102 @@ var config = require("../../config");
 var logger = config.logger;
 
 var shopping_cart_helper = require("../../helpers/shopping_cart_helper");
+var user_recipe_helper = require("../../helpers/user_recipe_helper");
 
 /**
- * @api {get} /user/shoppingcart Get all
- * @apiName Get all
- * @apiGroup  Shopping Cart
- * @apiHeader {String}  x-access-token User's unique access-key
- * @apiSuccess (Success 200) {Array} shopping_carts Array of shoppingcart document
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get("/", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  logger.trace("Get all shoppingcart API called");
-  var resp_data = await shopping_cart_helper.get_all_shoppingcart({
-    userId: authUserId
-  });
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching shopping cart = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("shopping cart got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
-});
-
-/**
- * @api {get} /user/shoppingcart/shopping_cart_id Get by ID
- * @apiName Get by ID
- * @apiGroup  Shopping Cart
- * @apiHeader {String}  x-access-token User's unique access-key
- * @apiSuccess (Success 200) {Array} shopping_cart Array of shoppingcart document
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get("/:shopping_cart_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  shopping_cart_id = req.params.shopping_cart_id;
-  logger.trace("Get all shopping cart API called");
-  var resp_data = await shopping_cart_helper.get_shopping_cart_id({
-    _id: shopping_cart_id,
-    userId: authUserId
-  });
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching shopping cart = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("shopping cart got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
-});
-
-/**
- * @api {post} /user/shoppingcart  Add
- * @apiName Add
+ * @api {post} /user/shopping_cart  Get
+ * @apiName Get
  * @apiGroup  Shopping Cart
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token User's unique access-key
- * @apiParam {String} itemId ingredients  ID
- * @apiParam {Number} qty Quantity of ingredients
+ * @apiParam {Date} start_date start date of recipe
+ * @apiParam {Date} end_date end date of recipe
  * @apiSuccess (Success 200) {JSON} shopping_cart added shopping cart detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
 router.post("/", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
   var schema = {
-    itemId: {
+    start_date: {
       notEmpty: true,
-      errorMessage: "Item ID is required"
+      errorMessage: "start date is required"
     },
-    qty: {
+    end_date: {
       notEmpty: true,
-      errorMessage: "Quantity is required"
+      errorMessage: "end date is required"
     }
   };
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
   if (!errors) {
-    var shopping_cart_obj = {
-      itemId: req.body.itemId,
-      qty: req.body.qty,
-      userId: authUserId
-    };
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
+    var ingredients = {};
+    var visitedFood = [];
+    var start_date = req.body.start_date;
+    var end_date = req.body.end_date;
 
-    let shopping_cart_data = await shopping_cart_helper.insert_shopping_cart(
-      shopping_cart_obj
-    );
+    start_date = await moment(start_date);
+    end_date = await moment(end_date);
+console.log('startdate',start_date);
+console.log('enddate',end_date);
+
+    let shopping_cart_data = await user_recipe_helper.get_user_recipe_by_id({
+      userId: authUserId,
+      date: {
+        $gte: start_date,
+        $lte: end_date
+      }
+    });
+console.log('shopping_cart_data',shopping_cart_data.todays_meal,"length:",shopping_cart_data.todays_meal.length);
+
+    data = shopping_cart_data.todays_meal;
+    var keys = Object.keys(data);
+
+    keys.forEach(async key => {
+      single_ingredient = data[key].ingredients;
+      
+      single_ingredient.forEach(ingredient => {
+        // console.log('ingredient.food',ingredient.food);
+
+        console.log("parseInt(ingredient.weight)", parseInt(ingredient.weight));
+
+        if (visitedFood.indexOf(ingredient.food) < 0) {
+          ingredients[ingredient.food] = {
+            value: parseFloat(ingredient.weight)
+          };
+          visitedFood.push(ingredient.food);
+        } else {
+          ingredients[ingredient.food].value =
+            parseFloat(ingredients[ingredient.food].value) +
+            parseFloat(ingredient.weight);
+        }
+      });
+    });
+
     if (shopping_cart_data.status === 0) {
       logger.error(
-        "Error while inserting shopping cart data = ",
+        "Error while fetching shopping cart data = ",
         shopping_cart_data
       );
       return res.status(config.BAD_REQUEST).json({ shopping_cart_data });
     } else {
-      return res.status(config.OK_STATUS).json(shopping_cart_data);
+      return res.status(config.OK_STATUS).json({
+        status: 1,
+        message: "user's recipe shopping cart data found",
+        ingredients: ingredients
+      });
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
 /**
- * @api {put} /user/shoppingcart  Update
- * @apiName Update
- * @apiGroup  Shopping Cart
- * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
- * @apiParam {String} itemId ingredients  ID
- * @apiParam {Number} qty Quantity of ingredients
- * @apiSuccess (Success 200) {JSON} shopping_cart updated shopping cart detail
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.put("/:shopping_cart_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  shopping_cart_id = req.params.shopping_cart_id;
-  var schema = {
-    itemId: {
-      notEmpty: true,
-      errorMessage: "Item ID is required"
-    },
-    qty: {
-      notEmpty: true,
-      errorMessage: "Quantity is required"
-    }
-  };
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-
-  if (!errors) {
-    var shopping_cart_obj = {
-      itemId: req.body.itemId,
-      qty: req.body.qty,
-      userId: authUserId
-    };
-
-    let shopping_cart_data = await shopping_cart_helper.update_shopping_cart_by_id(
-      { _id: shopping_cart_id, userId: authUserId },
-      shopping_cart_obj
-    );
-    if (shopping_cart_data.status === 0) {
-      logger.error(
-        "Error while updating shopping cart data = ",
-        shopping_cart_data
-      );
-      return res.status(config.BAD_REQUEST).json({ shopping_cart_data });
-    } else {
-      return res.status(config.OK_STATUS).json(shopping_cart_data);
-    }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
-  }
-});
-
-/**
- * @api {delete} /user/shoppingcart/:shopping_cart_id Delete
+ * @api {delete} /user/shopping_cart/:shopping_cart_id Delete
  * @apiName Delete
  * @apiGroup  Shopping Cart
  *
@@ -183,7 +120,7 @@ router.delete("/:shopping_cart_id", async (req, res) => {
   var authUserId = decoded.sub;
   logger.trace("Delete shopping cart API - Id = ", req.params.shopping_cart_id);
   let shopping_cart_data = await shopping_cart_helper.delete_shopping_cart_by_id(
-    {_id:req.params.shopping_cart_id,userId:authUserId}
+    { _id: req.params.shopping_cart_id, userId: authUserId }
   );
 
   if (shopping_cart_data.status === 0) {
