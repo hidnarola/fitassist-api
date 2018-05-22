@@ -7330,6 +7330,104 @@
   },
   {
     "type": "get",
+    "url": "/user/workout/today",
+    "title": "Get all user's workout",
+    "name": "Get_all_user_s_workout",
+    "group": "User_Body_Parts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_workouts",
+            "description": "<p>JSON of user_workout document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workout.js",
+    "groupTitle": "User_Body_Parts"
+  },
+  {
+    "type": "get",
+    "url": "/user/workout",
+    "title": "Get all user's workout",
+    "name": "Get_all_user_s_workout",
+    "group": "User_Body_Parts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_workouts",
+            "description": "<p>JSON of user_workout document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workout.js",
+    "groupTitle": "User_Body_Parts"
+  },
+  {
+    "type": "get",
     "url": "/user/equipment",
     "title": "Get User's all Equipment",
     "name": "Get_all_User_s_Equipment",

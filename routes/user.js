@@ -27,6 +27,7 @@ var like = require("./user/like");
 var recipe = require("./user/user_recipe");
 var nutrition = require("./user/nutrition");
 var test_exercises = require("./user/test_exercises");
+var user_workout = require("./user/user_workout");
 
 // router.use("/equipment_category", auth, equipment_category);
 // router.use("/equipment", auth, equipment);
@@ -52,5 +53,6 @@ router.use("/recipe", auth, recipe);
 router.use("/nutrition", auth, nutrition);
 router.use("/test_exercise", auth, test_exercises);
 router.use("/shopping_cart", auth, shopping_cart);
+router.use("/workout", auth, user_workout);
 
 module.exports = router;
