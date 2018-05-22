@@ -14,8 +14,8 @@ var shopping_cart_helper = require("../../helpers/shopping_cart_helper");
 var user_recipe_helper = require("../../helpers/user_recipe_helper");
 
 /**
- * @api {post} /user/shopping_cart  Get
- * @apiName Get
+ * @api {post} /user/shopping_cart  Get shopping cart
+ * @apiName Get shopping cart
  * @apiGroup  Shopping Cart
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token User's unique access-key
@@ -74,12 +74,10 @@ console.log('shopping_cart_data',shopping_cart_data.todays_meal,"length:",shoppi
         console.log("parseInt(ingredient.weight)", parseInt(ingredient.weight));
 
         if (visitedFood.indexOf(ingredient.food) < 0) {
-          ingredients[ingredient.food] = {
-            value: parseFloat(ingredient.weight)
-          };
+          ingredients[ingredient.food] = parseFloat(ingredient.weight);
           visitedFood.push(ingredient.food);
         } else {
-          ingredients[ingredient.food].value =
+          ingredients[ingredient.food]=
             parseFloat(ingredients[ingredient.food].value) +
             parseFloat(ingredient.weight);
         }
