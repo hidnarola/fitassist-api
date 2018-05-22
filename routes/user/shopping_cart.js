@@ -44,7 +44,6 @@ router.post("/", async (req, res) => {
     var decoded = jwtDecode(req.headers["authorization"]);
     var authUserId = decoded.sub;
     var ingredients = {};
-    var visitedFood = [];
     var start_date = req.body.start_date;
     var end_date = req.body.end_date;
 
@@ -67,9 +66,17 @@ router.post("/", async (req, res) => {
         shopping_cart_data
       );
       return res.status(config.BAD_REQUEST).json({ shopping_cart_data });
-    } else {
-
+    }
+    else if(shopping_cart_data.status === 2){
+      logger.error(
+        "no shopping cart data found= ",
+        shopping_cart_data
+      );
+      return res.status(config.OK_STATUS).json({ shopping_cart_data });
+    }else {
       data = shopping_cart_data.todays_meal;
+      console.log('data',shopping_cart_data);
+      
       var keys = Object.keys(data);
 
       keys.forEach(async key => {
@@ -77,18 +84,17 @@ router.post("/", async (req, res) => {
 
         single_ingredient.forEach(ingredient => {
           // console.log('ingredient.food',ingredient.food);
-
+          var foodName=ingredient.food.toLowerCase();
           console.log(
             "parseInt(ingredient.weight)",
             parseInt(ingredient.weight)
           );
 
-          if (visitedFood.indexOf(ingredient.food) < 0) {
-            ingredients[ingredient.food] = parseFloat(ingredient.weight);
-            visitedFood.push(ingredient.food);
+          if (!ingredients[foodName]) {
+            ingredients[foodName] = parseFloat(ingredient.weight);
           } else {
-            ingredients[ingredient.food] =
-              parseFloat(ingredients[ingredient.food]) +
+            ingredients[foodName] =
+              parseFloat(ingredients[foodName]) +
               parseFloat(ingredient.weight);
           }
         });
