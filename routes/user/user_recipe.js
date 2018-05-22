@@ -15,7 +15,7 @@ var user_recipe_helper = require("../../helpers/user_recipe_helper");
 
 /**
  * @api {get} /user/recipe/ Get recipe
- * @apiName Get 
+ * @apiName Get
  * @apiGroup User Recipe
  * @apiHeader {String}  x-access-token User's unique access-key
  * @apiSuccess (Success 200) {Array} user_recipe Array of user_recipes 's document
@@ -110,8 +110,8 @@ router.get("/", async (req, res) => {
         excludedSearch +
         toFrom +
         nutritionTargetsSearch;
-      console.log('url',url);
-      
+      console.log("url", url);
+
       var options = {
         uri: url,
         json: true // Automatically parses the JSON string in the response
@@ -194,18 +194,30 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var user_recipe_obj={};
+  var data = req.body.user_recipe;
 
-  var user_recipe_obj = req.body.user_recipe;
-  user_recipe_obj.userId=authUserId
+  user_recipe_obj.userId = authUserId;
+  user_recipe_obj.name = data.recipe.label;
+  user_recipe_obj.image = data.recipe.image;
+  user_recipe_obj.url = data.recipe.url;
+  user_recipe_obj.dietLabels = data.recipe.dietLabels;
+  user_recipe_obj.healthLabels = data.recipe.healthLabels;
+  user_recipe_obj.ingredientLines = data.recipe.ingredientLines;
+  user_recipe_obj.calories = data.recipe.calories;
+  user_recipe_obj.totalWeight = data.recipe.totalWeight;
+  user_recipe_obj.totalTime = data.recipe.totalTime;
+  user_recipe_obj.ingredients = data.recipe.ingredients;
+  user_recipe_obj.totalNutrients = data.recipe.totalNutrients;
+  user_recipe_obj.metaData = data.recipe;
+  user_recipe_obj.dayDriveType = data.dayDrive;
+  user_recipe_obj.date = data.date;
 
   let user_recipe_data = await user_recipe_helper.insert_user_recipe(
     user_recipe_obj
   );
   if (user_recipe_data.status === 0) {
-    logger.error(
-      "Error while inserting user recipe = ",
-      user_recipe_data
-    );
+    logger.error("Error while inserting user recipe = ", user_recipe_data);
     res.status(config.BAD_REQUEST).json(user_recipe_data);
   } else {
     res.status(config.OK_STATUS).json(user_recipe_data);
