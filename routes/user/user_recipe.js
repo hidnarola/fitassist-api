@@ -206,6 +206,7 @@ router.post("/", async (req, res) => {
   user_recipe_obj.healthLabels = data.recipe.healthLabels;
   user_recipe_obj.ingredientLines = data.recipe.ingredientLines;
   user_recipe_obj.calories = data.recipe.calories;
+  user_recipe_obj.serving = data.recipe.yield;
   user_recipe_obj.totalWeight = data.recipe.totalWeight;
   user_recipe_obj.totalTime = data.recipe.totalTime;
   user_recipe_obj.ingredients = data.recipe.ingredients;
