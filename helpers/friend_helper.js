@@ -70,7 +70,7 @@ friend_helper.get_friends = async id => {
  *          status 2 - If friends not found, with appropriate message
  */
 friend_helper.get_friend_by_username = async (username, statusType) => {
-  console.log(username);
+  
   try {
     if (statusType == 2) {
       var friends = await Users.aggregate([
@@ -228,7 +228,7 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
     if (friends && friends.length > 0) {
       return {
         status: 1,
-        message: " found",
+        message: "friends found",
         friends: friends[0].user
       };
     } else {

@@ -2,13 +2,6 @@ var express = require("express");
 var router = express.Router();
 var auth = require("../middlewares/user_auth");
 
-// var equipment_category = require("./user/equipment_category");
-// var exercise_type = require("./user/exercise_types");
-// var exercise = require("./user/exercise");
-// var ingredient = require("./user/ingredients");
-// var recipes = require("./user/recipes");
-// var item = require("./user/item");
-
 var body_measurement = require("./user/measurement");
 var nutrition_preference = require("./user/nutrition_preferences");
 var profile = require("./user/profile");
@@ -28,13 +21,8 @@ var recipe = require("./user/user_recipe");
 var nutrition = require("./user/nutrition");
 var test_exercises = require("./user/test_exercises");
 var user_workout = require("./user/user_workout");
+var timeline = require("./user/timeline");
 
-// router.use("/equipment_category", auth, equipment_category);
-// router.use("/equipment", auth, equipment);
-// router.use("/exercise_type", auth, exercise_type);
-// router.use("/exercise", auth, exercise);
-// router.use("/ingredient", auth, ingredient);
-// router.use("/recipes", auth, recipes);
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
 router.use("/profile", auth, profile);
@@ -54,5 +42,6 @@ router.use("/nutrition", auth, nutrition);
 router.use("/test_exercise", auth, test_exercises);
 router.use("/shopping_cart", auth, shopping_cart);
 router.use("/workout", auth, user_workout);
+router.use("/timeline", auth, timeline);
 
 module.exports = router;

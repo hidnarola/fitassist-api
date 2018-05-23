@@ -9,26 +9,26 @@ var user_post_helper = {};
  *          status 1 - If user's post photos data found, with user's post photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
-user_post_helper.get_user_post_photos = async (user_auth_id) => {
+user_post_helper.get_user_post_photos = async user_auth_id => {
   try {
     var user_post_photos = await UserPost.aggregate([
-		{
-			$match:user_auth_id
-		},
-		{
+      {
+        $match: user_auth_id
+      },
+      {
         $lookup: {
           from: "user_posts_images",
           localField: "_id",
           foreignField: "postId",
           as: "images"
         }
-	  },
-	  {
-		  $unwind:"$images"
-	  },
-	  {
-		$match:{"images.isDeleted":0}
-		},
+      },
+      {
+        $unwind: "$images"
+      },
+      {
+        $match: { "images.isDeleted": 0 }
+      },
       {
         $group: {
           _id: "$_id",
@@ -36,11 +36,10 @@ user_post_helper.get_user_post_photos = async (user_auth_id) => {
           privacy: { $first: "$privacy" },
           postType: { $first: "$postType" },
           status: { $first: "$status" },
-		  userId: { $first: "$userId" },
-		  images:{$addToSet:"$images"},
+          userId: { $first: "$userId" },
+          images: { $addToSet: "$images" }
         }
-	  },
-	  
+      }
     ]);
     if (user_post_photos || user_post_photos.length != 0) {
       return {
@@ -55,6 +54,110 @@ user_post_helper.get_user_post_photos = async (user_auth_id) => {
     return {
       status: 0,
       message: "Error occured while finding user post photos",
+      error: err
+    };
+  }
+};
+
+/*
+ * get_user_timeline is used to fetch all user's timeline data
+ * 
+ * @return  status 0 - If any internal error occured while fetching user's post
+ * photos data, with error
+ *          status 1 - If user's post photos data found, with user's post 
+ * photos object
+ *          status 2 - If user's post photos not found, with appropriate message
+ */
+user_post_helper.get_user_timeline = async user_auth_id => {
+  try {
+    var timeline = await UserPost.aggregate([
+      {
+        $match: user_auth_id
+      },
+      {
+        $lookup: {
+          from: "user_posts_images",
+          localField: "_id",
+          foreignField: "postId",
+          as: "timeline_images"
+        }
+      },
+      {
+        $unwind: {
+          path: "$timeline_images",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "authUserId",
+          as: "users"
+        }
+      },
+      {
+        $unwind: {
+          path: "$users",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+
+      {
+        $group: {
+          _id: "$_id",
+          description: {
+            $first: "$description"
+          },
+          privacy: {
+            $first: "$privacy"
+          },
+          privacy: {
+            $first: "$privacy"
+          },
+          privacy: {
+            $first: "$privacy"
+          },
+          isDeleted: {
+            $first: "$isDeleted"
+          },
+          status: {
+            $first: "$status"
+          },
+          userId: {
+            $first: "$users.authUserId"
+          },
+          firstName: {
+            $first: "$users.firstName"
+          },
+          lastName: {
+            $first: "$users.lastName"
+          },
+          createdAt: {
+            $first: "$createdAt"
+          },
+          postId: {
+            $first: "$timeline_images.postId"
+          },
+          image: {
+            $first: "$timeline_images.image"
+          }
+        }
+      }
+    ]);
+    if (timeline || timeline.length != 0) {
+      return {
+        status: 1,
+        message: "User timeline found",
+        timeline: timeline
+      };
+    } else {
+      return { status: 2, message: "No user timeline available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user timeline",
       error: err
     };
   }

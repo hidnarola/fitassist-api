@@ -99,7 +99,6 @@ router.get("/:username?/:type?", async (req, res) => {
       }
     }
   }
-  console.log(friendStatus);
   var resp_data = await friend_helper.get_friend_by_username(
     {
       username: username

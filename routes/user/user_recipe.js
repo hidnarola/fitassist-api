@@ -144,6 +144,7 @@ router.get("/", async (req, res) => {
             recipeObj.ingredientLines = user_meal[daydrive].ingredientLines;
             recipeObj.calories = user_meal[daydrive].calories;
             recipeObj.totalWeight = user_meal[daydrive].totalWeight;
+            recipeObj.serving = user_meal[daydrive].yield;
             recipeObj.totalTime = user_meal[daydrive].totalTime;
             recipeObj.ingredients = user_meal[daydrive].ingredients;
             recipeObj.totalNutrients = user_meal[daydrive].totalNutrients;
@@ -194,7 +195,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var user_recipe_obj={};
+  var user_recipe_obj = {};
   var data = req.body.user_recipe;
 
   user_recipe_obj.userId = authUserId;
