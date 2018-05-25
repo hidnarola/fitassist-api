@@ -81,7 +81,7 @@ router.get("/:user_post_id", async (req, res) => {
  *
  * @apiParam {File} images User's  Images
  * @apiParam {String} [description] Description of Images
- * @apiParam {Number} [priavacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
+ * @apiParam {Number} [privacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","post"]</code>
  *
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
@@ -111,12 +111,14 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var user_post_obj = {
       userId: authUserId,
-      description: req.body.description
+      description: req.body.description,
+      createdBy: authUserId
     };
 
     if (req.body.privacy) {
       user_post_obj.privacy = req.body.privacy;
     }
+
     if (req.body.postType) {
       user_post_obj.postType = req.body.postType;
     }

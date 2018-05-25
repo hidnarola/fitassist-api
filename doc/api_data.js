@@ -5858,7 +5858,7 @@ define({ "api": [
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5997,7 +5997,7 @@ define({ "api": [
     "groupTitle": "Recipes"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -8061,7 +8061,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -8088,7 +8088,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "Number",
             "optional": true,
-            "field": "priavacy",
+            "field": "privacy",
             "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
           },
           {
@@ -8144,7 +8144,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -8193,7 +8193,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -8242,7 +8242,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -8298,7 +8298,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -8857,333 +8857,6 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/user_post",
-    "title": "Add",
-    "name": "Add",
-    "group": "User_Post",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "File",
-            "optional": false,
-            "field": "images",
-            "description": "<p>User's  Images</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "description",
-            "description": "<p>Description of Images</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": true,
-            "field": "priavacy",
-            "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "postType",
-            "description": "<p>post Type of Post <br><code>Enum=[&quot;timeline&quot;,&quot;gallery&quot;]</code></p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "message",
-            "description": "<p>message for successful and unsuccessful image upload</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_posts.js",
-    "groupTitle": "User_Post"
-  },
-  {
-    "type": "delete",
-    "url": "/user/user_post/:photo_id",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Post",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_posts.js",
-    "groupTitle": "User_Post"
-  },
-  {
-    "type": "get",
-    "url": "/user/user_post",
-    "title": "Get all",
-    "name": "Get_all",
-    "group": "User_Post",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_post_photos",
-            "description": "<p>JSON of user post photos 's document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_posts.js",
-    "groupTitle": "User_Post"
-  },
-  {
-    "type": "get",
-    "url": "/user/user_post/:user_post_id",
-    "title": "Get by ID",
-    "name": "Get_by_ID",
-    "group": "User_Post",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_post_photo",
-            "description": "<p>user_post_photo's document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_posts.js",
-    "groupTitle": "User_Post"
-  },
-  {
-    "type": "put",
-    "url": "/user/user_post/:photo_id",
-    "title": "Update",
-    "name": "Update",
-    "group": "User_Post",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "File",
-            "optional": false,
-            "field": "image",
-            "description": "<p>User's  Image</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "description",
-            "description": "<p>Description of Image</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "privacy",
-            "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "status",
-            "description": "<p>status of Image <br><code>1 for Active<br>2 for Inactive</code></p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_post_photo",
-            "description": "<p>user_post_photo details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_posts.js",
-    "groupTitle": "User_Post"
-  },
-  {
-    "type": "post",
     "url": "/user/comment",
     "title": "Add",
     "name": "Add",
@@ -9403,7 +9076,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -9479,7 +9152,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -9529,7 +9202,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -9579,7 +9252,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -9628,7 +9301,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -9684,7 +9357,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -9822,7 +9495,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -10208,7 +9881,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -10227,9 +9900,16 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "String",
+            "optional": false,
+            "field": "createdBy",
+            "description": "<p>created User Id of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
             "optional": true,
             "field": "description",
-            "description": "<p>Description of Images</p>"
+            "description": "<p>image caption or timeline post</p>"
           },
           {
             "group": "Parameter",
@@ -10291,7 +9971,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -10389,7 +10069,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -10445,7 +10125,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>user's unique access-key</p>"
           }
         ]
@@ -10460,6 +10140,13 @@ define({ "api": [
             "optional": false,
             "field": "image",
             "description": "<p>User's  Image</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "createdBy",
+            "description": "<p>created User Id of user</p>"
           },
           {
             "group": "Parameter",
