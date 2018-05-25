@@ -34,10 +34,10 @@ router.get("/:username/:skip/:limit", async (req, res) => {
   var resp_data = await user_posts_helper.get_user_post_photos(
     username,
     {
-      $skip: skip
+      $skip: parseInt(skip)
     },
     {
-      $limit: limit
+      $limit: parseInt(limit)
     }
   );
 
