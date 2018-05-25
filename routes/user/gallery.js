@@ -18,7 +18,7 @@ var user_posts_helper = require("../../helpers/user_posts_helper");
  *
  * @apiHeader {String}  authorization user's unique access-key
  *
- * @apiSuccess (Success 200) {JSON} user_post_photos JSON of user post photos 's document
+ * @apiSuccess (Success 200) {JSON} user_gallery_photos JSON of user post photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:username/:skip/:limit", async (req, res) => {

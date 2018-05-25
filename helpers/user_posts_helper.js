@@ -58,7 +58,7 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
       return {
         status: 1,
         message: "User post photos found",
-        user_post_photos: user_post_photos
+        user_gallery_photos: user_post_photos
       };
     } else {
       return { status: 2, message: "No user post photos available" };
