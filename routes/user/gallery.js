@@ -21,15 +21,25 @@ var user_posts_helper = require("../../helpers/user_posts_helper");
  * @apiSuccess (Success 200) {JSON} user_post_photos JSON of user post photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/", async (req, res) => {
+router.get("/:username/:skip/:limit", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
+  var username = req.params.username;
+  var skip = req.params.skip ? req.params.skip : 0;
+  var limit = req.params.limit ? req.params.limit : 10;
+
   logger.trace("Get all user's post photos API called");
 
-  var resp_data = await user_posts_helper.get_user_post_photos({
-    userId: authUserId
-  });
+  var resp_data = await user_posts_helper.get_user_post_photos(
+    username,
+    {
+      $skip: skip
+    },
+    {
+      $limit: limit
+    }
+  );
 
   if (resp_data.status == 0) {
     logger.error(

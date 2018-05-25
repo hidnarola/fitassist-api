@@ -9,17 +9,25 @@ var nutrition_helper = {};
  *          status 2 - If nutrition not found, with appropriate message
  */
 nutrition_helper.get_all_nutrition = async () => {
-    try {
-        var nutrition = await Nutrition.find();
-        if (nutrition) {
-            return { "status": 1, "message": "Nutrition's details found", "nutritions": nutrition };
-        } else {
-            return { "status": 2, "message": "No nutrition available" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while finding nutrition", "error": err }
+  try {
+    var nutrition = await Nutrition.find();
+    if (nutrition) {
+      return {
+        status: 1,
+        message: "Nutrition's details found",
+        nutritions: nutrition
+      };
+    } else {
+      return { status: 2, message: "No nutrition available" };
     }
-}
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding nutrition",
+      error: err
+    };
+  }
+};
 
 /*
  * get_nutrition_by_id is used to fetch get_nutrition by ID
@@ -28,18 +36,18 @@ nutrition_helper.get_all_nutrition = async () => {
  *          status 1 - If nutrition data found, with nutrition object
  *          status 2 - If nutrition data not found, with appropriate message
  */
-nutrition_helper.get_nutrition_by_id = async (nutrition_id) => {
-    try {
-        let resp = await Nutrition.findOne({ _id: nutrition_id });
-        if (!resp) {
-            return { "status": 2, "message": "Nutrition not found" };
-        } else {
-            return { "status": 1, "message": "Nutrition found", "nutrition":resp };
-        }
-    } catch(err){
-        return {"status":0,"error":err};
+nutrition_helper.get_nutrition_by_id = async nutrition_id => {
+  try {
+    let resp = await Nutrition.findOne({ _id: nutrition_id });
+    if (!resp) {
+      return { status: 2, message: "Nutrition not found" };
+    } else {
+      return { status: 1, message: "Nutrition found", nutrition: resp };
     }
-}
+  } catch (err) {
+    return { status: 0, error: err };
+  }
+};
 
 /*
  * insert_nutrition is used to insert into nutrition collection
@@ -51,15 +59,23 @@ nutrition_helper.get_nutrition_by_id = async (nutrition_id) => {
  * 
  * @developed by "ar"
  */
-nutrition_helper.insert_nutrition = async (nutrition_object) => {
-    console.log("obj = ", nutrition_object);
-    let nutrition = new Nutrition(nutrition_object);
-    try {
-        let nutrition_data = await nutrition.save();
-        return { "status": 1, "message": "Nutrition inserted", "nutrition": nutrition_data };
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting nutrition", "error": err };
-    }
+nutrition_helper.insert_nutrition = async nutrition_object => {
+  console.log("obj = ", nutrition_object);
+  let nutrition = new Nutrition(nutrition_object);
+  try {
+    let nutrition_data = await nutrition.save();
+    return {
+      status: 1,
+      message: "Nutrition inserted",
+      nutrition: nutrition_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting nutrition",
+      error: err
+    };
+  }
 };
 
 /*
@@ -74,17 +90,32 @@ nutrition_helper.insert_nutrition = async (nutrition_object) => {
  * 
  * @developed by "ar"
  */
-nutrition_helper.update_nutrition_by_id = async (nutrition_id, nutrition_object) => {
-    try {
-        let nutrition = await Nutrition.findOneAndUpdate({ _id: nutrition_id }, nutrition_object, { new: true });
-        if (!nutrition) {
-            return { "status": 2, "message": "Record has not updated" };
-        } else {
-            return { "status": 1, "message": "Record has been updated", "nutrition": nutrition };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while updating nutrition", "error": err }
+nutrition_helper.update_nutrition_by_id = async (
+  nutrition_id,
+  nutrition_object
+) => {
+  try {
+    let nutrition = await Nutrition.findOneAndUpdate(
+      { _id: nutrition_id },
+      nutrition_object,
+      { new: true }
+    );
+    if (!nutrition) {
+      return { status: 2, message: "Record has not updated" };
+    } else {
+      return {
+        status: 1,
+        message: "Record has been updated",
+        nutrition: nutrition
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating nutrition",
+      error: err
+    };
+  }
 };
 
 /*
@@ -97,17 +128,21 @@ nutrition_helper.update_nutrition_by_id = async (nutrition_id, nutrition_object)
  * 
  * @developed by "ar"
  */
-nutrition_helper.delete_nutrition_by_id = async (nutrition_id) => {
-    try {
-        let resp = await Nutrition.findOneAndRemove({ _id: nutrition_id });
-        if (!resp) {
-            return { "status": 2, "message": "Nutrition not found" };
-        } else {
-            return { "status": 1, "message": "Nutrition deleted" };
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting nutrition", "error": err };
+nutrition_helper.delete_nutrition_by_id = async nutrition_id => {
+  try {
+    let resp = await Nutrition.findOneAndRemove({ _id: nutrition_id });
+    if (!resp) {
+      return { status: 2, message: "Nutrition not found" };
+    } else {
+      return { status: 1, message: "Nutrition deleted" };
     }
-}
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while deleting nutrition",
+      error: err
+    };
+  }
+};
 
 module.exports = nutrition_helper;

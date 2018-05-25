@@ -9,11 +9,22 @@ var user_post_helper = {};
  *          status 1 - If user's post photos data found, with user's post photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
-user_post_helper.get_user_post_photos = async user_auth_id => {
+user_post_helper.get_user_post_photos = async (username, skip, limit) => {
   try {
     var user_post_photos = await UserPost.aggregate([
       {
-        $match: user_auth_id
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "authUserId",
+          as: "users"
+        }
+      },
+      {
+        $unwind: "$users"
+      },
+      {
+        $match: { "users.username": username, isDeleted: 0 }
       },
       {
         $lookup: {
@@ -39,7 +50,9 @@ user_post_helper.get_user_post_photos = async user_auth_id => {
           userId: { $first: "$userId" },
           images: { $addToSet: "$images" }
         }
-      }
+      },
+      skip,
+      limit
     ]);
     if (user_post_photos || user_post_photos.length != 0) {
       return {
