@@ -19,17 +19,16 @@ var body_part_helper = require("../../helpers/body_parts_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-
-    logger.trace("Get all body parts API called");
-    var resp_data = await body_part_helper.get_all_body_parts();
-    if (resp_data.status == 0) {
-      logger.error("Error occured while fetching body parts = ", resp_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-      logger.trace("Body Parts got successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    }
-  });
+  logger.trace("Get all body parts API called");
+  var resp_data = await body_part_helper.get_all_body_parts();
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching body parts = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Body Parts got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
 
 /**
  * @api {get} /admin/bodypart/body_part_id Get by ID
@@ -40,7 +39,7 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:body_part_id", async (req, res) => {
-    body_part_id = req.params.body_part_id;
+  body_part_id = req.params.body_part_id;
   logger.trace("Get all Body part API called");
   var resp_data = await body_part_helper.get_body_part_id(body_part_id);
   if (resp_data.status == 0) {
@@ -64,31 +63,31 @@ router.get("/:body_part_id", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
-    var schema = {
-        "bodypart": {
-            notEmpty: true,
-            errorMessage: "Body Part name is required"
-        }
-    };
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-    
-    if (!errors) {
-        var body_part_obj = {
-            "bodypart": req.body.bodypart,
-            };
-
-            let body_part_data = await body_part_helper.insert_body_part(body_part_obj);
-            if (body_part_data.status === 0) {
-                logger.error("Error while inserting bodypart data = ", body_part_data);
-                return res.status(config.BAD_REQUEST).json({ body_part_data });
-            } else {
-                return res.status(config.OK_STATUS).json(body_part_data);
-            }
-    } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.BAD_REQUEST).json({ message: errors });
+  var schema = {
+    bodypart: {
+      notEmpty: true,
+      errorMessage: "Body Part name is required"
     }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+
+  if (!errors) {
+    var body_part_obj = {
+      bodypart: req.body.bodypart
+    };
+
+    let body_part_data = await body_part_helper.insert_body_part(body_part_obj);
+    if (body_part_data.status === 0) {
+      logger.error("Error while inserting bodypart data = ", body_part_data);
+      return res.status(config.BAD_REQUEST).json({ body_part_data });
+    } else {
+      return res.status(config.OK_STATUS).json(body_part_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+  }
 });
 
 /**
@@ -101,48 +100,49 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:body_part_id", async (req, res) => {
-    body_part_id = req.params.body_part_id;
-    console.log(body_part_id);
-    var schema = {
-        "bodypart": {
-            notEmpty: true,
-            errorMessage: "Body Part name is required"
-        }
-    };
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-    
-    if (!errors) {
-        var body_part_obj = {
-            "bodypart": req.body.bodypart,
-            };
-
-            let body_part_data = await body_part_helper.update_bodypart_by_id(body_part_id,body_part_obj);
-            if (body_part_data.status === 0) {
-                logger.error("Error while updating bodypart data = ", body_part_data);
-                return res.status(config.BAD_REQUEST).json({ body_part_data });
-            } else {
-                return res.status(config.OK_STATUS).json(body_part_data);
-            }
-    } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.BAD_REQUEST).json({ message: errors });
+  body_part_id = req.params.body_part_id;
+  console.log(body_part_id);
+  var schema = {
+    bodypart: {
+      notEmpty: true,
+      errorMessage: "Body Part name is required"
     }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
 
+  if (!errors) {
+    var body_part_obj = {
+      bodypart: req.body.bodypart
+    };
+
+    let body_part_data = await body_part_helper.update_bodypart_by_id(
+      body_part_id,
+      body_part_obj
+    );
+    if (body_part_data.status === 0) {
+      logger.error("Error while updating bodypart data = ", body_part_data);
+      return res.status(config.BAD_REQUEST).json({ body_part_data });
+    } else {
+      return res.status(config.OK_STATUS).json(body_part_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+  }
 });
 
 /**
  * @api {delete} /admin/bodypart/:body_part_id Delete
- * @apiName Delete  
+ * @apiName Delete
  * @apiGroup  Body Parts
- * 
+ *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
+ *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:body_part_id", async (req, res) => {
-
   logger.trace("Delete Body Part API - Id = ", req.params.body_part_id);
   let bodypart_data = await body_part_helper.delete_bodypart_by_id(
     req.params.body_part_id

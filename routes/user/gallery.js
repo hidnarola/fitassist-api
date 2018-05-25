@@ -16,7 +16,7 @@ var user_posts_helper = require("../../helpers/user_posts_helper");
  * @apiName Get all
  * @apiGroup User Gallery
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {JSON} user_post_photos JSON of user post photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
  * @apiName Get by ID
  * @apiGroup User Gallery
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -77,7 +77,7 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiGroup User Gallery
  *
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiParam {File} images User's  Images
  * @apiParam {String} [description] Description of Images
@@ -250,7 +250,7 @@ router.post("/", async (req, res) => {
  * @apiGroup User Gallery
  *
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiParam {File} image User's  Image
  * @apiParam {String} description Description of Image
@@ -350,7 +350,7 @@ router.put("/:photo_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -359,7 +359,7 @@ router.put("/:photo_id", async (req, res) => {
  * @apiName Delete
  * @apiGroup User Gallery
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.

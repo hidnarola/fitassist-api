@@ -12,8 +12,8 @@ var logger = config.logger;
 var like_comment_helper = require("../../helpers/like_comment_helper");
 
 /**
- * @api {post} /user/comment  Add 
- * @apiName Add 
+ * @api {post} /user/comment  Add
+ * @apiName Add
  * @apiGroup  User Post Comment
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token User's unique access-key
@@ -46,27 +46,22 @@ router.post("/", async (req, res) => {
       comment: req.body.comment
     };
 
-    let comment_data = await like_comment_helper.insert_comment(
-      comment_obj
-    );
+    let comment_data = await like_comment_helper.insert_comment(comment_obj);
     if (comment_data.status === 0) {
-      logger.error(
-        "Error while inserting comment data = ",
-        comment_data
-      );
+      logger.error("Error while inserting comment data = ", comment_data);
       return res.status(config.BAD_REQUEST).json({ comment_data });
     } else {
       return res.status(config.OK_STATUS).json(comment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
 /**
- * @api {put} /user/comment/:comment_id  Update 
- * @apiName Update 
+ * @api {put} /user/comment/:comment_id  Update
+ * @apiName Update
  * @apiGroup  User Post Comment
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token User's unique access-key
@@ -102,26 +97,22 @@ router.put("/:comment_id", async (req, res) => {
 
     let comment_data = await like_comment_helper.update_comment(
       {
-        _id:req.params.comment_id,
-        userId:authUserId
+        _id: req.params.comment_id,
+        userId: authUserId
       },
       comment_obj
     );
     if (comment_data.status === 0) {
-      logger.error(
-        "Error while inserting comment data = ",
-        comment_data
-      );
+      logger.error("Error while inserting comment data = ", comment_data);
       return res.status(config.BAD_REQUEST).json({ comment_data });
     } else {
       return res.status(config.OK_STATUS).json(comment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
-
 
 /**
  * @api {delete} /user/comment/:comment_id Delete
@@ -137,9 +128,10 @@ router.delete("/:comment_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete comment API - Id = ", req.params.comment_id);
-  let comment_data = await like_comment_helper.delete_comment(
-    { _id: req.params.comment_id, userId: authUserId }
-  );
+  let comment_data = await like_comment_helper.delete_comment({
+    _id: req.params.comment_id,
+    userId: authUserId
+  });
 
   if (comment_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(comment_data);

@@ -72,7 +72,7 @@ router.post("/get_by_id_logdate", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -167,7 +167,7 @@ router.post("/", async (req, res) => {
       }
     } else {
       logger.error("Validation Error = ", errors);
-      res.status(config.BAD_REQUEST).json({ message: errors });
+      res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
     }
   } else if (resp_data.status == 1) {
     var schema = {
@@ -212,7 +212,7 @@ router.post("/", async (req, res) => {
       }
     } else {
       logger.error("Validation Error = ", errors);
-      res.status(config.BAD_REQUEST).json({ message: errors });
+      res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
     }
   } else {
     return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -264,7 +264,7 @@ router.post("/get_log_dates_by_date", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 

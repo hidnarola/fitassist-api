@@ -29,9 +29,9 @@ router.get("/", async (req, res) => {
 
   var resp_data = await user_posts_helper.get_user_timeline({
     userId: authUserId,
-    postType: "timeline"
+    postType: "timeline",
+    isDeleted: 0
   });
-  console.log("resp_data", resp_data);
 
   if (resp_data.status == 0) {
     logger.error(
@@ -50,7 +50,7 @@ router.get("/", async (req, res) => {
  * @apiName Get by ID
  * @apiGroup User Timeline
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -79,10 +79,10 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiGroup User Timeline
  *
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token user's unique access-key
- *
+ * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {File} images User's  Images
- * @apiParam {String} [description] Description of Images
+ * @apiParam {String} createdBy created User Id of user
+ * @apiParam {String} [description] image caption or timeline post
  * @apiParam {Number} [priavacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","gallery"]</code>
  *
@@ -94,10 +94,7 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var schema = {
-    privacy: {
-      notEmpty: true,
-      errorMessage: "privacy is required"
-    },
+    privacy: { notEmpty: true, errorMessage: "privacy is required" },
     postType: {
       notEmpty: true,
       isIn: {
@@ -118,6 +115,11 @@ router.post("/", async (req, res) => {
 
     if (req.body.privacy) {
       user_post_obj.privacy = req.body.privacy;
+    }
+    if (req.body.createdBy) {
+      user_post_obj.createdBy = req.body.createdBy;
+    } else {
+      user_post_obj.createdBy = authUserId;
     }
     if (req.body.postType) {
       user_post_obj.postType = req.body.postType;
@@ -201,7 +203,6 @@ router.post("/", async (req, res) => {
           );
         } else {
           var post_image_obj = {
-            userId: authUserId,
             postId: user_post_data.user_post_photo._id,
             privacy: req.body.privacy
           };
@@ -242,7 +243,7 @@ router.post("/", async (req, res) => {
     );
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -252,9 +253,10 @@ router.post("/", async (req, res) => {
  * @apiGroup User Timeline
  *
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiParam {File} image User's  Image
+ * @apiParam {String} createdBy created User Id of user
  * @apiParam {String} description Description of Image
  * @apiParam {Number} privacy privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiParam {Number} status status of Image <br><code>1 for Active<br>2 for Inactive</code>
@@ -290,7 +292,11 @@ router.put("/:photo_id", async (req, res) => {
     if (req.body.status) {
       user_post_obj.status = req.body.status;
     }
-
+    if (req.body.createdBy) {
+      user_post_obj.createdBy = req.body.createdBy;
+    } else {
+      user_post_obj.createdBy = authUserId;
+    }
     var filename;
     if (req.files && req.files["image"]) {
       var file = req.files["image"];
@@ -352,7 +358,7 @@ router.put("/:photo_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -361,7 +367,7 @@ router.put("/:photo_id", async (req, res) => {
  * @apiName Delete
  * @apiGroup User Timeline
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.

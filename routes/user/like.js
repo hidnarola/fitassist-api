@@ -12,9 +12,9 @@ var logger = config.logger;
 var like_comment_helper = require("../../helpers/like_comment_helper");
 
 /**
- * @api {post} /user/like  Add 
+ * @api {post} /user/like  Add
  * @apiName Add Comment
- * @apiGroup  Likes 
+ * @apiGroup  Likes
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token User's unique access-key
  * @apiParam {String} postId postId of post
@@ -22,7 +22,7 @@ var like_comment_helper = require("../../helpers/like_comment_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
-router.post("/:post_id", async (req, res) => {
+router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var schema = {
@@ -38,16 +38,14 @@ router.post("/:post_id", async (req, res) => {
   if (!errors) {
     var like_obj = {
       userId: authUserId,
-      postId: req.params.post_id
+      postId: req.body.postId
     };
 
     let like_data = await like_comment_helper.get_like({
       userId: authUserId,
-      postId: req.params.post_id
+      postId: req.body.postId
     });
-    console.log(like_data);
     if (like_data.status === 1) {
-
       let like_data = await like_comment_helper.delete_like(like_obj);
       if (like_data.status === 0) {
         logger.error("Error while disliking post data = ", like_data);
@@ -55,9 +53,7 @@ router.post("/:post_id", async (req, res) => {
       } else {
         return res.status(config.OK_STATUS).json(like_data);
       }
-
     } else {
-
       let like_data = await like_comment_helper.insert_like(like_obj);
       if (like_data.status === 0) {
         logger.error("Error while inserting post data = ", like_data);
@@ -66,12 +62,9 @@ router.post("/:post_id", async (req, res) => {
         return res.status(config.OK_STATUS).json(like_data);
       }
     }
-
   } else {
-
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
-
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 

@@ -175,7 +175,7 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -206,7 +206,7 @@ router.put("/:badge_task_id", async (req, res) => {
         errorMessage: "Unit must be from kgs or kms"
       },
       errorMessage: "Unit is required"
-    },
+    }
   };
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -216,7 +216,7 @@ router.put("/:badge_task_id", async (req, res) => {
       name: req.body.name,
       unit: req.body.unit,
       description: req.body.description ? req.body.description : null,
-      status:req.body.status
+      status: req.body.status
     };
 
     let badge_task_data = await badge_task_helper.update_badge_task_by_id(
@@ -231,7 +231,7 @@ router.put("/:badge_task_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 

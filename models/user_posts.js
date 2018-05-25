@@ -6,7 +6,13 @@ var Schema = mongoose.Schema;
 
 var UserPostsSchema = new Schema(
   {
-    userId: {type: String, ref: "users", field: "authUserId", required: true },
+    userId: { type: String, ref: "users", field: "authUserId", required: true },
+    createdBy: {
+      type: String,
+      ref: "users",
+      field: "authUserId",
+      required: true
+    },
     description: { type: String, default: null },
     privacy: { type: Number, default: 3 },
     postType: {

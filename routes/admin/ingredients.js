@@ -132,13 +132,13 @@ router.post("/", async (req, res) => {
   };
 
   req.checkBody(schema);
-  
+
   var errors = req.validationErrors();
   if (!errors) {
     var ingredient_obj = {
       name: req.body.name,
       description: req.body.description ? req.body.description : null,
-      allowInShopList: req.body.allowInShopList,
+      allowInShopList: req.body.allowInShopList
     };
 
     //image upload
@@ -194,7 +194,7 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -226,7 +226,7 @@ router.put("/:ingredient_id", async (req, res) => {
     var ingredient_obj = {
       name: req.body.name,
       description: req.body.description ? req.body.description : null,
-      allowInShopList: req.body.allowInShopList,
+      allowInShopList: req.body.allowInShopList
     };
 
     //image upload
@@ -267,16 +267,14 @@ router.put("/:ingredient_id", async (req, res) => {
     }
     if (filename) {
       ingredient_obj.image = "uploads/ingredient/" + filename;
-      var resp_data = await ingredients_helper.get_ingredient_id(req.params.ingredient_id);
-      try{
-                fs.unlink(resp_data.ingredient.image,function(){
-                    console.log("Image deleted");
-                   });
-            }
-            catch(err)
-            {
-
-            }
+      var resp_data = await ingredients_helper.get_ingredient_id(
+        req.params.ingredient_id
+      );
+      try {
+        fs.unlink(resp_data.ingredient.image, function() {
+          console.log("Image deleted");
+        });
+      } catch (err) {}
     }
 
     //End image upload
@@ -293,7 +291,7 @@ router.put("/:ingredient_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 

@@ -1,20 +1,20 @@
 const jwt = require("express-jwt");
 const jwtAuthz = require("express-jwt-authz");
 const jwksRsa = require("jwks-rsa");
-var config = require('../config');
+var config = require("../config");
 
 const auth = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: config.jwksUri
+    jwksUri: config.JWKS_URI
   }),
 
   // Validate the audience and the issuer.
-  audience: config.audience,
-  issuer: config.issuer,
-  algorithms: [config.algorithms]
+  audience: config.AUDIENCE,
+  issuer: config.ISSUER,
+  algorithms: [config.ALGORITHMS]
 });
 
-module.exports= auth;
+module.exports = auth;

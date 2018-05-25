@@ -327,10 +327,18 @@ router.patch("/", async (req, res) => {
       errorMessage: "user profile picture is required"
     }
   };
-  
-  profilePicture = typeof req.files['user_img'] !== "undefined" ? req.files['user_img'].name : '';
 
-  req.checkBody('user_img', 'Profile picture is required.Please upload an image Jpeg, Png or Gif').isImage(profilePicture);
+  profilePicture =
+    typeof req.files["user_img"] !== "undefined"
+      ? req.files["user_img"].name
+      : "";
+
+  req
+    .checkBody(
+      "user_img",
+      "Profile picture is required.Please upload an image Jpeg, Png or Gif"
+    )
+    .isImage(profilePicture);
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -391,11 +399,9 @@ router.patch("/", async (req, res) => {
     // generate token for update profile
     var options = {
       method: "POST",
-      url: config.authTokenUrl,
-      headers: {
-        "content-type": "application/json"
-      },
-      body: config.authTokenGenrationCredentials,
+      url: config.AUTH_TOKEN_URL,
+      headers: { "content-type": "application/json" },
+      body: config.AUTH_TOKEN_GENRATION_CREDENTIALS,
       json: true
     };
 
@@ -403,7 +409,7 @@ router.patch("/", async (req, res) => {
     // image update start
     var options = {
       method: "PATCH",
-      url: config.authUserApiUrl + authUserId,
+      url: config.AUTH_USER_API_URL + authUserId,
       headers: {
         "content-type": "application/json",
         // authorization: "bearer "+token
@@ -426,7 +432,7 @@ router.patch("/", async (req, res) => {
     //image update end
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 

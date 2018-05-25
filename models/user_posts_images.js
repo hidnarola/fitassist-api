@@ -6,8 +6,11 @@ var Schema = mongoose.Schema;
 
 var UserPostsImagesSchema = new Schema(
   {
-    userId: { type: String, ref: "users", field: "authUserId", required: true },
-    postId: { type: mongoose.Schema.Types.ObjectId, ref: "user_posts", required: true },
+    postId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user_posts",
+      required: true
+    },
     image: { type: String, required: true },
     privacy: { type: Number, default: 3 },
     status: { type: Number, default: 1 },

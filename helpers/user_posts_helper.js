@@ -91,56 +91,136 @@ user_post_helper.get_user_timeline = async user_auth_id => {
       {
         $lookup: {
           from: "users",
-          localField: "userId",
+          localField: "createdBy",
           foreignField: "authUserId",
-          as: "users"
+          as: "createdDetail"
         }
       },
       {
         $unwind: {
-          path: "$users",
+          path: "$createdDetail",
           preserveNullAndEmptyArrays: true
         }
       },
-
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "authUserId",
+          as: "ownerDetail"
+        }
+      },
+      {
+        $unwind: {
+          path: "$ownerDetail",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "postId",
+          as: "likes"
+        }
+      },
+      {
+        $unwind: {
+          path: "$likes",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "likes.userId",
+          foreignField: "authUserId",
+          as: "likesDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$likesDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "postId",
+          as: "comments"
+        }
+      },
+      {
+        $unwind: {
+          path: "$comments",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "comments.userId",
+          foreignField: "authUserId",
+          as: "commentsDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$commentsDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
       {
         $group: {
           _id: "$_id",
-          description: {
-            $first: "$description"
+          firstName: { $first: "$ownerDetail.firstName" },
+          lastName: { $first: "$ownerDetail.lastName" },
+          description: { $first: "$$ROOT.description" },
+          privacy: { $first: "$$ROOT.privacy" },
+          timeline_images: { $addToSet: "$timeline_images" },
+          created_by: {
+            $first: {
+              _id: "$$ROOT.createdDetail._id",
+              userAuthId: "$$ROOT.createdDetail.userId",
+              firstName: "$$ROOT.createdDetail.firstName",
+              lastName: "$$ROOT.createdDetail.lastName",
+              avatar: "$$ROOT.createdDetail.avatar"
+            }
           },
-          privacy: {
-            $first: "$privacy"
+          owner_by: {
+            $first: {
+              _id: "$ownerDetail._id",
+              userAuthId: "$ownerDetail.userId",
+              firstName: "$ownerDetail.firstName",
+              lastName: "$ownerDetail.lastName",
+              avatar: "$ownerDetail.avatar"
+            }
           },
-          privacy: {
-            $first: "$privacy"
+          // likes: { $addToSet: "$likes" },
+          // comments: { $addToSet: "$comments" },
+          likes: {
+            $addToSet: {
+              authUserId: "$likesDetails.authUserId",
+              firstName: "$likesDetails.firstName",
+              lastName: "$likesDetails.lastName",
+              avatar: "$likesDetails.avatar",
+              username: "$likesDetails.username",
+              create_date: "$likes.createdAt"
+            }
           },
-          privacy: {
-            $first: "$privacy"
-          },
-          isDeleted: {
-            $first: "$isDeleted"
-          },
-          status: {
-            $first: "$status"
-          },
-          userId: {
-            $first: "$users.authUserId"
-          },
-          firstName: {
-            $first: "$users.firstName"
-          },
-          lastName: {
-            $first: "$users.lastName"
-          },
-          createdAt: {
-            $first: "$createdAt"
-          },
-          postId: {
-            $first: "$timeline_images.postId"
-          },
-          image: {
-            $first: "$timeline_images.image"
+          // comments_by: { $addToSet: "$commentsDetails" },
+          comments: {
+            $addToSet: {
+              authUserId: "$commentsDetails.authUserId",
+              firstName: "$commentsDetails.firstName",
+              lastName: "$commentsDetails.lastName",
+              avatar: "$commentsDetails.avatar",
+              username: "$commentsDetails.username",
+              comment: "$comments.comment",
+              create_date: "$comments.createdAt"
+            }
           }
         }
       }

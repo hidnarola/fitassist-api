@@ -231,7 +231,7 @@ router.post("/", async (req, res) => {
  * @apiName Delete
  * @apiGroup User Recipe
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.

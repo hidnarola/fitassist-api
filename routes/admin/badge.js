@@ -155,7 +155,7 @@ router.post("/", async (req, res) => {
       descriptionCompleted: req.body.descriptionCompleted
         ? req.body.descriptionCompleted
         : null,
-        descriptionInCompleted: req.body.descriptionInCompleted
+      descriptionInCompleted: req.body.descriptionInCompleted
         ? req.body.descriptionInCompleted
         : null,
       points: req.body.points,
@@ -175,7 +175,7 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -220,36 +220,28 @@ router.put("/:badge_id", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
-    
     var badge_obj = {
       name: req.body.name,
       points: req.body.points,
       task: req.body.task,
       timeLimit: req.body.timeLimit,
-      category: req.body.category,
+      category: req.body.category
     };
-    
-    if(req.body.timeType)
-    {
-      badge_obj.timeType=req.body.timeType
+
+    if (req.body.timeType) {
+      badge_obj.timeType = req.body.timeType;
     }
-    if(req.body.tags)
-    {
-      badge_obj.tags=req.body.tags
+    if (req.body.tags) {
+      badge_obj.tags = req.body.tags;
     }
-    if(req.body.descriptionCompleted)
-    {
-      badge_obj.descriptionCompleted=req.body.descriptionCompleted
+    if (req.body.descriptionCompleted) {
+      badge_obj.descriptionCompleted = req.body.descriptionCompleted;
     }
-    if(req.body.descriptionInCompleted)
-    {
-      badge_obj.descriptionInCompleted=req.body.descriptionInCompleted
+    if (req.body.descriptionInCompleted) {
+      badge_obj.descriptionInCompleted = req.body.descriptionInCompleted;
     }
 
-    let badge_data = await badge_helper.update_badge_by_id(
-      badge_id,
-      badge_obj
-    );
+    let badge_data = await badge_helper.update_badge_by_id(badge_id, badge_obj);
     if (badge_data.status === 0) {
       logger.error("Error while updating badge data = ", badge_data);
       return res.status(config.BAD_REQUEST).json({ badge_data });
@@ -258,7 +250,7 @@ router.put("/:badge_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -273,9 +265,7 @@ router.put("/:badge_id", async (req, res) => {
  */
 router.delete("/:badge_id", async (req, res) => {
   logger.trace("Delete badge API - Id = ", req.body.badge_id);
-  let badge_data = await badge_helper.delete_badge_by_id(
-    req.params.badge_id
-  );
+  let badge_data = await badge_helper.delete_badge_by_id(req.params.badge_id);
 
   if (badge_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(badge_data);

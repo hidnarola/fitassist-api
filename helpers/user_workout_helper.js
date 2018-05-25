@@ -11,12 +11,12 @@ var user_workout_helper = {};
  *          status 2 - If user workouts not found, with appropriate message
  */
 user_workout_helper.get_user_workout = async userId => {
-    try {
+  try {
     var user_workout = await UserWorkout.find(userId).populate({
       path: "schedule.exerciseId",
       populate: { path: "exercise" }
     });
-    if (user_workout) {
+    if (user_workout && user_workout.length) {
       return {
         status: 1,
         message: "user workouts details found",
@@ -48,7 +48,7 @@ user_workout_helper.get_user_workout_by_id = async workout_id => {
     var user_workout = await UserWorkout.findOne(workout_id).populate({
       path: "schedule.exerciseId",
       populate: { path: "exercise" }
-    });;
+    });
     if (user_workout) {
       return {
         status: 1,
@@ -83,7 +83,7 @@ user_workout_helper.delete_user_workout = async id => {
     if (user_workout) {
       return {
         status: 1,
-        message: "user workout detail deleted",
+        message: "user workout detail deleted"
       };
     } else {
       return { status: 2, message: "user workout not delete" };

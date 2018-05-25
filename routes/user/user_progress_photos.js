@@ -15,7 +15,7 @@ var user_progress_photos_helper = require("../../helpers/user_progress_photos_he
  * @apiName Get all Latest
  * @apiGroup User Progress Photo
  * @apiDescription  limit is use to limit the records. default is : 10
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {Array} user_progress_photos Array of user's progress_photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -51,7 +51,7 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
  * @apiName Get all
  * @apiGroup User Progress Photo
  * @apiDescription  username: user's username, start use for skip record. default is 0, limit is use to limit the records. default is : 10
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {Array} user_progress_photos Array of user's progress_photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -90,7 +90,7 @@ router.get("/:username/:start?/:limit?", async (req, res) => {
  * @apiName Get by ID
  * @apiGroup User Progress Photo
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {Array} user_progress_photo progress_photo's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -121,7 +121,7 @@ router.get("/:user_photo_id", async (req, res) => {
  * @apiGroup User Progress Photo
  *
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiParam {file} image User's Progress Image
  * @apiParam {String} description Description of progress
@@ -203,7 +203,7 @@ router.post("/", async (req, res) => {
  * @apiGroup User Progress Photo
  *
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {file} image User's Progress Image
  * @apiParam {String} description Description of progress
  * @apiSuccess (Success 200) {JSON} user_progress_photo user_progress_photo details
@@ -293,7 +293,7 @@ router.put("/", async (req, res) => {
  * @apiName Delete
  * @apiGroup User Progress Photo
  *
- * @apiHeader {String}  x-access-token user's unique access-key
+ * @apiHeader {String}  authorization user's unique access-key
  *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.

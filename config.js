@@ -5,9 +5,8 @@ log4js.configure({
 });
 const dotenv = require("dotenv").config();
 
-
 module.exports = {
-  // BASE_URL:'http://' + window.location.hostname + ':3300/',
+  BASE_URL: process.env.BASE_URL,
 
   //API url for search recipe
   RECIPE_API_URL:
@@ -18,27 +17,29 @@ module.exports = {
   logger: log4js.getLogger("development"),
 
   //Auth token generation body data
-  authTokenGenrationCredentials: {
+  CLIENT_ID: "lpiNJFwBeKI3PjUHmNV7Rp9SNQHbRZx0",
+  AUTH_TOKEN_URL: "https://fitassist.eu.auth0.com/oauth/token",
+  AUTH_USER_API_URL: "https://fitassist.eu.auth0.com/api/v2/users/",
+
+  //Auth0 config
+  JWKS_URI: "https://fitassist.eu.auth0.com/.well-known/jwks.json",
+  AUDIENCE: "https://fitassist.eu.auth0.com/api/v2/",
+  ISSUER: "https://fitassist.eu.auth0.com/",
+  GRANT_TYPE: "client_credentials",
+  CLIENT_SECRET:
+    "ZALaNjSvLMtlR0ctmJ9wR6MShRDKQ9qrAT9klrsPzU5F4KhmGsLzEjrmoVD3B-p3",
+  ALGORITHMS: "RS256",
+
+  AUTH_TOKEN_GENRATION_CREDENTIALS: {
     grant_type: "client_credentials",
-    client_id: "lpiNJFwBeKI3PjUHmNV7Rp9SNQHbRZx0",
+    client_id: this.CLIENT_ID,
     client_secret:
       "ZALaNjSvLMtlR0ctmJ9wR6MShRDKQ9qrAT9klrsPzU5F4KhmGsLzEjrmoVD3B-p3",
     audience: "https://fitassist.eu.auth0.com/api/v2/"
   },
-  authTokenUrl: "https://fitassist.eu.auth0.com/oauth/token",
-  authUserApiUrl: "https://fitassist.eu.auth0.com/api/v2/users/",
-  //Auth0 config
-  jwksUri: "https://fitassist.eu.auth0.com/.well-known/jwks.json",
-  audience: "https://fitassist.eu.auth0.com/api/v2/",
-  issuer: "https://fitassist.eu.auth0.com/",
-  grant_type: "client_credentials",
-  client_id: "lpiNJFwBeKI3PjUHmNV7Rp9SNQHbRZx0",
-  client_secret:
-    "ZALaNjSvLMtlR0ctmJ9wR6MShRDKQ9qrAT9klrsPzU5F4KhmGsLzEjrmoVD3B-p3",
-  algorithms: "RS256",
 
   // Database config
-  database: "mongodb://fitassist:jP3gnc4fW9@167.99.90.169/fitassist",
+  DATABASE: "mongodb://fitassist:jP3gnc4fW9@167.99.90.169/fitassist",
 
   // JWT
   ACCESS_TOKEN_SECRET_KEY: "fitassist_jwt_token",

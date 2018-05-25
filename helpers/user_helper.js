@@ -26,6 +26,30 @@ user_helper.get_all_users = async () => {
 };
 
 /*
+ * search_users is used to fetch all users data by search
+ * 
+ * @return  status 0 - If any internal error occured while fetching users data, 
+ * with error
+ *          status 1 - If users data found, with users object
+ *          status 2 - If users not found, with appropriate message
+ */
+user_helper.search_users = async searchObject => {
+  try {
+    var users = await User.find(searchObject);
+    if (users) {
+      return { status: 1, message: "users found", users: users };
+    } else {
+      return { status: 2, message: "No users available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding users",
+      error: err
+    };
+  }
+};
+/*
  * get_user_by_id is used to fetch user details by user id
  * 
  * @params  user_id     _id field of user collection
@@ -62,7 +86,7 @@ user_helper.get_user_by_id = async user_id => {
  * 
  * @developed by "ar"
  */
-user_helper.get_user_by = async (searchObject) => {
+user_helper.get_user_by = async searchObject => {
   try {
     var user = await User.findOne(searchObject).lean();
     if (user) {
