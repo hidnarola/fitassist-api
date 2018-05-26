@@ -57,16 +57,16 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
     if (user_post_photos || user_post_photos.length != 0) {
       return {
         status: 1,
-        message: "User post photos found",
+        message: "User photos found",
         user_gallery_photos: user_post_photos
       };
     } else {
-      return { status: 2, message: "No user post photos available" };
+      return { status: 2, message: "No user photos available" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding user post photos",
+      message: "Error occured while finding user photos",
       error: err
     };
   }

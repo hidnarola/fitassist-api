@@ -10,6 +10,7 @@ var jwtDecode = require("jwt-decode");
 var logger = config.logger;
 
 var user_posts_helper = require("../../helpers/user_posts_helper");
+var user_timeline_helper = require("../../helpers/user_timeline_helper");
 
 /**
  * @api {get} /user/gallery Get all
@@ -92,7 +93,7 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiParam {File} images User's  Images
  * @apiParam {String} [description] Description of Images
  * @apiParam {Number} [privacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
- * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","post"]</code>
+ * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","gallery"]</code>
  *
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -198,12 +199,11 @@ router.post("/", async (req, res) => {
       async (err, file_path_array) => {
         var unsuccess = 0;
         var success = 0;
-        console.log("user_post_obj:", user_post_obj);
 
         let user_post_data = await user_posts_helper.insert_user_post(
           user_post_obj
         );
-        console.log("user_post_data:", user_post_data);
+
         if (user_post_data.status === 0) {
           logger.error(
             "Error while inserting user post data = ",
@@ -215,6 +215,7 @@ router.post("/", async (req, res) => {
             postId: user_post_data.user_post_photo._id,
             privacy: req.body.privacy
           };
+
           async.each(
             file_path_array,
             async function(file, callback) {
@@ -232,10 +233,36 @@ router.post("/", async (req, res) => {
                 success++;
               }
             },
-            function(err) {
+            async function(err) {
               if (err) {
                 console.log("Failed to upload image");
               } else {
+                //TIMELINE START
+                var timelineObj = {
+                  userId: authUserId,
+                  createdBy: authUserId,
+                  postPhotoId: user_post_data.user_post_photo._id,
+                  tagLine: "added a new gallery photo"
+                };
+
+                let user_timeline_data = await user_timeline_helper.insert_timeline_data(
+                  timelineObj
+                );
+
+                console.log("user_timeline_data", user_timeline_data);
+
+                if (user_timeline_data.status === 0) {
+                  logger.error(
+                    "Error while inserting timeline data = ",
+                    user_timeline_data
+                  );
+                } else {
+                  logger.error(
+                    "successfully added timeline data = ",
+                    user_timeline_data
+                  );
+                }
+                // TIMELINE END
                 return res.status(config.OK_STATUS).json({
                   status: 1,
                   message:

@@ -55,12 +55,12 @@ exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
       //     existingInjuries:{ $addToSet: {"_id":"$existingInjuries._id","bodypart":"$existingInjuries.bodypart"} },
       //     workoutscheduletype: { $first: "$workoutscheduletype" },
       //     userId: { $first: "$userId" },
-      //     timeSchedule: { $first: "$timeSchedule" }, 
+      //     timeSchedule: { $first: "$timeSchedule" },
       //   }
       // },
-      {$match:id},      
+      { $match: id }
     ]);
-    if (exercise_preference && exercise_preference.length>0) {
+    if (exercise_preference && exercise_preference.length > 0) {
       return {
         status: 1,
         message: "exercise_preference found",
@@ -107,14 +107,14 @@ exercise_preference_helper.insert_exercise_prefernece = async exercise_preferenc
 };
 
 /*
- * update_nutrition_preference_by_id is used to update exercise_preference data based on nutrition_preference_id
+ * update_exercise_preference_by_userid is used to update exercise_preference data based on exercise_preference_id
  * 
- * @param   nutrition_preference_id         String  _id of nutrition that need to be update
- * @param   nutrition_preferences_object     JSON    object consist of all property that need to update
+ * @param   exercise_preference_id         String  _id of nutrition that need to be update
+ * @param   exercise_preference_object     JSON    object consist of all property that need to update
  * 
  * @return  status  0 - If any error occur in updating nutrition preference, with error
- *          status  1 - If Nutrition preference pr updated successfully, with appropriate message
- *          status  2 - If Nutrition preference not updated, with appropriate message
+ *          status  1 - If exercise_preference pr updated successfully, with appropriate message
+ *          status  2 - If exercise_preference not updated, with appropriate message
  * 
  * @developed by "amc"
  */
@@ -122,7 +122,6 @@ exercise_preference_helper.update_exercise_preference_by_userid = async (
   authUserId,
   exercise_preference_object
 ) => {
-
   try {
     let exercise_preference = await Exercise_preference.findOneAndUpdate(
       { userId: authUserId },

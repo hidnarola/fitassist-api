@@ -8,6 +8,7 @@ var jwtDecode = require("jwt-decode");
 var logger = config.logger;
 
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
+var user_timeline_helper = require("../../helpers/user_timeline_helper");
 
 /**
  * @api {get} /user/progress_photo/username/latest_month_wise/:limit? Get all Latest
@@ -56,7 +57,6 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:username/:start?/:limit?", async (req, res) => {
-  console.log("snjdfkgnhsd");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
@@ -192,6 +192,26 @@ router.post("/", async (req, res) => {
     );
     res.status(config.BAD_REQUEST).json(user_progress_photo_data);
   } else {
+    //TIMELINE START
+    var timelineObj = {
+      userId: authUserId,
+      createdBy: authUserId,
+      progressPhotoId: user_progress_photo_data.user_progress_photo._id,
+      tagLine: "added a new progress photo"
+    };
+    let user_timeline_data = await user_timeline_helper.insert_timeline_data(
+      timelineObj
+    );
+
+    if (user_timeline_data.status === 0) {
+      logger.error(
+        "Error while inserting timeline data = ",
+        user_timeline_data
+      );
+    } else {
+      logger.error("successfully added timeline data = ", user_timeline_data);
+    }
+    //TIMELINE END
     res.status(config.OK_STATUS).json(user_progress_photo_data);
   }
 });

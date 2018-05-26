@@ -94,37 +94,35 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
 
       {
         $project: {
-          "user_progress_photos": 1,
+          user_progress_photos: 1,
           // user_progress_photos: 1,
           // userId: 1,
           // description: 1,
           //  "year": { $year: "date" },
-           "month": { $month: "$user_progress_photos.date" },
+          month: { $month: "$user_progress_photos.date" }
           // day: { $dayOfMonth: "$date" }
         }
       },
       {
-        $group:{
-
-          _id:"$month",
-          "description":{$first:"$user_progress_photos.description"},
-          "image":{$first:"$user_progress_photos.image"},
-          "date":{$first:"$user_progress_photos.date"},
-          "isDeleted":{$first:"$user_progress_photos.isDeleted"},
-          "userId":{$first:"$user_progress_photos.userId"},
+        $group: {
+          _id: "$month",
+          description: { $first: "$user_progress_photos.description" },
+          image: { $first: "$user_progress_photos.image" },
+          date: { $first: "$user_progress_photos.date" },
+          isDeleted: { $first: "$user_progress_photos.isDeleted" },
+          userId: { $first: "$user_progress_photos.userId" }
           // month:"$month",
         }
       },
       {
-        $match:{
-          isDeleted:0
+        $match: {
+          isDeleted: 0
         }
       },
       limit,
       {
-        $sort:{"date":-1}
+        $sort: { date: -1 }
       }
-     
     ]);
 
     if (user_progress_photos && user_progress_photos.length != 0) {

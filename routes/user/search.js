@@ -16,6 +16,8 @@ user_helper = require("../../helpers/user_helper");
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} name name of user
+ * @apiParam {Number} start start of user
+ * @apiParam {Number} limit limit of user
  * @apiSuccess (Success 200) {Array}  users  data of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -25,11 +27,17 @@ router.post("/", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
+    var start = { $skip: parseInt(req.body.start ? req.body.start : 0) };
+    var offset = { $limit: parseInt(req.body.offset ? req.body.offset : 10) };
+
     var re = new RegExp(req.body.name, "i");
     value = { $regex: re };
 
-    var searchObject = { $or: [{ firstName: value }, { lastName: value }] };
-    var resp_data = await user_helper.search_users(searchObject);
+    var searchObject = {
+      $or: [{ firstName: value }, { lastName: value }, { username: value }]
+    };
+
+    var resp_data = await user_helper.search_users(searchObject, start, offset);
 
     if (resp_data.status == 1) {
       res.status(config.OK_STATUS).json(resp_data);

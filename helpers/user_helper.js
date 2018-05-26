@@ -33,9 +33,15 @@ user_helper.get_all_users = async () => {
  *          status 1 - If users data found, with users object
  *          status 2 - If users not found, with appropriate message
  */
-user_helper.search_users = async searchObject => {
+user_helper.search_users = async (searchObject, start, offset) => {
   try {
-    var users = await User.find(searchObject);
+    var users = await User.aggregate([
+      {
+        $match: searchObject
+      },
+      start,
+      offset
+    ]);
     if (users) {
       return { status: 1, message: "users found", users: users };
     } else {
