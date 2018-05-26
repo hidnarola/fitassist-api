@@ -8096,7 +8096,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "postType",
-            "description": "<p>post Type of Post <br><code>Enum=[&quot;timeline&quot;,&quot;post&quot;]</code></p>"
+            "description": "<p>post Type of Post <br><code>Enum=[&quot;timeline&quot;,&quot;gallery&quot;]</code></p>"
           }
         ]
       }
@@ -8206,7 +8206,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "user_post_photos",
+            "field": "user_gallery_photos",
             "description": "<p>JSON of user post photos 's document</p>"
           }
         ]
@@ -9615,6 +9615,20 @@ define({ "api": [
             "optional": false,
             "field": "name",
             "description": "<p>name of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "limit",
+            "description": "<p>limit of user</p>"
           }
         ]
       }
