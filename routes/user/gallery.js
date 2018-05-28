@@ -93,8 +93,6 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiParam {File} images User's  Images
  * @apiParam {String} [description] Description of Images
  * @apiParam {Number} [privacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
- * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","gallery"]</code>
- *
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -106,14 +104,6 @@ router.post("/", async (req, res) => {
     privacy: {
       notEmpty: true,
       errorMessage: "privacy is required"
-    },
-    postType: {
-      notEmpty: true,
-      isIn: {
-        options: [["timeline", "gallery"]],
-        errorMessage: "postType can be from timeline, gallery"
-      },
-      errorMessage: "postType is required"
     }
   };
   req.checkBody(schema);
@@ -123,7 +113,8 @@ router.post("/", async (req, res) => {
     var user_post_obj = {
       userId: authUserId,
       description: req.body.description,
-      createdBy: authUserId
+      createdBy: authUserId,
+      postType: "gallery"
     };
 
     if (req.body.privacy) {

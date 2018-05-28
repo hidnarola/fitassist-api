@@ -85,8 +85,6 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiParam {String} createdBy created User Id of user
  * @apiParam {String} [description] image caption or timeline post
  * @apiParam {Number} [priavacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
- * @apiParam {String} postType post Type of Post <br><code>Enum=["timeline","gallery"]</code>
- *
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -95,16 +93,9 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var schema = {
-    privacy: { notEmpty: true, errorMessage: "privacy is required" },
-    postType: {
-      notEmpty: true,
-      isIn: {
-        options: [["timeline", "gallery"]],
-        errorMessage: "postType can be from timeline, gallery"
-      },
-      errorMessage: "postType is required"
-    }
+    privacy: { notEmpty: true, errorMessage: "privacy is required" }
   };
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
@@ -121,9 +112,6 @@ router.post("/", async (req, res) => {
       user_post_obj.createdBy = req.body.createdBy;
     } else {
       user_post_obj.createdBy = authUserId;
-    }
-    if (req.body.postType) {
-      user_post_obj.postType = req.body.postType;
     }
 
     async.waterfall(
