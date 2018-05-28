@@ -27,17 +27,39 @@ router.post("/", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
-    var start = { $skip: parseInt(req.body.start ? req.body.start : 0) };
-    var offset = { $limit: parseInt(req.body.offset ? req.body.offset : 10) };
-
     var re = new RegExp(req.body.name, "i");
     value = { $regex: re };
 
-    var searchObject = {
-      $or: [{ firstName: value }, { lastName: value }, { username: value }]
+    var projectObject = {
+      $project: {
+        fullName: { $concat: ["$firstName", " ", "$lastName"] },
+        firstName: 1,
+        lastName: 1,
+        avatar: 1,
+        username: 1
+      }
     };
 
-    var resp_data = await user_helper.search_users(searchObject, start, offset);
+    var searchObject = {
+      $match: {
+        $or: [
+          { firstName: value },
+          { lastName: value },
+          { username: value },
+          { fullName: value }
+        ]
+      }
+    };
+
+    var start = { $skip: parseInt(req.body.start ? req.body.start : 0) };
+    var offset = { $limit: parseInt(req.body.offset ? req.body.offset : 10) };
+
+    var resp_data = await user_helper.search_users(
+      projectObject,
+      searchObject,
+      start,
+      offset
+    );
 
     if (resp_data.status == 1) {
       res.status(config.OK_STATUS).json(resp_data);

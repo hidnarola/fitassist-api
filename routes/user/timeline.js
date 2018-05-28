@@ -219,7 +219,7 @@ router.post("/", async (req, res) => {
                   userId: authUserId,
                   createdBy: user_post_obj.createdBy,
                   postPhotoId: user_post_data.user_post_photo._id,
-                  tagLine: "added a new " + user_post_obj.postType + " photo"
+                  tagLine: "added a new timeline photo"
                 };
                 let user_timeline_data = await user_timeline_helper.insert_timeline_data(
                   timelineObj
