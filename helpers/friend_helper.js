@@ -70,7 +70,6 @@ friend_helper.get_friends = async id => {
  *          status 2 - If friends not found, with appropriate message
  */
 friend_helper.get_friend_by_username = async (username, statusType) => {
-  
   try {
     if (statusType == 2) {
       var friends = await Users.aggregate([
@@ -167,6 +166,37 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
           $project: {
             users: {
               $mergeObjects: ["$user", { friendshipId: "$friendIds._id" }]
+            }
+          }
+        },
+
+        {
+          $lookup: {
+            from: "friends",
+            localField: "users.authUserId",
+            foreignField: "friendId",
+            as: "rightside"
+          }
+        },
+        {
+          $lookup: {
+            from: "friends",
+            localField: "users.authUserId",
+            foreignField: "userId",
+            as: "leftside"
+          }
+        },
+        {
+          $project: {
+            users: {
+              $mergeObjects: [
+                "$users",
+                {
+                  totalFriends: {
+                    $size: { $concatArrays: ["$leftside", "$rightside"] }
+                  }
+                }
+              ]
             }
           }
         },
@@ -324,7 +354,7 @@ friend_helper.reject_friend = async id => {
     if (friend && friend.n === 0) {
       return { status: 2, message: "Friend request not found" };
     } else {
-      console.log("'count'",friend);
+      console.log("'count'", friend);
       return {
         status: 1,
         message: "Friend request rejected"
