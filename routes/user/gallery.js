@@ -233,7 +233,8 @@ router.post("/", async (req, res) => {
                   userId: authUserId,
                   createdBy: authUserId,
                   postPhotoId: user_post_data.user_post_photo._id,
-                  tagLine: "added a new gallery photo"
+                  tagLine: "added a new gallery photo",
+                  type: "gallery"
                 };
 
                 let user_timeline_data = await user_timeline_helper.insert_timeline_data(

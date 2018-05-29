@@ -121,7 +121,7 @@ router.get("/:username?/:type?", async (req, res) => {
  * @apiGroup  User Friends
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} friendId Id fo friend
+ * @apiParam {String} friendId Id of friend
  * @apiSuccess (Success 200) {JSON} friend request sent in friends detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -141,7 +141,6 @@ router.post("/", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
-    
     if (authUserId === req.body.friendId) {
       return res
         .status(config.BAD_REQUEST)
@@ -154,22 +153,19 @@ router.post("/", async (req, res) => {
         { $and: [{ userId: req.body.friendId }, { friendId: authUserId }] }
       ]
     });
-    var msg="is already friend";
+    var msg = "is already friend";
     if (check_friend_data.status == 1) {
       if (check_friend_data.friends.length !== 0) {
-        if(check_friend_data.friends[0].status==1)
-        {
-          msg="request is already in pending";
+        if (check_friend_data.friends[0].status == 1) {
+          msg = "request is already in pending";
         }
-        return res
-          .status(config.BAD_REQUEST)
-          .json({ message: msg });
+        return res.status(config.BAD_REQUEST).json({ message: msg });
       }
     }
 
     var friend_obj = {
       userId: authUserId,
-      friendId: req.body.friendId,
+      friendId: req.body.friendId
     };
 
     let friend_data = await friend_helper.send_friend_request(friend_obj);
@@ -231,10 +227,7 @@ router.delete("/:request_id", async (req, res) => {
   logger.trace("Delete friend API - Id = ", req.params.request_id);
   let friend_data = await friend_helper.reject_friend({
     _id: req.params.request_id,
-    $or: [
-      { userId: authUserId },
-      { friendId: authUserId }
-    ]
+    $or: [{ userId: authUserId }, { friendId: authUserId }]
   });
 
   if (friend_data.status === 0) {

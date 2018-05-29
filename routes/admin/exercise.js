@@ -112,10 +112,8 @@ router.get("/:exercise_id", async (req, res) => {
  * @api {post} /admin/exercise Add
  * @apiName Add
  * @apiGroup Exercise
- * 
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
  * @apiParam {String} name Name of Exercise
  * @apiParam {String} [description] Description of Exercise
  * @apiParam {String} mainMuscleGroup Reference id of from muscles group collection
@@ -129,7 +127,6 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiParam {Array} [tips] tips of Exercise
  * @apiParam {Files} [images] Images of Exercise
  * @apiParam {Enum} [measures] Measures of Exercise
- 
  * @apiSuccess (Success 200) {JSON} exercise Exercise details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -167,7 +164,6 @@ router.post("/", async (req, res) => {
   otherMuscleGroupData = [];
 
   if (req.body.otherMuscleGroup) {
-
     JSON.parse(req.body.otherMuscleGroup).forEach(element => {
       otherMuscleGroupData.push(mongoose.Types.ObjectId(element));
     });
@@ -182,7 +178,7 @@ router.post("/", async (req, res) => {
       equipmentsData.push(mongoose.Types.ObjectId(element));
     });
   }
-  console.log("equipmentsData",equipmentsData);
+  console.log("equipmentsData", equipmentsData);
 
   if (!errors) {
     //console.log("Data = ",req.body);

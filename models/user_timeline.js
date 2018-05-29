@@ -13,29 +13,41 @@ var UserTimelineSchema = new Schema(
       field: "authUserId"
     },
     progressPhotoId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "user_progress_photos",
       default: null
     },
     postPhotoId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "user_posts",
       default: null
     },
     exercise: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       default: null
     },
     workout: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       default: null
     },
     goal: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       default: null
     },
     tagLine: {
       type: String,
+      default: null
+    },
+    type: {
+      type: String,
+      enum: [
+        "progress_photo",
+        "gallery",
+        "timeline",
+        "workout",
+        "goal",
+        "exercise"
+      ],
       default: null
     },
     status: { type: Number, default: 1 },

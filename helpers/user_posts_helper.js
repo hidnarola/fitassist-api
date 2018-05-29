@@ -85,172 +85,109 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
 user_post_helper.get_user_timeline = async user_auth_id => {
   try {
     //#region timeline old query
-    // var timeline = await UserPost.aggregate([
-    //   {
-    //     $match: user_auth_id
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "user_posts_images",
-    //       localField: "_id",
-    //       foreignField: "postId",
-    //       as: "timeline_images"
-    //     }
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: "$timeline_images",
-    //       preserveNullAndEmptyArrays: true
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "users",
-    //       localField: "createdBy",
-    //       foreignField: "authUserId",
-    //       as: "createdDetail"
-    //     }
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: "$createdDetail",
-    //       preserveNullAndEmptyArrays: true
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "users",
-    //       localField: "userId",
-    //       foreignField: "authUserId",
-    //       as: "ownerDetail"
-    //     }
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: "$ownerDetail",
-    //       preserveNullAndEmptyArrays: true
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "likes",
-    //       localField: "_id",
-    //       foreignField: "postId",
-    //       as: "likes"
-    //     }
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: "$likes",
-    //       preserveNullAndEmptyArrays: true
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "users",
-    //       localField: "likes.userId",
-    //       foreignField: "authUserId",
-    //       as: "likesDetails"
-    //     }
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: "$likesDetails",
-    //       preserveNullAndEmptyArrays: true
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "comments",
-    //       localField: "_id",
-    //       foreignField: "postId",
-    //       as: "comments"
-    //     }
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: "$comments",
-    //       preserveNullAndEmptyArrays: true
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "users",
-    //       localField: "comments.userId",
-    //       foreignField: "authUserId",
-    //       as: "commentsDetails"
-    //     }
-    //   },
-    //   {
-    //     $unwind: {
-    //       path: "$commentsDetails",
-    //       preserveNullAndEmptyArrays: true
-    //     }
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$_id",
-    //       firstName: { $first: "$ownerDetail.firstName" },
-    //       lastName: { $first: "$ownerDetail.lastName" },
-    //       description: { $first: "$$ROOT.description" },
-    //       privacy: { $first: "$$ROOT.privacy" },
-    //       timeline_images: { $addToSet: "$timeline_images" },
-    //       created_by: {
-    //         $first: {
-    //           _id: "$$ROOT.createdDetail._id",
-    //           userAuthId: "$$ROOT.createdDetail.userId",
-    //           firstName: "$$ROOT.createdDetail.firstName",
-    //           lastName: "$$ROOT.createdDetail.lastName",
-    //           avatar: "$$ROOT.createdDetail.avatar"
-    //         }
-    //       },
-    //       owner_by: {
-    //         $first: {
-    //           _id: "$ownerDetail._id",
-    //           userAuthId: "$ownerDetail.userId",
-    //           firstName: "$ownerDetail.firstName",
-    //           lastName: "$ownerDetail.lastName",
-    //           avatar: "$ownerDetail.avatar"
-    //         }
-    //       },
-    //       // likes: { $addToSet: "$likes" },
-    //       // comments: { $addToSet: "$comments" },
-    //       likes: {
-    //         $addToSet: {
-    //           authUserId: "$likesDetails.authUserId",
-    //           firstName: "$likesDetails.firstName",
-    //           lastName: "$likesDetails.lastName",
-    //           avatar: "$likesDetails.avatar",
-    //           username: "$likesDetails.username",
-    //           create_date: "$likes.createdAt"
-    //         }
-    //       },
-    //       // comments_by: { $addToSet: "$commentsDetails" },
-    //       comments: {
-    //         $addToSet: {
-    //           authUserId: "$commentsDetails.authUserId",
-    //           firstName: "$commentsDetails.firstName",
-    //           lastName: "$commentsDetails.lastName",
-    //           avatar: "$commentsDetails.avatar",
-    //           username: "$commentsDetails.username",
-    //           comment: "$comments.comment",
-    //           create_date: "$comments.createdAt"
-    //         }
-    //       }
-    //     }
-    //   }
-    // ]);
-    //#endregion
-    var timeline = await UserTimeline.find()
-      .populate("postPhotoId")
-      .populate("progressPhotoId")
-      .exec();
+    var timeline = await UserTimeline.aggregate([
+      {
+        $lookup: {
+          from: "user_progress_photos",
+          localField: "progressPhotoId",
+          foreignField: "_id",
+          as: "user_progress_photos"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user_progress_photos",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "user_posts",
+          localField: "postPhotoId",
+          foreignField: "_id",
+          as: "user_posts"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user_posts",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "user_posts_images",
+          localField: "user_posts._id",
+          foreignField: "postId",
+          as: "user_post_images"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user_post_images",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_posts.userId",
+          foreignField: "authUserId",
+          as: "users"
+        }
+      },
+      {
+        $unwind: {
+          path: "$users",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_posts.createdBy",
+          foreignField: "authUserId",
+          as: "created_by"
+        }
+      },
+      {
+        $unwind: {
+          path: "$created_by",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          progress_photos: { $addToSet: "$user_progress_photos" },
+          post_images: { $addToSet: "$user_post_images" },
+          tag_line: { $first: "$tagLine" },
+          type: { $first: "$type" },
+          progress_description: { $first: "$user_progress_photos.description" },
+          post_description: { $first: "$user_posts.description" },
+          created_by: {
+            $first: {
+              firstName: "$created_by.firstName",
+              lastName: "$created_by.lastName",
+              avatar: "$created_by.avatar",
+              username: "$created_by.username"
+            }
+          },
+          owner_by: {
+            $first: {
+              firstName: "$users.firstName",
+              lastName: "$users.lastName",
+              avatar: "$users.avatar",
+              username: "$users.username"
+            }
+          },
+          privacy: { $first: "$user_posts.privacy" },
+          createdAt: { $first: "$createdAt" }
+        }
+      }
+    ]);
     if (timeline || timeline.length != 0) {
-      return {
-        status: 1,
-        message: "User timeline found",
-        timeline: timeline
-      };
+      return { status: 1, message: "User timeline found", timeline: timeline };
     } else {
       return { status: 2, message: "No user timeline available" };
     }

@@ -22,53 +22,45 @@ user_helper = require("../../helpers/user_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
-  var schema = { name: { notEmpty: true, errorMessage: "name is required" } };
-  req.checkBody(schema);
-  var errors = req.validationErrors();
+  var name = req.body.name ? req.body.name : "";
+  var re = new RegExp(req.body.name, "i");
+  value = { $regex: re };
 
-  if (!errors) {
-    var re = new RegExp(req.body.name, "i");
-    value = { $regex: re };
-
-    var projectObject = {
-      $project: {
-        fullName: { $concat: ["$firstName", " ", "$lastName"] },
-        firstName: 1,
-        lastName: 1,
-        avatar: 1,
-        username: 1
-      }
-    };
-
-    var searchObject = {
-      $match: {
-        $or: [
-          { firstName: value },
-          { lastName: value },
-          { username: value },
-          { fullName: value }
-        ]
-      }
-    };
-
-    var start = { $skip: parseInt(req.body.start ? req.body.start : 0) };
-    var offset = { $limit: parseInt(req.body.offset ? req.body.offset : 10) };
-
-    var resp_data = await user_helper.search_users(
-      projectObject,
-      searchObject,
-      start,
-      offset
-    );
-
-    if (resp_data.status == 1) {
-      res.status(config.OK_STATUS).json(resp_data);
-    } else {
-      res.status(config.OK_STATUS).json(resp_data);
+  var projectObject = {
+    $project: {
+      fullName: { $concat: ["$firstName", " ", "$lastName"] },
+      firstName: 1,
+      lastName: 1,
+      avatar: 1,
+      username: 1
     }
+  };
+
+  var searchObject = {
+    $match: {
+      $or: [
+        { firstName: value },
+        { lastName: value },
+        { username: value },
+        { fullName: value }
+      ]
+    }
+  };
+
+  var start = { $skip: parseInt(req.body.start ? req.body.start : 0) };
+  var offset = { $limit: parseInt(req.body.offset ? req.body.offset : 10) };
+
+  var resp_data = await user_helper.search_users(
+    projectObject,
+    searchObject,
+    start,
+    offset
+  );
+
+  if (resp_data.status == 1) {
+    res.status(config.OK_STATUS).json(resp_data);
   } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

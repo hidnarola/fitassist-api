@@ -197,8 +197,11 @@ router.post("/", async (req, res) => {
       userId: authUserId,
       createdBy: authUserId,
       progressPhotoId: user_progress_photo_data.user_progress_photo._id,
-      tagLine: "added a new progress photo"
+      tagLine: "added a new progress photo",
+      type: "progress_photo"
     };
+    console.log("timelineObj", timelineObj);
+
     let user_timeline_data = await user_timeline_helper.insert_timeline_data(
       timelineObj
     );
