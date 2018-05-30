@@ -126,7 +126,7 @@ router.delete("/:username", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/chat/:username/:id Delete request
+ * @api {delete} /user/chat/:username/:message_id Delete request
  * @apiName Delete request
  * @apiGroup  User Chat
  *
@@ -143,7 +143,8 @@ router.delete("/:username/:message_id", async (req, res) => {
   let friend_data = await chat_helper.delete_chat_message_by_user_id(
     {
       userId: authUserId,
-      friendId: user.user.authUserId
+      friendId: user.user.authUserId,
+      _id: req.params.message_id
     },
     {
       isDeleted: 1
