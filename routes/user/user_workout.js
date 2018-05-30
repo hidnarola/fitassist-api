@@ -46,8 +46,19 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
   var date = req.body.date;
 
-  var start = moment(date).startOf("day"); // set to 12:00 am today
-  var end = moment(date).endOf("day"); // set to 23:59 pm today
+  // var start = moment(date).startOf("day"); // set to 12:00 am today
+  // var end = moment(date).endOf("day"); // set to 23:59 pm today
+
+  var start = moment(date).utcOffset(0);
+  start.toISOString();
+  start.format();
+
+  var end = moment(date)
+    .utcOffset(0)
+    .add(23, "hours")
+    .add(59, "minutes");
+  end.toISOString();
+  end.format();
   console.log("start", start);
   console.log("end", end);
 
