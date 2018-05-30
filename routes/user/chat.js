@@ -40,8 +40,8 @@ router.get("/:username", async (req, res) => {
 });
 
 /**
- * @api {post} /user/chat Send request
- * @apiName Send request
+ * @api {post} /user/chat Send
+ * @apiName Send
  * @apiGroup  User Chat
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
@@ -69,15 +69,15 @@ router.post("/", async (req, res) => {
       userId: authUserId,
       reply: req.body.reply
     };
-    let friend_data = await chat_helper.send_message(
+    let chat_data = await chat_helper.send_message(
       conversations_obj,
       conversations_replies_obj
     );
-    if (friend_data.status === 0) {
-      logger.error("Error while inserting friend request = ", friend_data);
-      return res.status(config.BAD_REQUEST).json({ friend_data });
+    if (chat_data.status === 0) {
+      logger.error("Error while sending message = ", chat_data);
+      return res.status(config.BAD_REQUEST).json({ chat_data });
     } else {
-      return res.status(config.OK_STATUS).json(friend_data);
+      return res.status(config.OK_STATUS).json(chat_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -86,8 +86,8 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/chat/:username Delete request
- * @apiName Delete request
+ * @api {delete} /user/chat/:username Delete
+ * @apiName Delete
  * @apiGroup  User Chat
  *
  * @apiHeader {String}  authorization User's unique access-key
@@ -100,7 +100,7 @@ router.delete("/:username", async (req, res) => {
   var authUserId = decoded.sub;
   var user = await user_helper.get_user_by({ username: req.params.username });
   logger.trace("Delete conversation of user. Id is = ", user.user.authUserId);
-  let friend_data = await chat_helper.delete_chat_message_by_user_id(
+  let chat_data = await chat_helper.delete_chat_message_by_user_id(
     {
       $or: [
         {
@@ -118,16 +118,16 @@ router.delete("/:username", async (req, res) => {
     }
   );
 
-  if (friend_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(friend_data);
+  if (chat_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(chat_data);
   } else {
-    res.status(config.OK_STATUS).json(friend_data);
+    res.status(config.OK_STATUS).json(chat_data);
   }
 });
 
 /**
- * @api {delete} /user/chat/:username/:message_id Delete request
- * @apiName Delete request
+ * @api {delete} /user/chat/:username/:message_id Delete
+ * @apiName Delete
  * @apiGroup  User Chat
  *
  * @apiHeader {String}  authorization User's unique access-key
@@ -140,7 +140,7 @@ router.delete("/:username/:message_id", async (req, res) => {
   var authUserId = decoded.sub;
   var user = await user_helper.get_user_by({ username: req.params.username });
   logger.trace("Delete conversation of user. Id is = ", user.user.authUserId);
-  let friend_data = await chat_helper.delete_chat_message_by_user_id(
+  let chat_data = await chat_helper.delete_chat_message_by_user_id(
     {
       userId: authUserId,
       friendId: user.user.authUserId,
@@ -151,10 +151,10 @@ router.delete("/:username/:message_id", async (req, res) => {
     }
   );
 
-  if (friend_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(friend_data);
+  if (chat_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(chat_data);
   } else {
-    res.status(config.OK_STATUS).json(friend_data);
+    res.status(config.OK_STATUS).json(chat_data);
   }
 });
 

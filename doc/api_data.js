@@ -7367,8 +7367,8 @@ define({ "api": [
   {
     "type": "delete",
     "url": "/user/chat/:username/:message_id",
-    "title": "Delete request",
-    "name": "Delete_request",
+    "title": "Delete",
+    "name": "Delete",
     "group": "User_Chat",
     "header": {
       "fields": {
@@ -7416,8 +7416,8 @@ define({ "api": [
   {
     "type": "delete",
     "url": "/user/chat/:username",
-    "title": "Delete request",
-    "name": "Delete_request",
+    "title": "Delete",
+    "name": "Delete",
     "group": "User_Chat",
     "header": {
       "fields": {
@@ -7514,8 +7514,8 @@ define({ "api": [
   {
     "type": "post",
     "url": "/user/chat",
-    "title": "Send request",
-    "name": "Send_request",
+    "title": "Send",
+    "name": "Send",
     "group": "User_Chat",
     "header": {
       "fields": {
