@@ -1,4 +1,5 @@
 var User = require("./../models/users");
+var _ = require("underscore");
 var user_helper = {};
 
 /*
@@ -43,9 +44,52 @@ user_helper.search_users = async (
     var users = await User.aggregate([
       projectObject,
       searchObject,
+      {
+        $lookup: {
+          from: "friends",
+          localField: "authUserId",
+          foreignField: "friendId",
+          as: "rightside"
+        }
+      },
+
+      {
+        $lookup: {
+          from: "friends",
+          localField: "authUserId",
+          foreignField: "userId",
+          as: "leftside"
+        }
+      },
+      {
+        $project: {
+          firstName: 1,
+          fullName: 1,
+          firstName: 1,
+          lastName: 1,
+          avatar: 1,
+          authUserId: 1,
+          username: 1,
+          totalFriends: {
+            $concatArrays: ["$leftside", "$rightside"]
+          }
+        }
+      },
       start,
       offset
     ]);
+    _.each(users, (user, index) => {
+      var total_friends = user.totalFriends;
+      var cnt = 0;
+      _.each(total_friends, (friend, i) => {
+        if (friend.status == 2) {
+          cnt++;
+        }
+      });
+      user.friendsCount = cnt;
+      delete user.totalFriends;
+    });
+
     if (users) {
       return { status: 1, message: "users found", users: users };
     } else {

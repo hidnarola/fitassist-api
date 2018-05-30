@@ -7330,9 +7330,9 @@
   },
   {
     "type": "get",
-    "url": "/user/chat/:userId",
-    "title": "Get chat messages by userId",
-    "name": "Get_chat_messages_by_userId",
+    "url": "/user/chat/:username",
+    "title": "Get chat messages by username",
+    "name": "Get_chat_messages_by_username",
     "group": "User_Chat",
     "header": {
       "fields": {
@@ -7354,7 +7354,7 @@
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "chat_messages",
+            "field": "conversations",
             "description": "<p>Array of conversations_replies document</p>"
           }
         ]
@@ -7430,7 +7430,7 @@
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "chat_message",
+            "field": "conversation",
             "description": "<p>message sent in conversations_replies detail</p>"
           }
         ]

@@ -28,10 +28,17 @@ router.post("/", async (req, res) => {
 
   var projectObject = {
     $project: {
-      fullName: { $concat: ["$firstName", " ", "$lastName"] },
+      fullName: {
+        $concat: [
+          { $ifNull: ["$firstName", ""] },
+          " ",
+          { $ifNull: ["$lastName", ""] }
+        ]
+      },
       firstName: 1,
       lastName: 1,
       avatar: 1,
+      authUserId: 1,
       username: 1
     }
   };

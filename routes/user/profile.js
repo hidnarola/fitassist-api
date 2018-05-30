@@ -13,7 +13,30 @@ var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
 
 /**
- * @api {get} /user/profile/username Get User Profile by username
+ * @api {get} /user/profile/ Get User Profile by username
+ * @apiName Get Profile by username
+ * @apiGroup User
+ * @apiSuccess (Success 200) {Array} user Array of users document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var resp_data = await user_helper.get_user_by({
+    authUserId: authUserId
+  });
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching user profile = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("user profile got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
+ * @api {get} /user/profile/:username Get User Profile by username
  * @apiName Get Profile by username
  * @apiGroup User
  * @apiSuccess (Success 200) {Array} user Array of users document
@@ -112,7 +135,8 @@ router.get("/:username", async (req, res) => {
  * @apiParam {Number} [mobileNumber] mobileNumber
  * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
  * @apiParam {Date} [dateOfBirth] Date of Birth
- * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')
+ * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat',
+ * 'gain_strength', 'gain_power', 'increase_endurance')
  * @apiParam {File} [user_img] avatar
  * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {Boolean} status status

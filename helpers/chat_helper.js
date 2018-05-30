@@ -1,5 +1,6 @@
 var Conversations = require("./../models/conversations");
 var ConversationsReplies = require("./../models/conversations_replies");
+var _ = require("underscore");
 var chat_helper = {};
 
 /*
@@ -14,14 +15,26 @@ chat_helper.get_messages = async (userId, friendId) => {
     var conversation = await Conversations.aggregate([
       {
         $match: {
-          $or: [
+          $and: [
             {
-              $and: [{ userId: friendId }, { friendId: userId }]
+              $or: [
+                {
+                  $and: [{ userId: friendId }, { friendId: userId }]
+                },
+                {
+                  $and: [{ userId: userId }, { friendId: friendId }]
+                }
+              ]
             },
             {
-              $and: [{ userId: userId }, { friendId: friendId }]
+              isDeleted: 0
             }
           ]
+        }
+      },
+      {
+        $sort: {
+          createdAt: -1
         }
       },
       {
@@ -34,6 +47,11 @@ chat_helper.get_messages = async (userId, friendId) => {
       },
       {
         $unwind: "$message"
+      },
+      {
+        $match: {
+          "message.isDeleted": 0
+        }
       },
       {
         $lookup: {
@@ -65,7 +83,8 @@ chat_helper.get_messages = async (userId, friendId) => {
               firstName: "$user.firstName",
               lastName: "$user.lastName",
               avatar: "$user.avatar",
-              username: "$user.username"
+              username: "$user.username",
+              authUserId: "$user.authUserId"
             }
           },
           friend: {
@@ -73,15 +92,33 @@ chat_helper.get_messages = async (userId, friendId) => {
               firstName: "$friend.firstName",
               lastName: "$friend.lastName",
               avatar: "$friend.avatar",
-              username: "$friend.username"
+              username: "$friend.username",
+              authUserId: "$friend.authUserId"
             }
           },
-          message: { $first: "$message.reply" }
+          message: { $first: "$message.reply" },
+          createdAt: { $first: "$message.createdAt" }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          user: 1,
+          friend: 1,
+          message: 1,
+          createdAt: 1,
+          flag: {
+            $cond: {
+              if: { $eq: ["$user.authUserId", userId] },
+              then: "sent",
+              else: "recieved"
+            }
+          }
         }
       }
     ]);
 
-    if (conversation) {
+    if (conversation && conversation.length > 0) {
       return {
         status: 1,
         message: "conversation found",
@@ -132,17 +169,27 @@ chat_helper.send_message = async (
 /*
  * delete_chat_message_by_user_id is used to delete chat_message from database
  * 
- * @param   userId String  _id of user that need to be delete
+ * @param   updateObject String  _id of user that need to be delete
  * 
  * @return  status  0 - If any error occur in deletion of chat_message, with error
  *          status  1 - If chat_message deleted successfully, with appropriate message
  * 
  * @developed by "amc"
  */
-chat_helper.delete_chat_message_by_user_id = async userId => {
+chat_helper.delete_chat_message_by_user_id = async (id, updateObject) => {
   try {
-    let resp = await ConversationsReplies.remove(userId);
-    if (!resp) {
+    let resp = await Conversations.updateMany(id, updateObject);
+    let resp_data = await Conversations.find(id);
+    deleteIds = [];
+    _.each(resp_data, (single, index) => {
+      deleteIds.push(single._id);
+    });
+
+    let resp2 = await ConversationsReplies.updateMany(
+      { conversationId: { $in: deleteIds } },
+      updateObject
+    );
+    if (!resp && !resp2) {
       return { status: 2, message: "chat message not found" };
     } else {
       return { status: 1, message: "chat message deleted" };

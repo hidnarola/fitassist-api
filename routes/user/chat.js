@@ -10,20 +10,25 @@ var config = require("../../config");
 var logger = config.logger;
 
 var chat_helper = require("../../helpers/chat_helper");
+var user_helper = require("../../helpers/user_helper");
 
 /**
- * @api {get} /user/chat/:userId Get chat messages by userId
- * @apiName Get chat messages by userId
+ * @api {get} /user/chat/:username Get chat messages by username
+ * @apiName Get chat messages by username
  * @apiGroup  User Chat
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} conversations Array of conversations_replies document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:friendId", async (req, res) => {
+router.get("/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var friendId = req.params.friendId;
-  var resp_data = await chat_helper.get_messages(authUserId, friendId);
+  var user = await user_helper.get_user_by({ username: req.params.username });
+
+  var resp_data = await chat_helper.get_messages(
+    authUserId,
+    user.user.authUserId
+  );
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching chat messages = ", resp_data);
@@ -81,8 +86,7 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @apiIgnore Not finished Method
- * @api {delete} /user/chat/:user_id Delete request
+ * @api {delete} /user/chat/:username Delete request
  * @apiName Delete request
  * @apiGroup  User Chat
  *
@@ -91,13 +95,60 @@ router.post("/", async (req, res) => {
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/:user_id", async (req, res) => {
+router.delete("/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Delete conversation of user. Id is = ", req.params.user_id);
-  let friend_data = await chat_helper.delete_chat_message_by_user_id({
-    _id: req.params.user_id
-  });
+  var user = await user_helper.get_user_by({ username: req.params.username });
+  logger.trace("Delete conversation of user. Id is = ", user.user.authUserId);
+  let friend_data = await chat_helper.delete_chat_message_by_user_id(
+    {
+      $or: [
+        {
+          userId: authUserId,
+          friendId: user.user.authUserId
+        },
+        {
+          friendId: authUserId,
+          userId: user.user.authUserId
+        }
+      ]
+    },
+    {
+      isDeleted: 1
+    }
+  );
+
+  if (friend_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(friend_data);
+  } else {
+    res.status(config.OK_STATUS).json(friend_data);
+  }
+});
+
+/**
+ * @api {delete} /user/chat/:username/:id Delete request
+ * @apiName Delete request
+ * @apiGroup  User Chat
+ *
+ * @apiHeader {String}  authorization User's unique access-key
+ *
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.delete("/:username/:message_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var user = await user_helper.get_user_by({ username: req.params.username });
+  logger.trace("Delete conversation of user. Id is = ", user.user.authUserId);
+  let friend_data = await chat_helper.delete_chat_message_by_user_id(
+    {
+      userId: authUserId,
+      friendId: user.user.authUserId
+    },
+    {
+      isDeleted: 1
+    }
+  );
 
   if (friend_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(friend_data);
