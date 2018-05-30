@@ -7058,9 +7058,9 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/profile/:username",
-    "title": "Get User Profile by username",
-    "name": "Get_Profile_by_username",
+    "url": "/user/profile/",
+    "title": "Get User Profile by AuthID",
+    "name": "Get_Profile_by_AuthID",
     "group": "User",
     "success": {
       "fields": {
@@ -7094,7 +7094,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/profile/",
+    "url": "/user/profile/:username",
     "title": "Get User Profile by username",
     "name": "Get_Profile_by_username",
     "group": "User",

@@ -13,8 +13,8 @@ var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
 
 /**
- * @api {get} /user/profile/ Get User Profile by username
- * @apiName Get Profile by username
+ * @api {get} /user/profile/ Get User Profile by AuthID
+ * @apiName Get Profile by AuthID
  * @apiGroup User
  * @apiSuccess (Success 200) {Array} user Array of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
