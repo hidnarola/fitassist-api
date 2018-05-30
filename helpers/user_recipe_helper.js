@@ -87,7 +87,6 @@ users_recipe_helper.insert_user_recipe = async user_recipe_object => {
 
 users_recipe_helper.delete_user_recipe = async id => {
   try {
-      
     let user_recipe_data = await UsersRecipe.remove(id);
     console.log("userdata", user_recipe_data.n);
 

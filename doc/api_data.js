@@ -5858,7 +5858,7 @@ define({ "api": [
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5997,7 +5997,7 @@ define({ "api": [
     "groupTitle": "Recipes"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -7330,6 +7330,131 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/user/chat/:userId",
+    "title": "Get chat messages by userId",
+    "name": "Get_chat_messages_by_userId",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "chat_messages",
+            "description": "<p>Array of conversations_replies document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/chat.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "post",
+    "url": "/user/chat",
+    "title": "Send request",
+    "name": "Send_request",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "reply",
+            "description": "<p>reply of chat message</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "friendId",
+            "description": "<p>Id of friend</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "chat_message",
+            "description": "<p>message sent in conversations_replies detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/chat.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "get",
     "url": "/user/equipment",
     "title": "Get User's all Equipment",
     "name": "Get_all_User_s_Equipment",
@@ -7916,7 +8041,7 @@ define({ "api": [
     "groupTitle": "User_Friends"
   },
   {
-    "type": "post",
+    "type": "get",
     "url": "/user/friend/:username/:type?",
     "title": "Get by Username",
     "name": "Get_by_Username",
@@ -8006,7 +8131,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "friendId",
-            "description": "<p>Id fo friend</p>"
+            "description": "<p>Id of friend</p>"
           }
         ]
       }
@@ -8090,13 +8215,6 @@ define({ "api": [
             "optional": true,
             "field": "privacy",
             "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "postType",
-            "description": "<p>post Type of Post <br><code>Enum=[&quot;timeline&quot;,&quot;gallery&quot;]</code></p>"
           }
         ]
       }
@@ -9931,13 +10049,6 @@ define({ "api": [
             "optional": true,
             "field": "priavacy",
             "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "postType",
-            "description": "<p>post Type of Post <br><code>Enum=[&quot;timeline&quot;,&quot;gallery&quot;]</code></p>"
           }
         ]
       }

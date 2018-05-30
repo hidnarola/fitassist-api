@@ -247,6 +247,36 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
           }
         },
         {
+          $lookup: {
+            from: "friends",
+            localField: "users.authUserId",
+            foreignField: "friendId",
+            as: "rightside"
+          }
+        },
+        {
+          $lookup: {
+            from: "friends",
+            localField: "users.authUserId",
+            foreignField: "userId",
+            as: "leftside"
+          }
+        },
+        {
+          $project: {
+            users: {
+              $mergeObjects: [
+                "$users",
+                {
+                  totalFriends: {
+                    $size: { $concatArrays: ["$leftside", "$rightside"] }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
           $group: {
             _id: "authUserId",
             user: { $push: "$users" }

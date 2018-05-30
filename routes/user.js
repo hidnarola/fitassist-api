@@ -23,6 +23,7 @@ var test_exercises = require("./user/test_exercises");
 var user_workout = require("./user/user_workout");
 var timeline = require("./user/timeline");
 var search = require("./user/search");
+var chat = require("./user/chat");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -45,5 +46,6 @@ router.use("/shopping_cart", auth, shopping_cart);
 router.use("/workout", auth, user_workout);
 router.use("/timeline", auth, timeline);
 router.use("/search", auth, search);
+router.use("/chat", auth, chat);
 
 module.exports = router;

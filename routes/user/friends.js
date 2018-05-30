@@ -45,7 +45,7 @@ var friend_helper = require("../../helpers/friend_helper");
 //#endregion
 
 /**
- * @api {post} /user/friend/:username/:type? Get by Username
+ * @api {get} /user/friend/:username/:type? Get by Username
  * @apiName Get by Username
  * @apiGroup  User Friends
  * @apiDescription Get friends by Username second parameter is used to get by status of friend 1 for pending friends and 2 for approved friend
@@ -144,7 +144,7 @@ router.post("/", async (req, res) => {
     if (authUserId === req.body.friendId) {
       return res
         .status(config.BAD_REQUEST)
-        .json({ message: "Can not send friend request itself" });
+        .json({ message: "Can not send friend request yourself" });
     }
 
     check_friend_data = await friend_helper.checkFriend({
