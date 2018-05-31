@@ -13,7 +13,7 @@ var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
 
 /**
- * @api {get} /user/profile/ Get User Profile by AuthID
+ * @api {get} /user/profile Get User Profile by AuthID
  * @apiName Get Profile by AuthID
  * @apiGroup User
  * @apiSuccess (Success 200) {Array} user Array of users document
@@ -132,6 +132,8 @@ router.get("/:username", async (req, res) => {
  * @apiParam {String} [firstName] First name of user
  * @apiParam {String} [lastName] Last name of user
  * @apiParam {Number} [mobileNumber] mobileNumber
+ * @apiParam {Number} [height] height
+ * @apiParam {Number} [weight] weight
  * @apiParam {Enum} [gender] gender | Possible Values ('male', 'female', 'transgender')
  * @apiParam {Date} [dateOfBirth] Date of Birth
  * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat',

@@ -13,6 +13,7 @@ var admin_helper = require("./../helpers/admin_helper");
 var measurement_helper = require("./../helpers/measurement_helper");
 var exercise_preference_helper = require("./../helpers/exercise_preference_helper");
 var nutrition_preferences_helper = require("./../helpers/nutrition_preferences_helper");
+var user_settings_helper = require("./../helpers/user_settings_helper");
 
 var logger = config.logger;
 
@@ -365,9 +366,9 @@ router.get("/auth0_user_sync", async (req, res) => {
       var response = await request(options);
       response = JSON.parse(response);
       if (response.email && typeof response.email !== "undefined") {
-        let data = await user_helper.checkvalue({ authUserId:response.sub });
-        console.log('data',data);
-        
+        let data = await user_helper.checkvalue({ authUserId: response.sub });
+        console.log("data", data);
+
         if (data.count <= 0) {
           var user_obj = {
             authUserId: response.sub,
@@ -392,29 +393,34 @@ router.get("/auth0_user_sync", async (req, res) => {
               }
             }
           }
-          
+
           var user_data = await user_helper.insert_user(user_obj);
           console.log(user_data);
           exercise_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
           exercise_obj.userId = response.sub;
           nutrition_obj = constant.NUTRITION_PREFERENCE_DEFUALT_VALUE;
           nutrition_obj.userId = response.sub;
-         
-          
+          setting_obj = constant.UNIT_SETTING_DEFUALT_VALUE;
+          setting_obj.userId = response.sub;
+
           var exercise_data = await exercise_preference_helper.insert_exercise_prefernece(
-             exercise_obj
-           );
+            exercise_obj
+          );
 
           var nutrition_data = await nutrition_preferences_helper.insert_nutrition_preference(
             nutrition_obj
           );
 
+          var setting_data = await user_settings_helper.insert_setting(
+            setting_obj
+          );
+
           res.status(config.OK_STATUS).json(user_data);
         } else {
-          let data = await user_helper.get_user_by(
-            {email:response.email,
-            authUserId:response.sub}
-          );
+          let data = await user_helper.get_user_by({
+            email: response.email,
+            authUserId: response.sub
+          });
           res.status(config.OK_STATUS).json(data);
         }
       } else {

@@ -1,4 +1,9 @@
 module.exports = {
+  UNIT_SETTING_DEFUALT_VALUE: {
+    distance: "km",
+    weight: "kg",
+    body_measurement: "cm"
+  },
   EXERCISE_PREFERENCE_DEFUALT_VALUE: {
     workoutIntensity: 0,
     exerciseExperience: 0,

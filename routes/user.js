@@ -24,6 +24,7 @@ var user_workout = require("./user/user_workout");
 var timeline = require("./user/timeline");
 var search = require("./user/search");
 var chat = require("./user/chat");
+var setting = require("./user/user_settings");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -47,5 +48,6 @@ router.use("/workout", auth, user_workout);
 router.use("/timeline", auth, timeline);
 router.use("/search", auth, search);
 router.use("/chat", auth, chat);
+router.use("/setting", auth, setting);
 
 module.exports = router;

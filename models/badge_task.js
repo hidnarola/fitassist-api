@@ -7,10 +7,10 @@ var Schema = mongoose.Schema;
 var BadgeTaskSchema = new Schema(
   {
     name: { type: String, required: true },
-    description: { type: String, required: true , default:null},
+    description: { type: String, required: true, default: null },
     unit: { type: String, enum: ["kms", "kgs"], required: true },
-    status: {type: Number, default:1},
-    isDeleted: {type: Number, default:0},
+    status: { type: Number, default: 1 },
+    isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },
@@ -18,10 +18,6 @@ var BadgeTaskSchema = new Schema(
 );
 
 // Compile model from schema
-var BadgeTask = mongoose.model(
-  "badge_task",
-  BadgeTaskSchema,
-  "badge_task"
-);
+var BadgeTask = mongoose.model("badge_task", BadgeTaskSchema, "badge_task");
 
 module.exports = BadgeTask;

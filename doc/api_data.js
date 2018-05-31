@@ -7058,7 +7058,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/profile/",
+    "url": "/user/profile",
     "title": "Get User Profile by AuthID",
     "name": "Get_Profile_by_AuthID",
     "group": "User",
@@ -7235,6 +7235,20 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "height",
+            "description": "<p>height</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "weight",
+            "description": "<p>weight</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "Enum",
             "optional": true,
             "field": "gender",
@@ -7359,7 +7373,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/user/chat/:username/:message_id",
+    "url": "/user/chat/:username",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Chat",
@@ -7409,6 +7423,104 @@ define({ "api": [
   {
     "type": "delete",
     "url": "/user/chat/:username",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_settings.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "delete",
+    "url": "/user/chat/:username/:message_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_settings.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "delete",
+    "url": "/user/chat/:username/:message_id",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Chat",
@@ -9907,6 +10019,89 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/search.js",
     "groupTitle": "User_Search"
+  },
+  {
+    "type": "post",
+    "url": "/user/settings",
+    "title": "Save",
+    "name": "Save",
+    "group": "User_Settings",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "distance",
+            "description": "<p>distance of friend</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "weight",
+            "description": "<p>weight of friend</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "body_measurement",
+            "description": "<p>body_measurement of friend</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "conversation",
+            "description": "<p>message sent in conversations_replies detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_settings.js",
+    "groupTitle": "User_Settings"
   },
   {
     "type": "post",

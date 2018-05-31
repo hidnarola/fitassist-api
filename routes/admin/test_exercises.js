@@ -127,7 +127,7 @@ router.get("/:test_exercise_id", async (req, res) => {
   test_exercise_id = req.params.test_exercise_id;
   logger.trace("Get all test exercise API called");
   var resp_data = await test_exercise_helper.get_test_exercise_id({
-    _id: test_exercise_id,
+    _id: test_exercise_id
   });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching test exercise = ", resp_data);
@@ -182,7 +182,7 @@ router.post("/", async (req, res) => {
         errorMessage:
           "Sub category must be from upper_body, side, lower_body or cardio"
       },
-      errorMessage: "subCategory of test exercies is required"
+      errorMessage: "sub Category of test exercies is required"
     },
     format: {
       notEmpty: true,
@@ -585,7 +585,7 @@ router.put("/:test_exercise_id", async (req, res) => {
           var oldData = {};
 
           var resp_data = await test_exercise_helper.get_test_exercise_id({
-            _id: test_exercise_id,
+            _id: test_exercise_id
           });
           if (test_exercise_obj.featureImage != null) {
             try {
@@ -600,7 +600,7 @@ router.put("/:test_exercise_id", async (req, res) => {
             }
             if (req.body.format == "a_or_b") {
               var titles = JSON.parse(req.body.title);
-              
+
               if (req.body.a_b_updateImageIndex) {
                 var a_b_updateImageIndex = req.body.a_b_updateImageIndex
                   ? JSON.parse(req.body.a_b_updateImageIndex)
@@ -609,28 +609,31 @@ router.put("/:test_exercise_id", async (req, res) => {
                   ? a_b_updateImageIndex.length
                   : 0;
               }
-                titles.forEach((title, index) => {
+              titles.forEach((title, index) => {
+                try {
+                  var url = oldData[index].image;
+                } catch (error) {}
+                if (
+                  a_b_updateImageIndexLength > 0 &&
+                  a_b_updateImageIndex.indexOf(index) >= 0
+                ) {
                   try {
-                    var url = oldData[index].image;
-                  } catch (error) {}
-                  if (a_b_updateImageIndexLength > 0 && a_b_updateImageIndex.indexOf(index) >= 0) {
-                    try {
-                      fs.unlink(oldData[index].image, async () => {
-                        console.log("Image deleted");
-                      });
-                    } catch (err) {}
-                    if (a_b_updateImageIndexLength > 1) {
-                      url = file_path_array[index];
-                    } else if (a_b_updateImageIndexLength == 1) {
-                      url = file_path_array[0];
-                    }                    
+                    fs.unlink(oldData[index].image, async () => {
+                      console.log("Image deleted");
+                    });
+                  } catch (err) {}
+                  if (a_b_updateImageIndexLength > 1) {
+                    url = file_path_array[index];
+                  } else if (a_b_updateImageIndexLength == 1) {
+                    url = file_path_array[0];
                   }
-                  data.push({
-                    title: title,
-                    image: url
-                  });                  
-                  console.log('DATA',data);
-                });                            
+                }
+                data.push({
+                  title: title,
+                  image: url
+                });
+                console.log("DATA", data);
+              });
             } else if (req.body.format == "multiselect") {
               var delete_multiselect_image_ids = req.body
                 .delete_multiselect_image_ids
