@@ -15,7 +15,7 @@ var user_settings_helper = {};
 user_settings_helper.insert_setting = async setting_obj => {
   try {
     let user_settings_obj = new UserSettings(setting_obj);
-    user_settings = await user_settings.save();
+    user_settings = await user_settings_obj.save();
 
     if (!user_settings) {
       return { status: 2, message: "Record has not added" };

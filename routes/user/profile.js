@@ -161,6 +161,7 @@ router.put("/", async (req, res) => {
   if (req.body.gender) {
     user_obj.gender = req.body.gender;
   }
+
   if (req.body.dateOfBirth) {
     user_obj.dateOfBirth = req.body.dateOfBirth;
   }

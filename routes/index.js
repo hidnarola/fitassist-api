@@ -414,7 +414,7 @@ router.get("/auth0_user_sync", async (req, res) => {
           var setting_data = await user_settings_helper.insert_setting(
             setting_obj
           );
-
+          console.log(setting_data);
           res.status(config.OK_STATUS).json(user_data);
         } else {
           let data = await user_helper.get_user_by({
