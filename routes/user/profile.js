@@ -149,37 +149,16 @@ router.put("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var user_obj = {};
-  if (req.body.firstName) {
-    user_obj.firstName = req.body.firstName;
-  }
-  if (req.body.lastName) {
-    user_obj.lastName = req.body.lastName;
-  }
-  if (req.body.mobileNumber) {
-    user_obj.mobileNumber = req.body.mobileNumber;
-  }
-  if (req.body.gender) {
-    user_obj.gender = req.body.gender;
-  }
-
-  if (req.body.dateOfBirth) {
-    user_obj.dateOfBirth = req.body.dateOfBirth;
-  }
-  if (req.body.height) {
-    user_obj.height = req.body.height;
-  }
-  if (req.body.weight) {
-    user_obj.weight = req.body.weight;
-  }
-  if (req.body.aboutMe) {
-    user_obj.aboutMe = req.body.aboutMe;
-  }
-  if (req.body.goals) {
-    user_obj.goals = req.body.goals;
-  }
-  if (req.body.workoutLocation) {
-    user_obj.workoutLocation = req.body.workoutLocation;
-  }
+  user_obj.firstName = req.body.firstName;
+  user_obj.lastName = req.body.lastName;
+  user_obj.mobileNumber = req.body.mobileNumber;
+  user_obj.gender = req.body.gender;
+  user_obj.dateOfBirth = req.body.dateOfBirth;
+  user_obj.height = req.body.height;
+  user_obj.weight = req.body.weight;
+  user_obj.aboutMe = req.body.aboutMe;
+  user_obj.goals = req.body.goals;
+  user_obj.workoutLocation = req.body.workoutLocation;
 
   let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
   if (user_data.status === 0) {
