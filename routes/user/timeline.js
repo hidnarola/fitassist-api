@@ -12,6 +12,7 @@ var logger = config.logger;
 var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
 var user_helper = require("../../helpers/user_helper");
+var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
 /**
  * @api {get} /user/timeline/:username Get all
@@ -47,6 +48,23 @@ router.get("/:username/:start/:offset", async (req, res) => {
       $limit: parseInt(limit)
     }
   );
+  var progress_photos_data = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
+    {
+      userId: user.user.authUserId,
+      // postType: "timeline",
+      isDeleted: 0
+    },
+    {
+      $skip: parseInt(skip)
+    },
+    {
+      $limit: parseInt(limit)
+    }
+  );
+
+  if (progress_photos_data.status == 1) {
+    resp_data.progress_photos = progress_photos_data.user_progress_photos;
+  }
 
   if (resp_data.status == 0) {
     logger.error(
@@ -274,7 +292,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-/**
+/**@apiIgnore Not finished Method
  * @api {put} /user/timeline/:photo_id Update
  * @apiName Update
  * @apiGroup User Timeline
@@ -319,60 +337,7 @@ router.put("/:photo_id", async (req, res) => {
     if (req.body.status) {
       user_post_obj.status = req.body.status;
     }
-    if (req.body.createdBy) {
-      user_post_obj.createdBy = req.body.createdBy;
-    } else {
-      user_post_obj.createdBy = authUserId;
-    }
-    var filename;
-    if (req.files && req.files["image"]) {
-      var file = req.files["image"];
-      var dir = "./uploads/user_post";
-      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
-      if (mimetype.indexOf(file.mimetype) != -1) {
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
-        extention = path.extname(file.name);
-        filename = "user_post_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
-          if (err) {
-            logger.error("There was an issue in uploading image");
-            res.send({
-              status: config.MEDIA_ERROR_STATUS,
-              err: "There was an issue in uploading image"
-            });
-          } else {
-            logger.trace("image has been uploaded. Image name = ", filename);
-            //return res.send(200, "null");
-          }
-        });
-      } else {
-        logger.error("Image format is invalid");
-        res.send({
-          status: config.VALIDATION_FAILURE_STATUS,
-          err: "Image format is invalid"
-        });
-      }
-    } else {
-      logger.info("Image not available to upload. Executing next instruction");
-      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-    }
-
-    //End image upload
-    if (filename) {
-      var resp_data = await user_posts_helper.get_user_post_photo_by_id({
-        _id: req.params.photo_id
-      });
-      fs.unlink(resp_data.user_post_photo.image, function(err, Success) {
-        if (err) throw err;
-        console.log("image is deleted");
-      });
-      user_post_obj.image = "uploads/user_post/" + filename;
-    }
-
-    //        console.log(resp_data);
     resp_data = await user_posts_helper.update_user_post_photo(
       { _id: req.params.photo_id, userId: authUserId },
       user_post_obj

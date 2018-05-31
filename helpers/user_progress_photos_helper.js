@@ -170,6 +170,45 @@ user_progress_photo_helper.get_user_progress_photo_by_id = async id => {
     };
   }
 };
+/*
+ * get_first_and_last_user_progress_photos is used to fetch all user's progress photos
+ * 
+ * @return  status 0 - If any internal error occured while fetching user's progress photos data, with error
+ *          status 1 - If user's progress photos data found, with user's progress photos object
+ *          status 2 - If user's progress photos not found, with appropriate message
+ */
+user_progress_photo_helper.get_first_and_last_user_progress_photos = async id => {
+  try {
+    var user_progress_photos = await UserProgressPhotos.aggregate([
+      {
+        $match: id
+      },
+      { $sort: { date: 1 } },
+      {
+        $group: {
+          _id: "$userId",
+          beginning: { $first: "$image" },
+          current: { $last: "$image" }
+        }
+      }
+    ]);
+    if (user_progress_photos && user_progress_photos.length != 0) {
+      return {
+        status: 1,
+        message: "User progress photos found",
+        user_progress_photos: user_progress_photos
+      };
+    } else {
+      return { status: 2, message: "No user progress photos available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user progress photos",
+      error: err
+    };
+  }
+};
 
 /*
  * insert_user_progress_photo is used to add all user's progress Photos

@@ -83,10 +83,6 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
  *          status 2 - If user's post photos not found, with appropriate message
  */
 user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
-  console.log("------------------------------------");
-  console.log("user_auth_id : ", user_auth_id, skip, offset);
-  console.log("------------------------------------");
-
   try {
     //#region timeline old query
     var timeline = await UserTimeline.aggregate([
@@ -166,6 +162,62 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
         }
       },
       {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "postId",
+          as: "likes"
+        }
+      },
+      {
+        $unwind: {
+          path: "$likes",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "likes.userId",
+          foreignField: "authUserId",
+          as: "likesDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$likesDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "postId",
+          as: "comments"
+        }
+      },
+      {
+        $unwind: {
+          path: "$comments",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "comments.userId",
+          foreignField: "authUserId",
+          as: "commentsDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$commentsDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $group: {
           _id: "$_id",
           progress_photos: { $addToSet: "$user_progress_photos" },
@@ -191,7 +243,28 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
             }
           },
           privacy: { $first: "$user_posts.privacy" },
-          createdAt: { $first: "$createdAt" }
+          createdAt: { $first: "$createdAt" },
+          likes: {
+            $addToSet: {
+              authUserId: "$likesDetails.authUserId",
+              firstName: "$likesDetails.firstName",
+              lastName: "$likesDetails.lastName",
+              avatar: "$likesDetails.avatar",
+              username: "$likesDetails.username",
+              create_date: "$likes.createdAt"
+            }
+          },
+          comments: {
+            $addToSet: {
+              authUserId: "$commentsDetails.authUserId",
+              firstName: "$commentsDetails.firstName",
+              lastName: "$commentsDetails.lastName",
+              avatar: "$commentsDetails.avatar",
+              username: "$commentsDetails.username",
+              comment: "$comments.comment",
+              create_date: "$comments.createdAt"
+            }
+          }
         }
       }
     ]);
