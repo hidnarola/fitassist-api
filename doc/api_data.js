@@ -7215,23 +7215,16 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "firstName",
             "description": "<p>First name of user</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "lastName",
             "description": "<p>Last name of user</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "email",
-            "description": "<p>Email address</p>"
           },
           {
             "group": "Parameter",
@@ -7243,7 +7236,7 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "Enum",
-            "optional": false,
+            "optional": true,
             "field": "gender",
             "description": "<p>gender | Possible Values ('male', 'female', 'transgender')</p>"
           },
@@ -7263,13 +7256,6 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "File",
-            "optional": true,
-            "field": "user_img",
-            "description": "<p>avatar</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "String",
             "optional": true,
             "field": "aboutMe",
@@ -7277,10 +7263,17 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "workoutLocation",
+            "description": "<p>workoutLocation</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "Boolean",
-            "optional": false,
+            "optional": true,
             "field": "status",
-            "description": "<p>status</p>"
+            "description": "<p>status of profile</p>"
           }
         ]
       }

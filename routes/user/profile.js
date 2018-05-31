@@ -129,17 +129,16 @@ router.get("/:username", async (req, res) => {
  * @apiName Profile - Update
  * @apiGroup User
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} firstName First name of user
- * @apiParam {String} lastName Last name of user
- * @apiParam {String} email Email address
+ * @apiParam {String} [firstName] First name of user
+ * @apiParam {String} [lastName] Last name of user
  * @apiParam {Number} [mobileNumber] mobileNumber
- * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
+ * @apiParam {Enum} [gender] gender | Possible Values ('male', 'female', 'transgender')
  * @apiParam {Date} [dateOfBirth] Date of Birth
  * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat',
  * 'gain_strength', 'gain_power', 'increase_endurance')
- * @apiParam {File} [user_img] avatar
  * @apiParam {String} [aboutMe] aboutMe
- * @apiParam {Boolean} status status
+ * @apiParam {String} [workoutLocation] workoutLocation
+ * @apiParam {Boolean} [status] status of profile
  * @apiSuccess (Success 200) {Array} user Array of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -147,126 +146,44 @@ router.put("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var schema = {
-    firstName: {
-      notEmpty: true,
-      errorMessage: "First name is required"
-    },
-    lastName: {
-      notEmpty: true,
-      errorMessage: "Last name is required"
-    },
-    email: {
-      notEmpty: true,
-      errorMessage: "Email address is required",
-      isEmail: { errorMessage: "Please enter valid email address" }
-    },
-    gender: {
-      notEmpty: true,
-      isIn: {
-        options: [["male", "female", "transgender"]],
-        errorMessage: "Gender can be from male, female or transgender"
-      },
-      errorMessage: "Gender is required"
-    },
-    // goals: {
-    //   notEmpty: true,
-    //   matches: {
-    //     options: [
-    //       [
-    //         "gain_muscle",
-    //         "gain_flexibility",
-    //         "lose_fat",
-    //         "gain_strength",
-    //         "gain_power",
-    //         "increase_endurance"
-    //       ]
-    //     ],
-    //     errorMessage: "goals can be from Enum"
-    //   },
-    //   errorMessage: "goals is required"
-    // },
-    aboutMe: {
-      notEmpty: true,
-      errorMessage: "About me is required"
-    }
-  };
-  req.checkBody(schema);
-  var errors = req.validationErrors();
+  var user_obj = {};
+  if (req.body.firstName) {
+    user_obj.firstName = req.body.firstName;
+  }
+  if (req.body.lastName) {
+    user_obj.lastName = req.body.lastName;
+  }
+  if (req.body.mobileNumber) {
+    user_obj.mobileNumber = req.body.mobileNumber;
+  }
+  if (req.body.gender) {
+    user_obj.gender = req.body.gender;
+  }
+  if (req.body.dateOfBirth) {
+    user_obj.dateOfBirth = req.body.dateOfBirth;
+  }
+  if (req.body.height) {
+    user_obj.height = req.body.height;
+  }
+  if (req.body.weight) {
+    user_obj.weight = req.body.weight;
+  }
+  if (req.body.aboutMe) {
+    user_obj.aboutMe = req.body.aboutMe;
+  }
+  if (req.body.goals) {
+    user_obj.goals = req.body.goals;
+  }
+  if (req.body.workoutLocation) {
+    user_obj.workoutLocation = req.body.workoutLocation;
+  }
 
-  if (!errors) {
-    var user_obj = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      mobileNumber: req.body.mobileNumber ? req.body.mobileNumber : null,
-      gender: req.body.gender,
-      dateOfBirth: req.body.dateOfBirth ? req.body.dateOfBirth : null,
-      height: req.body.height ? req.body.height : null,
-      weight: req.body.weight ? req.body.weight : null,
-      aboutMe: req.body.aboutMe,
-      goals: req.body.goals ? req.body.goals : null,
-      workoutLocation: req.body.workoutLocation
-        ? req.body.workoutLocation
-        : null
-    };
-
-    //image upload
-    var filename;
-    if (req.files && req.files["user_img"]) {
-      var file = req.files["user_img"];
-      var dir = "./uploads/user";
-      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-
-      if (mimetype.indexOf(file.mimetype) != -1) {
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
-        extention = path.extname(file.name);
-        filename = "user_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
-          if (err) {
-            logger.error("There was an issue in uploading image");
-            res.send({
-              status: config.MEDIA_ERROR_STATUS,
-              err: "There was an issue in uploading image"
-            });
-          } else {
-            logger.trace("image has been uploaded. Image name = ", filename);
-            //return res.send(200, "null");
-          }
-        });
-      } else {
-        logger.error("Image format is invalid");
-        res.send({
-          status: config.VALIDATION_FAILURE_STATUS,
-          err: "Image format is invalid"
-        });
-      }
-    } else {
-      logger.info("Image not available to upload. Executing next instruction");
-      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-    }
-    if (filename) {
-      user_obj.avatar = "uploads/user/" + filename;
-      resp_data = await user_helper.get_user_by_id(authUserId);
-      try {
-        fs.unlink(resp_data.user.avatar, function() {
-          console.log("Image deleted");
-        });
-      } catch (err) {}
-    }
-
-    let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
-    if (user_data.status === 0) {
-      logger.error("Error while updating user data = ", user_data);
-      return res.status(config.BAD_REQUEST).json({ user_data });
-    } else {
-      return res.status(config.OK_STATUS).json(user_data);
-    }
+  let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
+  if (user_data.status === 0) {
+    logger.error("Error while updating user data = ", user_data);
+    return res.status(config.INTERNAL_SERVER_ERROR).json({ user_data });
   } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    return res.status(config.OK_STATUS).json(user_data);
   }
 });
 
