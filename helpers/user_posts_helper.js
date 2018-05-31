@@ -82,10 +82,19 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
  * photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
-user_post_helper.get_user_timeline = async user_auth_id => {
+user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
+  console.log("------------------------------------");
+  console.log("user_auth_id : ", user_auth_id, skip, offset);
+  console.log("------------------------------------");
+
   try {
     //#region timeline old query
     var timeline = await UserTimeline.aggregate([
+      {
+        $match: user_auth_id
+      },
+      skip,
+      offset,
       {
         $lookup: {
           from: "user_progress_photos",

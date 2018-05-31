@@ -11,9 +11,10 @@ var logger = config.logger;
 
 var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
+var user_helper = require("../../helpers/user_helper");
 
 /**
- * @api {get} /user/timeline Get all
+ * @api {get} /user/timeline/:username Get all
  * @apiName Get all
  * @apiGroup User Timeline
  *
@@ -22,17 +23,30 @@ var user_timeline_helper = require("../../helpers/user_timeline_helper");
  * @apiSuccess (Success 200) {JSON} timeline JSON of user_posts 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/", async (req, res) => {
+router.get("/:username/:start/:offset", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
   logger.trace("Get all user's timeline API called");
 
-  var resp_data = await user_posts_helper.get_user_timeline({
-    userId: authUserId,
-    postType: "timeline",
-    isDeleted: 0
-  });
+  var skip = req.params.start ? req.params.start : 0;
+  var limit = req.params.offset ? req.params.offset : 10;
+
+  var user = await user_helper.get_user_by({ username: req.params.username });
+
+  var resp_data = await user_posts_helper.get_user_timeline(
+    {
+      userId: user.user.authUserId,
+      // postType: "timeline",
+      isDeleted: 0
+    },
+    {
+      $skip: parseInt(skip)
+    },
+    {
+      $limit: parseInt(limit)
+    }
+  );
 
   if (resp_data.status == 0) {
     logger.error(
