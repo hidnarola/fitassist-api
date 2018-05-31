@@ -1,6 +1,7 @@
 var UserPost = require("./../models/user_posts");
 var UserPostsImages = require("./../models/user_posts_images");
 var UserTimeline = require("./../models/user_timeline");
+var _ = require("underscore");
 var user_post_helper = {};
 
 /*
@@ -55,6 +56,7 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
       skip,
       limit
     ]);
+
     if (user_post_photos || user_post_photos.length != 0) {
       return {
         status: 1,
@@ -268,6 +270,24 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
         }
       }
     ]);
+
+    _.each(timeline, t => {
+      var likes = [];
+      var comments = [];
+      _.each(t.likes, like => {
+        if (Object.keys(like).length > 0) {
+          likes.push(like);
+        }
+      });
+      _.each(t.comments, comment => {
+        if (Object.keys(comment).length > 0) {
+          comments.push(comment);
+        }
+      });
+      t.likes = likes;
+      t.comments = comments;
+    });
+
     if (timeline || timeline.length != 0) {
       return { status: 1, message: "User timeline found", timeline: timeline };
     } else {
