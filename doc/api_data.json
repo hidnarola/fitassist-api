@@ -9547,7 +9547,7 @@
   },
   {
     "type": "get",
-    "url": "/user/progress_photo/:username/:start?/:limit?",
+    "url": "/user/progress_photo/:username/:start?/:limit?:/:sort_by",
     "title": "Get all",
     "name": "Get_all",
     "group": "User_Progress_Photo",
@@ -10456,7 +10456,7 @@
   },
   {
     "type": "get",
-    "url": "/user/timeline",
+    "url": "/user/timeline/:username",
     "title": "Get all",
     "name": "Get_all",
     "group": "User_Timeline",
@@ -10553,10 +10553,10 @@
     "groupTitle": "User_Timeline"
   },
   {
-    "type": "put",
-    "url": "/user/timeline/:photo_id",
-    "title": "Update",
-    "name": "Update",
+    "type": "get",
+    "url": "/user/timeline/:username/:post_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
     "group": "User_Timeline",
     "header": {
       "fields": {
@@ -10565,56 +10565,8 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
             "field": "authorization",
             "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "File",
-            "optional": false,
-            "field": "image",
-            "description": "<p>User's  Image</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "createdBy",
-            "description": "<p>created User Id of user</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "description",
-            "description": "<p>Description of Image</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "privacy",
-            "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "status",
-            "description": "<p>status of Image <br><code>1 for Active<br>2 for Inactive</code></p>"
           }
         ]
       }
@@ -10626,8 +10578,8 @@
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "user_post_photo",
-            "description": "<p>user_post_photo details</p>"
+            "field": "timeline",
+            "description": "<p>JSON of user_posts 's document</p>"
           }
         ]
       }
