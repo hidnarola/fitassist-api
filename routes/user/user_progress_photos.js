@@ -29,8 +29,7 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
   logger.trace("Get all user's progress_photo API called");
   var resp_data = await user_progress_photos_helper.get_user_progress_photos_month_wise(
     {
-      username: req.params.username,
-      isDeleted: 0
+      username: req.params.username
     },
     { $limit: limit }
   );
@@ -47,7 +46,7 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
 });
 
 /**
- * @api {get} /user/progress_photo/:username/:start?/:limit? Get all
+ * @api {get} /user/progress_photo/:username/:start?/:limit?:/:sort_by Get all
  * @apiName Get all
  * @apiGroup User Progress Photo
  * @apiDescription  username: user's username, start use for skip record. default is 0, limit is use to limit the records. default is : 10
@@ -56,12 +55,13 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
  * @apiSuccess (Success 200) {Array} user_progress_photos Array of user's progress_photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:username/:start?/:limit?", async (req, res) => {
+router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
   var start = parseInt(req.params.start ? req.params.start : 0);
   var limit = parseInt(req.params.limit ? req.params.limit : 10);
+  var sort_by = Number(req.params.sort_by ? req.params.sort_by : -1);
 
   logger.trace("Get all user's progress_photo API called");
   var resp_data = await user_progress_photos_helper.get_user_progress_photos(
@@ -70,7 +70,8 @@ router.get("/:username/:start?/:limit?", async (req, res) => {
       isDeleted: 0
     },
     { $skip: start },
-    { $limit: limit }
+    { $limit: limit },
+    { $sort: { date: sort_by } }
   );
   if (resp_data.status == 0) {
     logger.error(

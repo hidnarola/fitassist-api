@@ -64,6 +64,8 @@ router.get("/:username/:start/:offset", async (req, res) => {
 
   if (progress_photos_data.status == 1) {
     resp_data.progress_photos = progress_photos_data.user_progress_photos;
+  } else {
+    resp_data.progress_photos = {};
   }
 
   if (resp_data.status == 0) {

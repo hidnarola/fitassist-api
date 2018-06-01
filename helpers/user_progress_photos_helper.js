@@ -12,8 +12,13 @@ var user_progress_photo_helper = {};
 user_progress_photo_helper.get_user_progress_photos = async (
   search_obj,
   start,
-  limit
+  limit,
+  sort
 ) => {
+  console.log("------------------------------------");
+  console.log("sort : ", sort);
+  console.log("------------------------------------");
+
   try {
     var user_progress_photos = await UserProgressPhotos.aggregate([
       {
@@ -41,7 +46,8 @@ user_progress_photo_helper.get_user_progress_photos = async (
       },
       { $match: search_obj },
       start,
-      limit
+      limit,
+      sort
     ]);
     if (user_progress_photos && user_progress_photos.length != 0) {
       return {
@@ -78,7 +84,7 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
   try {
     var user_progress_photos = await Users.aggregate([
       {
-        $match: { username: "amc" }
+        $match: search_obj
       },
       {
         $lookup: {
@@ -91,7 +97,6 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
       {
         $unwind: "$user_progress_photos"
       },
-
       {
         $project: {
           user_progress_photos: 1,
@@ -105,9 +110,12 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
       },
       {
         $group: {
-          _id: "$month",
+          _id: {
+            _id: "$_id",
+            month: "$month"
+          },
           description: { $first: "$user_progress_photos.description" },
-          image: { $first: "$user_progress_photos.image" },
+          image: { $push: "$user_progress_photos.image" },
           date: { $first: "$user_progress_photos.date" },
           isDeleted: { $first: "$user_progress_photos.isDeleted" },
           userId: { $first: "$user_progress_photos.userId" }
@@ -119,10 +127,10 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
           isDeleted: 0
         }
       },
-      limit,
       {
         $sort: { date: -1 }
-      }
+      },
+      limit
     ]);
 
     if (user_progress_photos && user_progress_photos.length != 0) {
@@ -196,7 +204,7 @@ user_progress_photo_helper.get_first_and_last_user_progress_photos = async id =>
       return {
         status: 1,
         message: "User progress photos found",
-        user_progress_photos: user_progress_photos
+        user_progress_photos: user_progress_photos[0]
       };
     } else {
       return { status: 2, message: "No user progress photos available" };
