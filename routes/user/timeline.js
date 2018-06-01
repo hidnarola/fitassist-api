@@ -15,6 +15,58 @@ var user_helper = require("../../helpers/user_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
 /**
+ * @api {get} /user/timeline/:username/:post_id Get by ID
+ * @apiName Get by ID
+ * @apiGroup User Timeline
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiSuccess (Success 200) {JSON} timeline JSON of user_posts 's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/:username/:post_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  logger.trace("Get all user's timeline API called");
+
+  var user = await user_helper.get_user_by({ username: req.params.username });
+
+  var resp_data = await user_posts_helper.get_user_timeline({
+    userId: user.user.authUserId,
+    isDeleted: 0
+  });
+  var progress_photos_data = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
+    {
+      userId: user.user.authUserId,
+      // postType: "timeline",
+      isDeleted: 0
+    },
+    {
+      $skip: parseInt(skip)
+    },
+    {
+      $limit: parseInt(limit)
+    }
+  );
+
+  if (progress_photos_data.status == 1) {
+    resp_data.progress_photos = progress_photos_data.user_progress_photos;
+  } else {
+    resp_data.progress_photos = {};
+  }
+
+  if (resp_data.status == 0) {
+    logger.error(
+      "Error occured while fetching get all user timeline = ",
+      resp_data
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("user timeline got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
  * @api {get} /user/timeline/:username Get all
  * @apiName Get all
  * @apiGroup User Timeline
