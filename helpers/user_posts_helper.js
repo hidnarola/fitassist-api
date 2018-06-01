@@ -287,7 +287,11 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
     });
 
     if (timeline || timeline.length != 0) {
-      return { status: 1, message: "User timeline found", timeline: timeline };
+      return {
+        status: 1,
+        message: "User timeline found",
+        timeline: timeline[0]
+      };
     } else {
       return { status: 2, message: "No user timeline available" };
     }
