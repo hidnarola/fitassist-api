@@ -3,6 +3,7 @@ var router = express.Router();
 var fs = require("fs");
 var path = require("path");
 var async = require("async");
+var mongoose = require("mongoose");
 
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
@@ -22,37 +23,17 @@ var user_progress_photos_helper = require("../../helpers/user_progress_photos_he
  * @apiSuccess (Success 200) {JSON} timeline JSON of user_posts 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:username/:post_id", async (req, res) => {
+router.get("/:post_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var _id = req.params.post_id;
 
   logger.trace("Get all user's timeline API called");
 
-  var user = await user_helper.get_user_by({ username: req.params.username });
-
-  var resp_data = await user_posts_helper.get_user_timeline({
-    userId: user.user.authUserId,
+  var resp_data = await user_posts_helper.get_user_timeline_by_id({
+    _id: mongoose.Types.ObjectId(_id),
     isDeleted: 0
   });
-  var progress_photos_data = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
-    {
-      userId: user.user.authUserId,
-      // postType: "timeline",
-      isDeleted: 0
-    },
-    {
-      $skip: parseInt(skip)
-    },
-    {
-      $limit: parseInt(limit)
-    }
-  );
-
-  if (progress_photos_data.status == 1) {
-    resp_data.progress_photos = progress_photos_data.user_progress_photos;
-  } else {
-    resp_data.progress_photos = {};
-  }
 
   if (resp_data.status == 0) {
     logger.error(
