@@ -57,7 +57,7 @@ nutrition_helper.get_nutrition_by_id = async nutrition_id => {
  * @return  status  0 - If any error occur in inserting nutrition, with error
  *          status  1 - If nutrition inserted, with inserted nutrition's document and appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 nutrition_helper.insert_nutrition = async nutrition_object => {
   console.log("obj = ", nutrition_object);
@@ -88,7 +88,7 @@ nutrition_helper.insert_nutrition = async nutrition_object => {
  *          status  1 - If Nutrition updated successfully, with appropriate message
  *          status  2 - If Nutrition not updated, with appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 nutrition_helper.update_nutrition_by_id = async (
   nutrition_id,
@@ -126,7 +126,7 @@ nutrition_helper.update_nutrition_by_id = async (
  * @return  status  0 - If any error occur in deletion of nutrition, with error
  *          status  1 - If nutrition deleted successfully, with appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 nutrition_helper.delete_nutrition_by_id = async nutrition_id => {
   try {

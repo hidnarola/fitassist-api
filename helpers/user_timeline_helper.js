@@ -37,7 +37,7 @@ user_timeline_helper.get_user_timeline_by_user_id = async id => {
  * @return  status  0 - If any error occur in inserting preference, with error
  *          status  1 - If timeline inserted, with inserted timeline document and appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 user_timeline_helper.insert_timeline_data = async user_timeline_object => {
   let user_timeline = new UserTimeline(user_timeline_object);

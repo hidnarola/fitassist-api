@@ -59,7 +59,7 @@ equipment_helper.get_equipment_id = async id => {
  * @return  status  0 - If any error occur in inserting equipment, with error
  *          status  1 - If equipment inserted, with inserted equipment document and appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 equipment_helper.insert_equipment = async equipment_object => {
   console.log(equipment_object);
@@ -90,7 +90,7 @@ equipment_helper.insert_equipment = async equipment_object => {
  *          status  1 - If Equipment updated successfully, with appropriate message
  *          status  2 - If Equipment not updated, with appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 equipment_helper.update_equipment_by_id = async (
   equipment_id,
@@ -128,7 +128,7 @@ equipment_helper.update_equipment_by_id = async (
  * @return  status  0 - If any error occur in deletion of equipment, with error
  *          status  1 - If equipment deleted successfully, with appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 equipment_helper.delete_equipment_by_id = async equipment_id => {
   try {

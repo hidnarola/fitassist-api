@@ -65,7 +65,7 @@ users_recipe_helper.get_user_recipe_by_recipe_id = async id => {
  * @return  status  0 - If any error occur in inserting user's recipe, with error
  *          status  1 - If user's recipe inserted, with inserted user's recipe document and appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 users_recipe_helper.insert_user_recipe = async user_recipe_object => {
   let user_recipe = new UsersRecipe(user_recipe_object);

@@ -366,7 +366,7 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
       {
         $lookup: {
           from: "users",
-          localField: "user_posts.userId",
+          localField: "userId",
           foreignField: "authUserId",
           as: "users"
         }
@@ -380,7 +380,7 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
       {
         $lookup: {
           from: "users",
-          localField: "user_posts.createdBy",
+          localField: "createdBy",
           foreignField: "authUserId",
           as: "created_by"
         }

@@ -138,7 +138,7 @@ user_helper.get_user_by_id = async user_id => {
  *          status  1 - If User found, with found user document
  *          status  2 - If User not found, with appropriate error message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 user_helper.get_user_by = async searchObject => {
   try {
@@ -165,7 +165,7 @@ user_helper.get_user_by = async searchObject => {
  * @return  status  0 - If any error occur in inserting faculty, with error
  *          status  1 - If faculty inserted, with inserted faculty's document and appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 user_helper.insert_user = async user_object => {
   let user = new User(user_object);

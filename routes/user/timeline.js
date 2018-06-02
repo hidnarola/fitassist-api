@@ -19,8 +19,8 @@ var user_progress_photos_helper = require("../../helpers/user_progress_photos_he
  * @api {get} /user/timeline/:username/:post_id Get by ID
  * @apiName Get by ID
  * @apiGroup User Timeline
- * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {JSON} timeline JSON of user_posts 's document
+ * @apiHeader {String}  authorization user's unique access-key
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:post_id", async (req, res) => {
@@ -48,16 +48,14 @@ router.get("/:post_id", async (req, res) => {
 });
 
 /**
- * @api {get} /user/timeline/:username Get all
+ * @api {get} /user/timeline/:username/:start?/:offset? Get all
  * @apiName Get all
  * @apiGroup User Timeline
- *
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {JSON} timeline JSON of user_posts 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:username/:start/:offset", async (req, res) => {
+router.get("/:username/:start?/:offset?", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
@@ -84,14 +82,7 @@ router.get("/:username/:start/:offset", async (req, res) => {
   var progress_photos_data = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
     {
       userId: user.user.authUserId,
-      // postType: "timeline",
       isDeleted: 0
-    },
-    {
-      $skip: parseInt(skip)
-    },
-    {
-      $limit: parseInt(limit)
     }
   );
 
@@ -117,9 +108,7 @@ router.get("/:username/:start/:offset", async (req, res) => {
  * @api {get} /user/timeline/:user_post_id Get by ID
  * @apiName Get by ID
  * @apiGroup User Timeline
- *
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -145,7 +134,6 @@ router.get("/:user_post_id", async (req, res) => {
  * @api {post} /user/timeline Add
  * @apiName Add
  * @apiGroup User Timeline
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {File} images User's  Images
@@ -331,16 +319,13 @@ router.post("/", async (req, res) => {
  * @api {put} /user/timeline/:photo_id Update
  * @apiName Update
  * @apiGroup User Timeline
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiParam {File} image User's  Image
  * @apiParam {String} createdBy created User Id of user
  * @apiParam {String} description Description of Image
  * @apiParam {Number} privacy privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiParam {Number} status status of Image <br><code>1 for Active<br>2 for Inactive</code>
- *
  * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -393,9 +378,7 @@ router.put("/:photo_id", async (req, res) => {
  * @api {delete} /user/timeline/:photo_id Delete
  * @apiName Delete
  * @apiGroup User Timeline
- *
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

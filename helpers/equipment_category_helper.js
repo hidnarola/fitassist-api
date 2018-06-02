@@ -37,7 +37,7 @@ equipment_category_helper.get_all_equipment_category = async () => {
  * @return  status  0 - If any error occur in inserting equipment's category, with error
  *          status  1 - If equipment's category inserted, with inserted equipment's category document and appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 equipment_category_helper.insert_equipment_category = async equipment_category_object => {
   let equipment_category = new Equipment_category(equipment_category_object);
@@ -67,7 +67,7 @@ equipment_category_helper.insert_equipment_category = async equipment_category_o
  *          status  1 - If Equipment_category updated successfully, with appropriate message
  *          status  2 - If Equipment_category not updated, with appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 equipment_category_helper.update_equipment_category_by_id = async (
   equipment_category_id,
@@ -105,7 +105,7 @@ equipment_category_helper.update_equipment_category_by_id = async (
  * @return  status  0 - If any error occur in deletion of equipment_category, with error
  *          status  1 - If equipment_category deleted successfully, with appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 equipment_category_helper.delete_equipment_category_by_id = async equipment_category_id => {
   try {

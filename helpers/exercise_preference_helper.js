@@ -86,7 +86,7 @@ exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
  * @return  status  0 - If any error occur in inserting preference, with error
  *          status  1 - If prefernece inserted, with inserted prefernece document and appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 exercise_preference_helper.insert_exercise_prefernece = async exercise_preference_object => {
   let exercise_preference = new Exercise_preference(exercise_preference_object);

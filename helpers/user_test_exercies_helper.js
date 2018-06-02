@@ -37,7 +37,7 @@ user_test_exercise_helper.get_user_test_exercies_by_user_id = async id => {
  * @return  status  0 - If any error occur in inserting user_test_exercies, with error
  *          status  1 - If prefernece inserted, with inserted prefernece document and appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 user_test_exercise_helper.insert_user_test_exercies = async user_test_exercies_array => {
   

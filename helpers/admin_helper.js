@@ -32,7 +32,7 @@ admin_helper.get_admin_by_id = async (admin_id) => {
  *          status  1 - If Admin found, with found admin document
  *          status  2 - If Admin not found, with appropriate error message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 admin_helper.get_admin_by_email = async (email) => {
     try {
@@ -57,7 +57,7 @@ admin_helper.get_admin_by_email = async (email) => {
  *          status  1 - If Admin updated successfully, with appropriate message
  *          status  2 - If Admin not updated, with appropriate message
  * 
- * @developed by "ar"
+ * @developed by "amc"
  */
 admin_helper.update_admin_by_id = async (admin_id, admin_object) => {
     try {

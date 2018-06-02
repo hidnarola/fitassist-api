@@ -11,39 +11,6 @@ var logger = config.logger;
 
 var friend_helper = require("../../helpers/friend_helper");
 
-//#region Get All Friends
-/**
- * @api {get} /user/friend/:type Get all
- * @apiName Get all
- * @apiGroup  User Friends
- * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Number}  [type] type of friends <br><code>1 for pending friends,<br>2 for approved friends(default : 2)</code>
- * @apiSuccess (Success 200) {Array} friends Array of friends document
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-// router.get("/:type?", async (req, res) => {
-//   var decoded = jwtDecode(req.headers["authorization"]);
-//   var authUserId = decoded.sub;
-//   var type = 2;
-//   if (req.params.type) {
-//     type = parseInt(req.params.type);
-//   }
-//   logger.trace("Get all friends API called");
-//   var resp_data = await friend_helper.get_friends({
-//     userId: authUserId,
-//     status: type
-//   });
-//   if (resp_data.status == 0) {
-//     logger.error("Error occured while fetching friend = ", resp_data);
-//     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-//   } else {
-//     logger.trace("friend got successfully = ", resp_data);
-
-//     res.status(config.OK_STATUS).json(resp_data);
-//   }
-// });
-//#endregion
-
 /**
  * @api {get} /user/friend/:username/:type? Get by Username
  * @apiName Get by Username
