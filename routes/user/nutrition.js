@@ -13,7 +13,7 @@ user_recipe_helper = require("../../helpers/user_recipe_helper");
  * @api {get} /user/nutrition/recipe/:recipe_id Get recipe by ID
  * @apiName Get by recipe ID
  * @apiGroup User recipes
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} user_recipe Array of user_recipes 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

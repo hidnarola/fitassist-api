@@ -18,7 +18,7 @@ var user_recipe_helper = require("../../helpers/user_recipe_helper");
  * @apiName Get shopping cart
  * @apiGroup  Shopping Cart
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {Date} start_date start date of recipe
  * @apiParam {Date} end_date end date of recipe
  * @apiSuccess (Success 200) {JSON} shopping_cart added shopping cart detail
@@ -117,7 +117,7 @@ router.post("/", async (req, res) => {
  * @apiName Delete
  * @apiGroup  Shopping Cart
  *
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.

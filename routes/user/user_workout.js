@@ -37,7 +37,7 @@ router.get("/:workout_id", async (req, res) => {
  * @api {post} /user/workout Get all user's workout
  * @apiName Get all user's workout
  * @apiGroup  User Workout
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {JSON} user_workouts JSON of user_workout document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

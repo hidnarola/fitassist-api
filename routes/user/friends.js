@@ -10,6 +10,7 @@ var config = require("../../config");
 var logger = config.logger;
 
 var friend_helper = require("../../helpers/friend_helper");
+var notification_helper = require("../../helpers/notification_helper");
 
 /**
  * @api {get} /user/friend/:username/:type? Get by Username
@@ -37,12 +38,13 @@ router.get("/:username?/:type?", async (req, res) => {
   var userdata = await friend_helper.find({
     authUserId: authUserId
   });
-  var username = userdata.friends.username;
 
+  var username = userdata.friends.username;
   username = req.params.username ? req.params.username : username;
   userdata = await friend_helper.find({
     username: username
   });
+
   var returnObject = {
     self: 0,
     isFriend: 0
@@ -174,6 +176,15 @@ router.put("/:request_id", async (req, res) => {
     logger.error("Error while approving friend request = ", friend_data);
     return res.status(config.BAD_REQUEST).json({ friend_data });
   } else {
+    var notificationObj = {
+      userId: authUserId,
+      type: "friend",
+      body: "friend request approved",
+      meta: friend_data
+    };
+    let notification_data = await notification_helper.send_friend_request(
+      notificationObj
+    );
     return res.status(config.OK_STATUS).json(friend_data);
   }
 });

@@ -7,7 +7,9 @@ var Schema = mongoose.Schema;
 var UserNotificationsSchema = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },
-    content: { type: String, required: true },
+    type: { type: String, required: true },
+    body: { type: String, required: true },
+    meta: { type: Object, required: false, default: {} },
     isSeen: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }

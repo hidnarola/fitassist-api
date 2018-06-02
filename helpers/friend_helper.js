@@ -1,5 +1,6 @@
 var Friends = require("./../models/friends");
 var Users = require("./../models/users");
+var _ = require("underscore");
 var friend_helper = {};
 
 /*
@@ -193,7 +194,7 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
                 "$users",
                 {
                   totalFriends: {
-                    $size: { $concatArrays: ["$leftside", "$rightside"] }
+                    $concatArrays: ["$leftside", "$rightside"]
                   }
                 }
               ]
@@ -269,7 +270,7 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
                 "$users",
                 {
                   totalFriends: {
-                    $size: { $concatArrays: ["$leftside", "$rightside"] }
+                    $concatArrays: ["$leftside", "$rightside"]
                   }
                 }
               ]
@@ -284,6 +285,22 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
         }
       ]);
     }
+
+    _.each(friends[0].user, (friend, index) => {
+      var total_friends = friend.totalFriends;
+
+      var cnt = 0;
+      _.each(total_friends, (frd, i) => {
+        console.log(frd.status);
+        if (frd.status == 2) {
+          cnt++;
+        }
+      });
+      console.log("----------------");
+
+      friend.friendsCount = cnt;
+      delete friend.totalFriends;
+    });
 
     if (friends && friends.length > 0) {
       return {
@@ -305,12 +322,9 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
 
 /*
  * send_friend_request is used to insert friends collection
- * 
  * @param   friend_obj     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting friend, with error
  *          status  1 - If friend inserted, with inserted friend document and appropriate message
- * 
  * @developed by "amc"
  */
 friend_helper.send_friend_request = async friend_obj => {

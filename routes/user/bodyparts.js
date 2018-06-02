@@ -11,7 +11,7 @@ var body_part_helper = require('../../helpers/body_parts_helper');
  * @api {get} /user/bodypart Get all
  * @apiName Get all
  * @apiGroup  User Body Parts
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} bodyparts Array of bodyparts document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

@@ -16,7 +16,7 @@ var user_test_exercies_helper = require("../../helpers/user_test_exercies_helper
  * @api {get} /user/test_exercise Get all
  * @apiName Get all
  * @apiGroup  User Test Exercises
- * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiHeader {String}  authorization Admin's unique access-key
  * @apiSuccess (Success 200) {Array} test_exercises Array of test_exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -47,7 +47,7 @@ router.get("/", async (req, res) => {
  * @api {get} /user/test_exercise Get all
  * @apiName Get all
  * @apiGroup  User Test Exercises
- * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiHeader {String}  authorization Admin's unique access-key
  * @apiSuccess (Success 200) {Array} test_exercises Array of test_exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

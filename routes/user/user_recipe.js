@@ -17,7 +17,7 @@ var user_recipe_helper = require("../../helpers/user_recipe_helper");
  * @api {get} /user/recipe/ Get recipe
  * @apiName Get
  * @apiGroup User Recipe
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} user_recipe Array of user_recipes 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

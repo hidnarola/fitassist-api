@@ -3,6 +3,7 @@ var fs = require("fs");
 var path = require("path");
 var async = require("async");
 var jwtDecode = require("jwt-decode");
+var mongoose = require("mongoose");
 
 var router = express.Router();
 
@@ -10,13 +11,14 @@ var config = require("../../config");
 var logger = config.logger;
 
 var like_comment_helper = require("../../helpers/like_comment_helper");
+var user_posts_helper = require("../../helpers/user_posts_helper");
 
 /**
  * @api {post} /user/comment  Add
  * @apiName Add
  * @apiGroup  User Post Comment
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} comment comment of post
  * @apiParam {String} postId postId of post
  * @apiSuccess (Success 200) {JSON} comment added comment detail
@@ -51,6 +53,23 @@ router.post("/", async (req, res) => {
       logger.error("Error while inserting comment data = ", comment_data);
       return res.status(config.BAD_REQUEST).json({ comment_data });
     } else {
+      var resp_data = await user_posts_helper.get_user_timeline_by_id({
+        _id: mongoose.Types.ObjectId(req.body.postId),
+        isDeleted: 0
+      });
+
+      if (resp_data.status == 0) {
+        logger.error(
+          "Error occured while commenting user timeline = ",
+          req.body.postId
+        );
+        return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+      } else {
+        resp_data.message = "comment successfully";
+
+        logger.trace("user comment got successfully = ", resp_data);
+        return res.status(config.OK_STATUS).json(resp_data);
+      }
       return res.status(config.OK_STATUS).json(comment_data);
     }
   } else {
@@ -64,7 +83,7 @@ router.post("/", async (req, res) => {
  * @apiName Update
  * @apiGroup  User Post Comment
  * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} comment comment of post
  * @apiParam {String} postId postId of post
  * @apiSuccess (Success 200) {JSON} comment updated comment detail
@@ -119,7 +138,7 @@ router.put("/:comment_id", async (req, res) => {
  * @apiName Delete
  * @apiGroup  User Post Comment
  *
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.

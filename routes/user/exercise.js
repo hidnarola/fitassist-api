@@ -11,7 +11,7 @@ var exercise_helper = require('../../helpers/exercise_helper');
  * @api {get} /user/exercise Get all
  * @apiName Get all
  * @apiGroup User Exercise 
- * @apiHeader {String}  x-access-token User's unique access-key
+ * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} exercise Array of exercise_types's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

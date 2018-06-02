@@ -441,7 +441,7 @@ router.get("/auth0_user_sync", async (req, res) => {
  * @apiName Get all
  * @apiGroup Nutritional labels
  * @apiDescription  parameter type can be diet or health
- * @apiHeader {String}  x-access-token Admin's or User's unique access-key
+ * @apiHeader {String}  authorization Admin's or User's unique access-key
  * @apiParam {String} type type of nutritional_label <code>diet or health </code>
  * @apiSuccess (Success 200) {Array} labels Array of nutritional_labels's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -465,7 +465,7 @@ router.get("/nutritional_label/:type", async (req, res) => {
  * @api {get} /nutrition/ Get all
  * @apiName Get all
  * @apiGroup Common Nutrition
- * @apiHeader {String}  x-access-token Admin's or User's unique access-key
+ * @apiHeader {String}  authorization Admin's or User's unique access-key
  * @apiSuccess (Success 200) {Array} nutritions Array of nutrition's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
