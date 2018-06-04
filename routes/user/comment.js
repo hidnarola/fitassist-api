@@ -14,7 +14,7 @@ var like_comment_helper = require("../../helpers/like_comment_helper");
 var user_posts_helper = require("../../helpers/user_posts_helper");
 
 /**
- * @api {post} /user/comment  Add
+ * @api {post} /user/post/comment  Add
  * @apiName Add
  * @apiGroup  User Post Comment
  * @apiHeader {String}  Content-Type application/json
@@ -97,7 +97,7 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /user/comment/:comment_id  Update
+ * @api {put} /user/post/comment/:comment_id  Update
  * @apiName Update
  * @apiGroup  User Post Comment
  * @apiHeader {String}  Content-Type application/json
@@ -152,7 +152,7 @@ router.put("/:comment_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/comment/:comment_id Delete
+ * @api {delete} /user/post/comment/:comment_id Delete
  * @apiName Delete
  * @apiGroup  User Post Comment
  *

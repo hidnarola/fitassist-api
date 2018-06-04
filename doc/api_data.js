@@ -2033,7 +2033,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>Admin's or User's unique access-key</p>"
           }
         ]
@@ -4179,7 +4179,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/like",
+    "url": "/user/post/like",
     "title": "Add",
     "name": "Add_Comment",
     "group": "Likes",
@@ -4197,7 +4197,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -5808,7 +5808,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>Admin's or User's unique access-key</p>"
           }
         ]
@@ -6393,7 +6393,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -6449,7 +6449,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -7335,7 +7335,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -7373,7 +7373,105 @@ define({ "api": [
   },
   {
     "type": "delete",
+    "url": "/user/chat/:username/:message_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_settings.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "delete",
     "url": "/user/chat/:username",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_settings.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "delete",
+    "url": "/user/chat/:username/:message_id",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Chat",
@@ -7423,104 +7521,6 @@ define({ "api": [
   {
     "type": "delete",
     "url": "/user/chat/:username",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "delete",
-    "url": "/user/chat/:username/:message_id",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "delete",
-    "url": "/user/chat/:username/:message_id",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Chat",
@@ -7817,7 +7817,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -8076,7 +8076,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -8196,68 +8196,6 @@ define({ "api": [
             "optional": false,
             "field": "Success",
             "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/friends.js",
-    "groupTitle": "User_Friends"
-  },
-  {
-    "type": "get",
-    "url": "/user/friend/:type",
-    "title": "Get all",
-    "name": "Get_all",
-    "group": "User_Friends",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": true,
-            "field": "type",
-            "description": "<p>type of friends <br><code>1 for pending friends,<br>2 for approved friends(default : 2)</code></p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "friends",
-            "description": "<p>Array of friends document</p>"
           }
         ]
       }
@@ -9214,7 +9152,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/comment",
+    "url": "/user/post/comment",
     "title": "Add",
     "name": "Add",
     "group": "User_Post_Comment",
@@ -9232,7 +9170,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -9290,7 +9228,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/user/comment/:comment_id",
+    "url": "/user/post/comment/:comment_id",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Post_Comment",
@@ -9301,7 +9239,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -9339,7 +9277,7 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/user/comment/:comment_id",
+    "url": "/user/post/comment/:comment_id",
     "title": "Update",
     "name": "Update",
     "group": "User_Post_Comment",
@@ -9357,7 +9295,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -9901,7 +9839,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -10230,7 +10168,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>Admin's unique access-key</p>"
           }
         ]
@@ -10279,7 +10217,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>Admin's unique access-key</p>"
           }
         ]
@@ -10456,7 +10394,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/timeline/:username",
+    "url": "/user/timeline/:username/:start?/:offset?",
     "title": "Get all",
     "name": "Get_all",
     "group": "User_Timeline",
@@ -10482,6 +10420,55 @@ define({ "api": [
             "optional": false,
             "field": "timeline",
             "description": "<p>JSON of user_posts 's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/timeline.js",
+    "groupTitle": "User_Timeline"
+  },
+  {
+    "type": "get",
+    "url": "/user/timeline/:username/:post_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "User_Timeline",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "timeline",
+            "description": "<p>JSON of user_posts 's document</p>"
+          }
+        ]
+      }
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
           }
         ]
       }
@@ -10531,55 +10518,6 @@ define({ "api": [
             "optional": false,
             "field": "user_post_photo",
             "description": "<p>user_post_photo's document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/timeline.js",
-    "groupTitle": "User_Timeline"
-  },
-  {
-    "type": "get",
-    "url": "/user/timeline/:username/:post_id",
-    "title": "Get by ID",
-    "name": "Get_by_ID",
-    "group": "User_Timeline",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "timeline",
-            "description": "<p>JSON of user_posts 's document</p>"
           }
         ]
       }
@@ -10663,7 +10601,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]
@@ -10830,7 +10768,7 @@ define({ "api": [
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "x-access-token",
+            "field": "authorization",
             "description": "<p>User's unique access-key</p>"
           }
         ]

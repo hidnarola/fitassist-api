@@ -14,7 +14,7 @@ var like_comment_helper = require("../../helpers/like_comment_helper");
 var user_posts_helper = require("../../helpers/user_posts_helper");
 
 /**
- * @api {post} /user/like  Add
+ * @api {post} /user/post/like  Add
  * @apiName Add Comment
  * @apiGroup  Likes
  * @apiHeader {String}  Content-Type application/json
