@@ -227,6 +227,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           preserveNullAndEmptyArrays: true
         }
       },
+
       {
         $group: {
           _id: "$_id",
@@ -289,6 +290,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           likes.push(like);
         }
       });
+
       _.each(t.comments, comment => {
         if (Object.keys(comment).length > 0) {
           comments.push(comment);
@@ -331,6 +333,13 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
       {
         $match: user_auth_id
       },
+      {
+        $sort: {
+          createdAt: -1
+        }
+      },
+      skip,
+      offset,
       {
         $lookup: {
           from: "user_progress_photos",
@@ -467,13 +476,7 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
           preserveNullAndEmptyArrays: true
         }
       },
-      {
-        $sort: {
-          createdAt: -1
-        }
-      },
-      skip,
-      offset,
+
       {
         $group: {
           _id: "$_id",

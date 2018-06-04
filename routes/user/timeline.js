@@ -136,9 +136,9 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiGroup User Timeline
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {File} images User's  Images
+ * @apiParam {File} [images] User's  Images is required on if description is not exist.
  * @apiParam {String} createdBy created User Id of user
- * @apiParam {String} [description] image caption or timeline post
+ * @apiParam {String} [description] image caption or timeline post is required on if images is not exist.
  * @apiParam {Number} [priavacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -270,6 +270,7 @@ router.post("/", async (req, res) => {
                 console.log("Failed to upload image");
               } else {
                 //TIMELINE START
+                let resp_data_for_single_post;
                 var timelineObj = {
                   userId: authUserId,
                   createdBy: user_post_obj.createdBy,
@@ -281,14 +282,25 @@ router.post("/", async (req, res) => {
                   timelineObj
                 );
 
-                console.log("user_timeline_data", user_timeline_data);
-
                 if (user_timeline_data.status === 0) {
                   logger.error(
                     "Error while inserting timeline data = ",
                     user_timeline_data
                   );
                 } else {
+                  resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id(
+                    {
+                      _id: mongoose.Types.ObjectId(
+                        user_timeline_data.user_timeline._id
+                      ),
+                      isDeleted: 0
+                    }
+                  );
+
+                  console.log(
+                    "resp_data_for_single_post",
+                    resp_data_for_single_post
+                  );
                   logger.error(
                     "successfully added timeline data = ",
                     user_timeline_data
@@ -301,7 +313,8 @@ router.post("/", async (req, res) => {
                     success +
                     " successfully uploaded image(s), " +
                     unsuccess +
-                    " failed uploaded image(s)"
+                    " failed uploaded image(s)",
+                  timeline: resp_data_for_single_post.timeline
                 });
               }
             }
