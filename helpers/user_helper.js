@@ -195,7 +195,9 @@ user_helper.insert_user = async user_object => {
  */
 user_helper.update_user_by_id = async (user_id, user_obj) => {
   try {
-    let user = await User.findOneAndUpdate({ authUserId: user_id }, user_obj);
+    let user = await User.findOneAndUpdate({ authUserId: user_id }, user_obj, {
+      new: true
+    });
     if (!user) {
       return { status: 2, message: "Record has not updated" };
     } else {

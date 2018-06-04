@@ -10285,9 +10285,9 @@
           {
             "group": "Parameter",
             "type": "File",
-            "optional": false,
+            "optional": true,
             "field": "images",
-            "description": "<p>User's  Images</p>"
+            "description": "<p>User's  Images is required on if description is not exist.</p>"
           },
           {
             "group": "Parameter",
@@ -10301,13 +10301,13 @@
             "type": "String",
             "optional": true,
             "field": "description",
-            "description": "<p>image caption or timeline post</p>"
+            "description": "<p>image caption or timeline post is required on if images is not exist.</p>"
           },
           {
             "group": "Parameter",
             "type": "Number",
             "optional": true,
-            "field": "priavacy",
+            "field": "privacy",
             "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
           }
         ]

@@ -208,11 +208,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           preserveNullAndEmptyArrays: true
         }
       },
-      {
-        $sort: {
-          "comments.createdAt": -1
-        }
-      },
+      { $sort: { "comments._id": 1 } },
       {
         $lookup: {
           from: "users",
@@ -227,7 +223,11 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           preserveNullAndEmptyArrays: true
         }
       },
-
+      {
+        $sort: {
+          "comments.create_date": -1
+        }
+      },
       {
         $group: {
           _id: "$_id",

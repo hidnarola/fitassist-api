@@ -139,7 +139,7 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiParam {File} [images] User's  Images is required on if description is not exist.
  * @apiParam {String} createdBy created User Id of user
  * @apiParam {String} [description] image caption or timeline post is required on if images is not exist.
- * @apiParam {Number} [priavacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
+ * @apiParam {Number} [privacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -310,6 +310,7 @@ router.post("/", async (req, res) => {
                 return res.status(config.OK_STATUS).json({
                   status: 1,
                   message:
+                    "post successfully added, " +
                     success +
                     " successfully uploaded image(s), " +
                     unsuccess +

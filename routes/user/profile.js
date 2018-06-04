@@ -244,119 +244,98 @@ router.patch("/", async (req, res) => {
   };
   base_url = req.headers.host;
 
-  var schema = {
-    user_img: {
-      notEmpty: true,
-      errorMessage: "user profile picture is required"
-    }
-  };
-
   profilePicture =
     typeof req.files["user_img"] !== "undefined"
       ? req.files["user_img"].name
       : "";
 
-  req
-    .checkBody(
-      "user_img",
-      "Profile picture is required.Please upload an image Jpeg, Png or Gif"
-    )
-    .isImage(profilePicture);
+  //image upload
+  var filename;
+  if (req.files && req.files["user_img"]) {
+    var file = req.files["user_img"];
+    var dir = "./uploads/user";
+    var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-
-  if (!errors) {
-    //image upload
-    var filename;
-    if (req.files && req.files["user_img"]) {
-      var file = req.files["user_img"];
-      var dir = "./uploads/user";
-      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-
-      if (mimetype.indexOf(file.mimetype) != -1) {
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
-        }
-        extention = path.extname(file.name);
-        filename = "user_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
-          if (err) {
-            logger.error("There was an issue in uploading image");
-            res.send({
-              status: config.MEDIA_ERROR_STATUS,
-              err: "There was an issue in uploading image"
-            });
-          } else {
-            logger.trace("image has been uploaded. Image name = ", filename);
-            //return res.send(200, "null");
-          }
-        });
-      } else {
-        logger.error("Image format is invalid");
-        res.send({
-          status: config.VALIDATION_FAILURE_STATUS,
-          err: "Image format is invalid"
-        });
+    if (mimetype.indexOf(file.mimetype) != -1) {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
       }
+      extention = path.extname(file.name);
+      filename = "user_" + new Date().getTime() + extention;
+      file.mv(dir + "/" + filename, function(err) {
+        if (err) {
+          logger.error("There was an issue in uploading image");
+          res.send({
+            status: config.MEDIA_ERROR_STATUS,
+            err: "There was an issue in uploading image"
+          });
+        } else {
+          logger.trace("image has been uploaded. Image name = ", filename);
+          //return res.send(200, "null");
+        }
+      });
     } else {
-      logger.info("Image not available to upload. Executing next instruction");
-      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+      logger.error("Image format is invalid");
+      res.send({
+        status: config.VALIDATION_FAILURE_STATUS,
+        err: "Image format is invalid"
+      });
     }
-    if (filename) {
-      user_obj.avatar = config.BASE_URL + "uploads/user/" + filename;
-      resp_data = await user_helper.get_user_by_id(authUserId);
-      try {
-        fs.unlink(resp_data.user.avatar, function() {
-          console.log("Image deleted");
-        });
-      } catch (err) {}
-      let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
-      if (user_data.status === 0) {
-        logger.error("Error while updating user avatar = ", user_data);
-        //res.status(config.BAD_REQUEST).json({ user_data });
-      } else {
-        //res.status(config.OK_STATUS).json(user_data);
-      }
-    }
-    // generate token for update profile
-    var options = {
-      method: "POST",
-      url: config.AUTH_TOKEN_URL,
-      headers: { "content-type": "application/json" },
-      body: config.AUTH_TOKEN_GENRATION_CREDENTIALS,
-      json: true
-    };
-
-    var token = await request(options);
-    // image update start
-    var options = {
-      method: "PATCH",
-      url: config.AUTH_USER_API_URL + authUserId,
-      headers: {
-        "content-type": "application/json",
-        // authorization: "bearer "+token
-        authorization: `bearer ${token.access_token}`
-      },
-      body: {
-        user_metadata: {
-          picture: user_obj.avatar
-        }
-      },
-      json: true
-    };
-
-    request(options, function(error, response, body) {
-      if (error) {
-        return res.send({ status: 2, message: "profile image is not updated" });
-      }
-      return res.send({ status: 1, message: "profile image is updated" });
-    });
-    //image update end
   } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    logger.info("Image not available to upload. Executing next instruction");
+    //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
   }
+  if (filename) {
+    user_obj.avatar = config.BASE_URL + "uploads/user/" + filename;
+
+    resp_data = await user_helper.get_user_by_id(authUserId);
+    try {
+      fs.unlink(resp_data.user.avatar, function() {
+        console.log("Image deleted");
+      });
+    } catch (err) {}
+    let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
+    if (user_data.status === 0) {
+      logger.error("Error while updating user avatar = ", user_data);
+      return res.status(config.BAD_REQUEST).json({ user_data });
+    } else {
+      return res.status(config.OK_STATUS).json(user_data);
+    }
+  }
+  // generate token for update profile
+  // var options = {
+  //   method: "POST",
+  //   url: config.AUTH_TOKEN_URL,
+  //   headers: { "content-type": "application/json" },
+  //   body: config.AUTH_TOKEN_GENRATION_CREDENTIALS,
+  //   json: true
+  // };
+
+  // var token = await request(options);
+  // // image update start
+  // var options = {
+  //   method: "PATCH",
+  //   url: config.AUTH_USER_API_URL + authUserId,
+  //   headers: {
+  //     "content-type": "application/json",
+  //     // authorization: "bearer "+token
+  //     authorization: `bearer ${token.access_token}`
+  //   },
+  //   body: {
+  //     user_metadata: {
+  //       picture: user_obj.avatar
+  //     }
+  //   },
+  //   json: true
+  // };
+
+  // request(options, function(error, response, body) {
+  //   if (error) {
+  //     return res.send({ status: 2, message: "profile image is not updated" });
+  //   }
+  //   return res.send({ status: 1, message: "profile image is updated" });
+  // });
+  //image update end
 });
 
 module.exports = router;
