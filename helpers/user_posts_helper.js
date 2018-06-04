@@ -469,7 +469,11 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
           preserveNullAndEmptyArrays: true
         }
       },
-
+      {
+        $sort: {
+          createdAt: -1
+        }
+      },
       {
         $group: {
           _id: "$_id",
