@@ -169,7 +169,7 @@ router.put("/:request_id", async (req, res) => {
   };
 
   let friend_data = await friend_helper.approve_friend(
-    { _id: req.params.request_id, friendId: authUserId },
+    { _id: req.params.request_id, userId: authUserId },
     friend_obj
   );
   if (friend_data.status === 0) {
@@ -182,7 +182,7 @@ router.put("/:request_id", async (req, res) => {
       body: "friend request approved",
       meta: friend_data
     };
-    let notification_data = await notification_helper.send_friend_request(
+    let notification_data = await notification_helper.add_notifications(
       notificationObj
     );
     return res.status(config.OK_STATUS).json(friend_data);

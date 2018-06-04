@@ -246,6 +246,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           createdAt: { $first: "$createdAt" },
           likes: {
             $addToSet: {
+              _id: "$likes._id",
               authUserId: "$likesDetails.authUserId",
               firstName: "$likesDetails.firstName",
               lastName: "$likesDetails.lastName",
@@ -256,6 +257,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           },
           comments: {
             $addToSet: {
+              _id: "$comments._id",
               authUserId: "$commentsDetails.authUserId",
               firstName: "$commentsDetails.firstName",
               lastName: "$commentsDetails.lastName",
@@ -476,6 +478,7 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
           createdAt: { $first: "$createdAt" },
           likes: {
             $addToSet: {
+              _id: "$likes._id",
               authUserId: "$likesDetails.authUserId",
               firstName: "$likesDetails.firstName",
               lastName: "$likesDetails.lastName",
@@ -486,6 +489,7 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
           },
           comments: {
             $addToSet: {
+              _id: "$comments._id",
               authUserId: "$commentsDetails.authUserId",
               firstName: "$commentsDetails.firstName",
               lastName: "$commentsDetails.lastName",
