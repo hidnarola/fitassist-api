@@ -4223,7 +4223,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "like",
+            "field": "timeline",
             "description": "<p>added like detail</p>"
           }
         ]
@@ -9203,7 +9203,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "comment",
+            "field": "timeline",
             "description": "<p>added comment detail</p>"
           }
         ]
@@ -9328,7 +9328,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "comment",
+            "field": "timeline",
             "description": "<p>updated comment detail</p>"
           }
         ]

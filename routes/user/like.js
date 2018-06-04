@@ -20,7 +20,7 @@ var user_posts_helper = require("../../helpers/user_posts_helper");
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} postId postId of post
- * @apiSuccess (Success 200) {JSON} like added like detail
+ * @apiSuccess (Success 200) {JSON} timeline added like detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 

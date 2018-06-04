@@ -21,7 +21,7 @@ var user_posts_helper = require("../../helpers/user_posts_helper");
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} comment comment of post
  * @apiParam {String} postId postId of post
- * @apiSuccess (Success 200) {JSON} comment added comment detail
+ * @apiSuccess (Success 200) {JSON} timeline added comment detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
@@ -104,7 +104,7 @@ router.post("/", async (req, res) => {
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} comment comment of post
  * @apiParam {String} postId postId of post
- * @apiSuccess (Success 200) {JSON} comment updated comment detail
+ * @apiSuccess (Success 200) {JSON} timeline updated comment detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
