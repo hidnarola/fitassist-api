@@ -176,6 +176,11 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
         }
       },
       {
+        $sort: {
+          "likes.createdAt": 1
+        }
+      },
+      {
         $lookup: {
           from: "users",
           localField: "likes.userId",
@@ -201,6 +206,11 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
         $unwind: {
           path: "$comments",
           preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: {
+          "comments.createdAt": -1
         }
       },
       {
@@ -408,6 +418,11 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
         }
       },
       {
+        $sort: {
+          "likes.createdAt": 1
+        }
+      },
+      {
         $lookup: {
           from: "users",
           localField: "likes.userId",
@@ -436,6 +451,11 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
         }
       },
       {
+        $sort: {
+          "comments.createdAt": -1
+        }
+      },
+      {
         $lookup: {
           from: "users",
           localField: "comments.userId",
@@ -449,6 +469,7 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
           preserveNullAndEmptyArrays: true
         }
       },
+
       {
         $group: {
           _id: "$_id",
