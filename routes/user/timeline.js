@@ -163,11 +163,7 @@ router.post("/", async (req, res) => {
     if (req.body.privacy) {
       user_post_obj.privacy = req.body.privacy;
     }
-    if (req.body.onWall) {
-      user_post_obj.createdBy = req.body.onWall;
-    } else {
-      user_post_obj.createdBy = authUserId;
-    }
+    user_post_obj.createdBy = authUserId;
 
     async.waterfall(
       [
