@@ -137,7 +137,7 @@ router.get("/:user_post_id", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {File} [images] User's  Images is required on if description is not exist.
- * @apiParam {String} createdBy created User Id of user
+ * @apiParam {String} onWall id of user on whose timeline you are posting post
  * @apiParam {String} [description] image caption or timeline post is required on if images is not exist.
  * @apiParam {Number} [privacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
@@ -156,15 +156,15 @@ router.post("/", async (req, res) => {
 
   if (!errors) {
     var user_post_obj = {
-      userId: authUserId,
+      userId: req.body.onWall,
       description: req.body.description
     };
 
     if (req.body.privacy) {
       user_post_obj.privacy = req.body.privacy;
     }
-    if (req.body.createdBy) {
-      user_post_obj.createdBy = req.body.createdBy;
+    if (req.body.onWall) {
+      user_post_obj.createdBy = req.body.onWall;
     } else {
       user_post_obj.createdBy = authUserId;
     }

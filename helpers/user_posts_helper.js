@@ -343,11 +343,6 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
       {
         $match: user_auth_id
       },
-      {
-        $sort: {
-          createdAt: -1
-        }
-      },
       skip,
       offset,
       {
@@ -537,6 +532,11 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
               create_date: "$comments.createdAt"
             }
           }
+        }
+      },
+      {
+        $sort: {
+          createdAt: -1
         }
       }
     ]);
