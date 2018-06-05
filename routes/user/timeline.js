@@ -268,8 +268,8 @@ router.post("/", async (req, res) => {
                 //TIMELINE START
                 let resp_data_for_single_post;
                 var timelineObj = {
-                  userId: authUserId,
-                  createdBy: user_post_obj.createdBy,
+                  userId: req.body.onWall,
+                  createdBy: authUserId,
                   postPhotoId: user_post_data.user_post_photo._id,
                   tagLine: "added a new timeline photo",
                   type: "timeline"
