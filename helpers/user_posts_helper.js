@@ -208,7 +208,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           preserveNullAndEmptyArrays: true
         }
       },
-      { $sort: { "comments._id": 1 } },
+
       {
         $lookup: {
           from: "users",
@@ -225,7 +225,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
       },
       {
         $sort: {
-          "comments.create_date": -1
+          "comments.createdAt": 1
         }
       },
       {
@@ -301,6 +301,12 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
     });
 
     if (timeline || timeline.length != 0) {
+      var tmp = _.sortBy(timeline[0].comments, function(o) {
+        return o.create_date;
+      });
+
+      timeline[0].comments = tmp;
+
       return {
         status: 1,
         message: "User timeline found",
@@ -534,6 +540,7 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
     _.each(timeline, t => {
       var likes = [];
       var comments = [];
+      var tmp = [];
       _.each(t.likes, like => {
         if (Object.keys(like).length > 0) {
           likes.push(like);
@@ -544,8 +551,12 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
           comments.push(comment);
         }
       });
+
       t.likes = likes;
-      t.comments = comments;
+      tmp = _.sortBy(comments, function(o) {
+        return o.create_date;
+      });
+      t.comments = tmp;
     });
 
     if (timeline || timeline.length != 0) {
