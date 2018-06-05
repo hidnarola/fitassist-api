@@ -285,6 +285,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
     _.each(timeline, t => {
       var likes = [];
       var comments = [];
+      var tmp = [];
       _.each(t.likes, like => {
         if (Object.keys(like).length > 0) {
           likes.push(like);
@@ -296,8 +297,11 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           comments.push(comment);
         }
       });
+      tmp = _.sortBy(comments, function(o) {
+        return o.create_date;
+      });
       t.likes = likes;
-      t.comments = comments;
+      t.comments = tmp;
     });
 
     if (timeline || timeline.length != 0) {
@@ -551,11 +555,10 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
           comments.push(comment);
         }
       });
-
-      t.likes = likes;
       tmp = _.sortBy(comments, function(o) {
         return o.create_date;
       });
+      t.likes = likes;
       t.comments = tmp;
     });
 
