@@ -251,7 +251,7 @@ router.put("/photo", async (req, res) => {
   var filepath = filepath.replace(/\\/g, "/");
 
   if (filepath) {
-    user_obj.avatar = base_url + "/" + filepath;
+    user_obj.avatar = base_url + filepath;
 
     resp_data = await user_helper.get_user_by_id(authUserId);
     try {
