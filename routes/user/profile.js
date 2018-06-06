@@ -8,6 +8,7 @@ var request = require("request-promise");
 
 var config = require("../../config");
 var logger = config.logger;
+var base64Img = require("base64-img");
 
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
@@ -228,65 +229,28 @@ router.put("/update_aboutme", async (req, res) => {
 });
 
 /**
- * @api {patch} /user/profile Profile Picture - Update
+ * @api {put} /user/profile/photo Profile Picture - Update
  * @apiName Profile Picture - Update
  * @apiGroup User
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {File} user_img image of user
+ * @apiParam {String} user_img image of user
  * @apiSuccess (Success 200) {String} message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.patch("/", async (req, res) => {
+router.put("/photo", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+
   var user_obj = {
     avatar: ""
   };
   base_url = req.headers.host;
+  var dir = "./uploads/user";
+  var filename = "user_" + new Date().getTime();
+  var filepath = base64Img.imgSync(req.body.user_img, dir, filename);
 
-  profilePicture =
-    typeof req.files["user_img"] !== "undefined"
-      ? req.files["user_img"].name
-      : "";
-
-  //image upload
-  var filename;
-  if (req.files && req.files["user_img"]) {
-    var file = req.files["user_img"];
-    var dir = "./uploads/user";
-    var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-
-    if (mimetype.indexOf(file.mimetype) != -1) {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-      }
-      extention = path.extname(file.name);
-      filename = "user_" + new Date().getTime() + extention;
-      file.mv(dir + "/" + filename, function(err) {
-        if (err) {
-          logger.error("There was an issue in uploading image");
-          res.send({
-            status: config.MEDIA_ERROR_STATUS,
-            err: "There was an issue in uploading image"
-          });
-        } else {
-          logger.trace("image has been uploaded. Image name = ", filename);
-          //return res.send(200, "null");
-        }
-      });
-    } else {
-      logger.error("Image format is invalid");
-      res.send({
-        status: config.VALIDATION_FAILURE_STATUS,
-        err: "Image format is invalid"
-      });
-    }
-  } else {
-    logger.info("Image not available to upload. Executing next instruction");
-    //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-  }
-  if (filename) {
-    user_obj.avatar = config.BASE_URL + "uploads/user/" + filename;
+  if (filepath) {
+    user_obj.avatar = base_url + "/" + filepath;
 
     resp_data = await user_helper.get_user_by_id(authUserId);
     try {
@@ -301,6 +265,10 @@ router.patch("/", async (req, res) => {
     } else {
       return res.status(config.OK_STATUS).json(user_data);
     }
+  } else {
+    return res
+      .status(config.BAD_REQUEST)
+      .json({ status: 2, message: "no image selected" });
   }
   // generate token for update profile
   // var options = {

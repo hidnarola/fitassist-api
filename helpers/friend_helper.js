@@ -291,12 +291,10 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
 
       var cnt = 0;
       _.each(total_friends, (frd, i) => {
-        console.log(frd.status);
         if (frd.status == 2) {
           cnt++;
         }
       });
-      console.log("----------------");
 
       friend.friendsCount = cnt;
       delete friend.totalFriends;
@@ -488,7 +486,7 @@ friend_helper.find = async id => {
 };
 
 /*
- * checkFriend is used to checkf friend 
+ * checkFriend is used to check friend 
  * 
  * @return  status 0 - If any internal error occured while checking friend data, with error
  *          status 1 - If checking friend data found, with checking friend object

@@ -13,6 +13,7 @@ var logger = config.logger;
 var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
 var user_helper = require("../../helpers/user_helper");
+var friend_helper = require("../../helpers/friend_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
 /**
@@ -56,20 +57,48 @@ router.get("/:post_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:username/:start?/:offset?", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-
   logger.trace("Get all user's timeline API called");
 
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   var skip = req.params.start ? req.params.start : 0;
   var limit = req.params.offset ? req.params.offset : 10;
-
+  var privacyArray = [3];
   var user = await user_helper.get_user_by({ username: req.params.username });
+  var friendId = user.user.authUserId;
+
+  var searchObject = {
+    $or: [
+      {
+        $and: [{ userId: authUserId }, { friendId: friendId }]
+      },
+      {
+        $and: [{ userId: friendId }, { friendId: authUserId }]
+      }
+    ]
+  };
+
+  var checkFriend = await friend_helper.checkFriend(searchObject);
+
+  console.log("------------------------------------");
+  console.log(" friendId: ", friendId, authUserId);
+  console.log("------------------------------------");
+
+  if (friendId == authUserId) {
+    console.log("self");
+    privacyArray = [1, 2, 3];
+  } else if (checkFriend.status == 1) {
+    console.log("friend");
+    privacyArray = [2, 3];
+  } else {
+    console.log("unknown");
+    privacyArray = [3];
+  }
 
   var resp_data = await user_posts_helper.get_user_timeline(
     {
-      userId: user.user.authUserId,
-      // postType: "timeline",
+      // $or: [{ privacy: 1 }, { privacy: 2 }, { privacy: 3 }],
+      userId: friendId,
       isDeleted: 0
     },
     {
@@ -272,7 +301,8 @@ router.post("/", async (req, res) => {
                   createdBy: authUserId,
                   postPhotoId: user_post_data.user_post_photo._id,
                   tagLine: "added a new timeline photo",
-                  type: "timeline"
+                  type: "timeline",
+                  privacy: req.body.privacy ? req.body.privacy : 3
                 };
                 let user_timeline_data = await user_timeline_helper.insert_timeline_data(
                   timelineObj

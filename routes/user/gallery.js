@@ -234,7 +234,8 @@ router.post("/", async (req, res) => {
                   createdBy: authUserId,
                   postPhotoId: user_post_data.user_post_photo._id,
                   tagLine: "added a new gallery photo",
-                  type: "gallery"
+                  type: "gallery",
+                  privacy: req.body.privacy ? req.body.privacy : 3
                 };
 
                 let user_timeline_data = await user_timeline_helper.insert_timeline_data(

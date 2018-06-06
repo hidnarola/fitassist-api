@@ -169,7 +169,7 @@ router.put("/:request_id", async (req, res) => {
   };
 
   let friend_data = await friend_helper.approve_friend(
-    { _id: req.params.request_id, userId: authUserId },
+    { _id: req.params.request_id },
     friend_obj
   );
   if (friend_data.status === 0) {

@@ -199,7 +199,8 @@ router.post("/", async (req, res) => {
       createdBy: authUserId,
       progressPhotoId: user_progress_photo_data.user_progress_photo._id,
       tagLine: "added a new progress photo",
-      type: "progress_photo"
+      type: "progress_photo",
+      privacy: req.body.privacy ? req.body.privacy : 3
     };
     console.log("timelineObj", timelineObj);
 

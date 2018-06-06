@@ -50,6 +50,7 @@ var UserTimelineSchema = new Schema(
       ],
       default: null
     },
+    privacy: { type: Number, default: 3 },
     status: { type: Number, default: 1 },
     isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
