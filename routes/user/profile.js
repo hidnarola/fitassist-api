@@ -248,6 +248,7 @@ router.put("/photo", async (req, res) => {
   var dir = "./uploads/user";
   var filename = "user_" + new Date().getTime();
   var filepath = base64Img.imgSync(req.body.user_img, dir, filename);
+  var filepath = filepath.replace(/\\/g, "/");
 
   if (filepath) {
     user_obj.avatar = base_url + "/" + filepath;
