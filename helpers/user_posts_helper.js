@@ -343,12 +343,11 @@ user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
       {
         $match: user_auth_id
       },
-      skip,
-      offset,
       {
         $sort: { createdAt: -1 }
       },
-
+      skip,
+      offset,
       {
         $lookup: {
           from: "user_progress_photos",

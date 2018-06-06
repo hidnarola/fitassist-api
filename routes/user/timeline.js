@@ -343,44 +343,27 @@ router.put("/:photo_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var schema = {
-    privacy: {
-      notEmpty: true,
-      errorMessage: "Privacy is required"
-    }
-  };
+  var user_post_obj = {};
 
-  req.checkBody(schema);
-  var errors = req.validationErrors();
+  if (req.body.privacy) {
+    user_post_obj.privacy = req.body.privacy;
+  }
+  if (req.body.description) {
+    user_post_obj.description = req.body.description;
+  }
+  if (req.body.status) {
+    user_post_obj.status = req.body.status;
+  }
 
-  if (!errors) {
-    //console.log("Data = ",req.body);
-    //console.log("Files = ",req.files);
-    var user_post_obj = {};
-
-    if (req.body.privacy) {
-      user_post_obj.privacy = req.body.privacy;
-    }
-    if (req.body.description) {
-      user_post_obj.description = req.body.description;
-    }
-    if (req.body.status) {
-      user_post_obj.status = req.body.status;
-    }
-
-    resp_data = await user_posts_helper.update_user_post_photo(
-      { _id: req.params.photo_id, userId: authUserId },
-      user_post_obj
-    );
-    if (resp_data.status === 0) {
-      logger.error("Error while updating user post image = ", resp_data);
-      res.status(config.BAD_REQUEST).json({ resp_data });
-    } else {
-      res.status(config.OK_STATUS).json(resp_data);
-    }
+  resp_data = await user_posts_helper.update_user_post_photo(
+    { _id: req.params.photo_id, userId: authUserId },
+    user_post_obj
+  );
+  if (resp_data.status === 0) {
+    logger.error("Error while updating user post image = ", resp_data);
+    res.status(config.BAD_REQUEST).json({ resp_data });
   } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
