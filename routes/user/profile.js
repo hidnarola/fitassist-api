@@ -233,7 +233,7 @@ router.put("/update_aboutme", async (req, res) => {
  * @apiName Profile Picture - Update
  * @apiGroup User
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} user_img image of user
+ * @apiParam {String} user_img base64 encoded data
  * @apiSuccess (Success 200) {String} message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -271,40 +271,6 @@ router.put("/photo", async (req, res) => {
       .status(config.BAD_REQUEST)
       .json({ status: 2, message: "no image selected" });
   }
-  // generate token for update profile
-  // var options = {
-  //   method: "POST",
-  //   url: config.AUTH_TOKEN_URL,
-  //   headers: { "content-type": "application/json" },
-  //   body: config.AUTH_TOKEN_GENRATION_CREDENTIALS,
-  //   json: true
-  // };
-
-  // var token = await request(options);
-  // // image update start
-  // var options = {
-  //   method: "PATCH",
-  //   url: config.AUTH_USER_API_URL + authUserId,
-  //   headers: {
-  //     "content-type": "application/json",
-  //     // authorization: "bearer "+token
-  //     authorization: `bearer ${token.access_token}`
-  //   },
-  //   body: {
-  //     user_metadata: {
-  //       picture: user_obj.avatar
-  //     }
-  //   },
-  //   json: true
-  // };
-
-  // request(options, function(error, response, body) {
-  //   if (error) {
-  //     return res.send({ status: 2, message: "profile image is not updated" });
-  //   }
-  //   return res.send({ status: 1, message: "profile image is updated" });
-  // });
-  //image update end
 });
 
 module.exports = router;

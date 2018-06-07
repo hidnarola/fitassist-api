@@ -6,8 +6,12 @@ var Schema = mongoose.Schema;
 
 var UserNotificationsSchema = new Schema(
   {
-    userId: { type: String, ref: "users", field: "authUserId", required: true },
-    type: { type: String, required: true },
+    sender: { type: Object, required: true, default: null },
+    receiver: {
+      type: Object,
+      required: true
+    },
+    type: { type: String, enum: ["friend_request_approved"], required: true },
     body: { type: String, required: true },
     meta: { type: Object, required: false, default: {} },
     isSeen: { type: Number, default: 0 },

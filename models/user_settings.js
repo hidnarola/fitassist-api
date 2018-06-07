@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 var UserSettingSchema = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },
-    body_measurement: {
+    bodyMeasurement: {
       type: String,
       enum: ["cm", "inch", "feet"],
       default: "cm"
@@ -21,6 +21,26 @@ var UserSettingSchema = new Schema(
       type: String,
       enum: ["km", "mile"],
       default: "km"
+    },
+    postAccessibility: {
+      type: String,
+      enum: ["public", "friends", "only_me"],
+      default: 3
+    },
+    commentAccessibility: {
+      type: String,
+      enum: ["public", "friends", "only_me"],
+      default: 3
+    },
+    messageAccessibility: {
+      type: String,
+      enum: ["public", "friends", "only_me"],
+      default: 3
+    },
+    friendRequestAccessibility: {
+      type: String,
+      enum: ["public", "friends", "only_me"],
+      default: 3
     },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }

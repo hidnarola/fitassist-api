@@ -10,96 +10,33 @@ var jwtDecode = require("jwt-decode");
 
 var logger = config.logger;
 
-var user_posts_helper = require("../../helpers/user_posts_helper");
-var user_timeline_helper = require("../../helpers/user_timeline_helper");
-var user_helper = require("../../helpers/user_helper");
-var friend_helper = require("../../helpers/friend_helper");
-var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
+var user_personal_goals_helper = require("../../helpers/user_personal_goals_helper");
 
 /**
- * @api {get} /user/timeline/:post_id Get by ID
- * @apiName Get by ID
- * @apiGroup User Timeline
- * @apiSuccess (Success 200) {JSON} timeline JSON of user_posts 's document
- * @apiHeader {String}  authorization user's unique access-key
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get("/:post_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var _id = req.params.post_id;
-
-  logger.trace("Get all user's timeline API called");
-
-  var resp_data = await user_posts_helper.get_user_timeline_by_id({
-    _id: mongoose.Types.ObjectId(_id),
-    isDeleted: 0
-  });
-
-  if (resp_data.status == 0) {
-    logger.error(
-      "Error occured while fetching get all user timeline = ",
-      resp_data
-    );
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user timeline got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
-});
-
-/**
- * @api {get} /user/timeline/:username/:start?/:offset? Get all
+ * @api {get} /user/personal_goal/:type/:start?/:offset? Get all
  * @apiName Get all
- * @apiGroup User Timeline
+ * @apiGroup User Personal Goal
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} timeline JSON of user_posts 's document
+ * @apiParam {Number}  type type of completed goal 1 for completed and 0 for uncompleted
+ * @apiParam {Number}  start start of records
+ * @apiParam {Number}  offset offset of records
+ * @apiSuccess (Success 200) {JSON} personal_goals JSON of personal_goals 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:username/:start?/:offset?", async (req, res) => {
-  logger.trace("Get all user's timeline API called");
+router.get("/:type?/:start?/:offset?", async (req, res) => {
+  logger.trace("Get all user's personal_goal API called");
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+
   var skip = req.params.start ? req.params.start : 0;
   var limit = req.params.offset ? req.params.offset : 10;
-  var privacyArray = [3];
-  var user = await user_helper.get_user_by({ username: req.params.username });
-  var friendId = user.user.authUserId;
+  var type = req.params.type;
 
-  var searchObject = {
-    $or: [
-      {
-        $and: [{ userId: authUserId }, { friendId: friendId }]
-      },
-      {
-        $and: [{ userId: friendId }, { friendId: authUserId }]
-      }
-    ]
-  };
-
-  var checkFriend = await friend_helper.checkFriend(searchObject);
-
-  console.log("------------------------------------");
-  console.log(" friendId: ", friendId, authUserId);
-  console.log("------------------------------------");
-
-  if (friendId == authUserId) {
-    console.log("self");
-    privacyArray = [1, 2, 3];
-  } else if (checkFriend.status == 1) {
-    console.log("friend");
-    privacyArray = [2, 3];
-  } else {
-    console.log("unknown");
-    privacyArray = [3];
-  }
-
-  var resp_data = await user_posts_helper.get_user_timeline(
+  var resp_data = await user_personal_goals_helper.get_personal_goals(
     {
-      // $or: [{ privacy: 1 }, { privacy: 2 }, { privacy: 3 }],
-      userId: friendId,
-      isDeleted: 0
+      userId: authUserId,
+      isCompleted: type
     },
     {
       $skip: parseInt(skip)
@@ -108,47 +45,31 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
       $limit: parseInt(limit)
     }
   );
-  var progress_photos_data = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
-    {
-      userId: user.user.authUserId,
-      isDeleted: 0
-    }
-  );
-
-  if (progress_photos_data.status == 1) {
-    resp_data.progress_photos = progress_photos_data.user_progress_photos;
-  } else {
-    resp_data.progress_photos = {};
-  }
 
   if (resp_data.status == 0) {
     logger.error(
-      "Error occured while fetching get all user timeline = ",
+      "Error occured while fetching get all user personal_goals = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.trace("user timeline got successfully = ", resp_data);
+    logger.trace("user personal goals got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
 /**
- * @api {get} /user/timeline/:user_post_id Get by ID
- * @apiName Get by ID
- * @apiGroup User Timeline
+ * @api {get} /user/personal_goal/:goal_id Get by Goal ID
+ * @apiName Get by Goal ID
+ * @apiGroup User Personal Goal
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:user_post_id", async (req, res) => {
-  logger.trace(
-    "Get user post photo by ID API called : ",
-    req.params.user_post_id
-  );
-  var resp_data = await user_posts_helper.get_user_post_photo_by_id({
-    _id: req.params.user_post_id,
-    isDeleted: 0
+router.get("/:goal_id", async (req, res) => {
+  logger.trace("Get user post photo by ID API called : ", req.params.goal_id);
+  var resp_data = await user_personal_goals_helper.get_personal_goals({
+    _id: req.params.goal_id
   });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user post photo = ", resp_data);
@@ -160,15 +81,14 @@ router.get("/:user_post_id", async (req, res) => {
 });
 
 /**
- * @api {post} /user/timeline Add
+ * @api {post} /user/personal_goal Add
  * @apiName Add
- * @apiGroup User Timeline
+ * @apiGroup User Personal Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {File} [images] User's  Images is required on if description is not exist.
- * @apiParam {String} onWall id of user on whose timeline you are posting post
- * @apiParam {String} [description] image caption or timeline post is required on if images is not exist.
- * @apiParam {Number} [privacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
+ * @apiParam {Number} start start of goal
+ * @apiParam {Number} target target of goal
+ * @apiParam {Number} unit unit of goal
  * @apiSuccess (Success 200) {JSON} message message for successful and unsuccessful image upload
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -260,7 +180,7 @@ router.post("/", async (req, res) => {
         var unsuccess = 0;
         var success = 0;
 
-        let user_post_data = await user_posts_helper.insert_user_post(
+        let user_post_data = await user_personal_goals_helper.insert_user_post(
           user_post_obj
         );
         if (user_post_data.status === 0) {
@@ -277,7 +197,7 @@ router.post("/", async (req, res) => {
             file_path_array,
             async function(file, callback) {
               post_image_obj.image = file;
-              let user_post_data = await user_posts_helper.insert_user_post_image(
+              let user_post_data = await user_personal_goals_helper.insert_user_post_image(
                 post_image_obj
               );
               if (user_post_data.status === 0) {
@@ -294,14 +214,14 @@ router.post("/", async (req, res) => {
               if (err) {
                 console.log("Failed to upload image");
               } else {
-                //TIMELINE START
+                //personal_goal START
                 let resp_data_for_single_post;
                 var timelineObj = {
                   userId: req.body.onWall,
                   createdBy: authUserId,
                   postPhotoId: user_post_data.user_post_photo._id,
                   tagLine: "added a new post",
-                  type: "timeline",
+                  type: "personal_goal",
                   privacy: req.body.privacy ? req.body.privacy : 3
                 };
                 let user_timeline_data = await user_timeline_helper.insert_timeline_data(
@@ -310,11 +230,11 @@ router.post("/", async (req, res) => {
 
                 if (user_timeline_data.status === 0) {
                   logger.error(
-                    "Error while inserting timeline data = ",
+                    "Error while inserting personal_goal data = ",
                     user_timeline_data
                   );
                 } else {
-                  resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id(
+                  resp_data_for_single_post = await user_personal_goals_helper.get_user_timeline_by_id(
                     {
                       _id: mongoose.Types.ObjectId(
                         user_timeline_data.user_timeline._id
@@ -328,11 +248,11 @@ router.post("/", async (req, res) => {
                     resp_data_for_single_post
                   );
                   logger.error(
-                    "successfully added timeline data = ",
+                    "successfully added personal_goal data = ",
                     user_timeline_data
                   );
                 }
-                //TIMELINE END
+                //personal_goal END
                 return res.status(config.OK_STATUS).json({
                   status: 1,
                   message:
@@ -341,7 +261,7 @@ router.post("/", async (req, res) => {
                     " successfully uploaded image(s), " +
                     unsuccess +
                     " failed uploaded image(s)",
-                  timeline: resp_data_for_single_post.timeline
+                  personal_goal: resp_data_for_single_post.personal_goal
                 });
               }
             }
@@ -356,9 +276,9 @@ router.post("/", async (req, res) => {
 });
 
 /**@apiIgnore Not finished Method
- * @api {put} /user/timeline/:photo_id Update
+ * @api {put} /user/personal_goal/:photo_id Update
  * @apiName Update
- * @apiGroup User Timeline
+ * @apiGroup User Personal Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {File} image User's  Image
@@ -385,7 +305,7 @@ router.put("/:photo_id", async (req, res) => {
     user_post_obj.status = req.body.status;
   }
 
-  resp_data = await user_posts_helper.update_user_post_photo(
+  resp_data = await user_personal_goals_helper.update_user_post_photo(
     { _id: req.params.photo_id, userId: authUserId },
     user_post_obj
   );
@@ -398,9 +318,9 @@ router.put("/:photo_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/timeline/:photo_id Delete
+ * @api {delete} /user/personal_goal/:photo_id Delete
  * @apiName Delete
- * @apiGroup User Timeline
+ * @apiGroup User Personal Goal
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -409,7 +329,7 @@ router.delete("/:photo_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete user's post photo API - Id = ", req.params.photo_id);
-  let user_post_data = await user_posts_helper.delete_user_post_photo(
+  let user_post_data = await user_personal_goals_helper.delete_user_post_photo(
     { userId: authUserId, _id: req.params.photo_id },
     { isDeleted: 1 }
   );

@@ -24,6 +24,7 @@ var timeline = require("./user/timeline");
 var search = require("./user/search");
 var chat = require("./user/chat");
 var setting = require("./user/user_settings");
+var personal_goals = require("./user/personal_goals");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -47,5 +48,6 @@ router.use("/timeline", auth, timeline);
 router.use("/search", auth, search);
 router.use("/chat", auth, chat);
 router.use("/setting", auth, setting);
+router.use("/personal_goal", auth, personal_goals);
 
 module.exports = router;

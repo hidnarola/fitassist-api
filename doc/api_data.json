@@ -7129,8 +7129,8 @@
     "groupTitle": "User"
   },
   {
-    "type": "patch",
-    "url": "/user/profile",
+    "type": "put",
+    "url": "/user/profile/photo",
     "title": "Profile Picture - Update",
     "name": "Profile_Picture___Update",
     "group": "User",
@@ -7152,10 +7152,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "File",
+            "type": "String",
             "optional": false,
             "field": "user_img",
-            "description": "<p>image of user</p>"
+            "description": "<p>base64 encoded data</p>"
           }
         ]
       }
@@ -9961,8 +9961,8 @@
   {
     "type": "post",
     "url": "/user/settings",
-    "title": "Save",
-    "name": "Save",
+    "title": "Save User Preference",
+    "name": "Save_Preference",
     "group": "User_Settings",
     "header": {
       "fields": {
@@ -9992,21 +9992,49 @@
             "type": "String",
             "optional": false,
             "field": "distance",
-            "description": "<p>distance of friend</p>"
+            "description": "<p>distance unit of user. <code>Enum : [&quot;km&quot;, &quot;mile&quot;]</code></p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "weight",
-            "description": "<p>weight of friend</p>"
+            "description": "<p>weight unit of user. <code>Enum : [&quot;kg&quot;, &quot;lb&quot;]</code></p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "body_measurement",
-            "description": "<p>body_measurement of friend</p>"
+            "description": "<p>body_measurement unit of user. <code>Enum : [&quot;cm&quot;, &quot;inch&quot;, &quot;feet&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "postAccessibility",
+            "description": "<p>postAccessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "commentAccessibility",
+            "description": "<p>commentAccessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "messageAccessibility",
+            "description": "<p>messageAccessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "friendRequestAccessibility",
+            "description": "<p>friendRequestAccessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
           }
         ]
       }
@@ -10018,8 +10046,8 @@
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "conversation",
-            "description": "<p>message sent in conversations_replies detail</p>"
+            "field": "user_settings",
+            "description": "<p>user preference in user_settings detail</p>"
           }
         ]
       }
@@ -10293,8 +10321,8 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "createdBy",
-            "description": "<p>created User Id of user</p>"
+            "field": "onWall",
+            "description": "<p>id of user on whose timeline you are posting post</p>"
           },
           {
             "group": "Parameter",

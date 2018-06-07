@@ -5,12 +5,14 @@ var async = require("async");
 var jwtDecode = require("jwt-decode");
 
 var router = express.Router();
+var mongoose = require("mongoose");
 
 var config = require("../../config");
 var logger = config.logger;
 
 var friend_helper = require("../../helpers/friend_helper");
 var notification_helper = require("../../helpers/notification_helper");
+var user_helper = require("../../helpers/user_helper");
 
 /**
  * @api {get} /user/friend/:username/:type? Get by Username
@@ -176,10 +178,35 @@ router.put("/:request_id", async (req, res) => {
     logger.error("Error while approving friend request = ", friend_data);
     return res.status(config.BAD_REQUEST).json({ friend_data });
   } else {
+    var receiver = await friend_helper.checkFriend({
+      _id: mongoose.Types.ObjectId(req.params.request_id)
+    });
+
+    let receiver_data = await user_helper.get_user_by({
+      authUserId: receiver.friends[0].friendId
+    });
+    let sender_data = await user_helper.get_user_by({ authUserId: authUserId });
+
+    var receiver = {
+      firstName: receiver_data.user.firstName,
+      lastName: receiver_data.user.lastName,
+      avatar: receiver_data.user.avatar,
+      username: receiver_data.user.username,
+      authUserId: receiver_data.user.authUserId
+    };
+    var sender = {
+      firstName: sender_data.user.firstName,
+      lastName: sender_data.user.lastName,
+      avatar: sender_data.user.avatar,
+      username: sender_data.user.username,
+      authUserId: sender_data.user.authUserId
+    };
+
     var notificationObj = {
-      userId: authUserId,
-      type: "friend",
-      body: "friend request approved",
+      sender: sender,
+      receiver: receiver,
+      type: "friend_request_approved",
+      body: `${sender.firstName} ${sender.lastName} approved your request`,
       meta: friend_data
     };
     let notification_data = await notification_helper.add_notifications(

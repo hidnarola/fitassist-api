@@ -59,11 +59,8 @@ user_settings_helper.save_settings = async (userId, setting_obj) => {
     } else {
       setting_obj.userId = userId.userId;
       let user_settings_obj = new UserSettings(setting_obj);
-      user_settings = await user_settings.save();
+      user_settings = await user_settings_obj.save();
     }
-    console.log("------------------------------------");
-    console.log("user_settings : ", user_settings);
-    console.log("------------------------------------");
 
     if (!user_settings) {
       return { status: 2, message: "Record has not updated" };
