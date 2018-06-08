@@ -7,9 +7,6 @@ var mongoose = require("mongoose");
 
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
-var os = require("os");
-var hostname = os.hostname();
-console.log("hostname", hostname);
 
 var logger = config.logger;
 
