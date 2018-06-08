@@ -7,10 +7,25 @@ var user_personal_goals_helper = {};
  *          status 1 - If personal goal data found, with personal goals object
  *          status 2 - If personal goal data not found, with appropriate message
  */
-user_personal_goals_helper.get_personal_goals = async id => {
+user_personal_goals_helper.get_personal_goals = async (
+  id,
+  skip = null,
+  limit = null
+) => {
   try {
-    var personal_goals = await PersonalGoal.aggregate([{ $match: id }]);
-    if (personal_goals && personal_goals.length > 0) {
+    var personal_goals;
+
+    if (skip != null && limit != null) {
+      personal_goals = await PersonalGoal.aggregate([
+        { $match: id },
+        skip,
+        limit
+      ]);
+    } else {
+      personal_goals = await PersonalGoal.findOne(id);
+    }
+
+    if (personal_goals) {
       return {
         status: 1,
         message: "user's personal goals found",
@@ -29,6 +44,33 @@ user_personal_goals_helper.get_personal_goals = async id => {
 };
 
 /*
+ * get_personal_goal_by_id is used to fetch personal_goals by goal ID
+ * @return  status 0 - If any internal error occured while fetching personal goals data, with error
+ *          status 1 - If personal goal data found, with personal goals object
+ *          status 2 - If personal goal data not found, with appropriate message
+ */
+user_personal_goals_helper.get_personal_goal_by_id = async id => {
+  try {
+    personal_goal = await PersonalGoal.findOne(id);
+    if (personal_goal) {
+      return {
+        status: 1,
+        message: "user's personal goal found",
+        goal: personal_goal
+      };
+    } else {
+      return { status: 2, message: "user's personal goal not available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user's personal goal ",
+      error: err
+    };
+  }
+};
+
+/*
  * insert_personal_goal is used to insert into personal_goals
  * @param   personal_goal_object JSON object consist of all property that need to insert in collection
  * @return  status  0 - If any error occur in inserting personal_goal, with error
@@ -41,7 +83,7 @@ user_personal_goals_helper.insert_personal_goal = async personal_goal_object => 
     let personal_goal_data = await personal_goal.save();
     return {
       status: 1,
-      message: "User's user personal goal inserted",
+      message: "User's personal goal inserted",
       goal: personal_goal_data
     };
   } catch (err) {

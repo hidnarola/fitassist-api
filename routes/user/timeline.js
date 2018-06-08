@@ -355,7 +355,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-/**@apiIgnore Not finished Method
+/**
  * @api {put} /user/timeline/:photo_id Update
  * @apiName Update
  * @apiGroup User Timeline
