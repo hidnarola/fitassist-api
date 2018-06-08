@@ -506,58 +506,51 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "descriptionCompleted",
-            "description": "<p>descriptionCompleted of badge</p>"
+            "description": "<p>description of Completed badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
-            "field": "descriptionInCompleted",
-            "description": "<p>descriptionInCompleted of badge</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
             "optional": false,
-            "field": "points",
-            "description": "<p>points of badge</p>"
+            "field": "descriptionInCompleted",
+            "description": "<p>description of InCompleted badge</p>"
           },
           {
             "group": "Parameter",
-            "type": "Collection[]",
+            "type": "String",
+            "optional": false,
+            "field": "unit",
+            "description": "<p>unit of badge</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "value",
+            "description": "<p>value of badge</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
             "optional": false,
             "field": "task",
-            "description": "<p>task of badge <code>{taskID:&quot;&quot;,value:&quot;&quot;,unit:&quot;&quot;}</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Enum",
-            "optional": false,
-            "field": "timeType",
-            "description": "<p>[timeType] of badge | <code>Possible Values[&quot;standard&quot;,&quot;time_window&quot;,&quot;timed&quot;]</code></p>"
+            "description": "<p>task of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "timeLimit",
-            "description": "<p>timeLimit of badge <code>startDate:&quot;&quot;,endDate:&quot;&quot;,toDate:&quot;&quot;</code></p>"
+            "field": "duration",
+            "description": "<p>duration of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "category",
-            "description": "<p>categories of badge</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String[]",
-            "optional": false,
-            "field": "tags",
-            "description": "<p>tags of badge</p>"
+            "field": "point",
+            "description": "<p>point of badge</p>"
           }
         ]
       }
@@ -7417,56 +7410,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "delete",
-    "url": "/user/chat/:username",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
+    "filename": "routes/user/chat.js",
     "groupTitle": "User_Chat"
   },
   {
@@ -7515,7 +7459,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/chat.js",
+    "filename": "routes/user/user_settings.js",
     "groupTitle": "User_Chat"
   },
   {
@@ -7565,6 +7509,55 @@
     },
     "version": "0.0.0",
     "filename": "routes/user/chat.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "delete",
+    "url": "/user/chat/:username",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_settings.js",
     "groupTitle": "User_Chat"
   },
   {
@@ -9152,6 +9145,332 @@
   },
   {
     "type": "post",
+    "url": "/user/personal_goal",
+    "title": "Add",
+    "name": "Add",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "target",
+            "description": "<p>target of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "unit",
+            "description": "<p>unit of goal</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "personal_goal",
+            "description": "<p>message for successful personal_goal added</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/personal_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "delete",
+    "url": "/user/personal_goal/:goal_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/personal_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "get",
+    "url": "/user/personal_goal/:type/:start?/:offset?",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "type",
+            "description": "<p>type of completed goal 1 for completed and 0 for uncompleted</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start of records</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset of records</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "personal_goals",
+            "description": "<p>JSON of personal_goals 's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/personal_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "get",
+    "url": "/user/personal_goal/:goal_id",
+    "title": "Get by Goal ID",
+    "name": "Get_by_Goal_ID",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goal",
+            "description": "<p>personal_goals's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/personal_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "put",
+    "url": "/user/personal_goal/:goal_id",
+    "title": "Update",
+    "name": "Update",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": false,
+            "field": "image",
+            "description": "<p>User's  Image</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_post_photo",
+            "description": "<p>user_post_photo details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/personal_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "post",
     "url": "/user/post/comment",
     "title": "Add",
     "name": "Add",
@@ -10005,36 +10324,36 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "body_measurement",
-            "description": "<p>body_measurement unit of user. <code>Enum : [&quot;cm&quot;, &quot;inch&quot;, &quot;feet&quot;]</code></p>"
+            "field": "bodyMeasurement",
+            "description": "<p>body measurement unit of user. <code>Enum : [&quot;cm&quot;, &quot;inch&quot;, &quot;feet&quot;]</code></p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "postAccessibility",
-            "description": "<p>postAccessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+            "description": "<p>post accessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "commentAccessibility",
-            "description": "<p>commentAccessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+            "description": "<p>comment accessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "messageAccessibility",
-            "description": "<p>messageAccessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+            "description": "<p>message accessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "friendRequestAccessibility",
-            "description": "<p>friendRequestAccessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+            "description": "<p>friend request accessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
           }
         ]
       }
@@ -10471,7 +10790,56 @@
   },
   {
     "type": "get",
-    "url": "/user/timeline/:username/:post_id",
+    "url": "/user/timeline/:user_post_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "User_Timeline",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_post_photo",
+            "description": "<p>user_post_photo's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/timeline.js",
+    "groupTitle": "User_Timeline"
+  },
+  {
+    "type": "get",
+    "url": "/user/timeline/:post_id",
     "title": "Get by ID",
     "name": "Get_by_ID",
     "group": "User_Timeline",
@@ -10519,10 +10887,10 @@
     "groupTitle": "User_Timeline"
   },
   {
-    "type": "get",
-    "url": "/user/timeline/:user_post_id",
-    "title": "Get by ID",
-    "name": "Get_by_ID",
+    "type": "put",
+    "url": "/user/timeline/:photo_id",
+    "title": "Update",
+    "name": "Update",
     "group": "User_Timeline",
     "header": {
       "fields": {
@@ -10531,8 +10899,56 @@
             "group": "Header",
             "type": "String",
             "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
             "field": "authorization",
             "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "File",
+            "optional": false,
+            "field": "image",
+            "description": "<p>User's  Image</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "createdBy",
+            "description": "<p>created User Id of user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Description of Image</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "privacy",
+            "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "status",
+            "description": "<p>status of Image <br><code>1 for Active<br>2 for Inactive</code></p>"
           }
         ]
       }
@@ -10545,7 +10961,7 @@
             "type": "JSON",
             "optional": false,
             "field": "user_post_photo",
-            "description": "<p>user_post_photo's document</p>"
+            "description": "<p>user_post_photo details</p>"
           }
         ]
       }
