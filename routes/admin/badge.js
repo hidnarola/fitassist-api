@@ -107,14 +107,13 @@ router.get("/:badge_id", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name Name of badge
- * @apiParam {String} [descriptionCompleted] descriptionCompleted of badge
- * @apiParam {String} [descriptionInCompleted] descriptionInCompleted of badge
- * @apiParam {Number} points points of badge
- * @apiParam {Collection[]} task task of badge <code>{taskID:"",value:"",unit:""}</code>
- * @apiParam {Enum} timeType [timeType] of badge | <code>Possible Values["standard","time_window","timed"]</code>
- * @apiParam {String} timeLimit timeLimit of badge <code>startDate:"",endDate:"",toDate:""</code>
- * @apiParam {String} category categories of badge
- * @apiParam {String[]} tags tags of badge
+ * @apiParam {String} descriptionCompleted description of Completed badge
+ * @apiParam {String} descriptionInCompleted description of InCompleted badge
+ * @apiParam {String} unit unit of badge
+ * @apiParam {String} value value of badge
+ * @apiParam {String} task task of badge
+ * @apiParam {String} duration duration of badge
+ * @apiParam {String} point point of badge
  * @apiSuccess (Success 200) {JSON} badge added badge detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -125,25 +124,41 @@ router.post("/", async (req, res) => {
       notEmpty: true,
       errorMessage: "Name of Task is required"
     },
-    points: {
-      notEmpty: true,
-      errorMessage: "points of Task is required"
-    },
     task: {
       notEmpty: true,
       errorMessage: "task is required"
     },
-    timeLimit: {
-      notEmpty: true,
-      errorMessage: "timeLimit of Task is required"
-    },
-    timeType: {
+    unit: {
       notEmpty: false,
       isIn: {
-        options: ["standard", "time_window", "timed"],
-        errorMessage: "timeType must be from standard, time_window or timed"
+        options: [
+          "n/a",
+          "cm",
+          "feet",
+          "kg",
+          "lb",
+          "percentage",
+          "in",
+          "number",
+          "minute",
+          "meter",
+          "mile",
+          "bpm",
+          "g",
+          "mg"
+        ],
+        errorMessage:
+          "unit must be from n/a, cm, feet, kg, lb, percentage, in, number, minute, meter, mile, bpm, g or mg"
       },
-      errorMessage: "timeType is required"
+      errorMessage: "unit is required"
+    },
+    value: {
+      notEmpty: true,
+      errorMessage: "value is required"
+    },
+    duration: {
+      notEmpty: true,
+      errorMessage: "duration is required"
     }
   };
   req.checkBody(schema);
@@ -152,18 +167,10 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var badge_obj = {
       name: req.body.name,
-      descriptionCompleted: req.body.descriptionCompleted
-        ? req.body.descriptionCompleted
-        : null,
-      descriptionInCompleted: req.body.descriptionInCompleted
-        ? req.body.descriptionInCompleted
-        : null,
-      points: req.body.points,
       task: req.body.task,
-      timeType: req.body.timeType,
-      timeLimit: req.body.timeLimit,
-      category: req.body.category,
-      tags: req.body.tags
+      unit: req.body.unit,
+      value: req.body.value,
+      duration: req.body.duration
     };
 
     let badge_data = await badge_helper.insert_badge(badge_obj);

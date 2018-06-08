@@ -56,7 +56,6 @@ common_helper.changeObject = function(data, callback) {
   return data;
 };
 
-
 /*
  * get_nutritional_labels is used to fetch all health_label data
  * 
@@ -64,7 +63,7 @@ common_helper.changeObject = function(data, callback) {
  *          status 1 - If get_nutritional_labels data found, with get_nutritional_labels object
  *          status 2 - If get_nutritional_labels not found, with appropriate message
  */
-common_helper.get_nutritional_labels = async (type) => {
+common_helper.get_nutritional_labels = async type => {
   try {
     var nutritional_labels_data = await NutritionalLabels.find(type);
     if (nutritional_labels_data) {
@@ -85,7 +84,6 @@ common_helper.get_nutritional_labels = async (type) => {
   }
 };
 
-
 /*
  * get_nutritions is used to fetch all nutrition
  * 
@@ -95,14 +93,49 @@ common_helper.get_nutritional_labels = async (type) => {
  */
 common_helper.get_nutritions = async () => {
   try {
-      var nutrition = await Nutritions.find();
-      if (nutrition) {
-          return { "status": 1, "message": "Nutrition's details found", "nutritions": nutrition };
-      } else {
-          return { "status": 2, "message": "No nutrition available" };
-      }
+    var nutrition = await Nutritions.find();
+    if (nutrition) {
+      return {
+        status: 1,
+        message: "Nutrition's details found",
+        nutritions: nutrition
+      };
+    } else {
+      return { status: 2, message: "No nutrition available" };
+    }
   } catch (err) {
-      return { "status": 0, "message": "Error occured while finding nutrition", "error": err }
+    return {
+      status: 0,
+      message: "Error occured while finding nutrition",
+      error: err
+    };
   }
-}
+};
+
+/*
+ * unit_converter is used to convert units 
+ * 
+ * @return  converted unit
+ */
+common_helper.get_nutritions = async (data, unit) => {
+  switch (unit) {
+    case "cm":
+      break;
+    case "feet":
+      break;
+    case "kg":
+      break;
+    case "lb":
+      break;
+    case "in":
+      break;
+    case "minute":
+      break;
+    case "mile":
+      break;
+    case "g":
+      break;
+    case "mg":
+  }
+};
 module.exports = common_helper;
