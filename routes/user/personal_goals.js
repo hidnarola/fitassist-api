@@ -66,12 +66,17 @@ router.get("/:type/:start?/:limit?", async (req, res) => {
       isCompleted: type
     },
     { $skip: start },
-    { $limit: limit }
+    { $limit: limit },
+    {
+      $sort: {
+        createdAt: -1
+      }
+    }
   );
 
   if (resp_data.status == 0) {
     logger.error(
-      "Error occured while fetching get all user personal_goals = ",
+      "Error occured while fetching get all user personal goals = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
