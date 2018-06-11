@@ -50,21 +50,24 @@ router.get("/:goal_id", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} goals JSON of user_personal_goals's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/by_type/:type", async (req, res) => {
+router.get("/:type/:start?/:limit?", async (req, res) => {
   logger.trace("Get all user's personal_goal API called");
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var type = parseInt(req.params.type);
-  console.log("------------------------------------");
-  console.log("type : ", type);
-  console.log("------------------------------------");
+  var start = parseInt(req.params.start ? req.params.start : 0);
+  var limit = parseInt(req.params.limit ? req.params.limit : 10);
+  var type = parseInt(req.params.type ? req.params.type : 1);
 
-  var resp_data = await user_personal_goals_helper.get_personal_goals({
-    userId: authUserId,
-    isCompleted: type
-  });
+  var resp_data = await user_personal_goals_helper.get_personal_goals(
+    {
+      userId: authUserId,
+      isCompleted: type
+    },
+    { $skip: start },
+    { $limit: limit }
+  );
 
   if (resp_data.status == 0) {
     logger.error(

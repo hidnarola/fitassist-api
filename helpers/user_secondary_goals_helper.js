@@ -41,11 +41,7 @@ user_secondary_goals_helper.get_secondary_goals = async id => {
   try {
     var secondary_goals;
 
-    if (skip != null && limit != null) {
-      secondary_goals = await SecondaryGoal.aggregate([{ $match: id }]);
-    } else {
-      secondary_goals = await SecondaryGoal.findOne(id);
-    }
+    secondary_goals = await SecondaryGoal.aggregate([{ $match: id }]);
 
     if (secondary_goals) {
       return {

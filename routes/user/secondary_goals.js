@@ -28,7 +28,7 @@ router.get("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var resp_data = await user_secondary_goals_helper.get_secondary_goal({
+  var resp_data = await user_secondary_goals_helper.get_secondary_goals({
     userId: authUserId,
     isDeleted: 0
   });
