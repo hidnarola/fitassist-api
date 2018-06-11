@@ -40,7 +40,7 @@ router.get("/:goal_id", async (req, res) => {
   }
 });
 /**
- * @api {get} /user/personal_goal/:type Get all
+ * @api {get} /user/personal_goal/:type/:start/:limit Get all
  * @apiName Get all
  * @apiGroup User Personal Goal
  * @apiHeader {String}  authorization user's unique access-key
@@ -76,6 +76,11 @@ router.get("/:type/:start?/:limit?", async (req, res) => {
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
+    var total_count = await user_personal_goals_helper.count({
+      userId: authUserId,
+      isCompleted: type
+    });
+    resp_data.count = total_count.count;
     logger.trace("user personal goals got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }

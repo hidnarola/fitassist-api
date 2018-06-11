@@ -63,6 +63,32 @@ user_personal_goals_helper.get_personal_goal_by_id = async id => {
 };
 
 /*
+ * count is used to count all personal goal record user id ID
+ * @return  status 0 - If any internal error occured while couting personal goals data, with error
+ *          status 1 - If personal goal data found, with personal goals object
+ *          status 2 - If personal goal data not found, with appropriate message
+ */
+user_personal_goals_helper.count = async id => {
+  try {
+    count = await PersonalGoal.find(id).count();
+    if (count) {
+      return {
+        status: 1,
+        message: "user's personal goal found",
+        count: count
+      };
+    } else {
+      return { status: 2, message: "user's personal goal not available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user's personal goal ",
+      error: err
+    };
+  }
+};
+/*
  * insert_personal_goal is used to insert into personal_goals
  * @param   personal_goal_object JSON object consist of all property that need to insert in collection
  * @return  status  0 - If any error occur in inserting personal_goal, with error
