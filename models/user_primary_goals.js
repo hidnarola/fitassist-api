@@ -4,16 +4,12 @@ var mongoose = require("mongoose");
 //Define a schema
 var Schema = mongoose.Schema;
 
-var UserSecondaryGoalsSchema = new Schema(
+var UserPrimaryGoalsSchema = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },
     start: {
       type: Number,
       default: 0,
-      required: true
-    },
-    unit: {
-      type: String,
       required: true
     },
     goal: {
@@ -35,10 +31,10 @@ var UserSecondaryGoalsSchema = new Schema(
 );
 
 // Compile model from schema
-var UserSecondaryGoals = mongoose.model(
-  "user_secondary_goals",
-  UserSecondaryGoalsSchema,
-  "user_secondary_goals"
+var UserPrimaryGoals = mongoose.model(
+  "user_primary_goals",
+  UserPrimaryGoalsSchema,
+  "user_primary_goals"
 );
 
-module.exports = UserSecondaryGoals;
+module.exports = UserPrimaryGoals;

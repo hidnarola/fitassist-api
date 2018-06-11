@@ -7,23 +7,11 @@ var user_personal_goals_helper = {};
  *          status 1 - If personal goal data found, with personal goals object
  *          status 2 - If personal goal data not found, with appropriate message
  */
-user_personal_goals_helper.get_personal_goals = async (
-  id,
-  skip = null,
-  limit = null
-) => {
+user_personal_goals_helper.get_personal_goals = async id => {
   try {
     var personal_goals;
 
-    if (skip != null && limit != null) {
-      personal_goals = await PersonalGoal.aggregate([
-        { $match: id },
-        skip,
-        limit
-      ]);
-    } else {
-      personal_goals = await PersonalGoal.findOne(id);
-    }
+    personal_goals = await PersonalGoal.aggregate([{ $match: id }]);
 
     if (personal_goals) {
       return {

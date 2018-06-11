@@ -28,6 +28,7 @@ var UserSecondaryGoalsSchema = new Schema(
       ],
       required: true
     },
+    isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },

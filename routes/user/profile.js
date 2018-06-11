@@ -12,6 +12,7 @@ var base64Img = require("base64-img");
 
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
+var user_primary_goals_helper = require("../../helpers/user_primary_goals_helper");
 
 /**
  * @api {get} /user/profile Get User Profile by AuthID
@@ -158,10 +159,28 @@ router.put("/", async (req, res) => {
   user_obj.height = req.body.height;
   user_obj.weight = req.body.weight;
   user_obj.aboutMe = req.body.aboutMe;
-  user_obj.goals = req.body.goals;
   user_obj.workoutLocation = req.body.workoutLocation;
 
+  let find_goal_data = await user_primary_goals_helper.get_primary_goal_by_id({
+    goal: req.body.goal,
+    userId: authUserId
+  });
+
+  if (find_goal_data.status !== 1) {
+    let goal_object = {
+      userId: authUserId,
+      start: 0,
+      unit: 0,
+      goal: req.body.goal
+    };
+    let goal_data = await user_primary_goals_helper.insert_primary_goal(
+      goal_object
+    );
+    user_obj.goal = goal_data.goal._id;
+  }
+
   let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
+
   if (user_data.status === 0) {
     logger.error("Error while updating user data = ", user_data);
     return res.status(config.INTERNAL_SERVER_ERROR).json({ user_data });

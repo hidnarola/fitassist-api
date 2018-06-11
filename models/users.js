@@ -22,19 +22,11 @@ var UserSchema = new Schema(
     dateOfBirth: { type: Date, default: null },
     height: { type: Number, default: 0 },
     weight: { type: Number, default: 0 },
-    goals: [
-      {
-        type: String,
-        enum: [
-          "gain_muscle",
-          "gain_flexibility",
-          "lose_fat",
-          "gain_strength",
-          "gain_power",
-          "increase_endurance"
-        ]
-      }
-    ],
+    goal: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user_primary_goals",
+      required: false
+    },
     workoutLocation: {
       type: String,
       enum: ["gym", "home"],
@@ -49,7 +41,6 @@ var UserSchema = new Schema(
   },
   { versionKey: false }
 );
-
 
 // Compile model from schema
 var User = mongoose.model("users", UserSchema, "users");

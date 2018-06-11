@@ -1,167 +1,188 @@
-var PersonalGoal = require("./../models/user_personal_goals");
-var user_personal_goals_helper = {};
+var SecondaryGoal = require("./../models/user_secondary_goals");
+var user_secondary_goals_helper = {};
 
 /*
- * get_personal_goals is used to fetch personal_goals by user ID
- * @return  status 0 - If any internal error occured while fetching personal goals data, with error
- *          status 1 - If personal goal data found, with personal goals object
- *          status 2 - If personal goal data not found, with appropriate message
+ * get_secondary_goal is used to fetch secondary_goals by user ID
+ * @return  status 0 - If any internal error occured while fetching secondary goals data, with error
+ *          status 1 - If secondary goal data found, with secondary goals object
+ *          status 2 - If secondary goal data not found, with appropriate message
  */
-user_personal_goals_helper.get_personal_goals = async (
-  id,
-  skip = null,
-  limit = null
-) => {
+user_secondary_goals_helper.get_secondary_goal = async id => {
   try {
-    var personal_goals;
+    var secondary_goals;
+
+    secondary_goals = await SecondaryGoal.findOne(id);
+
+    if (secondary_goals) {
+      return {
+        status: 1,
+        message: "user's secondary goals found",
+        goal: secondary_goals
+      };
+    } else {
+      return { status: 2, message: "user's secondary goals not available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user's secondary goals ",
+      error: err
+    };
+  }
+};
+
+/*
+ * get_secondary_goals is used to fetch secondary_goals by user ID
+ * @return  status 0 - If any internal error occured while fetching secondary goals data, with error
+ *          status 1 - If secondary goal data found, with secondary goals object
+ *          status 2 - If secondary goal data not found, with appropriate message
+ */
+user_secondary_goals_helper.get_secondary_goals = async id => {
+  try {
+    var secondary_goals;
 
     if (skip != null && limit != null) {
-      personal_goals = await PersonalGoal.aggregate([
-        { $match: id },
-        skip,
-        limit
-      ]);
+      secondary_goals = await SecondaryGoal.aggregate([{ $match: id }]);
     } else {
-      personal_goals = await PersonalGoal.findOne(id);
+      secondary_goals = await SecondaryGoal.findOne(id);
     }
 
-    if (personal_goals) {
+    if (secondary_goals) {
       return {
         status: 1,
-        message: "user's personal goals found",
-        goals: personal_goals
+        message: "user's secondary goals found",
+        goals: secondary_goals
       };
     } else {
-      return { status: 2, message: "user's personal goals not available" };
+      return { status: 2, message: "user's secondary goals not available" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding user's personal goals ",
+      message: "Error occured while finding user's secondary goals ",
       error: err
     };
   }
 };
 
 /*
- * get_personal_goal_by_id is used to fetch personal_goals by goal ID
- * @return  status 0 - If any internal error occured while fetching personal goals data, with error
- *          status 1 - If personal goal data found, with personal goals object
- *          status 2 - If personal goal data not found, with appropriate message
+ * get_secondary_goal_by_id is used to fetch secondary_goals by goal ID
+ * @return  status 0 - If any internal error occured while fetching secondary goals data, with error
+ *          status 1 - If secondary goal data found, with secondary goals object
+ *          status 2 - If secondary goal data not found, with appropriate message
  */
-user_personal_goals_helper.get_personal_goal_by_id = async id => {
+user_secondary_goals_helper.get_secondary_goal_by_id = async id => {
   try {
-    personal_goal = await PersonalGoal.findOne(id);
-    if (personal_goal) {
+    secondary_goal = await SecondaryGoal.findOne(id);
+    if (secondary_goal) {
       return {
         status: 1,
-        message: "user's personal goal found",
-        goal: personal_goal
+        message: "user's secondary goal found",
+        goal: secondary_goal
       };
     } else {
-      return { status: 2, message: "user's personal goal not available" };
+      return { status: 2, message: "user's secondary goal not available" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding user's personal goal ",
+      message: "Error occured while finding user's secondary goal ",
       error: err
     };
   }
 };
 
 /*
- * insert_personal_goal is used to insert into personal_goals
- * @param   personal_goal_object JSON object consist of all property that need to insert in collection
- * @return  status  0 - If any error occur in inserting personal_goal, with error
- *          status  1 - If personal_goal inserted, with inserted personal_goals document and appropriate message
+ * insert_secondary_goal is used to insert into secondary_goals
+ * @param   secondary_goal_object JSON object consist of all property that need to insert in collection
+ * @return  status  0 - If any error occur in inserting secondary_goal, with error
+ *          status  1 - If secondary_goal inserted, with inserted secondary_goals document and appropriate message
  * @developed by "amc"
  */
-user_personal_goals_helper.insert_personal_goal = async personal_goal_object => {
-  let personal_goal = new PersonalGoal(personal_goal_object);
+user_secondary_goals_helper.insert_secondary_goal = async secondary_goal_object => {
+  let secondary_goal = new SecondaryGoal(secondary_goal_object);
   try {
-    let personal_goal_data = await personal_goal.save();
+    let secondary_goal_data = await secondary_goal.save();
     return {
       status: 1,
-      message: "User's personal goal inserted",
-      goal: personal_goal_data
+      message: "User's secondary goal inserted",
+      goal: secondary_goal_data
     };
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while inserting user's personal goal",
+      message: "Error occured while inserting user's secondary goal",
       error: err
     };
   }
 };
 
 /*
- * update_personal_goal is used to update personal_goal data based on personal_goal ID
- * @param   personal_goal_id         String  _id of personal_goal that need to be update
- * @param   personal_goal_obj     JSON    object consist of all property that need to update
- * @return  status  0 - If any error occur in updating personal_goal, with error
- *          status  1 - If personal_goal updated successfully, with appropriate message
- *          status  2 - If personal_goal not updated, with appropriate message
+ * update_secondary_goal is used to update secondary_goal data based on secondary_goal ID
+ * @param   secondary_goal_id         String  _id of secondary_goal that need to be update
+ * @param   secondary_goal_obj     JSON    object consist of all property that need to update
+ * @return  status  0 - If any error occur in updating secondary_goal, with error
+ *          status  1 - If secondary_goal updated successfully, with appropriate message
+ *          status  2 - If secondary_goal not updated, with appropriate message
  * @developed by "amc"
  */
-user_personal_goals_helper.update_personal_goal_by_id = async (
-  personal_goal_id,
-  personal_goal_obj
+user_secondary_goals_helper.update_secondary_goal_by_id = async (
+  secondary_goal_id,
+  secondary_goal_obj
 ) => {
   try {
-    let personal_goal = await PersonalGoal.findOneAndUpdate(
-      personal_goal_id,
-      personal_goal_obj,
+    let secondary_goal = await SecondaryGoal.findOneAndUpdate(
+      secondary_goal_id,
+      secondary_goal_obj,
       { new: true }
     );
-    if (!personal_goal) {
-      return { status: 2, message: "personal goal has not updated" };
+    if (!secondary_goal) {
+      return { status: 2, message: "secondary goal has not updated" };
     } else {
       return {
         status: 1,
-        message: "personal goal has been updated",
-        goal: personal_goal
+        message: "secondary goal has been updated",
+        goal: secondary_goal
       };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while updating user's personal goal",
+      message: "Error occured while updating user's secondary goal",
       error: err
     };
   }
 };
 
 /*
- * delete_personal_goal is used to delete personal_goal data based on personal_goal ID
- * @param   personal_goal_id String  _id of personal_goal that need to be delete
- * @param   personal_goal_obj JSON object consist of all property that need to delete 
- * @return  status  0 - If any error occur in updating personal goal, with error
- *          status  1 - If personal goal deleted successfully, with appropriate message
- *          status  2 - If personal goal not deleted, with appropriate message
+ * delete_secondary_goal is used to delete secondary_goal data based on secondary_goal ID
+ * @param   secondary_goal_id String  _id of secondary_goal that need to be delete
+ * @param   secondary_goal_obj JSON object consist of all property that need to delete 
+ * @return  status  0 - If any error occur in updating secondary goal, with error
+ *          status  1 - If secondary goal deleted successfully, with appropriate message
+ *          status  2 - If secondary goal not deleted, with appropriate message
  * @developed by "amc"
  */
-user_personal_goals_helper.delete_personal_goal = async (
-  personal_goal_id,
-  personal_goal_obj
-) => {
+user_secondary_goals_helper.delete_secondary_goal = async secondary_goal_id => {
   try {
-    let personal_goal = await PersonalGoal.remove(personal_goal_id);
-    if (!personal_goal) {
-      return { status: 2, message: "personal goal has not deleted" };
+    let secondary_goal = await SecondaryGoal.updateOne(secondary_goal_id, {
+      isDeleted: 1
+    });
+    if (!secondary_goal) {
+      return { status: 2, message: "secondary goal has not deleted" };
     } else {
       return {
         status: 1,
-        message: "personal goal has been deleted"
+        message: "secondary goal has been deleted"
       };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while updating user's personal goal",
+      message: "Error occured while updating user's secondary goal",
       error: err
     };
   }
 };
 
-module.exports = user_personal_goals_helper;
+module.exports = user_secondary_goals_helper;
