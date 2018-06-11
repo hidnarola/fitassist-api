@@ -17,7 +17,7 @@ var user_personal_goals_helper = require("../../helpers/user_personal_goals_help
  * @apiName Get by Goal ID
  * @apiGroup User Personal Goal
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} goal personal_goals's document
+ * @apiSuccess (Success 200) {JSON} goal user_personal_goals's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:goal_id", async (req, res) => {
@@ -47,7 +47,7 @@ router.get("/:goal_id", async (req, res) => {
  * @apiParam {Number}  type type of completed goal 1 for completed and 0 for uncompleted
  * @apiParam {Number}  start start of records
  * @apiParam {Number}  offset offset of records
- * @apiSuccess (Success 200) {JSON} goals JSON of personal_goals 's document
+ * @apiSuccess (Success 200) {JSON} goals JSON of user_personal_goals's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:type?/:start?/:offset?", async (req, res) => {
@@ -91,11 +91,10 @@ router.get("/:type?/:start?/:offset?", async (req, res) => {
  * @apiGroup User Personal Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {Number} start start of goal
  * @apiParam {Number} target target of goal
  * @apiParam {String} task task of goal
  * @apiParam {Number} unit unit of goal
- * @apiSuccess (Success 200) {JSON} goal message for successful personal_goal added
+ * @apiSuccess (Success 200) {JSON} goal message for successful user_personal_goals added
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
@@ -103,7 +102,6 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var schema = {
-    start: { notEmpty: true, errorMessage: "start is required" },
     target: { notEmpty: true, errorMessage: "target is required" },
     unit: { notEmpty: true, errorMessage: "unit is required" },
     task: {
@@ -176,7 +174,7 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var personal_goal_obj = {
       userId: authUserId,
-      start: req.body.start,
+      start: 0,
       target: req.body.target,
       unit: req.body.unit,
       task: req.body.task
@@ -206,7 +204,7 @@ router.post("/", async (req, res) => {
  * @apiGroup User Personal Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} goal personal_goals details
+ * @apiSuccess (Success 200) {JSON} goal user_personal_goals details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:goal_id", async (req, res) => {

@@ -871,49 +871,49 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "descriptionCompleted",
-            "description": "<p>descriptionCompleted of badge</p>"
+            "description": "<p>description of Completed badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "descriptionInCompleted",
-            "description": "<p>descriptionInCompleted of badge</p>"
+            "description": "<p>description of InCompleted badge</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "unit",
+            "description": "<p>unit of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "Number",
             "optional": false,
-            "field": "points",
-            "description": "<p>points of badge</p>"
+            "field": "value",
+            "description": "<p>value of badge</p>"
           },
           {
             "group": "Parameter",
-            "type": "Collection[]",
+            "type": "String",
             "optional": false,
             "field": "task",
-            "description": "<p>task of badge <code>{taskID:&quot;&quot;,value:&quot;&quot;,unit:&quot;&quot;}</code></p>"
+            "description": "<p>task of badge</p>"
           },
           {
             "group": "Parameter",
-            "type": "Enum",
+            "type": "Object",
             "optional": false,
-            "field": "timeType",
-            "description": "<p>timeType of badge | <code>Possible Values[&quot;standard&quot;,&quot;time_window&quot;,&quot;timed&quot;]</code></p>"
+            "field": "duration",
+            "description": "<p>duration of badge</p>"
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "Number",
             "optional": false,
-            "field": "timeLimit",
-            "description": "<p>timeLimit of badge <code>startDate:&quot;&quot;,endDate:&quot;&quot;,toDate:&quot;&quot;</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "category",
-            "description": "<p>categories of badge</p>"
+            "field": "point",
+            "description": "<p>point of badge</p>"
           }
         ]
       }
@@ -7410,7 +7410,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/chat.js",
+    "filename": "routes/user/user_settings.js",
     "groupTitle": "User_Chat"
   },
   {
@@ -7459,7 +7459,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
+    "filename": "routes/user/chat.js",
     "groupTitle": "User_Chat"
   },
   {
@@ -9188,6 +9188,103 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "task",
+            "description": "<p>task of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "unit",
+            "description": "<p>unit of goal</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goal",
+            "description": "<p>message for successful user_personal_goals added</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/personal_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "post",
+    "url": "/user/personal_goal",
+    "title": "Add",
+    "name": "Add",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "target",
+            "description": "<p>target of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "task",
+            "description": "<p>task of goal</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "Number",
             "optional": false,
             "field": "unit",
@@ -9205,6 +9302,55 @@ define({ "api": [
             "optional": false,
             "field": "personal_goal",
             "description": "<p>message for successful personal_goal added</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/secondary_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "delete",
+    "url": "/user/personal_goal/:goal_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
           }
         ]
       }
@@ -9272,7 +9418,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/personal_goals.js",
+    "filename": "routes/user/secondary_goals.js",
     "groupTitle": "User_Personal_Goal"
   },
   {
@@ -9348,6 +9494,131 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
+    "filename": "routes/user/secondary_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "get",
+    "url": "/user/personal_goal/:type/:start?/:offset?",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "type",
+            "description": "<p>type of completed goal 1 for completed and 0 for uncompleted</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start of records</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset of records</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goals",
+            "description": "<p>JSON of user_personal_goals's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/personal_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "get",
+    "url": "/user/personal_goal/:goal_id",
+    "title": "Get by Goal ID",
+    "name": "Get_by_Goal_ID",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goal",
+            "description": "<p>user_personal_goals's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
     "filename": "routes/user/personal_goals.js",
     "groupTitle": "User_Personal_Goal"
   },
@@ -9397,14 +9668,14 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/personal_goals.js",
+    "filename": "routes/user/secondary_goals.js",
     "groupTitle": "User_Personal_Goal"
   },
   {
     "type": "put",
     "url": "/user/personal_goal/:goal_id",
-    "title": "Update",
-    "name": "Update",
+    "title": "Update(completed goal)",
+    "name": "Update_completed_goal_",
     "group": "User_Personal_Goal",
     "header": {
       "fields": {
@@ -9426,15 +9697,58 @@ define({ "api": [
         ]
       }
     },
-    "parameter": {
+    "success": {
       "fields": {
-        "Parameter": [
+        "Success 200": [
           {
-            "group": "Parameter",
-            "type": "File",
+            "group": "Success 200",
+            "type": "JSON",
             "optional": false,
-            "field": "image",
-            "description": "<p>User's  Image</p>"
+            "field": "goal",
+            "description": "<p>user_personal_goals details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/personal_goals.js",
+    "groupTitle": "User_Personal_Goal"
+  },
+  {
+    "type": "put",
+    "url": "/user/personal_goal/:goal_id",
+    "title": "Update(completed goal)",
+    "name": "Update_completed_goal_",
+    "group": "User_Personal_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
           }
         ]
       }
@@ -9466,7 +9780,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/personal_goals.js",
+    "filename": "routes/user/secondary_goals.js",
     "groupTitle": "User_Personal_Goal"
   },
   {
@@ -9669,6 +9983,326 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/comment.js",
     "groupTitle": "User_Post_Comment"
+  },
+  {
+    "type": "post",
+    "url": "/user/primary_goal",
+    "title": "Add",
+    "name": "Add",
+    "group": "User_Primary_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "target",
+            "description": "<p>target of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "task",
+            "description": "<p>task of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "unit",
+            "description": "<p>unit of goal</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goal",
+            "description": "<p>message for successful user_primary_goals added</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/primary_goals.js",
+    "groupTitle": "User_Primary_Goal"
+  },
+  {
+    "type": "delete",
+    "url": "/user/primary_goal/:goal_id",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Primary_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/primary_goals.js",
+    "groupTitle": "User_Primary_Goal"
+  },
+  {
+    "type": "get",
+    "url": "/user/primary_goal/:type/:start?/:offset?",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Primary_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "type",
+            "description": "<p>type of completed goal 1 for completed and 0 for uncompleted</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start of records</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset of records</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goals",
+            "description": "<p>JSON of user_primary_goals document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/primary_goals.js",
+    "groupTitle": "User_Primary_Goal"
+  },
+  {
+    "type": "get",
+    "url": "/user/primary_goal/:goal_id",
+    "title": "Get by Goal ID",
+    "name": "Get_by_Goal_ID",
+    "group": "User_Primary_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goal",
+            "description": "<p>user_primary_goals document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/primary_goals.js",
+    "groupTitle": "User_Primary_Goal"
+  },
+  {
+    "type": "put",
+    "url": "/user/primary_goal/:goal_id",
+    "title": "Update(completed goal)",
+    "name": "Update_completed_goal_",
+    "group": "User_Primary_Goal",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goal",
+            "description": "<p>user_primary_goals details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/primary_goals.js",
+    "groupTitle": "User_Primary_Goal"
   },
   {
     "type": "post",

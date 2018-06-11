@@ -17,12 +17,12 @@ var user_primary_goals_helper = require("../../helpers/user_primary_goals_helper
  * @apiName Get by Goal ID
  * @apiGroup User Primary Goal
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} goal personal_goals's document
+ * @apiSuccess (Success 200) {JSON} goal user_primary_goals document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:goal_id", async (req, res) => {
   logger.trace("Get user primary goal by ID API called : ", req.params.goal_id);
-  var resp_data = await user_primary_goals_helper.get_personal_goal_by_id({
+  var resp_data = await user_primary_goals_helper.get_primary_goal({
     _id: mongoose.Types.ObjectId(req.params.goal_id)
   });
   if (resp_data.status == 0) {
@@ -44,7 +44,7 @@ router.get("/:goal_id", async (req, res) => {
  * @apiParam {Number}  type type of completed goal 1 for completed and 0 for uncompleted
  * @apiParam {Number}  start start of records
  * @apiParam {Number}  offset offset of records
- * @apiSuccess (Success 200) {JSON} goals JSON of personal_goals 's document
+ * @apiSuccess (Success 200) {JSON} goals JSON of user_primary_goals document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:type?/:start?/:offset?", async (req, res) => {
@@ -57,7 +57,7 @@ router.get("/:type?/:start?/:offset?", async (req, res) => {
   var offset = parseInt(req.params.offset ? req.params.offset : 10);
   var type = parseInt(req.params.type);
 
-  var resp_data = await user_primary_goals_helper.get_personal_goals(
+  var resp_data = await user_primary_goals_helper.get_primary_goal(
     {
       userId: authUserId,
       isCompleted: type
@@ -72,7 +72,7 @@ router.get("/:type?/:start?/:offset?", async (req, res) => {
 
   if (resp_data.status == 0) {
     logger.error(
-      "Error occured while fetching get all user personal_goals = ",
+      "Error occured while fetching get all user primary_goal = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -92,7 +92,7 @@ router.get("/:type?/:start?/:offset?", async (req, res) => {
  * @apiParam {Number} target target of goal
  * @apiParam {String} task task of goal
  * @apiParam {Number} unit unit of goal
- * @apiSuccess (Success 200) {JSON} goal message for successful personal_goal added
+ * @apiSuccess (Success 200) {JSON} goal message for successful user_primary_goals added
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
@@ -203,7 +203,7 @@ router.post("/", async (req, res) => {
  * @apiGroup User Primary Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} goal personal_goals details
+ * @apiSuccess (Success 200) {JSON} goal user_primary_goals details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:goal_id", async (req, res) => {
