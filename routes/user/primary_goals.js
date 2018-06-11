@@ -10,39 +10,36 @@ var jwtDecode = require("jwt-decode");
 
 var logger = config.logger;
 
-var user_personal_goals_helper = require("../../helpers/user_personal_goals_helper");
+var user_primary_goals_helper = require("../../helpers/user_primary_goals_helper");
 
 /**
- * @api {get} /user/personal_goal/:goal_id Get by Goal ID
+ * @api {get} /user/primary_goal/:goal_id Get by Goal ID
  * @apiName Get by Goal ID
- * @apiGroup User Personal Goal
+ * @apiGroup User Primary Goal
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {JSON} goal personal_goals's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:goal_id", async (req, res) => {
-  logger.trace(
-    "Get user personal goal by ID API called : ",
-    req.params.goal_id
-  );
-  var resp_data = await user_personal_goals_helper.get_personal_goal_by_id({
+  logger.trace("Get user primary goal by ID API called : ", req.params.goal_id);
+  var resp_data = await user_primary_goals_helper.get_personal_goal_by_id({
     _id: mongoose.Types.ObjectId(req.params.goal_id)
   });
   if (resp_data.status == 0) {
     logger.error(
-      "Error occured while fetching user personal goal = ",
+      "Error occured while fetching user primary goal = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.trace("user personal goal got successfully = ", resp_data);
+    logger.trace("user primary goal got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
 /**
- * @api {get} /user/personal_goal/:type/:start?/:offset? Get all
+ * @api {get} /user/primary_goal/:type/:start?/:offset? Get all
  * @apiName Get all
- * @apiGroup User Personal Goal
+ * @apiGroup User Primary Goal
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {Number}  type type of completed goal 1 for completed and 0 for uncompleted
  * @apiParam {Number}  start start of records
@@ -60,7 +57,7 @@ router.get("/:type?/:start?/:offset?", async (req, res) => {
   var offset = parseInt(req.params.offset ? req.params.offset : 10);
   var type = parseInt(req.params.type);
 
-  var resp_data = await user_personal_goals_helper.get_personal_goals(
+  var resp_data = await user_primary_goals_helper.get_personal_goals(
     {
       userId: authUserId,
       isCompleted: type
@@ -86,9 +83,9 @@ router.get("/:type?/:start?/:offset?", async (req, res) => {
 });
 
 /**
- * @api {post} /user/personal_goal Add
+ * @api {post} /user/primary_goal Add
  * @apiName Add
- * @apiGroup User Personal Goal
+ * @apiGroup User Primary Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {Number} start start of goal
@@ -182,7 +179,7 @@ router.post("/", async (req, res) => {
       task: req.body.task
     };
 
-    let personal_goal_data = await user_personal_goals_helper.insert_personal_goal(
+    let personal_goal_data = await user_primary_goals_helper.insert_personal_goal(
       personal_goal_obj
     );
     if (personal_goal_data.status === 0) {
@@ -201,9 +198,9 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /user/personal_goal/:goal_id Update(completed goal)
+ * @api {put} /user/primary_goal/:goal_id Update(completed goal)
  * @apiName Update(completed goal)
- * @apiGroup User Personal Goal
+ * @apiGroup User Primary Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {JSON} goal personal_goals details
@@ -218,7 +215,7 @@ router.put("/:goal_id", async (req, res) => {
     modifiedAt: new Date()
   };
 
-  resp_data = await user_personal_goals_helper.update_personal_goal_by_id(
+  resp_data = await user_primary_goals_helper.update_personal_goal_by_id(
     { _id: req.params.goal_id },
     personal_goal_obj
   );
@@ -231,9 +228,9 @@ router.put("/:goal_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/personal_goal/:goal_id Delete
+ * @api {delete} /user/primary_goal/:goal_id Delete
  * @apiName Delete
- * @apiGroup User Personal Goal
+ * @apiGroup User Primary Goal
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -241,8 +238,8 @@ router.put("/:goal_id", async (req, res) => {
 router.delete("/:goal_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Delete user's personal goal API - Id = ", req.params.goal_id);
-  let user_post_data = await user_personal_goals_helper.delete_personal_goal({
+  logger.trace("Delete user's primary goal API - Id = ", req.params.goal_id);
+  let user_post_data = await user_primary_goals_helper.delete_personal_goal({
     userId: authUserId,
     _id: req.params.goal_id
   });

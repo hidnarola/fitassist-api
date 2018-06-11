@@ -111,31 +111,64 @@ common_helper.get_nutritions = async () => {
     };
   }
 };
-
 /*
- * unit_converter is used to convert units 
+ * unit_converter is used to convert  all unit
  * 
- * @return  converted unit
+ * @return  status 0 - If any internal error occured while converting unit data, with error
+ *          status 1 - If unit data found, with unit object
+ *          status 2 - If unit not found, with appropriate message
  */
-common_helper.get_nutritions = async (data, unit) => {
+common_helper.unit_converter = async (data, unit) => {
+  var calculatedData;
+
   switch (unit) {
     case "cm":
+      return { baseValue: data, baseUnit: "cm" };
       break;
     case "feet":
+      calculatedData = data * 30.48;
+      return { baseValue: calculatedData, baseUnit: "cm" };
       break;
     case "kg":
+      calculatedData = data * 1000;
+      return { baseValue: calculatedData, baseUnit: "g" };
       break;
     case "lb":
+      calculatedData = data / 0.0022046;
+      return { baseValue: calculatedData, baseUnit: "g" };
       break;
     case "in":
+      calculatedData = data * 2.54;
+      return { baseValue: calculatedData, baseUnit: "cm" };
+      break;
+    case "hour":
+      calculatedData = data * 60;
+      return { baseValue: calculatedData, baseUnit: "minute" };
       break;
     case "minute":
+      return { baseValue: data, baseUnit: "minute" };
+      break;
+    case "km":
+      calculatedData = data * 1000;
+      return { baseValue: calculatedData, baseUnit: "meter" };
+      break;
+    case "meter":
+      return { baseValue: data, baseUnit: "meter" };
       break;
     case "mile":
+      calculatedData = data * 1609.344;
+      return { baseValue: calculatedData, baseUnit: "meter" };
       break;
     case "g":
+      return { baseValue: data, baseUnit: "g" };
       break;
     case "mg":
+      calculatedData = data / 1000;
+      return { baseValue: calculatedData, baseUnit: "g" };
+      break;
+    default:
+      return { baseValue: data, baseUnit: unit };
+      break;
   }
 };
 module.exports = common_helper;

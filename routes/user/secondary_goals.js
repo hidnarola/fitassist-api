@@ -21,21 +21,15 @@ var user_personal_goals_helper = require("../../helpers/user_personal_goals_help
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:goal_id", async (req, res) => {
-  logger.trace(
-    "Get user personal goal by ID API called : ",
-    req.params.goal_id
-  );
+  logger.trace("Get user post photo by ID API called : ", req.params.goal_id);
   var resp_data = await user_personal_goals_helper.get_personal_goal_by_id({
     _id: mongoose.Types.ObjectId(req.params.goal_id)
   });
   if (resp_data.status == 0) {
-    logger.error(
-      "Error occured while fetching user personal goal = ",
-      resp_data
-    );
+    logger.error("Error occured while fetching user post photo = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.trace("user personal goal got successfully = ", resp_data);
+    logger.trace("user post photo got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
@@ -47,7 +41,7 @@ router.get("/:goal_id", async (req, res) => {
  * @apiParam {Number}  type type of completed goal 1 for completed and 0 for uncompleted
  * @apiParam {Number}  start start of records
  * @apiParam {Number}  offset offset of records
- * @apiSuccess (Success 200) {JSON} goals JSON of personal_goals 's document
+ * @apiSuccess (Success 200) {JSON} personal_goals JSON of personal_goals 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:type?/:start?/:offset?", async (req, res) => {
@@ -95,7 +89,7 @@ router.get("/:type?/:start?/:offset?", async (req, res) => {
  * @apiParam {Number} target target of goal
  * @apiParam {String} task task of goal
  * @apiParam {Number} unit unit of goal
- * @apiSuccess (Success 200) {JSON} goal message for successful personal_goal added
+ * @apiSuccess (Success 200) {JSON} personal_goal message for successful personal_goal added
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
@@ -206,7 +200,7 @@ router.post("/", async (req, res) => {
  * @apiGroup User Personal Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} goal personal_goals details
+ * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:goal_id", async (req, res) => {
@@ -241,7 +235,7 @@ router.put("/:goal_id", async (req, res) => {
 router.delete("/:goal_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Delete user's personal goal API - Id = ", req.params.goal_id);
+  logger.trace("Delete user's post photo API - Id = ", req.params.goal_id);
   let user_post_data = await user_personal_goals_helper.delete_personal_goal({
     userId: authUserId,
     _id: req.params.goal_id

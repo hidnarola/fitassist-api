@@ -31,10 +31,11 @@ var BadgesSchema = new Schema(
         "percentage",
         "in",
         "number",
+        "hour",
         "minute",
         "meter",
+        "km",
         "mile",
-        "bpm",
         "g",
         "mg"
       ],

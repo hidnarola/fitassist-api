@@ -2,12 +2,9 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 var async = require("async");
-
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
-
 var badge_helper = require("../../helpers/badge_helper");
 var common_helper = require("../../helpers/common_helper");
 
@@ -110,10 +107,10 @@ router.get("/:badge_id", async (req, res) => {
  * @apiParam {String} descriptionCompleted description of Completed badge
  * @apiParam {String} descriptionInCompleted description of InCompleted badge
  * @apiParam {String} unit unit of badge
- * @apiParam {String} value value of badge
+ * @apiParam {Number} value value of badge
  * @apiParam {String} task task of badge
- * @apiParam {String} duration duration of badge
- * @apiParam {String} point point of badge
+ * @apiParam {Object} duration duration of badge
+ * @apiParam {Number} point point of badge
  * @apiSuccess (Success 200) {JSON} badge added badge detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -132,23 +129,26 @@ router.post("/", async (req, res) => {
       notEmpty: false,
       isIn: {
         options: [
-          "n/a",
-          "cm",
-          "feet",
-          "kg",
-          "lb",
-          "percentage",
-          "in",
-          "number",
-          "minute",
-          "meter",
-          "mile",
-          "bpm",
-          "g",
-          "mg"
+          [
+            "n/a",
+            "cm",
+            "feet",
+            "kg",
+            "lb",
+            "percentage",
+            "in",
+            "number",
+            "hour",
+            "minute",
+            "meter",
+            "km",
+            "mile",
+            "g",
+            "mg"
+          ]
         ],
         errorMessage:
-          "unit must be from n/a, cm, feet, kg, lb, percentage, in, number, minute, meter, mile, bpm, g or mg"
+          "unit must be from n/a, cm, feet, kg, lb, percentage, in, number,hour, minute,km, meter, mile, g or mg"
       },
       errorMessage: "unit is required"
     },
@@ -168,11 +168,23 @@ router.post("/", async (req, res) => {
     var badge_obj = {
       name: req.body.name,
       task: req.body.task,
+      descriptionCompleted: req.body.descriptionCompleted,
+      descriptionInCompleted: req.body.descriptionInCompleted,
       unit: req.body.unit,
       value: req.body.value,
       duration: req.body.duration
     };
 
+    let base_value_and_unit = await common_helper.unit_converter(
+      req.body.value,
+      req.body.unit
+    );
+
+    badge_obj.baseValue = base_value_and_unit.baseValue;
+    badge_obj.baseUnit = base_value_and_unit.baseUnit;
+
+    // console.log("badge_obj", badge_obj);
+    // return res.send(badge_obj);
     let badge_data = await badge_helper.insert_badge(badge_obj);
     if (badge_data.status === 0) {
       logger.error("Error while inserting badge data = ", badge_data);
@@ -193,71 +205,43 @@ router.post("/", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name Name of badge
- * @apiParam {String} descriptionCompleted descriptionCompleted of badge
- * @apiParam {String} descriptionInCompleted descriptionInCompleted of badge
- * @apiParam {Number} points points of badge
- * @apiParam {Collection[]} task task of badge <code>{taskID:"",value:"",unit:""}</code>
- * @apiParam {Enum} timeType timeType of badge | <code>Possible Values["standard","time_window","timed"]</code>
- * @apiParam {String} timeLimit timeLimit of badge <code>startDate:"",endDate:"",toDate:""</code>
- * @apiParam {String} category categories of badge
+ * @apiParam {String} descriptionCompleted description of Completed badge
+ * @apiParam {String} descriptionInCompleted description of InCompleted badge
+ * @apiParam {String} unit unit of badge
+ * @apiParam {Number} value value of badge
+ * @apiParam {String} task task of badge
+ * @apiParam {Object} duration duration of badge
+ * @apiParam {Number} point point of badge
  * @apiSuccess (Success 200) {JSON} badge added badge detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:badge_id", async (req, res) => {
   badge_id = req.params.badge_id;
-  var schema = {
-    name: {
-      notEmpty: true,
-      errorMessage: "Name of Task is required"
-    },
-    points: {
-      notEmpty: true,
-      errorMessage: "points of Task is required"
-    },
-    task: {
-      notEmpty: true,
-      errorMessage: "task is required"
-    },
-    timeLimit: {
-      notEmpty: true,
-      errorMessage: "timeLimit of Task is required"
-    }
+
+  var badge_obj = {
+    name: req.body.name,
+    task: req.body.task,
+    descriptionCompleted: req.body.descriptionCompleted,
+    descriptionInCompleted: req.body.descriptionInCompleted,
+    unit: req.body.unit,
+    value: req.body.value,
+    duration: req.body.duration
   };
-  req.checkBody(schema);
-  var errors = req.validationErrors();
 
-  if (!errors) {
-    var badge_obj = {
-      name: req.body.name,
-      points: req.body.points,
-      task: req.body.task,
-      timeLimit: req.body.timeLimit,
-      category: req.body.category
-    };
+  let base_value_and_unit = await common_helper.unit_converter(
+    req.body.value,
+    req.body.unit
+  );
 
-    if (req.body.timeType) {
-      badge_obj.timeType = req.body.timeType;
-    }
-    if (req.body.tags) {
-      badge_obj.tags = req.body.tags;
-    }
-    if (req.body.descriptionCompleted) {
-      badge_obj.descriptionCompleted = req.body.descriptionCompleted;
-    }
-    if (req.body.descriptionInCompleted) {
-      badge_obj.descriptionInCompleted = req.body.descriptionInCompleted;
-    }
+  badge_obj.baseValue = base_value_and_unit.baseValue;
+  badge_obj.baseUnit = base_value_and_unit.baseUnit;
 
-    let badge_data = await badge_helper.update_badge_by_id(badge_id, badge_obj);
-    if (badge_data.status === 0) {
-      logger.error("Error while updating badge data = ", badge_data);
-      return res.status(config.BAD_REQUEST).json({ badge_data });
-    } else {
-      return res.status(config.OK_STATUS).json(badge_data);
-    }
+  let badge_data = await badge_helper.update_badge_by_id(badge_id, badge_obj);
+  if (badge_data.status === 0) {
+    logger.error("Error while updating badge data = ", badge_data);
+    return res.status(config.BAD_REQUEST).json({ badge_data });
   } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    return res.status(config.OK_STATUS).json(badge_data);
   }
 });
 

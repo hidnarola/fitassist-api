@@ -25,6 +25,8 @@ var search = require("./user/search");
 var chat = require("./user/chat");
 var setting = require("./user/user_settings");
 var personal_goals = require("./user/personal_goals");
+var secondary_goals = require("./user/secondary_goals");
+var primary_goals = require("./user/primary_goals");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -49,5 +51,7 @@ router.use("/search", auth, search);
 router.use("/chat", auth, chat);
 router.use("/setting", auth, setting);
 router.use("/personal_goal", auth, personal_goals);
+router.use("/primary_goal", auth, primary_goals);
+router.use("/secondary_goal", auth, secondary_goals);
 
 module.exports = router;

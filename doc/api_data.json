@@ -526,7 +526,7 @@
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "Number",
             "optional": false,
             "field": "value",
             "description": "<p>value of badge</p>"
@@ -540,14 +540,14 @@
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "Object",
             "optional": false,
             "field": "duration",
             "description": "<p>duration of badge</p>"
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "Number",
             "optional": false,
             "field": "point",
             "description": "<p>point of badge</p>"

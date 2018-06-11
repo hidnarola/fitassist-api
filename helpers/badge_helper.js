@@ -14,7 +14,7 @@ badge_helper.get_badges = async () => {
     if (badge) {
       return {
         status: 1,
-        message: "badge found",
+        message: "badges found",
         badges: badge
       };
     } else {
@@ -67,11 +67,11 @@ badge_helper.insert_badge = async badge_obj => {
   console.log(badge_obj);
   let badge = new Badges(badge_obj);
   try {
-    let badge_task_data = await badge.save();
+    let badge_data = await badge.save();
     return {
       status: 1,
       message: "badge inserted",
-      badge: badge_task_data
+      badge: badge_data
     };
   } catch (err) {
     return {
@@ -94,14 +94,12 @@ badge_helper.insert_badge = async badge_obj => {
  * 
  * @developed by "amc"
  */
-badge_helper.update_badge_by_id = async (  badge_id,  badge_obj) => {
+badge_helper.update_badge_by_id = async (badge_id, badge_obj) => {
   console.log(badge_obj);
   try {
-    let badge = await Badges.findOneAndUpdate(
-      { _id: badge_id },
-      badge_obj,
-      { new: true }
-    );
+    let badge = await Badges.findOneAndUpdate({ _id: badge_id }, badge_obj, {
+      new: true
+    });
     if (!badge) {
       return { status: 2, message: "Record has not updated" };
     } else {
@@ -137,14 +135,14 @@ badge_helper.delete_badge_by_id = async badge_id => {
       { isDeleted: 1 }
     );
     if (!resp) {
-      return { status: 2, message: "badge task not found" };
+      return { status: 2, message: "badge not found" };
     } else {
-      return { status: 1, message: "badge task deleted" };
+      return { status: 1, message: "badge deleted" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while deleting badge task",
+      message: "Error occured while deleting badge",
       error: err
     };
   }
