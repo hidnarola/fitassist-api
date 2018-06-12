@@ -6,7 +6,7 @@ module.exports = {
   },
 
   BADGES_TYPE: {
-    PROFILE: ["profile_update", "workouts_total", "friends", "post"],
+    PROFILE: ["profile_update"],
     BODY_MASS: ["weight_gain", "weight_loss"],
     BODY_FAT: [
       "body_fat_gain",

@@ -9,7 +9,7 @@ var request = require("request-promise");
 var config = require("../../config");
 var logger = config.logger;
 var base64Img = require("base64-img");
-var constants = require("constants");
+var constant = require("../../constant");
 
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
@@ -186,48 +186,35 @@ router.put("/", async (req, res) => {
     var data = user_data.user;
     var percentage = 0;
     for (const key of Object.keys(data)) {
-      switch (data[key]) {
-        case "gender":
+      if (data[key] != null) {
+        if (key == "gender") {
           percentage += 10;
-          break;
-        case "dateOfBirth":
+        } else if (key == "dateOfBirth") {
           percentage += 10;
-          break;
-        case "height":
+        } else if (key == "height") {
           percentage += 10;
-          break;
-        case "weight":
+        } else if (key == "weight") {
           percentage += 10;
-          break;
-        case "avatar":
-          percentage += 20;
-          break;
-        case "aboutMe":
+        } else if (key == "avatar") {
+          percentage += 15;
+        } else if (key == "aboutMe") {
           percentage += 10;
-          break;
-        case "lastName":
+        } else if (key == "lastName") {
           percentage += 10;
-          break;
-        case "mobileNumber":
+        } else if (key == "mobileNumber") {
+          percentage += 15;
+        } else if (key == "goal") {
           percentage += 10;
-          break;
-        case "goal":
-          percentage += 10;
-          break;
-        default:
-          break;
+        }
       }
     }
-    console.log("------------------------------------");
-    console.log("percentage : ", percentage);
-    console.log("------------------------------------");
 
-    // var badgeAssign = badge_assign_helper.badge_assign(
-    //   authUserId,
-    //   constants.BADGES_TYPE.PROFILE,
-    //   "timePeriod",
-    //   "value"
-    // );
+    var badgeAssign = await badge_assign_helper.badge_assign(
+      authUserId,
+      constant.BADGES_TYPE.PROFILE,
+      percentage,
+      user_data
+    );
 
     return res.status(config.OK_STATUS).json(user_data);
   }
