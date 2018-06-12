@@ -5851,7 +5851,7 @@
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5990,7 +5990,7 @@
     "groupTitle": "Recipes"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -7314,89 +7314,6 @@
     "version": "0.0.0",
     "filename": "routes/user/profile.js",
     "groupTitle": "User"
-  },
-  {
-    "type": "post",
-    "url": "/user/badge",
-    "title": "Add",
-    "name": "Add",
-    "group": "User_Badges",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "target",
-            "description": "<p>target of goal</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "task",
-            "description": "<p>task of goal</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "unit",
-            "description": "<p>unit of goal</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "goal",
-            "description": "<p>message for successful badges_assign added</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/badges.js",
-    "groupTitle": "User_Badges"
   },
   {
     "type": "get",
@@ -10450,7 +10367,7 @@
             "type": "String",
             "optional": false,
             "field": "task",
-            "description": "<p>task of goal | Possible values<code> &quot;gain_muscle&quot;, &quot;gain_flexibility&quot;, &quot;lose_fat&quot;, &quot;gain_strength&quot;, &quot;gain_power&quot;, &quot;increase_endurance&quot; </code></p>"
+            "description": "<p>task of goal | Possible values<code> gain_muscle, gain_flexibility, lose_fat, gain_strength, gain_power, increase_endurance </code></p>"
           }
         ]
       }
@@ -10549,33 +10466,6 @@
             "optional": false,
             "field": "authorization",
             "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "type",
-            "description": "<p>type of completed goal 1 for completed and 0 for uncompleted</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "start",
-            "description": "<p>start of records</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "offset",
-            "description": "<p>offset of records</p>"
           }
         ]
       }

@@ -16,9 +16,6 @@ var user_secondary_goals_helper = require("../../helpers/user_secondary_goals_he
  * @apiName Get all
  * @apiGroup User Secondary Goal
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {Number}  type type of completed goal 1 for completed and 0 for uncompleted
- * @apiParam {Number}  start start of records
- * @apiParam {Number}  offset offset of records
  * @apiSuccess (Success 200) {JSON} goals JSON of user_secondary_goals 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -81,12 +78,12 @@ router.get("/:goal_id", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {String} task task of goal | Possible values<code>
-            "gain_muscle",
-            "gain_flexibility",
-            "lose_fat",
-            "gain_strength",
-            "gain_power",
-            "increase_endurance"
+            gain_muscle,
+            gain_flexibility,
+            lose_fat,
+            gain_strength,
+            gain_power,
+            increase_endurance
           </code>
  * @apiSuccess (Success 200) {JSON} goal message for successful user_secondary_goals added
  * @apiError (Error 4xx) {String} message Validation or error message.

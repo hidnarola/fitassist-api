@@ -11,7 +11,8 @@ var badges_assign_helper = {};
 badges_assign_helper.get_all_badges = async (
   condition = {},
   skip = {},
-  limit = {}
+  limit = {},
+  sort = {}
 ) => {
   try {
     var badges = await BadgesAssign.aggregate([
@@ -19,7 +20,8 @@ badges_assign_helper.get_all_badges = async (
         $match: condition
       },
       skip,
-      limit
+      limit,
+      sort
     ]);
     if (badges) {
       return {
@@ -40,12 +42,12 @@ badges_assign_helper.get_all_badges = async (
 };
 
 /*
- * get_badge is used to fetch badge by ID
+ * find_badge is used to fetch badge by ID
  * @return  status 0 - If any internal error occured while fetching badge data, with error
  *          status 1 - If badge data found, with badge object
  *          status 2 - If badge data not found, with appropriate message
  */
-badges_assign_helper.get_badge = async id => {
+badges_assign_helper.find_badge = async id => {
   try {
     var badge = await BadgesAssign.findOne(id);
     if (badge) {
