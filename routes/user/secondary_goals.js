@@ -145,7 +145,7 @@ router.post("/", async (req, res) => {
     } else {
       return res
         .status(config.OK_STATUS)
-        .json({ status: 0, message: "goal is already defined" });
+        .json({ status: 2, message: "goal is already exists" });
     }
   } else {
     logger.error("Validation Error = ", errors);

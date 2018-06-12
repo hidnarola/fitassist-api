@@ -85,7 +85,12 @@ router.get("/:type/:start?/:limit?", async (req, res) => {
       userId: authUserId,
       isCompleted: type
     });
-    resp_data.count = total_count.count;
+
+    if (total_count.status == 1) {
+      resp_data.count = total_count.count;
+    } else {
+      resp_data.count = 0;
+    }
     logger.trace("user personal goals got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
