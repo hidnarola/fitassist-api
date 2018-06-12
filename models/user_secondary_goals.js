@@ -12,10 +12,6 @@ var UserSecondaryGoalsSchema = new Schema(
       default: 0,
       required: true
     },
-    unit: {
-      type: String,
-      required: true
-    },
     goal: {
       type: String,
       enum: [

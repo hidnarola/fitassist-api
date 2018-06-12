@@ -1,10 +1,5 @@
 var express = require("express");
 var router = express.Router();
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
-var mongoose = require("mongoose");
-
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
 
