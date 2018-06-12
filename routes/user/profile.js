@@ -9,10 +9,12 @@ var request = require("request-promise");
 var config = require("../../config");
 var logger = config.logger;
 var base64Img = require("base64-img");
+var constants = require("constants");
 
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
 var user_primary_goals_helper = require("../../helpers/user_primary_goals_helper");
+var badge_assign_helper = require("../../helpers/badge_assign_helper");
 
 /**
  * @api {get} /user/profile Get User Profile by AuthID
@@ -62,17 +64,11 @@ router.get("/:username", async (req, res) => {
     });
   }
 
-  console.log("usedata", userdata);
-
   var userAuthId = userdata.friends.authUserId;
   if (userAuthId && typeof userAuthId !== "undefined") {
     if (userAuthId === authUserId) {
       friendshipStatus = "self";
     } else {
-      // friend_data = await friend_helper.checkFriend({
-      //   friendId: userAuthId,
-      //   userId: authUserId
-      // });
       friend_data = await friend_helper.checkFriend({
         $or: [
           { $and: [{ userId: authUserId }, { friendId: userAuthId }] },
@@ -176,7 +172,9 @@ router.put("/", async (req, res) => {
     let goal_data = await user_primary_goals_helper.insert_primary_goal(
       goal_object
     );
-    user_obj.goal = goal_data.goal._id;
+    if (goal_data.status == 1) {
+      user_obj.goal = goal_data.goal._id;
+    }
   }
 
   let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
@@ -185,6 +183,52 @@ router.put("/", async (req, res) => {
     logger.error("Error while updating user data = ", user_data);
     return res.status(config.INTERNAL_SERVER_ERROR).json({ user_data });
   } else {
+    var data = user_data.user;
+    var percentage = 0;
+    for (const key of Object.keys(data)) {
+      switch (data[key]) {
+        case "gender":
+          percentage += 10;
+          break;
+        case "dateOfBirth":
+          percentage += 10;
+          break;
+        case "height":
+          percentage += 10;
+          break;
+        case "weight":
+          percentage += 10;
+          break;
+        case "avatar":
+          percentage += 20;
+          break;
+        case "aboutMe":
+          percentage += 10;
+          break;
+        case "lastName":
+          percentage += 10;
+          break;
+        case "mobileNumber":
+          percentage += 10;
+          break;
+        case "goal":
+          percentage += 10;
+          break;
+        default:
+          break;
+      }
+    }
+    console.log("------------------------------------");
+    console.log("percentage : ", percentage);
+    console.log("------------------------------------");
+
+    // var badgeAssign = badge_assign_helper.badge_assign(
+    //   authUserId,
+    //   constants.BADGES_TYPE.PROFILE,
+    //   "timePeriod",
+    //   "value"
+    // );
+
     return res.status(config.OK_STATUS).json(user_data);
   }
 });

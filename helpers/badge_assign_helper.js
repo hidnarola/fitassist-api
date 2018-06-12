@@ -42,12 +42,12 @@ badges_assign_helper.get_all_badges = async (
 };
 
 /*
- * find_badge is used to fetch badge by ID
+ * badge_assign is used to fetch badge by ID
  * @return  status 0 - If any internal error occured while fetching badge data, with error
  *          status 1 - If badge data found, with badge object
  *          status 2 - If badge data not found, with appropriate message
  */
-badges_assign_helper.find_badge = async id => {
+badges_assign_helper.badge_assign = async id => {
   try {
     var badge = await BadgesAssign.findOne(id);
     if (badge) {

@@ -74,10 +74,6 @@ user_primary_goals_helper.get_primary_goal_by_id = async id => {
  * @developed by "amc"
  */
 user_primary_goals_helper.insert_primary_goal = async primary_goal_object => {
-  console.log("------------------------------------");
-  console.log("primary_goal_object : ", primary_goal_object);
-  console.log("------------------------------------");
-
   let primary_goal = new PrimaryGoal(primary_goal_object);
   try {
     let primary_goal_data = await primary_goal.save();

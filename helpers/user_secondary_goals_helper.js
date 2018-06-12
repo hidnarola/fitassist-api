@@ -161,9 +161,7 @@ user_secondary_goals_helper.update_secondary_goal_by_id = async (
  */
 user_secondary_goals_helper.delete_secondary_goal = async secondary_goal_id => {
   try {
-    let secondary_goal = await SecondaryGoal.updateOne(secondary_goal_id, {
-      isDeleted: 1
-    });
+    let secondary_goal = await SecondaryGoal.remove(secondary_goal_id);
     if (!secondary_goal) {
       return { status: 2, message: "secondary goal has not deleted" };
     } else {
