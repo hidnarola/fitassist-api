@@ -95,6 +95,7 @@ router.post("/", async (req, res) => {
   var schema = {
     task: {
       notEmpty: true,
+      errorMessage: "task is required",
       isIn: {
         options: [
           [
@@ -107,8 +108,7 @@ router.post("/", async (req, res) => {
           ]
         ],
         errorMessage: "Invalid task"
-      },
-      errorMessage: "task is required"
+      }
     }
   };
 
@@ -145,7 +145,7 @@ router.post("/", async (req, res) => {
     } else {
       return res
         .status(config.OK_STATUS)
-        .json({ status: 1, message: "goal is already defined" });
+        .json({ status: 0, message: "goal is already defined" });
     }
   } else {
     logger.error("Validation Error = ", errors);
