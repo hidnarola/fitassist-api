@@ -94,7 +94,7 @@ router.post("/", async (req, res) => {
 
   var schema = {
     task: {
-      notEmpty: false,
+      notEmpty: true,
       isIn: {
         options: [
           [
