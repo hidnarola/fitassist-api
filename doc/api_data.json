@@ -5851,7 +5851,7 @@
     "groupTitle": "Nutritional_labels"
   },
   {
-    "type": "put",
+    "type": "post",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -5990,7 +5990,7 @@
     "groupTitle": "Recipes"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/admin/recipes",
     "title": "Add",
     "name": "Add",
@@ -7316,6 +7316,158 @@
     "groupTitle": "User"
   },
   {
+    "type": "post",
+    "url": "/user/badge",
+    "title": "Add",
+    "name": "Add",
+    "group": "User_Badges",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "target",
+            "description": "<p>target of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "task",
+            "description": "<p>task of goal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "unit",
+            "description": "<p>unit of goal</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goal",
+            "description": "<p>message for successful badges_assign added</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/badges.js",
+    "groupTitle": "User_Badges"
+  },
+  {
+    "type": "get",
+    "url": "/user/badge/:start/:limit",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "User_Badges",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start of records</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "offset",
+            "description": "<p>offset of records</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "goals",
+            "description": "<p>JSON of badges_assign's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/badges.js",
+    "groupTitle": "User_Badges"
+  },
+  {
     "type": "get",
     "url": "/user/bodypart",
     "title": "Get all",
@@ -7464,7 +7616,7 @@
   },
   {
     "type": "delete",
-    "url": "/user/chat/:username/:message_id",
+    "url": "/user/chat/:username",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Chat",
@@ -7513,7 +7665,7 @@
   },
   {
     "type": "delete",
-    "url": "/user/chat/:username",
+    "url": "/user/chat/:username/:message_id",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Chat",
@@ -9277,7 +9429,7 @@
   },
   {
     "type": "get",
-    "url": "/user/personal_goal/:type/:start?/:offset?",
+    "url": "/user/personal_goal/:type/:start/:limit",
     "title": "Get all",
     "name": "Get_all",
     "group": "User_Personal_Goal",
@@ -10298,14 +10450,7 @@
             "type": "String",
             "optional": false,
             "field": "task",
-            "description": "<p>task of goal</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "unit",
-            "description": "<p>unit of goal</p>"
+            "description": "<p>task of goal | Possible values<code> &quot;gain_muscle&quot;, &quot;gain_flexibility&quot;, &quot;lose_fat&quot;, &quot;gain_strength&quot;, &quot;gain_power&quot;, &quot;increase_endurance&quot; </code></p>"
           }
         ]
       }
@@ -10391,7 +10536,7 @@
   },
   {
     "type": "get",
-    "url": "/user/secondary_goal/:type/:start?/:offset?",
+    "url": "/user/secondary_goal",
     "title": "Get all",
     "name": "Get_all",
     "group": "User_Secondary_Goal",
@@ -11027,55 +11172,6 @@
   },
   {
     "type": "get",
-    "url": "/user/timeline/:user_post_id",
-    "title": "Get by ID",
-    "name": "Get_by_ID",
-    "group": "User_Timeline",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_post_photo",
-            "description": "<p>user_post_photo's document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/timeline.js",
-    "groupTitle": "User_Timeline"
-  },
-  {
-    "type": "get",
     "url": "/user/timeline/:post_id",
     "title": "Get by ID",
     "name": "Get_by_ID",
@@ -11102,6 +11198,55 @@
             "optional": false,
             "field": "authorization",
             "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/timeline.js",
+    "groupTitle": "User_Timeline"
+  },
+  {
+    "type": "get",
+    "url": "/user/timeline/:user_post_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "User_Timeline",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_post_photo",
+            "description": "<p>user_post_photo's document</p>"
           }
         ]
       }

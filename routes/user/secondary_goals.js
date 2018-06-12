@@ -80,8 +80,14 @@ router.get("/:goal_id", async (req, res) => {
  * @apiGroup User Secondary Goal
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {String} task task of goal
- * @apiParam {Number} unit unit of goal
+ * @apiParam {String} task task of goal | Possible values<code>
+            "gain_muscle",
+            "gain_flexibility",
+            "lose_fat",
+            "gain_strength",
+            "gain_power",
+            "increase_endurance"
+          </code>
  * @apiSuccess (Success 200) {JSON} goal message for successful user_secondary_goals added
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -90,7 +96,6 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var schema = {
-    unit: { notEmpty: true, errorMessage: "unit is required" },
     task: {
       notEmpty: false,
       isIn: {
@@ -116,9 +121,7 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var secondary_goal_obj = {
       userId: authUserId,
-      start: req.body.start,
-      target: req.body.target,
-      unit: req.body.unit,
+      start: 0,
       goal: req.body.task
     };
 

@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 var auth = require("../middlewares/user_auth");
-
 var body_measurement = require("./user/measurement");
 var nutrition_preference = require("./user/nutrition_preferences");
 var profile = require("./user/profile");
@@ -26,6 +25,7 @@ var chat = require("./user/chat");
 var setting = require("./user/user_settings");
 var personal_goals = require("./user/personal_goals");
 var secondary_goals = require("./user/secondary_goals");
+var badge = require("./user/badges");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -50,6 +50,7 @@ router.use("/search", auth, search);
 router.use("/chat", auth, chat);
 router.use("/setting", auth, setting);
 router.use("/personal_goal", auth, personal_goals);
+router.use("/badge", auth, badge);
 router.use("/secondary_goal", auth, secondary_goals);
 
 module.exports = router;
