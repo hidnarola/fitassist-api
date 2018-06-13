@@ -216,11 +216,17 @@ router.put("/", async (req, res) => {
       user_data.user
     );
 
-    console.log("------------------------------------");
-    console.log("badgeAssign : ", badgeAssign);
-    console.log("------------------------------------");
+    if (badgeAssign.status == 1) {
+      console.log("------------------------------------");
+      console.log("badgeAssign : ", badgeAssign);
+      console.log("------------------------------------");
+    } else {
+      console.log("------------------------------------");
+      console.log("cancel : ");
+      console.log("------------------------------------");
+    }
 
-    return res.status(config.OK_STATUS).json(badgeAssign);
+    return res.status(config.OK_STATUS).json(user_data);
     // return res.status(config.OK_STATUS).json(user_data);
   }
 });

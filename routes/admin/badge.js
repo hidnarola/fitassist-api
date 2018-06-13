@@ -403,6 +403,7 @@ router.post("/", async (req, res) => {
  * @apiParam {Object} [timeType] timeType of badge
  * @apiParam {Object} [duration] duration of badge
  * @apiParam {Number} [point] point of badge
+ * @apiParam {Number} [status] status of badge
  * @apiSuccess (Success 200) {JSON} badge added badge detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -652,8 +653,12 @@ router.put("/:badge_id", async (req, res) => {
       point: req.body.point,
       timeType: req.body.timeType
     };
+
     if (req.body.duration) {
       badge_obj.duration = req.body.duration;
+    }
+    if (req.body.status) {
+      badge_obj.status = req.body.status;
     }
 
     let base_value_and_unit = await common_helper.unit_converter(
