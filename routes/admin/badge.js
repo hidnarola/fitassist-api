@@ -358,6 +358,7 @@ router.post("/", async (req, res) => {
       descriptionInCompleted: req.body.descriptionInCompleted,
       unit: req.body.unit,
       value: req.body.value,
+      point: req.body.point,
       timeType: req.body.timeType
     };
     if (req.body.duration) {
@@ -398,9 +399,9 @@ router.post("/", async (req, res) => {
  * @apiParam {String} descriptionInCompleted description of InCompleted badge
  * @apiParam {String} unit unit of badge
  * @apiParam {Number} value value of badge
- * @apiParam {String} task task of badge
- * @apiParam {Object} duration duration of badge
- * @apiParam {Number} point point of badge
+ * @apiParam {String} [task] task of badge
+ * @apiParam {Object} [duration] duration of badge
+ * @apiParam {Number} [point] point of badge
  * @apiSuccess (Success 200) {JSON} badge added badge detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -414,6 +415,7 @@ router.put("/:badge_id", async (req, res) => {
     descriptionInCompleted: req.body.descriptionInCompleted,
     unit: req.body.unit,
     value: req.body.value,
+    point: req.body.point,
     duration: req.body.duration
   };
 

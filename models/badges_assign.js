@@ -12,6 +12,7 @@ var BadgesAssignSchema = new Schema(
       ref: "badges",
       required: true
     },
+    task: { type: String },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },
