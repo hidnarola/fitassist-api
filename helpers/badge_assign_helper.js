@@ -65,19 +65,28 @@ badges_assign_helper.badge_assign = async (
         var badge = await Badges.find({
           task: "profile_update"
         });
+        all_possible_badges = [];
         badge.forEach(async singleBadge => {
           var SingleBadgeObject = {
             baseValue: singleBadge.baseValue,
             baseUnit: singleBadge.baseUnit,
+            value: singleBadge.value,
+            unit: singleBadge.unit,
             name: singleBadge.name,
             point: singleBadge.point,
+            timeType: singleBadge.timeType,
             descriptionCompleted: singleBadge.descriptionCompleted,
             duration: singleBadge.duration
           };
-          console.log("------------------------------------");
-          console.log("SingleBadgeObject : ", SingleBadgeObject);
-          console.log("------------------------------------");
+          all_possible_badges.push(SingleBadgeObject);
         });
+
+        var user_gained_badges = await BadgesAssign.findOne({
+          userId: authUserId,
+          task: "profile_update"
+        });
+        if (!user_gained_badges) {
+        }
       } else if (element == "weight_gain") {
       } else if (element == "weight_loss") {
       } else if (element == "body_fat_gain") {

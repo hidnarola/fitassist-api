@@ -6,7 +6,7 @@ module.exports = {
   },
 
   BADGES_TYPE: {
-    PROFILE: ["profile_update"],
+    PROFILE: ["profile_update", "friends", "post"],
     BODY_MASS: ["weight_gain", "weight_loss"],
     BODY_FAT: [
       "body_fat_gain",
@@ -48,7 +48,10 @@ module.exports = {
       "reps_total",
       "reps_average",
       "reps_most",
-      "sets_least"
+      "sets_least",
+      "sets_total",
+      "sets_average",
+      "sets_most"
     ],
     RUNNING: [
       "running_distance_total",
@@ -64,7 +67,7 @@ module.exports = {
       "heart_rate_total",
       "heart_rate_average",
       "heart_rate_most",
-      "heart_rate_least_",
+      "heart_rate_least",
       "heart_rate_resting_total",
       "heart_rate_resting_average",
       "heart_rate_resting_most",
@@ -84,25 +87,25 @@ module.exports = {
     CALORIES: [
       "calories_total",
       "calories_average",
-      "calories_most_",
-      "calories_least_",
+      "calories_most",
+      "calories_least",
       "calories_excess"
     ],
     NUTRITIONS: [
       "fat_saturated_total",
       "fat_saturated_average",
-      "fat_saturated_most_",
-      "fat_saturated_least_",
+      "fat_saturated_most",
+      "fat_saturated_least",
       "fat_saturated_excess",
-      "fat_trans_total_",
+      "fat_trans_total",
       "fat_trans_average",
-      "fat_trans_most_",
-      "fat_trans_least_",
+      "fat_trans_most",
+      "fat_trans_least",
       "fat_trans_excess",
-      "folate_total_",
+      "folate_total",
       "folate_average",
-      "folate_most_",
-      "folate_least_",
+      "folate_most",
+      "folate_least",
       "folate_excess",
       "potassium_total",
       "potassium_average",
@@ -172,12 +175,12 @@ module.exports = {
       "protein_total",
       "protein_average",
       "protein_most",
-      "protein_least_",
+      "protein_least",
       "protein_excess",
       "fiber_total",
       "fiber_average",
       "fiber_most",
-      "fiber_least_",
+      "fiber_least",
       "fiber_excess"
     ]
   },

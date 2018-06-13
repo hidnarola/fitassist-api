@@ -542,6 +542,13 @@
             "group": "Parameter",
             "type": "Object",
             "optional": false,
+            "field": "timeType",
+            "description": "<p>timeType of badge</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": true,
             "field": "duration",
             "description": "<p>duration of badge</p>"
           },
