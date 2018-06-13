@@ -120,7 +120,7 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
-      errorMessage: "Name of Task is required"
+      errorMessage: "Name is required"
     },
     task: {
       notEmpty: true,
@@ -296,7 +296,7 @@ router.post("/", async (req, res) => {
         ],
         errorMessage: "Invalid task"
       },
-      errorMessage: "task is required"
+      errorMessage: "Task is required"
     },
     unit: {
       notEmpty: true,
@@ -320,24 +320,33 @@ router.post("/", async (req, res) => {
             "mg"
           ]
         ],
-        errorMessage:
-          "unit must be from n/a, cm, feet, kg, lb, percentage, in, number,hour, minute,km, meter, mile, g or mg"
+        errorMessage: "Unit is invalid"
       },
-      errorMessage: "unit is required"
+      errorMessage: "Unit is required"
     },
     value: {
       notEmpty: true,
-      errorMessage: "value is required"
+      errorMessage: "Target is required"
+    },
+    point: {
+      notEmpty: true,
+      errorMessage: "Points are required"
     },
     timeType: {
       notEmpty: true,
       isIn: {
         options: [["standard", "time_window"]],
-        errorMessage: "unit must be from  standard or time_window"
+        errorMessage: "Time Type is invalid"
       },
-      errorMessage: "timeType is required"
+      errorMessage: "Time Type is required"
     }
   };
+  if (req.body.timeType && req.body.timeType == "time_window") {
+    schema.duration = {
+      notEmpty: true,
+      errorMessage: "Duration is required"
+    };
+  }
   req.checkBody(schema);
   var errors = req.validationErrors();
 

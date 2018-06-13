@@ -213,10 +213,15 @@ router.put("/", async (req, res) => {
       authUserId,
       constant.BADGES_TYPE.PROFILE,
       percentage,
-      user_data
+      user_data.user
     );
 
-    return res.status(config.OK_STATUS).json(user_data);
+    console.log("------------------------------------");
+    console.log("badgeAssign : ", badgeAssign);
+    console.log("------------------------------------");
+
+    return res.status(config.OK_STATUS).json(badgeAssign);
+    // return res.status(config.OK_STATUS).json(user_data);
   }
 });
 

@@ -7,11 +7,11 @@ var Schema = mongoose.Schema;
 var BadgesAssignSchema = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },
-    badgeName: { type: String, require: true },
-    type: { type: String },
-    descriptionCompleted: { type: String, require: true },
-    meta: { type: Object },
-    point: { type: Number, require: true },
+    badgeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "badges",
+      required: true
+    },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },

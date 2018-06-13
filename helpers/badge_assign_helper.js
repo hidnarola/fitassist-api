@@ -67,25 +67,47 @@ badges_assign_helper.badge_assign = async (
         });
         all_possible_badges = [];
         badge.forEach(async singleBadge => {
-          var SingleBadgeObject = {
+          var single_badge_object = {
+            _id: singleBadge._id,
             baseValue: singleBadge.baseValue,
             baseUnit: singleBadge.baseUnit,
             value: singleBadge.value,
             unit: singleBadge.unit,
             name: singleBadge.name,
+            task: singleBadge.task,
             point: singleBadge.point,
             timeType: singleBadge.timeType,
             descriptionCompleted: singleBadge.descriptionCompleted,
             duration: singleBadge.duration
           };
-          all_possible_badges.push(SingleBadgeObject);
+          all_possible_badges.push(single_badge_object);
         });
 
-        var user_gained_badges = await BadgesAssign.findOne({
+        var user_gained_badges = await BadgesAssign.find({
           userId: authUserId,
           task: "profile_update"
         });
-        if (!user_gained_badges) {
+        if (user_gained_badges && user_gained_badges.length > 0) {
+          user_gained_badges.forEach(async (tmp, index) => {
+            console.log("------------------------------------");
+            console.log("tmp : ", index+1, tmp);
+            console.log("------------------------------------");
+          });
+        } else {
+          all_possible_badges.forEach(async single_badge => {
+            if (single_badge.baseValue <= valueToBeCompare) {
+              var badge_assign_obj = {
+                userId: authUserId,
+                badgeName: single_badge.name,
+                task: single_badge.task,
+                descriptionCompleted: single_badge.descriptionCompleted,
+                meta: metaData,
+                point: single_badge.point
+              };
+              let badge_assign = new BadgesAssign(badge_assign_obj);
+              let badge_data = await badge_assign.save();
+            }
+          });
         }
       } else if (element == "weight_gain") {
       } else if (element == "weight_loss") {

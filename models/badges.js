@@ -214,7 +214,7 @@ var BadgesSchema = new Schema(
       default: "standard"
     },
     duration: { type: Object, default: null },
-    point: { type: Number, default: 10 },
+    point: { type: Number, required: true, default: 0 },
     status: { type: Number, default: 1 },
     isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
