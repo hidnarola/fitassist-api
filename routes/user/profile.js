@@ -162,16 +162,24 @@ router.put("/", async (req, res) => {
   if (user.status == 1) {
     if (user.user.goal) {
       if (user.user.goal.name != req.body.goal) {
+        if (req.body.goal) {
+          user_obj.goal = {
+            name: req.body.goal,
+            start: 0
+          };
+        } else {
+          user_obj.goal = null;
+        }
+      }
+    } else {
+      if (req.body.goal) {
         user_obj.goal = {
           name: req.body.goal,
           start: 0
         };
+      } else {
+        user_obj.goal = null;
       }
-    } else {
-      user_obj.goal = {
-        name: req.body.goal,
-        start: 0
-      };
     }
   }
 

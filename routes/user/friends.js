@@ -225,10 +225,13 @@ router.put("/:request_id", async (req, res) => {
       },
       2
     );
-    console.log('------------------------------------');
-    console.log(' : ', );
-    console.log('------------------------------------');
-    
+    console.log("------------------------------------");
+    console.log(" receiver_data_friends: ", receiver_data_friends);
+    console.log("------------------------------------");
+
+    console.log("------------------------------------");
+    console.log(" sender_data_friends: ", sender_data_friends);
+    console.log("------------------------------------");
     if (resp_data.status == 0) {
       logger.error("Error occured while fetching friend = ", resp_data);
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);

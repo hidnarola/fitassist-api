@@ -23,8 +23,9 @@ var timeline = require("./user/timeline");
 var search = require("./user/search");
 var chat = require("./user/chat");
 var setting = require("./user/user_settings");
-var personal_goals = require("./user/personal_goals");
+var primary_goal = require("./user/primary_goals");
 var secondary_goals = require("./user/secondary_goals");
+var personal_goals = require("./user/personal_goals");
 var badge = require("./user/badges");
 
 router.use("/measurement", auth, body_measurement);
@@ -49,8 +50,9 @@ router.use("/timeline", auth, timeline);
 router.use("/search", auth, search);
 router.use("/chat", auth, chat);
 router.use("/setting", auth, setting);
+router.use("/primary_goal", auth, primary_goal);
+router.use("/secondary_goal", auth, secondary_goals);
 router.use("/personal_goal", auth, personal_goals);
 router.use("/badge", auth, badge);
-router.use("/secondary_goal", auth, secondary_goals);
 
 module.exports = router;
