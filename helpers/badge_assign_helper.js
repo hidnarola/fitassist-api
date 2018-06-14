@@ -52,8 +52,7 @@ badges_assign_helper.get_all_badges = async (
 badges_assign_helper.badge_assign = async (
   authUserId,
   badgesType,
-  valueToBeCompare,
-  metaData
+  valueToBeCompare
 ) => {
   try {
     var insert_batch_data = [];

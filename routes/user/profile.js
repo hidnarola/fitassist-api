@@ -157,14 +157,21 @@ router.put("/", async (req, res) => {
   user_obj.aboutMe = req.body.aboutMe;
   user_obj.workoutLocation = req.body.workoutLocation;
 
-  let user = await user_helper.get_user_by_id({
-    userId: authUserId
-  });
+  let user = await user_helper.get_user_by_id(authUserId);
 
   if (user.status == 1) {
-    if (user.user.goal.name != req.body.goal) {
-      user_obj.goal.name = req.body.goal;
-      user_obj.goal.start = 0;
+    if (user.user.goal) {
+      if (user.user.goal.name != req.body.goal) {
+        user_obj.goal = {
+          name: req.body.goal,
+          start: 0
+        };
+      }
+    } else {
+      user_obj.goal = {
+        name: req.body.goal,
+        start: 0
+      };
     }
   }
 
@@ -203,8 +210,7 @@ router.put("/", async (req, res) => {
     var badgeAssign = await badge_assign_helper.badge_assign(
       authUserId,
       constant.BADGES_TYPE.PROFILE,
-      percentage,
-      user_data.user
+      percentage
     );
 
     return res.status(config.OK_STATUS).json(user_data);

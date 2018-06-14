@@ -212,6 +212,37 @@ router.put("/:request_id", async (req, res) => {
     let notification_data = await notification_helper.add_notifications(
       notificationObj
     );
+
+    var receiver_data_friends = await friend_helper.get_friend_by_username(
+      {
+        username: receiver_data.user.username
+      },
+      2
+    );
+    var sender_data_friends = await friend_helper.get_friend_by_username(
+      {
+        username: sender_data.user.username
+      },
+      2
+    );
+    console.log('------------------------------------');
+    console.log(' : ', );
+    console.log('------------------------------------');
+    
+    if (resp_data.status == 0) {
+      logger.error("Error occured while fetching friend = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      logger.trace("friend got successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    }
+
+    var badgeAssign = await badge_assign_helper.badge_assign(
+      authUserId,
+      constant.BADGES_TYPE.PROFILE,
+      percentage
+    );
+
     return res.status(config.OK_STATUS).json(friend_data);
   }
 });
