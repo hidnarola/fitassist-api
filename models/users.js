@@ -22,11 +22,7 @@ var UserSchema = new Schema(
     dateOfBirth: { type: Date, default: null },
     height: { type: Number, default: 0 },
     weight: { type: Number, default: 0 },
-    goal: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "user_primary_goals",
-      required: false
-    },
+    goal: { type: Object, default: null },
     workoutLocation: {
       type: String,
       enum: ["gym", "home"],

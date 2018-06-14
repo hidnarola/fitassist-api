@@ -62,6 +62,7 @@ badges_assign_helper.badge_assign = async (
       var badge = await Badges.find({
         task: element
       });
+
       all_possible_badges = [];
       for (let singleBadge of badge) {
         var single_badge_object = {
@@ -79,11 +80,12 @@ badges_assign_helper.badge_assign = async (
         };
         all_possible_badges.push(single_badge_object);
       }
-      var user_gained_badges = await BadgesAssign.find({
-        userId: authUserId,
-        task: element
-      });
+
       if (element == "profile_update") {
+        var user_gained_badges = await BadgesAssign.find({
+          userId: authUserId,
+          task: "profile_update"
+        });
         if (user_gained_badges && user_gained_badges.length > 0) {
           for (let single_badge of all_possible_badges) {
             var id = single_badge._id;
@@ -113,37 +115,6 @@ badges_assign_helper.badge_assign = async (
             }
           }
         }
-      } else if (element == "friends") {
-        if (user_gained_badges && user_gained_badges.length > 0) {
-          for (let single_badge of all_possible_badges) {
-            var id = single_badge._id;
-            var badge_assigned = _.find(user_gained_badges, user_badge => {
-              return user_badge.badgeId.toString() === id.toString();
-            });
-            if (!badge_assigned) {
-              if (single_badge.baseValue <= valueToBeCompare) {
-                var badge_assign_obj = {
-                  userId: authUserId,
-                  badgeId: single_badge._id,
-                  task: single_badge.task
-                };
-                insert_batch_data.push(badge_assign_obj);
-              }
-            }
-          }
-        } else {
-          for (let single_badge of all_possible_badges) {
-            if (single_badge.baseValue <= valueToBeCompare) {
-              var badge_assign_obj = {
-                userId: authUserId,
-                badgeId: single_badge._id,
-                task: single_badge.task
-              };
-              insert_batch_data.push(badge_assign_obj);
-            }
-          }
-        }
-      } else if (element == "post") {
       } else if (element == "weight_gain") {
       } else if (element == "weight_loss") {
       } else if (element == "body_fat_gain") {
@@ -308,7 +279,6 @@ badges_assign_helper.badge_assign = async (
     try {
       let insert_badge = await BadgesAssign.insertMany(insert_batch_data);
       if (insert_badge && insert_badge.length > 0) {
-        console.log("SEND NOTIFICATION TO USER USING SOCKET");
         return {
           status: 1,
           message: "badges assigned",

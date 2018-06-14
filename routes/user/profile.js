@@ -157,23 +157,14 @@ router.put("/", async (req, res) => {
   user_obj.aboutMe = req.body.aboutMe;
   user_obj.workoutLocation = req.body.workoutLocation;
 
-  let find_goal_data = await user_primary_goals_helper.get_primary_goal_by_id({
-    goal: req.body.goal,
+  let user = await user_helper.get_user_by_id({
     userId: authUserId
   });
 
-  if (find_goal_data.status !== 1) {
-    let goal_object = {
-      userId: authUserId,
-      start: 0,
-      unit: 0,
-      goal: req.body.goal
-    };
-    let goal_data = await user_primary_goals_helper.insert_primary_goal(
-      goal_object
-    );
-    if (goal_data.status == 1) {
-      user_obj.goal = goal_data.goal._id;
+  if (user.status == 1) {
+    if (user.user.goal.name != req.body.goal) {
+      user_obj.goal.name = req.body.goal;
+      user_obj.goal.start = 0;
     }
   }
 
@@ -216,9 +207,6 @@ router.put("/", async (req, res) => {
       user_data.user
     );
 
-    if (badgeAssign.status == 1) {
-      console.log("SEND NOTIFICATION TO USER USING SOCKET");
-    }
     return res.status(config.OK_STATUS).json(user_data);
   }
 });
