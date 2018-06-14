@@ -171,7 +171,15 @@ router.put("/:request_id", async (req, res) => {
   var friend_obj = {
     status: 2
   };
+  var checkfrd = await friend_helper.checkFriend({
+    _id: mongoose.Types.ObjectId(req.params.request_id)
+  });
 
+  // if (checkfrd.status == 1 && checkfrd.friends[0].status == 2) {
+  //   return res
+  //     .status(config.OK_STATUS)
+  //     .json({ status: 0, message: "already friend" });
+  // }
   let friend_data = await friend_helper.approve_friend(
     { _id: req.params.request_id },
     friend_obj
@@ -187,33 +195,44 @@ router.put("/:request_id", async (req, res) => {
     let receiver_data = await user_helper.get_user_by({
       authUserId: receiver.friends[0].friendId
     });
+
     let sender_data = await user_helper.get_user_by({ authUserId: authUserId });
 
-    var receiver = {
-      firstName: receiver_data.user.firstName,
-      lastName: receiver_data.user.lastName,
-      avatar: receiver_data.user.avatar,
-      username: receiver_data.user.username,
-      authUserId: receiver_data.user.authUserId
-    };
-    var sender = {
-      firstName: sender_data.user.firstName,
-      lastName: sender_data.user.lastName,
-      avatar: sender_data.user.avatar,
-      username: sender_data.user.username,
-      authUserId: sender_data.user.authUserId
-    };
-
-    var notificationObj = {
-      sender: sender,
-      receiver: receiver,
-      type: "friend_request_approved",
-      body: `${sender.firstName} ${sender.lastName} approved your request`,
-      meta: friend_data
-    };
-    let notification_data = await notification_helper.add_notifications(
-      notificationObj
-    );
+    if (receiver_data.status == 1) {
+      var receiver = {
+        firstName: receiver_data.user.firstName,
+        lastName: receiver_data.user.lastName,
+        avatar: receiver_data.user.avatar,
+        username: receiver_data.user.username,
+        authUserId: receiver_data.user.authUserId
+      };
+    }
+    if (sender_data.status == 1) {
+      var sender = {
+        firstName: sender_data.user.firstName,
+        lastName: sender_data.user.lastName,
+        avatar: sender_data.user.avatar,
+        username: sender_data.user.username,
+        authUserId: sender_data.user.authUserId
+      };
+    }
+    if (sender && receiver) {
+      var notificationObj = {
+        sender: sender,
+        receiver: receiver,
+        type: "friend_request_approved",
+        body: `${sender.firstName} ${sender.lastName} approved your request`,
+        meta: friend_data
+      };
+      let notification_data = await notification_helper.add_notifications(
+        notificationObj
+      );
+      if (notification_data.status == 1) {
+        console.log("notification sent successfully");
+      } else {
+        console.log("notficiaion could not sent");
+      }
+    }
 
     var receiver_data_friends = await friend_helper.get_friend_by_username(
       {
@@ -227,22 +246,26 @@ router.put("/:request_id", async (req, res) => {
       },
       2
     );
+
+    var senderBadges = await badge_assign_helper.badge_assign(
+      authUserId,
+      constant.BADGES_TYPE.PROFILE,
+      sender_data_friends.friends.length
+    );
+
     console.log("------------------------------------");
-    console.log(
-      " receiver_data_friends: ",
+    console.log("senderBadges : ", senderBadges);
+    console.log("------------------------------------");
+
+    var receiverBadges = await badge_assign_helper.badge_assign(
+      receiver_data.user.authUserId,
+      constant.BADGES_TYPE.PROFILE,
       receiver_data_friends.friends.length
     );
-    console.log("------------------------------------");
 
     console.log("------------------------------------");
-    console.log(" sender_data_friends: ", sender_data_friends.friends.length);
+    console.log("receiverBadges : ", receiverBadges);
     console.log("------------------------------------");
-
-    // var badgeAssign = await badge_assign_helper.badge_assign(
-    //   authUserId,
-    //   constant.BADGES_TYPE.PROFILE,
-    //   percentage
-    // );
 
     return res.status(config.OK_STATUS).json(friend_data);
   }
