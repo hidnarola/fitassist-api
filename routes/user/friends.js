@@ -6,6 +6,7 @@ var jwtDecode = require("jwt-decode");
 
 var router = express.Router();
 var mongoose = require("mongoose");
+var constant = require("../../constant");
 
 var config = require("../../config");
 var logger = config.logger;
@@ -13,6 +14,7 @@ var logger = config.logger;
 var friend_helper = require("../../helpers/friend_helper");
 var notification_helper = require("../../helpers/notification_helper");
 var user_helper = require("../../helpers/user_helper");
+var badge_assign_helper = require("../../helpers/badge_assign_helper");
 
 /**
  * @api {get} /user/friend/:username/:type? Get by Username
@@ -226,25 +228,21 @@ router.put("/:request_id", async (req, res) => {
       2
     );
     console.log("------------------------------------");
-    console.log(" receiver_data_friends: ", receiver_data_friends);
-    console.log("------------------------------------");
-
-    console.log("------------------------------------");
-    console.log(" sender_data_friends: ", sender_data_friends);
-    console.log("------------------------------------");
-    if (resp_data.status == 0) {
-      logger.error("Error occured while fetching friend = ", resp_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-      logger.trace("friend got successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    }
-
-    var badgeAssign = await badge_assign_helper.badge_assign(
-      authUserId,
-      constant.BADGES_TYPE.PROFILE,
-      percentage
+    console.log(
+      " receiver_data_friends: ",
+      receiver_data_friends.friends.length
     );
+    console.log("------------------------------------");
+
+    console.log("------------------------------------");
+    console.log(" sender_data_friends: ", sender_data_friends.friends.length);
+    console.log("------------------------------------");
+
+    // var badgeAssign = await badge_assign_helper.badge_assign(
+    //   authUserId,
+    //   constant.BADGES_TYPE.PROFILE,
+    //   percentage
+    // );
 
     return res.status(config.OK_STATUS).json(friend_data);
   }
