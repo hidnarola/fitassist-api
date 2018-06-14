@@ -651,14 +651,12 @@ router.put("/:badge_id", async (req, res) => {
       unit: req.body.unit,
       value: req.body.value,
       point: req.body.point,
-      timeType: req.body.timeType
+      timeType: req.body.timeType,
+      status: req.body.status
     };
 
     if (req.body.duration) {
       badge_obj.duration = req.body.duration;
-    }
-    if (req.body.status) {
-      badge_obj.status = req.body.status;
     }
 
     let base_value_and_unit = await common_helper.unit_converter(
