@@ -167,5 +167,6 @@ app.use(function(err, req, res, next) {
 var server = app.listen(config.node_port || 3000, function() {
   console.log("Listening on port " + (config.node_port || 3000) + "...");
 });
+socket.socketStartUp(server);
 
 module.exports = app;
