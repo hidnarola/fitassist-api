@@ -149,6 +149,35 @@ badge_helper.delete_badge_by_id = async badge_id => {
 };
 
 /*
+ * undo_badge_by_id is used to undo badge from database
+ * 
+ * @param   badge_id String  _id of badge that need to be undo
+ * 
+ * @return  status  0 - If any error occur in undo of badge, with error
+ *          status  1 - If badge undo successfully, with appropriate message
+ * 
+ * @developed by "amc"
+ */
+badge_helper.undo_badge_by_id = async badge_id => {
+  try {
+    let resp = await Badges.findOneAndUpdate(
+      { _id: badge_id },
+      { isDeleted: 0 }
+    );
+    if (!resp) {
+      return { status: 2, message: "badge not found" };
+    } else {
+      return { status: 1, message: "badge recovered" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while recovering badge",
+      error: err
+    };
+  }
+};
+/*
  * get_filtered_records is used to fetch all filtered data
  * 
  * @return  status 0 - If any internal error occured while fetching filtered data, with error

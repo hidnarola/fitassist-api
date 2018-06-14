@@ -217,17 +217,9 @@ router.put("/", async (req, res) => {
     );
 
     if (badgeAssign.status == 1) {
-      console.log("------------------------------------");
-      console.log("badgeAssign : ", badgeAssign);
-      console.log("------------------------------------");
-    } else {
-      console.log("------------------------------------");
-      console.log("cancel : ");
-      console.log("------------------------------------");
+      console.log("SEND NOTIFICATION TO USER USING SOCKET");
     }
-
     return res.status(config.OK_STATUS).json(user_data);
-    // return res.status(config.OK_STATUS).json(user_data);
   }
 });
 

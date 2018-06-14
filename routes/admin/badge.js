@@ -700,4 +700,23 @@ router.delete("/:badge_id", async (req, res) => {
   }
 });
 
+/**
+ * @api {put} /admin/badge/undo/:badge_id Undo
+ * @apiName Undo
+ * @apiGroup  Badge
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/undo/:badge_id", async (req, res) => {
+  logger.trace("undo badge API - Id = ", req.params.badge_id);
+  let badge_data = await badge_helper.undo_badge_by_id(req.params.badge_id);
+
+  if (badge_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(badge_data);
+  } else {
+    res.status(config.OK_STATUS).json(badge_data);
+  }
+});
+
 module.exports = router;

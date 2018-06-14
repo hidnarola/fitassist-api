@@ -92,12 +92,14 @@ badges_assign_helper.badge_assign = async (
               return user_badge.badgeId.toString() === id.toString();
             });
             if (!badge_assigned) {
-              var badge_assign_obj = {
-                userId: authUserId,
-                badgeId: single_badge._id,
-                task: single_badge.task
-              };
-              insert_batch_data.push(badge_assign_obj);
+              if (single_badge.baseValue <= valueToBeCompare) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+              }
             }
           }
         } else {
@@ -275,11 +277,19 @@ badges_assign_helper.badge_assign = async (
     }
     try {
       let insert_badge = await BadgesAssign.insertMany(insert_batch_data);
-      return {
-        status: 1,
-        message: "badges assigned",
-        badges:insert_badge
-      };
+      if (insert_badge && insert_badge.length > 0) {
+        return {
+          status: 1,
+          message: "badges assigned",
+          badges: insert_badge
+        };
+      } else {
+        return {
+          status: 0,
+          message: "badges not assigned",
+          error: err
+        };
+      }
     } catch (err) {
       return {
         status: 0,

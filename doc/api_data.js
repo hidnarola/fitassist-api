@@ -839,6 +839,55 @@ define({ "api": [
   },
   {
     "type": "put",
+    "url": "/admin/badge/undo/:badge_id",
+    "title": "Undo",
+    "name": "Undo",
+    "group": "Badge",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/badge.js",
+    "groupTitle": "Badge"
+  },
+  {
+    "type": "put",
     "url": "/admin/badge",
     "title": "Update",
     "name": "Update",
@@ -869,58 +918,72 @@ define({ "api": [
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "name",
             "description": "<p>Name of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "descriptionCompleted",
             "description": "<p>description of Completed badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "descriptionInCompleted",
             "description": "<p>description of InCompleted badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "unit",
             "description": "<p>unit of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "Number",
-            "optional": false,
+            "optional": true,
             "field": "value",
             "description": "<p>value of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "task",
             "description": "<p>task of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "Object",
-            "optional": false,
+            "optional": true,
+            "field": "timeType",
+            "description": "<p>timeType of badge</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": true,
             "field": "duration",
             "description": "<p>duration of badge</p>"
           },
           {
             "group": "Parameter",
             "type": "Number",
-            "optional": false,
+            "optional": true,
             "field": "point",
             "description": "<p>point of badge</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "status",
+            "description": "<p>status of badge</p>"
           }
         ]
       }
@@ -7486,6 +7549,55 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
+    "filename": "routes/user/user_settings.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "delete",
+    "url": "/user/chat/:username",
+    "title": "Delete",
+    "name": "Delete",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
     "filename": "routes/user/chat.js",
     "groupTitle": "User_Chat"
   },
@@ -7536,55 +7648,6 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/user/chat.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "delete",
-    "url": "/user/chat/:username",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
     "groupTitle": "User_Chat"
   },
   {
