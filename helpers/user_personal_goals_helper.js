@@ -18,9 +18,9 @@ user_personal_goals_helper.get_personal_goals = async (
 
     personal_goals = await PersonalGoal.aggregate([
       { $match: id },
+      sort,
       skip,
-      limit,
-      sort
+      limit
     ]);
 
     if (personal_goals) {

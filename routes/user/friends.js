@@ -15,6 +15,7 @@ var friend_helper = require("../../helpers/friend_helper");
 var notification_helper = require("../../helpers/notification_helper");
 var user_helper = require("../../helpers/user_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
+var socket = require("../../socket/socketServer");
 
 /**
  * @api {get} /user/friend/:username/:type? Get by Username
@@ -164,6 +165,16 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:request_id", async (req, res) => {
+  // console.log("------------------------------------");
+  // console.log("req.io : ", req.io.sockets);
+  // console.log("------------------------------------");
+  console.log("------------------------------------");
+  console.log("socket.io : ", socket.io);
+  console.log("------------------------------------");
+
+  socket.io.sockets.emit("update", "i am at friend request added");
+  // req.io.sockets.emit("update", "hello broooo");
+
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var request_id = req.params.request_id;
@@ -250,7 +261,9 @@ router.put("/:request_id", async (req, res) => {
     var senderBadges = await badge_assign_helper.badge_assign(
       authUserId,
       constant.BADGES_TYPE.PROFILE,
-      sender_data_friends.friends.length
+      {
+        friends: sender_data_friends.friends.length
+      }
     );
 
     console.log("------------------------------------");

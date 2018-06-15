@@ -24,6 +24,20 @@ var socket = require("./socket/socketServer");
 var user_helper = require("./helpers/user_helper");
 
 var app = express();
+
+var io = require("socket.io").listen(app.listen(3300));
+
+io.sockets.on("connection", function(socket) {
+  console.log("client connect");
+  socket.on("joinUser", function(data) {
+    console.log("------------------------------------");
+    console.log("joinUser : ", data);
+    console.log("------------------------------------");
+
+    // io.sockets.emit("message", data + " yes connected");
+  });
+});
+
 // app.use(fileUpload());
 app.use(fileUpload({ limits: { fileSize: 15 * 1024 * 1024 } }));
 
@@ -77,6 +91,8 @@ app.use(
 
 // Support corss origin request
 app.use(function(req, res, next) {
+  req.io = io;
+
   // Website you wish to allow to connect
   res.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -164,9 +180,9 @@ app.use(function(err, req, res, next) {
 //   cluster.fork();
 // });
 
-var server = app.listen(config.node_port || 3000, function() {
-  console.log("Listening on port " + (config.node_port || 3000) + "...");
-});
-socket.init(server);
+// var server = app.listen(config.node_port || 3000, function() {
+//   console.log("Listening on port " + (config.node_port || 3000) + "...");
+// });
+// socket.socketStartUp(server);
 
 module.exports = app;

@@ -16,6 +16,8 @@ var friend_helper = require("../../helpers/friend_helper");
 var user_primary_goals_helper = require("../../helpers/user_primary_goals_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 
+var socket = require("../../socket/socketServer");
+
 /**
  * @api {get} /user/profile Get User Profile by AuthID
  * @apiName Get Profile by AuthID
@@ -143,6 +145,12 @@ router.get("/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
+  console.log("------------------------------------");
+  console.log("socket.io : ", socket.users);
+  console.log("------------------------------------");
+  socket.users.set("Test", "temp");
+  socket.io.sockets.emit("update", "hello");
+
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 

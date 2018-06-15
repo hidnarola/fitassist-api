@@ -1,9 +1,12 @@
 var io = require("socket.io")();
-var myIo = {};
+var socketFunction = {};
+var socketMap = [];
 var users = new Map();
 var socketToUsers = new Map();
-myIo.init = function(server) {
+
+socketFunction.socketStartUp = function(server) {
   io.attach(server);
+
   io.on("connection", function(socket) {
     socket.on("join", function(userData) {
       var id = userData.authUserId;
@@ -34,10 +37,7 @@ myIo.init = function(server) {
         socketToUsers.delete(socketId);
       }
     });
-    console.log("Socket Connected With socket id : -", socket.id);
   });
-  myIo.io = io;
-  myIo.users = users;
-  myIo.socketToUser = socketToUsers;
 };
-module.exports = myIo;
+
+module.exports = socketFunction;
