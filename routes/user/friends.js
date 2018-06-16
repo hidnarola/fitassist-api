@@ -165,16 +165,6 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:request_id", async (req, res) => {
-  // console.log("------------------------------------");
-  // console.log("req.io : ", req.io.sockets);
-  // console.log("------------------------------------");
-  console.log("------------------------------------");
-  console.log("socket.io : ", socket.io);
-  console.log("------------------------------------");
-
-  socket.io.sockets.emit("update", "i am at friend request added");
-  // req.io.sockets.emit("update", "hello broooo");
-
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var request_id = req.params.request_id;
@@ -257,7 +247,7 @@ router.put("/:request_id", async (req, res) => {
       },
       2
     );
-
+    // badge_assign start;
     var senderBadges = await badge_assign_helper.badge_assign(
       authUserId,
       constant.BADGES_TYPE.PROFILE,
@@ -265,20 +255,15 @@ router.put("/:request_id", async (req, res) => {
         friends: sender_data_friends.friends.length
       }
     );
-
-    console.log("------------------------------------");
-    console.log("senderBadges : ", senderBadges);
-    console.log("------------------------------------");
+    //badge assign end
 
     var receiverBadges = await badge_assign_helper.badge_assign(
       receiver_data.user.authUserId,
       constant.BADGES_TYPE.PROFILE,
-      receiver_data_friends.friends.length
+      {
+        friends: receiver_data_friends.friends.length
+      }
     );
-
-    console.log("------------------------------------");
-    console.log("receiverBadges : ", receiverBadges);
-    console.log("------------------------------------");
 
     return res.status(config.OK_STATUS).json(friend_data);
   }

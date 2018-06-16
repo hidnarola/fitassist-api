@@ -5,6 +5,35 @@ var _ = require("underscore");
 var user_post_helper = {};
 
 /*
+ * count_post is used to count all user's post photos
+ * 
+ * @return  status 0 - If any internal error occured while couting user's post photos data, with error
+ *          status 1 - If user's post photos data counted, with user's post photos object
+ *          status 2 - If user's post photos not counted, with appropriate message
+ */
+user_post_helper.count_post = async id => {
+  try {
+    var user_post_photos = await UserPost.find(id).count();
+
+    if (user_post_photos) {
+      return {
+        status: 1,
+        message: "User photos found",
+        count: user_post_photos
+      };
+    } else {
+      return { status: 2, message: "No user photos available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while couting user photos",
+      error: err
+    };
+  }
+};
+
+/*
  * get_user_post_photos is used to fetch all user's post photos
  * 
  * @return  status 0 - If any internal error occured while fetching user's post photos data, with error
@@ -336,7 +365,11 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
  * photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
-user_post_helper.get_user_timeline = async (user_auth_id, skip, offset) => {
+user_post_helper.get_user_timeline = async (
+  user_auth_id,
+  skip = {},
+  offset = {}
+) => {
   try {
     //#region timeline old query
     var timeline = await UserTimeline.aggregate([

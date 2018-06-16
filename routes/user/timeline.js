@@ -4,9 +4,9 @@ var fs = require("fs");
 var path = require("path");
 var async = require("async");
 var mongoose = require("mongoose");
-
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
+var constant = require("../../constant");
 
 var logger = config.logger;
 
@@ -15,6 +15,7 @@ var user_timeline_helper = require("../../helpers/user_timeline_helper");
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
+var badge_assign_helper = require("../../helpers/badge_assign_helper");
 
 /**
  * @api {get} /user/timeline/:post_id Get by ID
@@ -333,6 +334,21 @@ router.post("/", async (req, res) => {
                   );
                 }
                 //TIMELINE END
+
+                // Badge assign
+                var total_post = await user_posts_helper.count_post({
+                  userId: authUserId
+                });
+
+                var post_data = await badge_assign_helper.badge_assign(
+                  authUserId,
+                  constant.BADGES_TYPE.PROFILE,
+                  {
+                    post: total_post.count
+                  }
+                );
+                // Badge assign end
+
                 return res.status(config.OK_STATUS).json({
                   status: 1,
                   message:

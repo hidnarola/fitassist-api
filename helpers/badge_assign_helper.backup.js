@@ -44,16 +44,20 @@ badges_assign_helper.get_all_badges = async (
 };
 
 /*
- * badge_assign is used to assign badge 
- * @return  status 0 - If any internal error occured while assigning badge data, with error
- *          status 1 - If badge assign, with badge object
- *          status 2 - If badge data not assign, with appropriate message
+ * badge_assign is used to fetch badge by ID
+ * @return  status 0 - If any internal error occured while fetching badge data, with error
+ *          status 1 - If badge data found, with badge object
+ *          status 2 - If badge data not found, with appropriate message
  */
 badges_assign_helper.badge_assign = async (
   authUserId,
   badgesType,
   valueToBeCompare
 ) => {
+  console.log("------------------------------------");
+  console.log("valueToBeCompare.post : ", valueToBeCompare.post);
+  console.log("------------------------------------");
+
   try {
     var insert_batch_data = [];
 

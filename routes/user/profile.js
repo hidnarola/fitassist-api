@@ -223,11 +223,13 @@ router.put("/", async (req, res) => {
       }
     }
 
+    //badge assign
     var badgeAssign = await badge_assign_helper.badge_assign(
       authUserId,
       constant.BADGES_TYPE.PROFILE,
-      percentage
+      { percentage: percentage }
     );
+    //badge assign
 
     return res.status(config.OK_STATUS).json(user_data);
   }
