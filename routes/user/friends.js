@@ -189,15 +189,17 @@ router.put("/:request_id", async (req, res) => {
     logger.error("Error while approving friend request = ", friend_data);
     return res.status(config.BAD_REQUEST).json({ friend_data });
   } else {
-    var receiver = await friend_helper.checkFriend({
+    var friend = await friend_helper.checkFriend({
       _id: mongoose.Types.ObjectId(req.params.request_id)
     });
 
     let receiver_data = await user_helper.get_user_by({
-      authUserId: receiver.friends[0].friendId
+      authUserId: friend.friends[0].userId
     });
 
-    let sender_data = await user_helper.get_user_by({ authUserId: authUserId });
+    let sender_data = await user_helper.get_user_by({
+      authUserId: friend.friends[0].friendId
+    });
 
     if (receiver_data.status == 1) {
       var receiver = {
@@ -222,7 +224,7 @@ router.put("/:request_id", async (req, res) => {
         sender: sender,
         receiver: receiver,
         type: "friend_request_approved",
-        body: `${sender.firstName} ${sender.lastName} approved your request`,
+        body: `{${sender.firstName} ${sender.lastName}} approved your request`,
         meta: friend_data
       };
       // console.log("------------------------------------");
@@ -234,8 +236,6 @@ router.put("/:request_id", async (req, res) => {
         socket
       );
       if (notification_data.status == 1) {
-
-        
         console.log("notification sent successfully");
       } else {
         console.log("notficiaion could not sent");

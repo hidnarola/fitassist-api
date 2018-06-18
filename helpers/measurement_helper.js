@@ -36,9 +36,15 @@ measurement_helper.get_all_measurement = async () => {
  *          status 1 - If bodymeasurement data found, with bodymeasurement object
  *          status 2 - If bodymeasurement not found, with appropriate message
  */
-measurement_helper.get_body_measurement_id = async id => {
+measurement_helper.get_body_measurement_id = async (
+  id,
+  sort = {},
+  limit = 0
+) => {
   try {
-    var measurement = await Measurement.findOne(id);
+    var measurement = await Measurement.findOne(id)
+      .sort(sort)
+      .limit(limit);
     if (measurement) {
       return {
         status: 1,

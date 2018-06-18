@@ -38,6 +38,34 @@ router.get("/", async (req, res) => {
 });
 
 /**
+ * @api {put} /user/notification/:notification_id Make notification as read
+ * @apiName Make notification as read
+ * @apiGroup  User Notification
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/:notification_id?", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  let notification_data = await notification_helper.notification_seen(
+    {
+      _id: req.params.notification_id
+    },
+    {
+      isSeen: 1
+    }
+  );
+  if (notification_data.status === 0) {
+    logger.error("Error while mark as read notification = ", notification_data);
+    return res.status(config.BAD_REQUEST).json({ notification_data });
+  } else {
+    return res.status(config.OK_STATUS).json(notification_data);
+  }
+});
+
+/**
  * @api {put} /user/notification Mark as read
  * @apiName Mark as read
  * @apiGroup  User Notification
@@ -58,7 +86,10 @@ router.put("/", async (req, res) => {
     }
   );
   if (notification_data.status === 0) {
-    logger.error("Error while mark as read notification = ", notification_data);
+    logger.error(
+      "Error while mark as read notifications = ",
+      notification_data
+    );
     return res.status(config.BAD_REQUEST).json({ notification_data });
   } else {
     return res.status(config.OK_STATUS).json(notification_data);

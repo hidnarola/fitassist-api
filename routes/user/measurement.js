@@ -8,10 +8,12 @@ var jwtDecode = require("jwt-decode");
 var router = express.Router();
 
 var config = require("../../config");
+var constant = require("../../constant");
 var logger = config.logger;
 
 var measurement_helper = require("../../helpers/measurement_helper");
 var common_helper = require("../../helpers/common_helper");
+var badge_assign_helper = require("../../helpers/badge_assign_helper");
 
 /**
  * @api {post} /user/measurement/get_by_id_logdate Get User Measurement
@@ -163,6 +165,7 @@ router.post("/", async (req, res) => {
         );
         return res.status(config.BAD_REQUEST).json({ measurement_data });
       } else {
+        badgesAssign(authUserId);
         return res.status(config.OK_STATUS).json(measurement_data);
       }
     } else {
@@ -208,6 +211,7 @@ router.post("/", async (req, res) => {
         );
         return res.status(config.BAD_REQUEST).json({ measurement_data });
       } else {
+        badgesAssign(authUserId);
         return res.status(config.OK_STATUS).json(measurement_data);
       }
     } else {
@@ -268,4 +272,41 @@ router.post("/get_log_dates_by_date", async (req, res) => {
   }
 });
 
+async function badgesAssign(authUserId) {
+  // badge_assign start;
+  var resp_data = await measurement_helper.get_body_measurement_id(
+    {
+      userId: authUserId
+    },
+    { logDate: -1 },
+    1
+  );
+  var body_measurement_data = {
+    neck_measurement_gain: resp_data.measurement.neck,
+    neck_measurement_loss: resp_data.measurement.neck,
+    shoulders_measurement_gain: resp_data.measurement.shoulders,
+    shoulders_measurement_loss: resp_data.measurement.shoulders,
+    chest_measurement_gain: resp_data.measurement.chest,
+    chest_measurement_loss: resp_data.measurement.chest,
+    upper_arm_measurement_gain: resp_data.measurement.upperArm,
+    upper_arm_measurement_loss: resp_data.measurement.upperArm,
+    waist_measurement_gain: resp_data.measurement.waist,
+    waist_measurement_loss: resp_data.measurement.waist,
+    forearm_measurement_gain: resp_data.measurement.forearm,
+    forearm_measurement_loss: resp_data.measurement.forearm,
+    hips_measurement_gain: resp_data.measurement.hips,
+    hips_measurement_loss: resp_data.measurement.hips,
+    thigh_measurement_gain: resp_data.measurement.thigh,
+    thigh_measurement_loss: resp_data.measurement.thigh,
+    calf_measurement_gain: resp_data.measurement.calf,
+    calf_measurement_loss: resp_data.measurement.calf
+  };
+
+  var senderBadges = await badge_assign_helper.badge_assign(
+    authUserId,
+    constant.BADGES_TYPE.BODY_MEASUREMENT,
+    body_measurement_data
+  );
+  //badge assign end
+}
 module.exports = router;

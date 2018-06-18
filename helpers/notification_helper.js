@@ -22,7 +22,7 @@ user_notifications_helper.get_notifications = async userId => {
       }
     ]);
 
-    if (notifications && notifications.length > 0) {
+    if (notifications) {
       return {
         status: 1,
         message: "notifications found",
@@ -133,14 +133,14 @@ user_notifications_helper.notification_seen = async (id, updateObject) => {
   try {
     let resp = await UserNotifications.updateMany(id, updateObject);
     if (!resp) {
-      return { status: 2, message: "notifications not found" };
+      return { status: 2, message: "notification not found" };
     } else {
-      return { status: 1, message: "notifications marked as read" };
+      return { status: 1, message: "notification marked as read" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while marking as read notifications",
+      message: "Error occured while marking as read notification",
       error: err
     };
   }

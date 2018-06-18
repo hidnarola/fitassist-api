@@ -13,6 +13,7 @@ var measurement_helper = require("../../helpers/measurement_helper");
 var common_helper = require("../../helpers/common_helper");
 
 /**
+ * @apiIgnore "not used"
  * @api {post} /admin/measurement/filter Filter
  * @apiName Filter
  * @apiDescription Request Object :<pre><code>
@@ -66,6 +67,7 @@ router.post("/filter", async (req, res) => {
 });
 
 /**
+ * @apiIgnore "not used"
  * @api {get} /admin/measurement Get all
  * @apiName Get all
  * @apiGroup Measurement
@@ -88,6 +90,7 @@ router.get("/", async (req, res) => {
 });
 
 /**
+ * @apiIgnore "not used"
  * @api {get} /admin/measurement/:measurement_by_id Get by ID
  * @apiName Get by ID
  * @apiGroup Measurement
@@ -115,6 +118,7 @@ router.get("/:measurement_by_id", async (req, res) => {
 });
 
 /**
+ * @apiIgnore "not used"
  * @api {get} /admin/measurement/userid/:user_id Get by User ID
  * @apiName Get by User ID
  * @apiGroup Measurement
@@ -142,6 +146,7 @@ router.get("/userid/:user_id", async (req, res) => {
 });
 
 /**
+ * @apiIgnore "not used"
  * @api {post} /admin/measurement Add
  * @apiName Add
  * @apiGroup Measurement
@@ -215,6 +220,7 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * @apiIgnore "not used"
  * @api {put} /admin/measurement/:measurement_id Update
  * @apiName Update
  * @apiGroup Measurement
@@ -287,6 +293,7 @@ router.put("/:measurement_id", async (req, res) => {
 });
 
 /**
+ * @apiIgnore "not used"
  * @api {delete} /admin/measurement/:measurement_id Delete
  * @apiName Delete
  * @apiGroup Measurement

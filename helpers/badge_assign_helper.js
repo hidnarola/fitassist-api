@@ -61,7 +61,8 @@ badges_assign_helper.badge_assign = async (
       var badge = await Badges.find({
         task: element
       });
-      all_possible_badges = [];
+
+      var all_possible_badges = [];
       for (let singleBadge of badge) {
         var single_badge_object = {
           _id: singleBadge._id,
@@ -181,6 +182,12 @@ badges_assign_helper.badge_assign = async (
       } else if (element == "body_fat_least") {
       } else if (element == "neck_measurement_gain") {
       } else if (element == "neck_measurement_loss") {
+        
+        console.log('------------------------------------');
+        console.log(' : ', );
+        console.log('------------------------------------');
+        
+
       } else if (element == "shoulders_measurement_gain") {
       } else if (element == "shoulders_measurement_loss") {
       } else if (element == "chest_measurement_gain") {
