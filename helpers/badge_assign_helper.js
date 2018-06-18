@@ -334,10 +334,6 @@ badges_assign_helper.badge_assign = async (
       }
     }
     try {
-      console.log("------------------------------------");
-      console.log("insert_batch_data : ", insert_batch_data);
-      console.log("------------------------------------");
-
       let insert_badge = await BadgesAssign.insertMany(insert_batch_data);
       if (insert_badge && insert_badge.length > 0) {
         // console.log("SEND NOTIFICATION TO USER USING SOCKET");

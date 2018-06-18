@@ -1,5 +1,6 @@
 var UserNotifications = require("./../models/user_notifications");
 var user_notifications_helper = {};
+// var socket = require("../socket/socketServer");
 
 /*
  * get_notifications is used to fetch all user notification data
@@ -40,6 +41,35 @@ user_notifications_helper.get_notifications = async userId => {
 };
 
 /*
+ * get_notifications_count is used to count all user notifications data
+ * 
+ * @return  status 0 - If any internal error occured while counting notification data, with error
+ *          status 1 - If notification data count, with notification object
+ *          status 2 - If notification not count, with appropriate message
+ */
+user_notifications_helper.get_notifications_count = async userId => {
+  try {
+    var count = await UserNotifications.find(userId).count();
+
+    if (count) {
+      return {
+        status: 1,
+        message: "notifications found",
+        count: count
+      };
+    } else {
+      return { status: 2, message: "No notifications available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding notifications",
+      error: err
+    };
+  }
+};
+
+/*
  * add_notifications is used to insert into user_notifications collection
  * 
  * @param   notificationObj     JSON object consist of all property that need to insert in collection
@@ -49,10 +79,31 @@ user_notifications_helper.get_notifications = async userId => {
  * 
  * @developed by "amc"
  */
-user_notifications_helper.add_notifications = async notificationObj => {
+user_notifications_helper.add_notifications = async (
+  notificationObj,
+  socket
+) => {
   try {
     let notification_data = new UserNotifications(notificationObj);
     let notification = await notification_data.save();
+
+    var user_notifications_count = await user_notifications_helper.get_notifications_count(
+      {
+        "receiver.authUserId": notificationObj.receiver.authUserId,
+        isSeen: 0
+      }
+    );
+
+    var user = socket.users.get(notificationObj.receiver.authUserId);
+
+    if (user) {
+      var socketIds = user.socketIds;
+      socketIds.forEach(socketId => {
+        socket.io.to(socketId).emit("receive_user_notification_count", {
+          count: user_notifications_count.count
+        });
+      });
+    }
     return {
       status: 1,
       message: "notification sent",
@@ -84,12 +135,12 @@ user_notifications_helper.notification_seen = async (id, updateObject) => {
     if (!resp) {
       return { status: 2, message: "notifications not found" };
     } else {
-      return { status: 1, message: "notifications seen" };
+      return { status: 1, message: "notifications marked as read" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while seen notifications",
+      message: "Error occured while marking as read notifications",
       error: err
     };
   }

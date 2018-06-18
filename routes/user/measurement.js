@@ -196,11 +196,11 @@ router.post("/", async (req, res) => {
         height: req.body.height ? req.body.height : 0
       };
 
-      console.log(resp_data.measurement._id);
       let measurement_data = await measurement_helper.update_body_measurement(
         resp_data.measurement._id,
         measurement_obj
       );
+
       if (measurement_data.status === 0) {
         logger.error(
           "Error while inserting measurement data = ",

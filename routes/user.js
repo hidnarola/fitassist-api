@@ -27,6 +27,7 @@ var primary_goal = require("./user/primary_goals");
 var secondary_goals = require("./user/secondary_goals");
 var personal_goals = require("./user/personal_goals");
 var badge = require("./user/badges");
+var notification = require("./user/notifications");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -54,5 +55,6 @@ router.use("/primary_goal", auth, primary_goal);
 router.use("/secondary_goal", auth, secondary_goals);
 router.use("/personal_goal", auth, personal_goals);
 router.use("/badge", auth, badge);
+router.use("/notification", auth, notification);
 
 module.exports = router;

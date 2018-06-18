@@ -225,10 +225,17 @@ router.put("/:request_id", async (req, res) => {
         body: `${sender.firstName} ${sender.lastName} approved your request`,
         meta: friend_data
       };
+      // console.log("------------------------------------");
+      // console.log("socket : ", socket);
+      // console.log("------------------------------------");
+
       let notification_data = await notification_helper.add_notifications(
-        notificationObj
+        notificationObj,
+        socket
       );
       if (notification_data.status == 1) {
+
+        
         console.log("notification sent successfully");
       } else {
         console.log("notficiaion could not sent");
