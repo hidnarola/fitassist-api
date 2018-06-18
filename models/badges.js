@@ -213,6 +213,11 @@ var BadgesSchema = new Schema(
       enum: ["standard", "time_window"],
       default: "standard"
     },
+    baseDuration: { type: Number },
+    timeWindowType: {
+      type: String,
+      enum: ["day", "week", "month", "year"]
+    },
     duration: { type: Object, default: null },
     point: { type: Number, required: true, default: 0 },
     status: { type: Number, default: 1 },

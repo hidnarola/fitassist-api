@@ -549,6 +549,13 @@ define({ "api": [
             "group": "Parameter",
             "type": "Object",
             "optional": true,
+            "field": "timeWindowType",
+            "description": "<p>timeWindowType of badge | possible values<code>[&quot;day&quot;, &quot;week&quot;, &quot;month&quot;, &quot;year&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": true,
             "field": "duration",
             "description": "<p>duration of badge</p>"
           },
@@ -963,6 +970,13 @@ define({ "api": [
             "optional": true,
             "field": "timeType",
             "description": "<p>timeType of badge</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": true,
+            "field": "timeWindowType",
+            "description": "<p>timeWindowType of badge | possible values<code>[&quot;day&quot;, &quot;week&quot;, &quot;month&quot;, &quot;year&quot;]</code></p>"
           },
           {
             "group": "Parameter",
@@ -6912,7 +6926,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/user/chat/:username",
+    "url": "/user/chat/:username/:message_id",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Chat",
@@ -6956,7 +6970,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/chat.js",
+    "filename": "routes/user/user_settings.js",
     "groupTitle": "User_Chat"
   },
   {
@@ -7059,7 +7073,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/user/chat/:username/:message_id",
+    "url": "/user/chat/:username",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Chat",
@@ -7103,7 +7117,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
+    "filename": "routes/user/chat.js",
     "groupTitle": "User_Chat"
   },
   {
@@ -8521,6 +8535,55 @@ define({ "api": [
             "optional": false,
             "field": "notifications",
             "description": "<p>Array of notifications document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/notifications.js",
+    "groupTitle": "User_Notification"
+  },
+  {
+    "type": "put",
+    "url": "/user/notification/:notification_id",
+    "title": "Make notification as read",
+    "name": "Make_notification_as_read",
+    "group": "User_Notification",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
           }
         ]
       }

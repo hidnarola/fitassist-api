@@ -224,7 +224,7 @@ router.put("/:request_id", async (req, res) => {
         sender: sender,
         receiver: receiver,
         type: "friend_request_approved",
-        body: `{${sender.firstName} ${sender.lastName}} approved your request`,
+        body: `${sender.firstName} ${sender.lastName} approved your request`,
         meta: friend_data
       };
       // console.log("------------------------------------");

@@ -15,10 +15,6 @@ user_progress_photo_helper.get_user_progress_photos = async (
   limit,
   sort
 ) => {
-  console.log("------------------------------------");
-  console.log("sort : ", sort);
-  console.log("------------------------------------");
-
   try {
     var user_progress_photos = await UserProgressPhotos.aggregate([
       {

@@ -81,18 +81,11 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
 
   var checkFriend = await friend_helper.checkFriend(searchObject);
 
-  console.log("------------------------------------");
-  console.log(" friendId: ", friendId, authUserId);
-  console.log("------------------------------------");
-
   if (friendId == authUserId) {
-    console.log("self");
     privacyArray = [1, 2, 3];
   } else if (checkFriend.status == 1) {
-    console.log("friend");
     privacyArray = [2, 3];
   } else {
-    console.log("unknown");
     privacyArray = [3];
   }
 

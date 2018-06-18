@@ -6,7 +6,6 @@ var NutritionalLabels = require("./../models/nutritional_labels");
 var Nutritions = require("./../models/nutritions");
 
 common_helper.hashPassword = function(callback) {
-  console.log("in hash password");
   bcrypt.compare(this.password, this.hash, function(err, res) {
     if (err) {
       callback({ status: 0, error: err });

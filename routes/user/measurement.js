@@ -108,6 +108,11 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
   var logDate = req.body.logDate;
 
+  var host = req.headers["host"];
+  console.log("------------------------------------");
+  console.log("host : ", host);
+  console.log("------------------------------------");
+
   var startdate = moment(logDate).utcOffset(0);
   startdate.toISOString();
   startdate.format();

@@ -110,6 +110,7 @@ router.get("/:badge_id", async (req, res) => {
  * @apiParam {Number} value value of badge
  * @apiParam {String} task task of badge
  * @apiParam {Object} timeType timeType of badge
+ * @apiParam {Object} [timeWindowType] timeWindowType of badge | possible values<code>["day", "week", "month", "year"]</code>
  * @apiParam {Object} [duration] duration of badge
  * @apiParam {Number} point point of badge
  * @apiSuccess (Success 200) {JSON} badge added badge detail
@@ -364,6 +365,26 @@ router.post("/", async (req, res) => {
     if (req.body.duration) {
       badge_obj.duration = req.body.duration;
     }
+    if (req.body.timeWindowType) {
+      badge_obj.timeWindowType = req.body.timeWindowType;
+      switch (req.body.timeWindowType) {
+        case "day":
+          badge_obj.baseDuration = req.body.duration;
+          break;
+        case "week":
+          badge_obj.baseDuration = req.body.duration * 7;
+          break;
+        case "month":
+          badge_obj.baseDuration = req.body.duration * 30;
+          break;
+        case "year":
+          badge_obj.baseDuration = req.body.duration * 365;
+          break;
+        default:
+          badge_obj.baseDuration = req.body.duration;
+          break;
+      }
+    }
 
     let base_value_and_unit = await common_helper.unit_converter(
       req.body.value,
@@ -401,6 +422,7 @@ router.post("/", async (req, res) => {
  * @apiParam {Number} [value] value of badge
  * @apiParam {String} [task] task of badge
  * @apiParam {Object} [timeType] timeType of badge
+ * @apiParam {Object} [timeWindowType] timeWindowType of badge | possible values<code>["day", "week", "month", "year"]</code>
  * @apiParam {Object} [duration] duration of badge
  * @apiParam {Number} [point] point of badge
  * @apiParam {Number} [status] status of badge
@@ -657,6 +679,26 @@ router.put("/:badge_id", async (req, res) => {
 
     if (req.body.duration) {
       badge_obj.duration = req.body.duration;
+    }
+    if (req.body.timeWindowType) {
+      badge_obj.timeWindowType = req.body.timeWindowType;
+      switch (req.body.timeWindowType) {
+        case "day":
+          badge_obj.baseDuration = req.body.duration;
+          break;
+        case "week":
+          badge_obj.baseDuration = req.body.duration * 7;
+          break;
+        case "month":
+          badge_obj.baseDuration = req.body.duration * 30;
+          break;
+        case "year":
+          badge_obj.baseDuration = req.body.duration * 365;
+          break;
+        default:
+          badge_obj.baseDuration = req.body.duration;
+          break;
+      }
     }
 
     let base_value_and_unit = await common_helper.unit_converter(

@@ -182,12 +182,11 @@ badges_assign_helper.badge_assign = async (
       } else if (element == "body_fat_least") {
       } else if (element == "neck_measurement_gain") {
       } else if (element == "neck_measurement_loss") {
-        
-        console.log('------------------------------------');
-        console.log(' : ', );
-        console.log('------------------------------------');
-        
-
+        all_possible_badges.forEach(element => {
+          console.log("------------------------------------");
+          console.log("element.timeType : ", element);
+          console.log("------------------------------------");
+        });
       } else if (element == "shoulders_measurement_gain") {
       } else if (element == "shoulders_measurement_loss") {
       } else if (element == "chest_measurement_gain") {
