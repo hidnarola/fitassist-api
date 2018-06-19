@@ -12,21 +12,25 @@ var logger = config.logger;
 var notification_helper = require("../../helpers/notification_helper");
 
 /**
- * @api {get} /user/notification/ Get Notification
+ * @api {get} /user/notification/:type? Get Notification
  * @apiName  Get Notification
  * @apiGroup  User Notification
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {JSON} notifications Array of notifications document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/", async (req, res) => {
+router.get("/:type?", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var obj = {
+    "receiver.authUserId": authUserId
+  };
 
-  var resp_data = await notification_helper.get_notifications({
-    "receiver.authUserId": authUserId,
-    isSeen: 0
-  });
+  if (typeof req.params.type !== "undefined") {
+    obj.isSeen = parseInt(req.params.type);
+  }
+
+  var resp_data = await notification_helper.get_notifications(obj);
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching notifications = ", resp_data);
@@ -68,8 +72,8 @@ router.put("/", async (req, res) => {
 });
 
 /**
- * @api {put} /user/notification/:notification_id Make notification as read
- * @apiName Make notification as read
+ * @api {put} /user/notification/:notification_id Make Notification as Read
+ * @apiName Make Notification as Read
  * @apiGroup  User Notification
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {String} Success message

@@ -13,22 +13,18 @@ var chat_helper = require("../../helpers/chat_helper");
 var user_helper = require("../../helpers/user_helper");
 
 /**
- * @api {get} /user/chat/:username Get chat messages by username
- * @apiName Get chat messages by username
+ * @api {get} /user/chat/ Get chat messages
+ * @apiName Get chat messages
  * @apiGroup  User Chat
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {Array} conversations Array of conversations_replies document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:username", async (req, res) => {
+router.get("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var user = await user_helper.get_user_by({ username: req.params.username });
 
-  var resp_data = await chat_helper.get_messages(
-    authUserId,
-    user.user.authUserId
-  );
+  var resp_data = await chat_helper.get_messages(authUserId);
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching chat messages = ", resp_data);
@@ -45,7 +41,7 @@ router.get("/:username", async (req, res) => {
  * @apiGroup  User Chat
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} reply reply of chat message
+ * @apiParam {String} message message of chat conversation
  * @apiParam {String} friendId Id of friend
  * @apiSuccess (Success 200) {JSON} conversation message sent in conversations_replies detail
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -57,7 +53,7 @@ router.post("/", async (req, res) => {
 
   var schema = {
     friendId: { notEmpty: true, errorMessage: "friend Id is required" },
-    reply: { notEmpty: true, errorMessage: "reply is required " }
+    message: { notEmpty: true, errorMessage: "message is required " }
   };
 
   req.checkBody(schema);
@@ -67,7 +63,7 @@ router.post("/", async (req, res) => {
     var conversations_obj = { userId: authUserId, friendId: req.body.friendId };
     var conversations_replies_obj = {
       userId: authUserId,
-      reply: req.body.reply
+      message: req.body.message
     };
     let chat_data = await chat_helper.send_message(
       conversations_obj,

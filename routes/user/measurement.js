@@ -14,6 +14,7 @@ var logger = config.logger;
 var measurement_helper = require("../../helpers/measurement_helper");
 var common_helper = require("../../helpers/common_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
+var user_settings_helper = require("../../helpers/user_settings_helper");
 
 /**
  * @api {post} /user/measurement/get_by_id_logdate Get User Measurement
@@ -29,7 +30,6 @@ router.post("/get_by_id_logdate", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logDate = req.body.logDate;
-  console.log("Logdate: ", logDate);
   var schema = {
     logDate: {
       notEmpty: true,
@@ -108,11 +108,6 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
   var logDate = req.body.logDate;
 
-  var host = req.headers["host"];
-  console.log("------------------------------------");
-  console.log("host : ", host);
-  console.log("------------------------------------");
-
   var startdate = moment(logDate).utcOffset(0);
   startdate.toISOString();
   startdate.format();
@@ -132,34 +127,108 @@ router.post("/", async (req, res) => {
       $lte: enddate
     }
   });
-  if (resp_data.status == 2) {
-    var schema = {
-      logDate: {
-        notEmpty: true,
-        errorMessage: "Log Date is required"
-      }
-    };
+  var schema = {
+    logDate: {
+      notEmpty: true,
+      errorMessage: "Log Date is required"
+    },
+    neck: {
+      notEmpty: true,
+      errorMessage: "neck is required"
+    },
+    shoulders: {
+      notEmpty: true,
+      errorMessage: "shoulders is required"
+    },
+    chest: {
+      notEmpty: true,
+      errorMessage: "chest is required"
+    },
+    upperArm: {
+      notEmpty: true,
+      errorMessage: "upperArm is required"
+    },
+    waist: {
+      notEmpty: true,
+      errorMessage: "waist is required"
+    },
+    forearm: {
+      notEmpty: true,
+      errorMessage: "forearm is required"
+    },
+    hips: {
+      notEmpty: true,
+      errorMessage: "hips is required"
+    },
+    thigh: {
+      notEmpty: true,
+      errorMessage: "thigh is required"
+    },
+    calf: {
+      notEmpty: true,
+      errorMessage: "calf is required"
+    },
+    weight: {
+      notEmpty: true,
+      errorMessage: "weight is required"
+    },
+    height: {
+      notEmpty: true,
+      errorMessage: "height is required"
+    }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    let measurement_unit_data = await user_settings_helper.get_setting({
+      userId: authUserId
+    });
+    console.log("------------------------------------");
+    console.log(
+      "measurement_unit_data : ",
+      measurement_unit_data.user_settings.bodyMeasurement
+    );
+    console.log("------------------------------------");
 
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-
-    if (!errors) {
-      var measurement_obj = {
+    if (measurement_unit_data.status === 0) {
+      logger.error(
+        "Error while inserting measurement data = ",
+        measurement_unit_data
+      );
+      measurement_obj = {
         userId: authUserId,
-        logDate: req.body.logDate ? req.body.logDate : 0,
-        neck: req.body.neck ? req.body.neck : 0,
-        shoulders: req.body.shoulders ? req.body.shoulders : 0,
-        chest: req.body.chest ? req.body.chest : 0,
-        upperArm: req.body.upperArm ? req.body.upperArm : 0,
-        waist: req.body.waist ? req.body.waist : 0,
-        forearm: req.body.forearm ? req.body.forearm : 0,
-        hips: req.body.hips ? req.body.hips : 0,
-        thigh: req.body.thigh ? req.body.thigh : 0,
-        calf: req.body.calf ? req.body.calf : 0,
-        weight: req.body.weight ? req.body.weight : 0,
-        height: req.body.height ? req.body.height : 0
+        logDate: req.body.logDate,
+        neck: req.body.neck,
+        shoulders: req.body.shoulders,
+        chest: req.body.chest,
+        upperArm: req.body.upperArm,
+        waist: req.body.waist,
+        forearm: req.body.forearm,
+        hips: req.body.hips,
+        thigh: req.body.thigh,
+        calf: req.body.calf,
+        weight: req.body.weight,
+        height: req.body.height
       };
+    } else {
+      measurement_obj = {
+        userId: authUserId,
+        logDate: req.body.logDate,
+        neck: req.body.neck,
+        shoulders: req.body.shoulders,
+        chest: req.body.chest,
+        upperArm: req.body.upperArm,
+        waist: req.body.waist,
+        forearm: req.body.forearm,
+        hips: req.body.hips,
+        thigh: req.body.thigh,
+        calf: req.body.calf,
+        weight: req.body.weight,
+        height: req.body.height
+      };
+    }
 
+    if (resp_data.status == 2) {
       let measurement_data = await measurement_helper.insert_body_measurement(
         measurement_obj
       );
@@ -174,36 +243,6 @@ router.post("/", async (req, res) => {
         return res.status(config.OK_STATUS).json(measurement_data);
       }
     } else {
-      logger.error("Validation Error = ", errors);
-      res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
-    }
-  } else if (resp_data.status == 1) {
-    var schema = {
-      logDate: {
-        notEmpty: true,
-        errorMessage: "Log Date is required"
-      }
-    };
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-
-    if (!errors) {
-      var measurement_obj = {
-        userId: authUserId,
-        logDate: req.body.logDate ? req.body.logDate : 0,
-        neck: req.body.neck ? req.body.neck : 0,
-        shoulders: req.body.shoulders ? req.body.shoulders : 0,
-        chest: req.body.chest ? req.body.chest : 0,
-        upperArm: req.body.upperArm ? req.body.upperArm : 0,
-        waist: req.body.waist ? req.body.waist : 0,
-        forearm: req.body.forearm ? req.body.forearm : 0,
-        hips: req.body.hips ? req.body.hips : 0,
-        thigh: req.body.thigh ? req.body.thigh : 0,
-        calf: req.body.calf ? req.body.calf : 0,
-        weight: req.body.weight ? req.body.weight : 0,
-        height: req.body.height ? req.body.height : 0
-      };
-
       let measurement_data = await measurement_helper.update_body_measurement(
         resp_data.measurement._id,
         measurement_obj
@@ -219,12 +258,10 @@ router.post("/", async (req, res) => {
         badgesAssign(authUserId);
         return res.status(config.OK_STATUS).json(measurement_data);
       }
-    } else {
-      logger.error("Validation Error = ", errors);
-      res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
     }
   } else {
-    return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 

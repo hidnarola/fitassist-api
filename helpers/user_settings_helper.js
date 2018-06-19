@@ -2,6 +2,42 @@ var UserSettings = require("./../models/user_settings");
 var user_settings_helper = {};
 
 /*
+ * get_setting is used to get user settings data 
+ * 
+ * @param   setting_obj     JSON    object consist of all property that need to update
+ * 
+ * @return  status  0 - If any error occur in updating user_settings, with error
+ *          status  1 - If user_settings found successfully, with appropriate message
+ *          status  2 - If user_settings not found, with appropriate message
+ * 
+ * @developed by "amc"
+ */
+user_settings_helper.get_setting = async userId => {
+  try {
+    let user_settings_data = await UserSettings.findOne(userId);
+
+    if (user_settings_data) {
+      return {
+        status: 1,
+        message: "user preferences found",
+        user_settings: user_settings_data
+      };
+    } else {
+      return {
+        status: 2,
+        message: "user preferences not found",
+        user_settings: user_settings_data
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user settings",
+      error: err
+    };
+  }
+};
+/*
  * insert_setting is used to insert user settings data 
  * 
  * @param   setting_obj     JSON    object consist of all property that need to update
@@ -49,18 +85,11 @@ user_settings_helper.insert_setting = async setting_obj => {
  */
 user_settings_helper.save_settings = async (userId, setting_obj) => {
   try {
-    let user_settings;
     let user_settings_data = await UserSettings.findOne(userId);
 
-    if (user_settings_data && user_settings_data != null) {
-      user_settings = await UserSettings.findOneAndUpdate(userId, setting_obj, {
-        new: true
-      });
-    } else {
-      setting_obj.userId = userId.userId;
-      let user_settings_obj = new UserSettings(setting_obj);
-      user_settings = await user_settings_obj.save();
-    }
+    user_settings = await UserSettings.findOneAndUpdate(userId, setting_obj, {
+      new: true
+    });
 
     if (!user_settings) {
       return { status: 2, message: "Record has not updated" };

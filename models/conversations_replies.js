@@ -6,7 +6,12 @@ var Schema = mongoose.Schema;
 
 var ConversationsRepliesSchema = new Schema(
   {
-    reply: {
+    conversationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "conversations",
+      required: true
+    },
+    message: {
       type: String,
       required: true
     },
@@ -16,11 +21,7 @@ var ConversationsRepliesSchema = new Schema(
       field: "authUserId",
       required: true
     },
-    conversationId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "conversations",
-      required: true
-    },
+    isDeletedBy: { type: Number, default: null }, // 1 for sender 2 for reciever and 3 for both
     isDeleted: { type: Number, default: 0 },
     status: { type: Number, default: 1 },
     createdAt: { type: Date, default: Date.now },

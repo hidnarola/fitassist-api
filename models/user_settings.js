@@ -9,7 +9,7 @@ var UserSettingSchema = new Schema(
     userId: { type: String, ref: "users", field: "authUserId", required: true },
     bodyMeasurement: {
       type: String,
-      enum: ["cm", "inch", "feet"],
+      enum: ["cm", "inch"],
       default: "cm"
     },
     weight: {
@@ -23,23 +23,19 @@ var UserSettingSchema = new Schema(
       default: "km"
     },
     postAccessibility: {
-      type: String,
-      enum: ["public", "friends", "only_me"],
+      type: Number,
       default: 3
     },
     commentAccessibility: {
-      type: String,
-      enum: ["public", "friends", "only_me"],
+      type: Number,
       default: 3
     },
     messageAccessibility: {
-      type: String,
-      enum: ["public", "friends", "only_me"],
+      type: Number,
       default: 3
     },
     friendRequestAccessibility: {
-      type: String,
-      enum: ["public", "friends", "only_me"],
+      type: Number,
       default: 3
     },
     createdAt: { type: Date, default: Date.now },

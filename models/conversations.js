@@ -18,6 +18,7 @@ var ConversationSchema = new Schema(
       field: "authUserId",
       required: true
     },
+    isDeletedBy: { type: Number, default: null },
     isDeleted: { type: Number, default: 0 },
     status: { type: Number, default: 1 },
     createdAt: { type: Date, default: Date.now },

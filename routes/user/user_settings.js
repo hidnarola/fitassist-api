@@ -19,11 +19,11 @@ var user_settings_helper = require("../../helpers/user_settings_helper");
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} distance distance unit of user. <code>Enum : ["km", "mile"]</code>
  * @apiParam {String} weight weight unit of user. <code>Enum : ["kg", "lb"]</code>
- * @apiParam {String} bodyMeasurement body measurement unit of user. <code>Enum : ["cm", "inch", "feet"]</code>
- * @apiParam {String} postAccessibility post accessibility of user. <code>Enum : ["public", "friends", "only_me"]</code>
- * @apiParam {String} commentAccessibility comment accessibility of user. <code>Enum : ["public", "friends", "only_me"]</code>
- * @apiParam {String} messageAccessibility message accessibility of user. <code>Enum : ["public", "friends", "only_me"]</code>
- * @apiParam {String} friendRequestAccessibility friend request accessibility of user. <code>Enum : ["public", "friends", "only_me"]</code>
+ * @apiParam {String} bodyMeasurement body measurement unit of user. <code>Enum : ["cm", "inch"]</code>
+ * @apiParam {String} postAccessibility post accessibility of user.
+ * @apiParam {String} commentAccessibility comment accessibility of user.
+ * @apiParam {String} messageAccessibility message accessibility of user.
+ * @apiParam {String} friendRequestAccessibility friend request accessibility of user.
  * @apiSuccess (Success 200) {JSON} user_settings user preference in user_settings detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -35,10 +35,10 @@ router.post("/", async (req, res) => {
 
   if (req.body.distance) {
     schema.distance = {
-      notEmpty: true,
+      notEmpty: false,
       isIn: {
         options: [["km", "mile"]],
-        errorMessage: "distance must be from km or mile"
+        errorMessage: "distance is invalid"
       },
       errorMessage: "distance unit required"
     };
@@ -46,10 +46,10 @@ router.post("/", async (req, res) => {
 
   if (req.body.weight) {
     schema.weight = {
-      notEmpty: true,
+      notEmpty: false,
       isIn: {
         options: [["kg", "lb"]],
-        errorMessage: "weight must be from kg or lb"
+        errorMessage: "weight is invalid"
       },
       errorMessage: "weight unit required"
     };
@@ -57,10 +57,10 @@ router.post("/", async (req, res) => {
 
   if (req.body.bodyMeasurement) {
     schema.bodyMeasurement = {
-      notEmpty: true,
+      notEmpty: false,
       isIn: {
-        options: [["cm", "inch", "feet"]],
-        errorMessage: "body measurement must be from cm, inch or feet"
+        options: [["cm", "inch"]],
+        errorMessage: "body is invalid"
       },
       errorMessage: "body measurement unit required"
     };
@@ -68,11 +68,9 @@ router.post("/", async (req, res) => {
 
   if (req.body.postAccessibility) {
     schema.postAccessibility = {
-      notEmpty: true,
-      isIn: {
-        options: [["public", "friends", "only_me"]],
-        errorMessage:
-          "post accessibility must be from public, friends or only_me"
+      notEmpty: false,
+      isDecimal: {
+        errorMessage: "post accessibility is invalid"
       },
       errorMessage: "post accessibility is required"
     };
@@ -80,11 +78,9 @@ router.post("/", async (req, res) => {
 
   if (req.body.commentAccessibility) {
     schema.commentAccessibility = {
-      notEmpty: true,
-      isIn: {
-        options: [["public", "friends", "only_me"]],
-        errorMessage:
-          "comment accessibility must be from public, friends or only_me"
+      notEmpty: false,
+      isDecimal: {
+        errorMessage: "comment accessibility is invalid"
       },
       errorMessage: "comment accessibility is required"
     };
@@ -92,11 +88,9 @@ router.post("/", async (req, res) => {
 
   if (req.body.messageAccessibility) {
     schema.messageAccessibility = {
-      notEmpty: true,
-      isIn: {
-        options: [["public", "friends", "only_me"]],
-        errorMessage:
-          "message accessibility must be from public, friends or only_me"
+      notEmpty: false,
+      isDecimal: {
+        errorMessage: "message accessibility is invalid"
       },
       errorMessage: "message accessibility is required"
     };
@@ -104,11 +98,9 @@ router.post("/", async (req, res) => {
 
   if (req.body.friendRequestAccessibility) {
     schema.friendRequestAccessibility = {
-      notEmpty: true,
-      isIn: {
-        options: [["public", "friends", "only_me"]],
-        errorMessage:
-          "friend request accessibility must be from public, friends or only_me"
+      notEmpty: false,
+      isDecimal: {
+        errorMessage: "friend request accessibility is invalid"
       },
       errorMessage: "friend request accessibility is required"
     };
@@ -156,7 +148,7 @@ router.post("/", async (req, res) => {
       setting_obj
     );
     if (settings_data.status === 0) {
-      logger.error("Error while sending message = ", settings_data);
+      logger.error("Error while saving setting  = ", settings_data);
       return res.status(config.BAD_REQUEST).json({ settings_data });
     } else {
       return res.status(config.OK_STATUS).json(settings_data);
@@ -164,75 +156,6 @@ router.post("/", async (req, res) => {
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
-  }
-});
-
-/**
- * @api {delete} /user/chat/:username Delete
- * @apiName Delete
- * @apiGroup  User Chat
- * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {String} Success message
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.delete("/:username", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var user = await user_helper.get_user_by({ username: req.params.username });
-  logger.trace("Delete conversation of user. Id is = ", user.user.authUserId);
-  let chat_data = await chat_helper.delete_chat_message_by_user_id(
-    {
-      $or: [
-        {
-          userId: authUserId,
-          friendId: user.user.authUserId
-        },
-        {
-          friendId: authUserId,
-          userId: user.user.authUserId
-        }
-      ]
-    },
-    {
-      isDeleted: 1
-    }
-  );
-
-  if (chat_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(chat_data);
-  } else {
-    res.status(config.OK_STATUS).json(chat_data);
-  }
-});
-
-/**
- * @api {delete} /user/chat/:username/:message_id Delete
- * @apiName Delete
- * @apiGroup  User Chat
- * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {String} Success message
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.delete("/:username/:message_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var user = await user_helper.get_user_by({ username: req.params.username });
-  logger.trace("Delete conversation of user. Id is = ", user.user.authUserId);
-  let chat_data = await chat_helper.delete_chat_message_by_user_id(
-    {
-      userId: authUserId,
-      friendId: user.user.authUserId,
-      _id: req.params.message_id
-    },
-    {
-      isDeleted: 1
-    }
-  );
-
-  if (chat_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(chat_data);
-  } else {
-    res.status(config.OK_STATUS).json(chat_data);
   }
 });
 

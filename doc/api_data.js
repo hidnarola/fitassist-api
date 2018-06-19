@@ -6613,6 +6613,42 @@ define({ "api": [
     "groupTitle": "User"
   },
   {
+    "type": "get",
+    "url": "/user/profile/preferences",
+    "title": "Get User Profile preferences",
+    "name": "Get_Profile_preferences",
+    "group": "User",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "user_settings",
+            "description": "<p>Array of users_settings document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/profile.js",
+    "groupTitle": "User"
+  },
+  {
     "type": "put",
     "url": "/user/profile/photo",
     "title": "Profile Picture - Update",
@@ -6807,6 +6843,117 @@ define({ "api": [
     "groupTitle": "User"
   },
   {
+    "type": "post",
+    "url": "/user/profile/preferences",
+    "title": "Save User Preference",
+    "name": "Save_Preference",
+    "group": "User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "distance",
+            "description": "<p>distance unit of user. <code>Enum : [&quot;km&quot;, &quot;mile&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "weight",
+            "description": "<p>weight unit of user. <code>Enum : [&quot;kg&quot;, &quot;lb&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "bodyMeasurement",
+            "description": "<p>body measurement unit of user. <code>Enum : [&quot;cm&quot;, &quot;inch&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "postAccessibility",
+            "description": "<p>post accessibility of user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "commentAccessibility",
+            "description": "<p>comment accessibility of user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "messageAccessibility",
+            "description": "<p>message accessibility of user.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "friendRequestAccessibility",
+            "description": "<p>friend request accessibility of user.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_settings",
+            "description": "<p>user preference in user_settings detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/profile.js",
+    "groupTitle": "User"
+  },
+  {
     "type": "get",
     "url": "/user/badge/:start/:limit",
     "title": "Get all",
@@ -6970,104 +7117,6 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "delete",
-    "url": "/user/chat/:username",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "delete",
-    "url": "/user/chat/:username/:message_id",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
     "filename": "routes/user/chat.js",
     "groupTitle": "User_Chat"
   },
@@ -7122,8 +7171,8 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/chat/:username",
-    "title": "Get chat messages by username",
+    "url": "/user/chat/",
+    "title": "Get chat messages",
     "name": "Get_chat_messages_by_username",
     "group": "User_Chat",
     "header": {
@@ -7202,8 +7251,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "reply",
-            "description": "<p>reply of chat message</p>"
+            "field": "message",
+            "description": "<p>message of chat conversation</p>"
           },
           {
             "group": "Parameter",
@@ -8509,7 +8558,7 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/notification/",
+    "url": "/user/notification/:type?",
     "title": "Get Notification",
     "name": "Get_Notification",
     "group": "User_Notification",
@@ -8559,8 +8608,8 @@ define({ "api": [
   {
     "type": "put",
     "url": "/user/notification/:notification_id",
-    "title": "Make notification as read",
-    "name": "Make_notification_as_read",
+    "title": "Make Notification as Read",
+    "name": "Make_Notification_as_Read",
     "group": "User_Notification",
     "header": {
       "fields": {
@@ -10284,35 +10333,35 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "bodyMeasurement",
-            "description": "<p>body measurement unit of user. <code>Enum : [&quot;cm&quot;, &quot;inch&quot;, &quot;feet&quot;]</code></p>"
+            "description": "<p>body measurement unit of user. <code>Enum : [&quot;cm&quot;, &quot;inch&quot;]</code></p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "postAccessibility",
-            "description": "<p>post accessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+            "description": "<p>post accessibility of user.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "commentAccessibility",
-            "description": "<p>comment accessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+            "description": "<p>comment accessibility of user.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "messageAccessibility",
-            "description": "<p>message accessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+            "description": "<p>message accessibility of user.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "friendRequestAccessibility",
-            "description": "<p>friend request accessibility of user. <code>Enum : [&quot;public&quot;, &quot;friends&quot;, &quot;only_me&quot;]</code></p>"
+            "description": "<p>friend request accessibility of user.</p>"
           }
         ]
       }

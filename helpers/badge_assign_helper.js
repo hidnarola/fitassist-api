@@ -1,6 +1,8 @@
 var BadgesAssign = require("./../models/badges_assign");
 var Badges = require("./../models/badges");
 var _ = require("underscore");
+var measurement_helper = require("./measurement_helper");
+
 var badges_assign_helper = {};
 
 /*
@@ -64,20 +66,7 @@ badges_assign_helper.badge_assign = async (
 
       var all_possible_badges = [];
       for (let singleBadge of badge) {
-        var single_badge_object = {
-          _id: singleBadge._id,
-          baseValue: singleBadge.baseValue,
-          baseUnit: singleBadge.baseUnit,
-          value: singleBadge.value,
-          unit: singleBadge.unit,
-          name: singleBadge.name,
-          task: singleBadge.task,
-          point: singleBadge.point,
-          timeType: singleBadge.timeType,
-          descriptionCompleted: singleBadge.descriptionCompleted,
-          duration: singleBadge.duration
-        };
-        all_possible_badges.push(single_badge_object);
+        all_possible_badges.push(singleBadge);
       }
       var user_gained_badges = await BadgesAssign.find({
         userId: authUserId,
@@ -181,12 +170,26 @@ badges_assign_helper.badge_assign = async (
       } else if (element == "body_fat_most") {
       } else if (element == "body_fat_least") {
       } else if (element == "neck_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var resp_data = await measurement_helper.get_body_measurement_id(
+            {
+              logDate: {
+                $gte: new Date(
+                  new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                )
+              },
+              userId: authUserId
+            },
+            { logDate: 1 },
+            1
+          );
+          if (resp_data.status == 1) {
+            // if (resp_data.measurement.neck) {
+            // }
+          }
+        }
       } else if (element == "neck_measurement_loss") {
-        all_possible_badges.forEach(element => {
-          console.log("------------------------------------");
-          console.log("element.timeType : ", element);
-          console.log("------------------------------------");
-        });
       } else if (element == "shoulders_measurement_gain") {
       } else if (element == "shoulders_measurement_loss") {
       } else if (element == "chest_measurement_gain") {

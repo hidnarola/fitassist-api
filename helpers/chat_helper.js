@@ -10,7 +10,7 @@ var chat_helper = {};
  *          status 1 - If chat messages data found, with chat messages object
  *          status 2 - If chat messages not found, with appropriate message
  */
-chat_helper.get_messages = async (userId, friendId) => {
+chat_helper.get_messages = async userId => {
   try {
     var conversation = await Conversations.aggregate([
       {
@@ -19,10 +19,10 @@ chat_helper.get_messages = async (userId, friendId) => {
             {
               $or: [
                 {
-                  $and: [{ userId: friendId }, { friendId: userId }]
+                  $and: [{ userId: userId }]
                 },
                 {
-                  $and: [{ userId: userId }, { friendId: friendId }]
+                  $and: [{ friendId: userId }]
                 }
               ]
             },
@@ -151,11 +151,38 @@ chat_helper.send_message = async (
   conversations_replies_obj
 ) => {
   try {
-    let chat_message_data = new Conversations(conversations_obj);
-    let chat_message = await chat_message_data.save();
-    conversations_replies_obj.conversationId = chat_message._id;
+    var conversation_pair = {
+      $or: [
+        {
+          $and: [
+            { userId: conversations_obj.userId },
+            { friendId: conversations_obj.friendId }
+          ]
+        },
+        {
+          $and: [
+            { userId: conversations_obj.friendId },
+            { friendId: conversations_obj.userId }
+          ]
+        }
+      ]
+    };
+
+    let check_conversation_channel = await Conversations.findOne(
+      conversation_pair
+    );
+    if (check_conversation_channel) {
+      conversation_id = check_conversation_channel._id;
+    } else {
+      let chat_message_data = new Conversations(conversations_obj);
+      let chat_message = await chat_message_data.save();
+      conversation_id = chat_message._id;
+    }
+    conversations_replies_obj.conversationId = conversation_id;
+
     chat_message_data = new ConversationsReplies(conversations_replies_obj);
     chat_message = await chat_message_data.save();
+
     return { status: 1, message: "message sent", conversation: chat_message };
   } catch (err) {
     return {
