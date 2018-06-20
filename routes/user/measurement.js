@@ -15,6 +15,7 @@ var measurement_helper = require("../../helpers/measurement_helper");
 var common_helper = require("../../helpers/common_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
+var user_helper = require("../../helpers/user_helper");
 
 /**
  * @api {post} /user/measurement/get_by_id_logdate Get User Measurement
@@ -183,13 +184,8 @@ router.post("/", async (req, res) => {
     let measurement_unit_data = await user_settings_helper.get_setting({
       userId: authUserId
     });
-    console.log("------------------------------------");
-    console.log(
-      "measurement_unit_data : ",
-      measurement_unit_data.user_settings.bodyMeasurement
-    );
-    console.log("------------------------------------");
-
+    var bodyMeasurement = measurement_unit_data.user_settings.bodyMeasurement;
+    var weight = measurement_unit_data.user_settings.weight;
     if (measurement_unit_data.status === 0) {
       logger.error(
         "Error while inserting measurement data = ",
@@ -211,22 +207,73 @@ router.post("/", async (req, res) => {
         height: req.body.height
       };
     } else {
+      var neck = await common_helper.unit_converter(
+        req.body.neck,
+        bodyMeasurement
+      );
+      var shoulders = await common_helper.unit_converter(
+        req.body.shoulders,
+        bodyMeasurement
+      );
+      var chest = await common_helper.unit_converter(
+        req.body.chest,
+        bodyMeasurement
+      );
+      var upperArm = await common_helper.unit_converter(
+        req.body.upperArm,
+        bodyMeasurement
+      );
+      var waist = await common_helper.unit_converter(
+        req.body.waist,
+        bodyMeasurement
+      );
+      var forearm = await common_helper.unit_converter(
+        req.body.forearm,
+        bodyMeasurement
+      );
+      var hips = await common_helper.unit_converter(
+        req.body.hips,
+        bodyMeasurement
+      );
+      var thigh = await common_helper.unit_converter(
+        req.body.thigh,
+        bodyMeasurement
+      );
+      var calf = await common_helper.unit_converter(
+        req.body.calf,
+        bodyMeasurement
+      );
+      var weight = await common_helper.unit_converter(req.body.weight, weight);
+      var height = await common_helper.unit_converter(
+        req.body.height,
+        bodyMeasurement
+      );
+
       measurement_obj = {
         userId: authUserId,
         logDate: req.body.logDate,
-        neck: req.body.neck,
-        shoulders: req.body.shoulders,
-        chest: req.body.chest,
-        upperArm: req.body.upperArm,
-        waist: req.body.waist,
-        forearm: req.body.forearm,
-        hips: req.body.hips,
-        thigh: req.body.thigh,
-        calf: req.body.calf,
-        weight: req.body.weight,
-        height: req.body.height
+        neck: neck.baseValue,
+        shoulders: shoulders.baseValue,
+        chest: chest.baseValue,
+        upperArm: upperArm.baseValue,
+        waist: waist.baseValue,
+        forearm: forearm.baseValue,
+        hips: hips.baseValue,
+        thigh: thigh.baseValue,
+        calf: calf.baseValue,
+        weight: weight.baseValue,
+        height: height.baseValue
       };
     }
+    var user_height_and_weight_object = {
+      weight: weight.baseValue,
+      height: height.baseValue
+    };
+
+    let user_height_and_weight = await user_helper.update_user_by_id(
+      authUserId,
+      user_height_and_weight_object
+    );
 
     if (resp_data.status == 2) {
       let measurement_data = await measurement_helper.insert_body_measurement(

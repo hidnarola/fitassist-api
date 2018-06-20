@@ -10,127 +10,135 @@ var chat_helper = {};
  *          status 1 - If chat messages data found, with chat messages object
  *          status 2 - If chat messages not found, with appropriate message
  */
-chat_helper.get_messages = async userId => {
+chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
   try {
     var conversation = await Conversations.aggregate([
       {
         $match: {
-          $and: [
+          $or: [
             {
-              $or: [
-                {
-                  $and: [{ userId: userId }]
-                },
-                {
-                  $and: [{ friendId: userId }]
-                }
-              ]
+              userId: userId
             },
             {
-              isDeleted: 0
+              friendId: userId
             }
           ]
         }
       },
-      {
-        $sort: {
-          createdAt: -1
-        }
-      },
+      skip,
+      limit,
       {
         $lookup: {
           from: "conversations_replies",
-          localField: "_id",
           foreignField: "conversationId",
-          as: "message"
+          localField: "_id",
+          as: "conversations"
         }
       },
       {
-        $unwind: "$message"
-      },
-      {
-        $match: {
-          "message.isDeleted": 0
-        }
+        $unwind: "$conversations"
       },
       {
         $lookup: {
           from: "users",
+          foreignField: "authUserId",
           localField: "userId",
-          foreignField: "authUserId",
-          as: "user"
+          as: "userId"
         }
       },
       {
-        $unwind: "$user"
+        $unwind: "$userId"
       },
       {
         $lookup: {
           from: "users",
-          localField: "friendId",
           foreignField: "authUserId",
-          as: "friend"
+          localField: "friendId",
+          as: "friendId"
         }
       },
       {
-        $unwind: "$friend"
+        $unwind: "$friendId"
+      },
+      {
+        $sort: {
+          "conversations.createdAt": -1
+        }
       },
       {
         $group: {
           _id: "$_id",
-          user: {
-            $first: {
-              firstName: "$user.firstName",
-              lastName: "$user.lastName",
-              avatar: "$user.avatar",
-              username: "$user.username",
-              authUserId: "$user.authUserId"
-            }
-          },
-          friend: {
-            $first: {
-              firstName: "$friend.firstName",
-              lastName: "$friend.lastName",
-              avatar: "$friend.avatar",
-              username: "$friend.username",
-              authUserId: "$friend.authUserId"
-            }
-          },
-          message: { $first: "$message.reply" },
-          createdAt: { $first: "$message.createdAt" }
+          lastReplyAt: { $first: "$lastReplyAt" },
+          userData: { $first: "$userId" },
+          friendData: { $first: "$friendId" },
+          conversation: { $first: "$conversations" }
         }
       },
       {
-        $project: {
-          _id: 1,
-          user: 1,
-          friend: 1,
-          message: 1,
-          createdAt: 1,
-          flag: {
-            $cond: {
-              if: { $eq: ["$user.authUserId", userId] },
-              then: "sent",
-              else: "recieved"
-            }
-          }
+        $sort: {
+          lastReplyAt: -1
         }
       }
     ]);
 
-    if (conversation && conversation.length > 0) {
+    if (conversation) {
       return {
         status: 1,
         message: "conversation found",
-        conversation: conversation
+        channels: conversation
       };
     } else {
-      return { status: 2, message: "No conversation available" };
+      return { status: 2, message: "No messages available" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding conversation",
+      message: "Error occured while finding messages",
+      error: err
+    };
+  }
+};
+/*
+ * get_messages is used to fetch all messages data
+ * 
+ * @return  status 0 - If any internal error occured while fetching chat messages data, with error
+ *          status 1 - If chat messages data found, with chat messages object
+ *          status 2 - If chat messages not found, with appropriate message
+ */
+chat_helper.get_conversation = async (channel_id, skip = {}, limit = {}) => {
+  try {
+    var conversation = await Conversations.aggregate([
+      {
+        $match: channel_id
+      },
+      {
+        $lookup: {
+          from: "conversations_replies",
+          foreignField: "conversationId",
+          localField: "_id",
+          as: "conversations"
+        }
+      },
+      {
+        $sort: {
+          "conversations.createdAt": -1
+        }
+      }
+    ]);
+
+    if (conversation) {
+      return {
+        status: 1,
+        message: "conversation found",
+        channels: conversation
+      };
+    } else {
+      return { status: 2, message: "No messages available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding messages",
       error: err
     };
   }

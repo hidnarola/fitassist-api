@@ -21,11 +21,8 @@ var ConversationsRepliesSchema = new Schema(
       field: "authUserId",
       required: true
     },
-    isDeletedBy: { type: Number, default: null }, // 1 for sender 2 for reciever and 3 for both
-    isDeleted: { type: Number, default: 0 },
-    status: { type: Number, default: 1 },
-    createdAt: { type: Date, default: Date.now },
-    modifiedAt: { type: Date, default: Date.now }
+    isSeen: { type: Number, default: 0 },
+    createdAt: { type: Date, default: Date.now }
   },
   { versionKey: false }
 );

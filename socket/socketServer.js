@@ -1,6 +1,10 @@
 var io = require("socket.io")();
 var jwtDecode = require("jwt-decode");
 var user_notification_helper = require("../helpers/notification_helper");
+var chat_helper = require("../helpers/chat_helper");
+var config = require("../config");
+var logger = config.logger;
+
 var myIo = {};
 var users = new Map();
 var socketToUsers = new Map();
@@ -40,6 +44,39 @@ myIo.init = function(server) {
       });
     });
 
+    socket.on("request_users_conversation_channels", async function(data) {
+      var resp_data = {};
+      var decoded = jwtDecode(data.token);
+      var authUserId = decoded.sub;
+      var user = users.get(authUserId);
+      var socketIds = user.socketIds;
+      var start = parseInt(data.start ? data.start : 0);
+      var limit = parseInt(data.limit ? data.limit : 10);
+      try {
+        resp_data = await chat_helper.get_messages(
+          authUserId,
+          { $skip: start },
+          { $limit: limit }
+        );
+
+        if (resp_data.status == 0) {
+          logger.error(
+            "Error occured while fetching chat messages = ",
+            resp_data
+          );
+        } else {
+          logger.trace("chat messages got successfully = ", resp_data);
+        }
+      } catch (error) {
+        resp_data.message = "Internal server error! please try again later.";
+        resp_data.status = 0;
+      } finally {
+        socketIds.forEach(socketId => {
+          io.to(socketId).emit("receive_users_conversation_channel", resp_data);
+        });
+      }
+    });
+
     socket.on("disconnect", function() {
       var socketId = this.id;
       var socketToUser = socketToUsers.get(socketId);
@@ -54,7 +91,8 @@ myIo.init = function(server) {
         socketToUsers.delete(socketId);
       }
     });
-    // console.log("Socket Connected With socket id : -", socket.id);
+
+    console.log("Socket Connected With socket id : -", socket.id);
   });
   myIo.io = io;
   myIo.users = users;

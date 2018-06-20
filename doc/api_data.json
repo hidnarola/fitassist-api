@@ -6843,7 +6843,7 @@
     "groupTitle": "User"
   },
   {
-    "type": "post",
+    "type": "put",
     "url": "/user/profile/preferences",
     "title": "Save User Preference",
     "name": "Save_Preference",
@@ -6931,7 +6931,7 @@
             "type": "JSON",
             "optional": false,
             "field": "user_settings",
-            "description": "<p>user preference in user_settings detail</p>"
+            "description": "<p>user preference in user_settings detail.</p>"
           }
         ]
       }
@@ -7171,9 +7171,9 @@
   },
   {
     "type": "get",
-    "url": "/user/chat/",
+    "url": "/user/chat/messages",
     "title": "Get chat messages",
-    "name": "Get_chat_messages_by_username",
+    "name": "Get_chat_messages",
     "group": "User_Chat",
     "header": {
       "fields": {
@@ -7195,7 +7195,7 @@
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "conversations",
+            "field": "messages",
             "description": "<p>Array of conversations_replies document</p>"
           }
         ]

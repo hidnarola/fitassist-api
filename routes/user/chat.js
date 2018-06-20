@@ -3,28 +3,66 @@ var fs = require("fs");
 var path = require("path");
 var async = require("async");
 var jwtDecode = require("jwt-decode");
-
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
-
 var chat_helper = require("../../helpers/chat_helper");
 var user_helper = require("../../helpers/user_helper");
 
 /**
- * @api {get} /user/chat/ Get chat messages
- * @apiName Get chat messages
+ * @api {get} /user/chat/messages/:start?/:limit? Get recently messages
+ * @apiName Get recently messages
  * @apiGroup  User Chat
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {Array} conversations Array of conversations_replies document
+ * @apiSuccess (Success 200) {Array} messages Array of conversations_replies document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/", async (req, res) => {
+router.get("/messages/:start?/:limit?/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var resp_data = await chat_helper.get_messages(authUserId);
+  var start = parseInt(req.params.start ? req.params.start : 0);
+  var limit = parseInt(req.params.limit ? req.params.limit : 10);
+
+  var resp_data = await chat_helper.get_messages(
+    authUserId,
+    { $skip: start },
+    { $limit: limit }
+  );
+
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching chat messages = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("chat messages got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
+ * @api {get} /user/chat/channel_id/:start?/:limit? Get recently messages
+ * @apiName Get recently messages
+ * @apiGroup  User Chat
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {Array} channels Array of conversations_replies document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/:channel_id/:start?/:limit?/", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var channel_id = {
+    _id: new ObjectId(req.params.channel_id)
+  };
+
+  var start = parseInt(req.params.start ? req.params.start : 0);
+  var limit = parseInt(req.params.limit ? req.params.limit : 10);
+
+  var resp_data = await chat_helper.get_conversation(
+    authUserId,
+    { $skip: start },
+    { $limit: limit }
+  );
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching chat messages = ", resp_data);
