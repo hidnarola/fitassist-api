@@ -4,6 +4,8 @@ var async = require("async");
 var _ = require("underscore");
 var NutritionalLabels = require("./../models/nutritional_labels");
 var Nutritions = require("./../models/nutritions");
+var user_helper = require("./../helpers/user_helper");
+var notification_helper = require("./../helpers/notification_helper");
 
 common_helper.hashPassword = function(callback) {
   bcrypt.compare(this.password, this.hash, function(err, res) {
@@ -170,4 +172,70 @@ common_helper.unit_converter = async (data, unit) => {
       break;
   }
 };
+
+/*
+ * send_notification is used to send notification  to user
+ * 
+ * @return  status 0 - If any internal error occured while sending notification data, with error
+ *          status 1 - If notification inserted, with unit object
+ *          status 2 - If notification not inserted, with appropriate message
+ */
+common_helper.send_notification = async (notificationData, socket) => {
+  let receiver_data = await user_helper.get_user_by({
+    authUserId: notificationData.receiverId
+  });
+
+  let sender_data = await user_helper.get_user_by({
+    authUserId: notificationData.senderId
+  });
+
+  if (receiver_data.status == 1) {
+    var receiver = {
+      firstName: receiver_data.user.firstName,
+      lastName: receiver_data.user.lastName,
+      avatar: receiver_data.user.avatar,
+      username: receiver_data.user.username,
+      authUserId: receiver_data.user.authUserId
+    };
+  }
+  if (sender_data.status == 1) {
+    var sender = {
+      firstName: sender_data.user.firstName,
+      lastName: sender_data.user.lastName,
+      avatar: sender_data.user.avatar,
+      username: sender_data.user.username,
+      authUserId: sender_data.user.authUserId
+    };
+  }
+  if (sender && receiver) {
+    var notificationObj = {
+      sender: sender,
+      receiver: receiver,
+      type: notificationData.type,
+      timelineId: notificationData.timelineId,
+      body: `${sender.firstName} ${sender.lastName} ${
+        notificationData.bodyMessage
+      }`
+    };
+
+    let notification_data = await notification_helper.add_notifications(
+      notificationObj,
+      socket
+    );
+
+    if (notification_data.status == 1) {
+      return {
+        status: 1,
+        message: "notification sent",
+        notification: notification_data
+      };
+    } else {
+      return {
+        status: 1,
+        message: "notification not sent"
+      };
+    }
+  }
+};
+
 module.exports = common_helper;

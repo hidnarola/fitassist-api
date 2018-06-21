@@ -11,9 +11,13 @@ var UserNotificationsSchema = new Schema(
       type: Object,
       required: true
     },
-    type: { type: String, enum: ["friend_request_approved"], required: true },
+    type: {
+      type: String,
+      enum: ["friend_request_approved", "like_post", "comment_post"],
+      required: true
+    },
+    timelineId: { type: String },
     body: { type: String, required: true },
-    meta: { type: Object, required: false, default: {} },
     isSeen: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }

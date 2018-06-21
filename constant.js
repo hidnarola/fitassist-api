@@ -232,5 +232,19 @@ module.exports = {
       }
     ],
     healthRestrictionLabels: []
+  },
+  NOTIFICATION_MESSAGES: {
+    LIKE: {
+      TYPE: "like_post",
+      MESSAGE: "liked your post"
+    },
+    COMMENT: {
+      TYPE: "comment_post",
+      MESSAGE: "commented on your post"
+    },
+    FRIEND_REQUEST: {
+      TYPE: "friend_request_approved",
+      MESSAGE: "approved your friend request"
+    }
   }
 };

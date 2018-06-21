@@ -5990,6 +5990,78 @@
     "groupTitle": "Shopping_Cart"
   },
   {
+    "type": "socket on",
+    "url": "request_users_conversation_channels",
+    "title": "Get user channels",
+    "name": "Get_user_channels",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Data of user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "resp_data",
+            "description": "<p>resp_data of channel</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "user_notifications_count",
+    "title": "Get user notification counts",
+    "name": "Get_user_notification_counts",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token of user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>count of notifications</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
     "type": "post",
     "url": "/admin/test_exercise",
     "title": "Add",
@@ -7171,9 +7243,9 @@
   },
   {
     "type": "get",
-    "url": "/user/chat/messages",
-    "title": "Get chat messages",
-    "name": "Get_chat_messages",
+    "url": "/user/chat/messages/:start?/:limit?",
+    "title": "Get recently messages",
+    "name": "Get_recently_messages",
     "group": "User_Chat",
     "header": {
       "fields": {
@@ -7196,6 +7268,55 @@
             "type": "Array",
             "optional": false,
             "field": "messages",
+            "description": "<p>Array of conversations_replies document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/chat.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "get",
+    "url": "/user/chat/channel_id/:start?/:limit?",
+    "title": "Get recently messages",
+    "name": "Get_recently_messages",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "channels",
             "description": "<p>Array of conversations_replies document</p>"
           }
         ]

@@ -26,6 +26,14 @@ myIo.init = function(server) {
       socketToUsers.set(socket.id, authUserId);
     });
 
+    /**
+     * @api {socket on} user_notifications_count  Get user notification counts
+     * @apiName Get user notification counts
+     * @apiGroup  Sokets
+     * @apiParam {String} token Token of user
+     * @apiSuccess (Success 200) {Number} count count of notifications
+     */
+
     socket.on("user_notifications_count", async function(token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
@@ -44,6 +52,13 @@ myIo.init = function(server) {
       });
     });
 
+    /**
+     * @api {socket on} request_users_conversation_channels  Get user channels
+     * @apiName Get user channels
+     * @apiGroup  Sokets
+     * @apiParam {Object} data Data of user
+     * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
+     */
     socket.on("request_users_conversation_channels", async function(data) {
       var resp_data = {};
       var decoded = jwtDecode(data.token);

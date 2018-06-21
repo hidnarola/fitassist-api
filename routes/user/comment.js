@@ -4,6 +4,7 @@ var path = require("path");
 var async = require("async");
 var jwtDecode = require("jwt-decode");
 var mongoose = require("mongoose");
+var constant = require("../../constant");
 
 var router = express.Router();
 
@@ -12,6 +13,8 @@ var logger = config.logger;
 
 var like_comment_helper = require("../../helpers/like_comment_helper");
 var user_posts_helper = require("../../helpers/user_posts_helper");
+var common_helper = require("../../helpers/common_helper");
+var socket = require("../../socket/socketServer");
 
 /**
  * @api {post} /user/post/comment  Add
@@ -70,6 +73,27 @@ router.post("/", async (req, res) => {
           isDeleted: 0
         });
 
+        if (
+          authUserId.toString() !==
+          resp_data.timeline.created_by.authUserId.toString()
+        ) {
+          var notificationObj = {
+            senderId: authUserId,
+            receiverId: resp_data.timeline.created_by.authUserId,
+            timelineId: req.body.postId,
+            type: constant.NOTIFICATION_MESSAGES.COMMENT.TYPE,
+            bodyMessage: constant.NOTIFICATION_MESSAGES.COMMENT.MESSAGE
+          };
+
+          var notification_data = await common_helper.send_notification(
+            notificationObj,
+            socket
+          );
+          console.log("------------------------------------");
+          console.log("notification_data : ", notification_data);
+          console.log("------------------------------------");
+        }
+
         if (resp_data.status == 0) {
           logger.error(
             "Error occured while commenting user timeline = ",
@@ -78,13 +102,10 @@ router.post("/", async (req, res) => {
           return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
         } else {
           resp_data.message = "comment successfully";
-
           logger.trace("user posted comment successfully = ", resp_data);
           return res.status(config.OK_STATUS).json(resp_data);
         }
-
         resp_data.message = "comment successfully";
-
         logger.trace("user comment got successfully = ", resp_data);
         return res.status(config.OK_STATUS).json(resp_data);
       }

@@ -117,9 +117,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
   try {
     //#region timeline old query
     var timeline = await UserTimeline.aggregate([
-      {
-        $match: user_auth_id
-      },
+      { $match: user_auth_id },
       {
         $lookup: {
           from: "user_progress_photos",
@@ -204,11 +202,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           preserveNullAndEmptyArrays: true
         }
       },
-      {
-        $sort: {
-          "likes.createdAt": 1
-        }
-      },
+      { $sort: { "likes.createdAt": 1 } },
       {
         $lookup: {
           from: "users",
@@ -268,6 +262,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           post_description: { $first: "$user_posts.description" },
           created_by: {
             $first: {
+              authUserId: "$created_by.authUserId",
               firstName: "$created_by.firstName",
               lastName: "$created_by.lastName",
               avatar: "$created_by.avatar",
@@ -276,6 +271,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           },
           owner_by: {
             $first: {
+              authUserId: "$users.authUserId",
               firstName: "$users.firstName",
               lastName: "$users.lastName",
               avatar: "$users.avatar",

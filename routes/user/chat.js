@@ -2,6 +2,7 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 var async = require("async");
+var mongoose = require("mongoose");
 var jwtDecode = require("jwt-decode");
 var router = express.Router();
 var config = require("../../config");
@@ -52,14 +53,14 @@ router.get("/:channel_id/:start?/:limit?/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var channel_id = {
-    _id: new ObjectId(req.params.channel_id)
+    _id: mongoose.Types.ObjectId(req.params.channel_id)
   };
 
   var start = parseInt(req.params.start ? req.params.start : 0);
   var limit = parseInt(req.params.limit ? req.params.limit : 10);
 
   var resp_data = await chat_helper.get_conversation(
-    authUserId,
+    channel_id,
     { $skip: start },
     { $limit: limit }
   );

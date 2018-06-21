@@ -6,12 +6,15 @@ var mongoose = require("mongoose");
 var jwtDecode = require("jwt-decode");
 
 var router = express.Router();
+var constant = require("../../constant");
 
 var config = require("../../config");
 var logger = config.logger;
 
 var like_comment_helper = require("../../helpers/like_comment_helper");
 var user_posts_helper = require("../../helpers/user_posts_helper");
+var common_helper = require("../../helpers/common_helper");
+var socket = require("../../socket/socketServer");
 
 /**
  * @api {post} /user/post/like  Add
@@ -47,8 +50,10 @@ router.post("/", async (req, res) => {
       userId: authUserId,
       postId: req.body.postId
     });
+
     if (like_data.status === 1) {
       let like_data = await like_comment_helper.delete_like(like_obj);
+
       if (like_data.status === 0) {
         logger.error("Error while disliking post data = ", like_data);
         return res.status(config.BAD_REQUEST).json({ like_data });
@@ -65,7 +70,7 @@ router.post("/", async (req, res) => {
           );
           return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
         } else {
-          resp_data.message = "Post liked";
+          resp_data.message = "Post disliked";
           logger.trace("user like got successfully = ", resp_data);
           return res.status(config.OK_STATUS).json(resp_data);
         }
@@ -82,6 +87,28 @@ router.post("/", async (req, res) => {
           isDeleted: 0
         });
 
+        if (
+          authUserId.toString() !==
+          resp_data.timeline.created_by.authUserId.toString()
+        ) {
+          var notificationObj = {
+            senderId: authUserId,
+            receiverId: resp_data.timeline.created_by.authUserId,
+            timelineId: req.body.postId,
+            type: constant.NOTIFICATION_MESSAGES.LIKE.TYPE,
+            bodyMessage: constant.NOTIFICATION_MESSAGES.LIKE.MESSAGE
+          };
+
+          var notification_data = await common_helper.send_notification(
+            notificationObj,
+            socket
+          );
+        }
+        var resp_data = await user_posts_helper.get_user_timeline_by_id({
+          _id: mongoose.Types.ObjectId(req.body.postId),
+          isDeleted: 0
+        });
+
         if (resp_data.status == 0) {
           logger.error(
             "Error occured while liking user timeline = ",
@@ -89,7 +116,7 @@ router.post("/", async (req, res) => {
           );
           return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
         } else {
-          resp_data.message = "Post disliked";
+          resp_data.message = "Post Liked";
 
           logger.trace("user like got successfully = ", resp_data);
           return res.status(config.OK_STATUS).json(resp_data);

@@ -15,6 +15,7 @@ var friend_helper = require("../../helpers/friend_helper");
 var notification_helper = require("../../helpers/notification_helper");
 var user_helper = require("../../helpers/user_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
+var common_helper = require("../../helpers/common_helper");
 var socket = require("../../socket/socketServer");
 
 /**
@@ -193,6 +194,18 @@ router.put("/:request_id", async (req, res) => {
       _id: mongoose.Types.ObjectId(req.params.request_id)
     });
 
+    notificationObj = {
+      senderId: friend.friends[0].friendId,
+      receiverId: friend.friends[0].userId,
+      type: constant.NOTIFICATION_MESSAGES.FRIEND_REQUEST.TYPE,
+      bodyMessage: constant.NOTIFICATION_MESSAGES.FRIEND_REQUEST.MESSAGE
+    };
+
+    var notification_data = await common_helper.send_notification(
+      notificationObj,
+      socket
+    );
+
     let receiver_data = await user_helper.get_user_by({
       authUserId: friend.friends[0].userId
     });
@@ -200,47 +213,6 @@ router.put("/:request_id", async (req, res) => {
     let sender_data = await user_helper.get_user_by({
       authUserId: friend.friends[0].friendId
     });
-
-    if (receiver_data.status == 1) {
-      var receiver = {
-        firstName: receiver_data.user.firstName,
-        lastName: receiver_data.user.lastName,
-        avatar: receiver_data.user.avatar,
-        username: receiver_data.user.username,
-        authUserId: receiver_data.user.authUserId
-      };
-    }
-    if (sender_data.status == 1) {
-      var sender = {
-        firstName: sender_data.user.firstName,
-        lastName: sender_data.user.lastName,
-        avatar: sender_data.user.avatar,
-        username: sender_data.user.username,
-        authUserId: sender_data.user.authUserId
-      };
-    }
-    if (sender && receiver) {
-      var notificationObj = {
-        sender: sender,
-        receiver: receiver,
-        type: "friend_request_approved",
-        body: `${sender.firstName} ${sender.lastName} approved your request`,
-        meta: friend_data
-      };
-      // console.log("------------------------------------");
-      // console.log("socket : ", socket);
-      // console.log("------------------------------------");
-
-      let notification_data = await notification_helper.add_notifications(
-        notificationObj,
-        socket
-      );
-      if (notification_data.status == 1) {
-        console.log("notification sent successfully");
-      } else {
-        console.log("notficiaion could not sent");
-      }
-    }
 
     var receiver_data_friends = await friend_helper.get_friend_by_username(
       {

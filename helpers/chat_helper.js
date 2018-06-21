@@ -80,7 +80,6 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
         }
       }
     ]);
-
     if (conversation) {
       return {
         status: 1,
@@ -99,11 +98,11 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
   }
 };
 /*
- * get_messages is used to fetch all messages data
+ * get_conversation is used to fetch all conversation data
  * 
- * @return  status 0 - If any internal error occured while fetching chat messages data, with error
- *          status 1 - If chat messages data found, with chat messages object
- *          status 2 - If chat messages not found, with appropriate message
+ * @return  status 0 - If any internal error occured while fetching chat conversation data, with error
+ *          status 1 - If chat conversation data found, with chat conversation object
+ *          status 2 - If chat conversation not found, with appropriate message
  */
 chat_helper.get_conversation = async (channel_id, skip = {}, limit = {}) => {
   try {
@@ -116,29 +115,28 @@ chat_helper.get_conversation = async (channel_id, skip = {}, limit = {}) => {
           from: "conversations_replies",
           foreignField: "conversationId",
           localField: "_id",
-          as: "conversations"
+          as: "messages"
         }
       },
       {
-        $sort: {
-          "conversations.createdAt": -1
-        }
-      }
+        $unwind: "$messages"
+      },
+      { $sort: { "messages.createdAt": -1 } },
+      { $group: { _id: "$_id", messages: { $push: "$messages" } } }
     ]);
-
     if (conversation) {
       return {
         status: 1,
         message: "conversation found",
-        channels: conversation
+        conversations: conversation
       };
     } else {
-      return { status: 2, message: "No messages available" };
+      return { status: 2, message: "No conversation available" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding messages",
+      message: "Error occured while finding conversation",
       error: err
     };
   }
