@@ -68,6 +68,7 @@ badges_assign_helper.badge_assign = async (
       for (let singleBadge of badge) {
         all_possible_badges.push(singleBadge);
       }
+
       var user_gained_badges = await BadgesAssign.find({
         userId: authUserId,
         task: element
@@ -172,40 +173,862 @@ badges_assign_helper.badge_assign = async (
       } else if (element == "neck_measurement_gain") {
         for (let single_badge of all_possible_badges) {
           var duration = parseInt(single_badge.baseDuration);
-          var resp_data = await measurement_helper.get_body_measurement_id(
-            {
-              logDate: {
-                $gte: new Date(
-                  new Date().getTime() - duration * 24 * 60 * 60 * 1000
-                )
-              },
-              userId: authUserId
-            },
-            { logDate: 1 },
-            1
-          );
-          if (resp_data.status == 1) {
-            // if (resp_data.measurement.neck) {
-            // }
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.neck;
+              var lastNeck = valueToBeCompare.neck_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("neck gain badge assigned");
+              }
+            }
           }
         }
       } else if (element == "neck_measurement_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.neck;
+              var lastNeck = valueToBeCompare.neck_measurement_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("neck loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "shoulders_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.shoulders;
+              var lastNeck = valueToBeCompare.shoulders_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("shoulders gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "shoulders_measurement_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.shoulders;
+              var lastNeck = valueToBeCompare.shoulders_measurement_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("shoulders loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "chest_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.chest;
+              var lastNeck = valueToBeCompare.chest_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("chest gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "chest_measurement_loss") {
+        console.log("------------------------------------");
+        console.log("chest : ");
+        console.log("------------------------------------");
+
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.chest;
+              var lastNeck = valueToBeCompare.chest_measurement_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("chest loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "upper_arm_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.upperArm;
+              var lastNeck = valueToBeCompare.upper_arm_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("upperArm gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "upper_arm_measurement_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.upperArm;
+              var lastNeck = valueToBeCompare.upper_arm_measurement_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("upperArm loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "waist_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.waist;
+              var lastNeck = valueToBeCompare.waist_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("waist gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "waist_measurement_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.waist;
+              var lastNeck = valueToBeCompare.waist_measurement_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("waist loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "forearm_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.forearm;
+              var lastNeck = valueToBeCompare.forearm_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("forearm gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "forearm_measurement_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.forearm;
+              var lastNeck = valueToBeCompare.forearm_measurement_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("forearm loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "hips_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.hips;
+              var lastNeck = valueToBeCompare.hips_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("hips gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "hips_measurement_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.hips;
+              var lastNeck = valueToBeCompare.hips_measurement_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("hips loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "thigh_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.thigh;
+              var lastNeck = valueToBeCompare.thigh_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("thigh gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "thigh_measurement_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.thigh;
+              var lastNeck = valueToBeCompare.thigh_measurement_gain;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("thigh loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "calf_measurement_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.calf;
+              var lastNeck = valueToBeCompare.calf_measurement_gain;
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("calf gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "calf_measurement_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.calf;
+              var lastNeck = valueToBeCompare.calf_measurement_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                console.log("calf loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "weight_lifted_total") {
       } else if (element == "weight_lifted_average") {
       } else if (element == "weight_lifted_most") {
@@ -342,9 +1165,11 @@ badges_assign_helper.badge_assign = async (
       } else if (element == "fiber_excess") {
       }
     }
+
     try {
       let insert_badge = await BadgesAssign.insertMany(insert_batch_data);
       if (insert_badge && insert_badge.length > 0) {
+        console.log("badges assignement completed");
         // console.log("SEND NOTIFICATION TO USER USING SOCKET");
         return {
           status: 1,

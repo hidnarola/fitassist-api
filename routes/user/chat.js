@@ -75,6 +75,40 @@ router.get("/:channel_id/:start?/:limit?/", async (req, res) => {
 });
 
 /**
+ * @api {get} /user/chat/ Get unread  messages count
+ * @apiName Get unread  messages count
+ * @apiGroup  User Chat
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {Array} channels Array of conversations_replies document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var channel_id = {
+    _id: mongoose.Types.ObjectId(req.params.channel_id)
+  };
+
+  var start = parseInt(req.params.start ? req.params.start : 0);
+  var limit = parseInt(req.params.limit ? req.params.limit : 10);
+
+  var resp_data = await chat_helper.count_unread_messages(authUserId);
+
+  console.log("------------------------------------");
+  console.log("resp_data : ", resp_data);
+  console.log("------------------------------------");
+
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching chat messages = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("chat messages got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
  * @api {post} /user/chat Send
  * @apiName Send
  * @apiGroup  User Chat

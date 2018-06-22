@@ -11,6 +11,10 @@ var chat_helper = {};
  *          status 2 - If chat messages not found, with appropriate message
  */
 chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
+  console.log("------------------------------------");
+  console.log("userId : ", userId);
+  console.log("------------------------------------");
+
   try {
     var conversation = await Conversations.aggregate([
       {
@@ -80,6 +84,9 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
         }
       }
     ]);
+    console.log("------------------------------------");
+    console.log("conversation : ", conversation);
+    console.log("------------------------------------");
     if (conversation) {
       return {
         status: 1,
@@ -124,11 +131,83 @@ chat_helper.get_conversation = async (channel_id, skip = {}, limit = {}) => {
       { $sort: { "messages.createdAt": -1 } },
       { $group: { _id: "$_id", messages: { $push: "$messages" } } }
     ]);
+
     if (conversation) {
       return {
         status: 1,
         message: "conversation found",
-        conversations: conversation
+        conversations: conversation[0]
+      };
+    } else {
+      return { status: 2, message: "No conversation available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding conversation",
+      error: err
+    };
+  }
+};
+
+/*
+ * count_unread_messages is used to count all unread conversation message data
+ * 
+ * @return  status 0 - If any internal error occured while couting chat conversation data, with error
+ *          status 1 - If chat conversation data count, with chat conversation object
+ *          status 2 - If chat conversation not count, with appropriate message
+ */
+chat_helper.count_unread_messages = async userId => {
+  try {
+    var conversation = await Conversations.aggregate([
+      {
+        $match: {
+          $or: [
+            {
+              userId: userId
+            },
+            {
+              friendId: userId
+            }
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: "conversations_replies",
+          foreignField: "conversationId",
+          localField: "_id",
+          as: "messages"
+        }
+      },
+      {
+        $unwind: "$messages"
+      },
+      {
+        $match: {
+          "messages.isSeen": 0
+        }
+      },
+
+      { $group: { _id: "$_id", messages: { $push: "$messages" } } }
+    ]);
+
+    console.log("------------------------------------");
+    console.log("conversation : ", conversation);
+    console.log("------------------------------------");
+
+    var count = 0;
+    _.each(conversation, function(single, index) {
+      _.each(single.messages, function(single_msg) {
+        if (single_msg.isSeen == 0) count++;
+      });
+    });
+
+    if (conversation) {
+      return {
+        status: 1,
+        message: `total ${count} unread messages`,
+        count: conversation
       };
     } else {
       return { status: 2, message: "No conversation available" };
