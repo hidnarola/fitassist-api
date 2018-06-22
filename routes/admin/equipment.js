@@ -253,7 +253,8 @@ router.put("/:equipment_id", async (req, res) => {
       name: req.body.name,
       description: req.body.description ? req.body.description : null,
       category_id: req.body.category_id,
-      status: req.body.status
+      status: req.body.status,
+      modifiedAt: new Date()
     };
 
     // Image upload

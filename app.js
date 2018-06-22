@@ -121,6 +121,7 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
 var serverpath = "http://localhost:3300/";
 if (app.get("env") != "development") {
   serverpath = "http://167.99.90.169:3300/";

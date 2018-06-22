@@ -270,7 +270,8 @@ router.put("/:measurement_id", async (req, res) => {
       thigh: req.body.thigh ? req.body.thigh : 0,
       calf: req.body.calf ? req.body.calf : 0,
       weight: req.body.weight ? req.body.weight : 0,
-      height: req.body.height ? req.body.height : 0
+      height: req.body.height ? req.body.height : 0,
+      modifiedAt: new Date()
     };
 
     let measurement_data = await measurement_helper.update_body_measurement(

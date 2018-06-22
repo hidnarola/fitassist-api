@@ -113,7 +113,8 @@ router.put("/:body_part_id", async (req, res) => {
 
   if (!errors) {
     var body_part_obj = {
-      bodypart: req.body.bodypart
+      bodypart: req.body.bodypart,
+      modifiedAt: new Date()
     };
 
     let body_part_data = await body_part_helper.update_bodypart_by_id(

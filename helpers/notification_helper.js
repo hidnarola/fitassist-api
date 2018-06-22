@@ -81,20 +81,39 @@ user_notifications_helper.get_notifications_count = async userId => {
  */
 user_notifications_helper.add_notifications = async (
   notificationObj,
-  socket
+  socket,
+  type = ""
 ) => {
+  var authUserId = "";
+  let notification_data;
   try {
-    let notification_data = new UserNotifications(notificationObj);
-    let notification = await notification_data.save();
+    if (type != "") {
+      console.log("------------------------------------");
+      console.log("multiple : ");
+      console.log("------------------------------------");
+
+      notification_data = await UserNotifications.insertMany(notificationObj);
+      authUserId = notificationObj[0].receiver.authUserId;
+    } else {
+      console.log("------------------------------------");
+      console.log("single : ");
+      console.log("------------------------------------");
+      let notification = new UserNotifications(notificationObj);
+      notification_data = await notification.save();
+      authUserId = notificationObj.receiver.authUserId;
+    }
+    console.log("------------------------------------");
+    console.log("authUserId : ", authUserId);
+    console.log("------------------------------------");
 
     var user_notifications_count = await user_notifications_helper.get_notifications_count(
       {
-        "receiver.authUserId": notificationObj.receiver.authUserId,
+        "receiver.authUserId": authUserId,
         isSeen: 0
       }
     );
 
-    var user = socket.users.get(notificationObj.receiver.authUserId);
+    var user = socket.users.get(authUserId);
 
     if (user) {
       var socketIds = user.socketIds;
@@ -107,7 +126,7 @@ user_notifications_helper.add_notifications = async (
     return {
       status: 1,
       message: "notification sent",
-      notification: notification
+      notification: notification_data
     };
   } catch (err) {
     return {

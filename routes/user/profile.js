@@ -169,12 +169,6 @@ router.get("/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
-  console.log("------------------------------------");
-  console.log("socket.io : ", socket.users);
-  console.log("------------------------------------");
-  socket.users.set("Test", "temp");
-  socket.io.sockets.emit("update", "hello");
-
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
@@ -188,6 +182,7 @@ router.put("/", async (req, res) => {
   user_obj.weight = req.body.weight;
   user_obj.aboutMe = req.body.aboutMe;
   user_obj.workoutLocation = req.body.workoutLocation;
+  modifiedAt: new Date();
 
   let user = await user_helper.get_user_by_id(authUserId);
 

@@ -188,7 +188,8 @@ router.put("/:exercise_type_id", async (req, res) => {
   var errors = req.validationErrors();
   if (!errors) {
     var exercise_type_obj = {
-      name: req.body.name
+      name: req.body.name,
+      modifiedAt: new Date()
     };
 
     if (req.body.description) {

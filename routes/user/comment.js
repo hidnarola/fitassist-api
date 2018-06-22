@@ -150,7 +150,8 @@ router.put("/:comment_id", async (req, res) => {
     var comment_obj = {
       userId: authUserId,
       postId: req.body.postId,
-      comment: req.body.comment
+      comment: req.body.comment,
+      modifiedAt: new Date()
     };
 
     let comment_data = await like_comment_helper.update_comment(

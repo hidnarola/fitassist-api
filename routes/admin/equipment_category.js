@@ -105,7 +105,8 @@ router.put("/:equipment_category_id", async (req, res) => {
   var errors = req.validationErrors();
   if (!errors) {
     var equipment_category_obj = {
-      name: req.body.name
+      name: req.body.name,
+      modifiedAt: new Date()
     };
 
     if (req.body.description) {

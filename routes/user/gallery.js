@@ -309,7 +309,9 @@ router.put("/:photo_id", async (req, res) => {
   if (!errors) {
     //console.log("Data = ",req.body);
     //console.log("Files = ",req.files);
-    var user_post_obj = {};
+    var user_post_obj = {
+      modifiedAt: new Date()
+    };
 
     if (req.body.privacy) {
       user_post_obj.privacy = req.body.privacy;

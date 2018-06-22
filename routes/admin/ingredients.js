@@ -226,7 +226,8 @@ router.put("/:ingredient_id", async (req, res) => {
     var ingredient_obj = {
       name: req.body.name,
       description: req.body.description ? req.body.description : null,
-      allowInShopList: req.body.allowInShopList
+      allowInShopList: req.body.allowInShopList,
+      modifiedAt: new Date()
     };
 
     //image upload

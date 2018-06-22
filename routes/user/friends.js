@@ -171,7 +171,8 @@ router.put("/:request_id", async (req, res) => {
   var request_id = req.params.request_id;
 
   var friend_obj = {
-    status: 2
+    status: 2,
+    modifiedAt: new Date()
   };
   var checkfrd = await friend_helper.checkFriend({
     _id: mongoose.Types.ObjectId(req.params.request_id)

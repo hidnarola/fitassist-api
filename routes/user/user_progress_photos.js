@@ -238,7 +238,8 @@ router.put("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var user_progress_photo_obj = {
-    userId: authUserId
+    userId: authUserId,
+    modifiedAt: new Date()
   };
   if (req.body.description) {
     user_progress_photo_obj.description = req.body.description;

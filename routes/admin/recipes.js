@@ -51,17 +51,16 @@ var common_helper = require("../../helpers/common_helper");
  */
 
 router.post("/filter", async (req, res) => {
-  
-    filter_object = common_helper.changeObject(req.body);
-    let filtered_data = await recipes_helper.get_filtered_records(filter_object);
-    //console.log(filtered_data);
-    if (filtered_data.status === 0) {
-      logger.error("Error while fetching searched data = ", filtered_data);
-      return res.status(config.BAD_REQUEST).json({ filtered_data });
-    } else {
-      return res.status(config.OK_STATUS).json(filtered_data);
-    }
-  });
+  filter_object = common_helper.changeObject(req.body);
+  let filtered_data = await recipes_helper.get_filtered_records(filter_object);
+  //console.log(filtered_data);
+  if (filtered_data.status === 0) {
+    logger.error("Error while fetching searched data = ", filtered_data);
+    return res.status(config.BAD_REQUEST).json({ filtered_data });
+  } else {
+    return res.status(config.OK_STATUS).json(filtered_data);
+  }
+});
 
 /**
  * @api {get} /admin/recipes Get all
@@ -72,19 +71,17 @@ router.post("/filter", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
+  logger.trace("Get All Recipes API called");
+  var resp_data = await recipes_helper.get_all_recipes();
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching Recipes = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Recipes got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
 
-    logger.trace("Get All Recipes API called");
-    var resp_data = await recipes_helper.get_all_recipes();
-    if (resp_data.status == 0) {
-      logger.error("Error occured while fetching Recipes = ", resp_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-      logger.trace("Recipes got successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    }
-  });
-
-  
 /**
  * @api {get} /admin/recipes/recipe_id Get by ID
  * @apiName Get by ID
@@ -94,7 +91,7 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:recipe_id", async (req, res) => {
-    recipe_id = req.params.recipe_id;
+  recipe_id = req.params.recipe_id;
   logger.trace("Get recipe by id API called");
   var resp_data = await recipes_helper.get_recipe_by_id(recipe_id);
   if (resp_data.status == 0) {
@@ -126,83 +123,87 @@ router.get("/:recipe_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
-   
-    var schema = {
-        'name': {
-            notEmpty: true,
-            errorMessage: "name of recipe is required"
-        },
-        'recipeType': {
-            notEmpty: true,
-            errorMessage: "RecipeType is required"
-        },
-        'nutritions': {
-            notEmpty: true,
-            errorMessage: "Nutritions is required"
-        }
-    };
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-    
-    if (!errors) {
-        var recipe_obj = 
-        {
-            name:req.body.name,           
-            description:req.body.description,
-            method:req.body.method,
-            ingredients:req.body.ingredients,
-            ingredientsIncluded:JSON.parse(req.body.ingredientsIncluded),
-            preparationTime:req.body.preparationTime,
-            cookTime:req.body.cookTime,
-            difficultyLevel:req.body.difficultyLevel,
-            rating:req.body.rating,
-            recipeType:JSON.parse(req.body.recipeType),
-            nutritions:JSON.parse(req.body.nutritions)        
-        };
-            //image upload
-        var filename;
-        if (req.files && req.files['recipe_img']) {
-            var file = req.files['recipe_img'];
-            var dir = "./uploads/recipe";
-            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
-
-            if (mimetype.indexOf(file.mimetype) != -1) {
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
-                }
-                extention = path.extname(file.name);
-                filename = "recipe_" + new Date().getTime() + extention;
-                file.mv(dir + '/' + filename, function (err) {
-                    if (err) {
-                        logger.error("There was an issue in uploading image");
-                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
-                    } else {
-                        logger.trace("image has been uploaded. Image name = ", filename);
-                        //return res.send(200, "null");
-                    }
-                });
-            } else {
-                logger.error("Image format is invalid");
-                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
-            }
-        } else {
-            logger.info("Image not available to upload. Executing next instruction");
-            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-        }
-        recipe_obj.image='uploads/recipe/' + filename;
-        
-            let recipe_data = await recipes_helper.insert_recipes(recipe_obj);
-            if (recipe_data.status === 0) {
-                logger.error("Error while inserting recipe data = ", recipe_data);
-                return res.status(config.BAD_REQUEST).json({ recipe_data });
-            } else {
-                return res.status(config.OK_STATUS).json(recipe_data);
-            }
-    } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+  var schema = {
+    name: {
+      notEmpty: true,
+      errorMessage: "name of recipe is required"
+    },
+    recipeType: {
+      notEmpty: true,
+      errorMessage: "RecipeType is required"
+    },
+    nutritions: {
+      notEmpty: true,
+      errorMessage: "Nutritions is required"
     }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
 
+  if (!errors) {
+    var recipe_obj = {
+      name: req.body.name,
+      description: req.body.description,
+      method: req.body.method,
+      ingredients: req.body.ingredients,
+      ingredientsIncluded: JSON.parse(req.body.ingredientsIncluded),
+      preparationTime: req.body.preparationTime,
+      cookTime: req.body.cookTime,
+      difficultyLevel: req.body.difficultyLevel,
+      rating: req.body.rating,
+      recipeType: JSON.parse(req.body.recipeType),
+      nutritions: JSON.parse(req.body.nutritions),
+      modifiedAt: new Date()
+    };
+    //image upload
+    var filename;
+    if (req.files && req.files["recipe_img"]) {
+      var file = req.files["recipe_img"];
+      var dir = "./uploads/recipe";
+      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+
+      if (mimetype.indexOf(file.mimetype) != -1) {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
+        }
+        extention = path.extname(file.name);
+        filename = "recipe_" + new Date().getTime() + extention;
+        file.mv(dir + "/" + filename, function(err) {
+          if (err) {
+            logger.error("There was an issue in uploading image");
+            res.send({
+              status: config.MEDIA_ERROR_STATUS,
+              err: "There was an issue in uploading image"
+            });
+          } else {
+            logger.trace("image has been uploaded. Image name = ", filename);
+            //return res.send(200, "null");
+          }
+        });
+      } else {
+        logger.error("Image format is invalid");
+        res.send({
+          status: config.VALIDATION_FAILURE_STATUS,
+          err: "Image format is invalid"
+        });
+      }
+    } else {
+      logger.info("Image not available to upload. Executing next instruction");
+      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+    }
+    recipe_obj.image = "uploads/recipe/" + filename;
+
+    let recipe_data = await recipes_helper.insert_recipes(recipe_obj);
+    if (recipe_data.status === 0) {
+      logger.error("Error while inserting recipe data = ", recipe_data);
+      return res.status(config.BAD_REQUEST).json({ recipe_data });
+    } else {
+      return res.status(config.OK_STATUS).json(recipe_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+  }
 });
 /**
  * @api {put} /admin/recipes Add
@@ -225,118 +226,119 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:recipe_id", async (req, res) => {
-   
-    var schema = {
-        'name': {
-            notEmpty: true,
-            errorMessage: "name of recipe is required"
-        },
-        'recipeType': {
-            notEmpty: true,
-            errorMessage: "RecipeType is required"
-        },
-        'nutritions': {
-            notEmpty: true,
-            errorMessage: "Nutritions is required"
-        }
+  var schema = {
+    name: {
+      notEmpty: true,
+      errorMessage: "name of recipe is required"
+    },
+    recipeType: {
+      notEmpty: true,
+      errorMessage: "RecipeType is required"
+    },
+    nutritions: {
+      notEmpty: true,
+      errorMessage: "Nutritions is required"
+    }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+
+  if (!errors) {
+    var recipe_obj = {
+      name: req.body.name,
+      description: req.body.description,
+      method: req.body.method,
+      ingredients: req.body.ingredients,
+      ingredientsIncluded: JSON.parse(req.body.ingredientsIncluded),
+      preparationTime: req.body.preparationTime,
+      cookTime: req.body.cookTime,
+      difficultyLevel: req.body.difficultyLevel,
+      rating: req.body.rating,
+      recipeType: JSON.parse(req.body.recipeType),
+      nutritions: JSON.parse(req.body.nutritions)
     };
-    req.checkBody(schema);
-    var errors = req.validationErrors();
-    
-    if (!errors) {
-        var recipe_obj = 
-        {
-            name:req.body.name,           
-            description:req.body.description,
-            method:req.body.method,
-            ingredients:req.body.ingredients,
-            ingredientsIncluded:JSON.parse(req.body.ingredientsIncluded),
-            preparationTime:req.body.preparationTime,
-            cookTime:req.body.cookTime,
-            difficultyLevel:req.body.difficultyLevel,
-            rating:req.body.rating,
-            recipeType:JSON.parse(req.body.recipeType),
-            nutritions:JSON.parse(req.body.nutritions)        
-        };
-            //image upload
-        var filename;
-        if (req.files && req.files['recipe_img']) {
-            var file = req.files['recipe_img'];
-            var dir = "./uploads/recipe";
-            var mimetype = ['image/png', 'image/jpeg', 'image/jpg'];
+    //image upload
+    var filename;
+    if (req.files && req.files["recipe_img"]) {
+      var file = req.files["recipe_img"];
+      var dir = "./uploads/recipe";
+      var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
-            if (mimetype.indexOf(file.mimetype) != -1) {
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
-                }
-                extention = path.extname(file.name);
-                filename = "recipe_" + new Date().getTime() + extention;
-                file.mv(dir + '/' + filename, function (err) {
-                    if (err) {
-                        logger.error("There was an issue in uploading image");
-                        res.send({"status": config.MEDIA_ERROR_STATUS, "err": "There was an issue in uploading image"});
-                    } else {
-                        logger.trace("image has been uploaded. Image name = ", filename);
-                        //return res.send(200, "null");
-                    }
-                });
-            } else {
-                logger.error("Image format is invalid");
-                res.send({"status": config.VALIDATION_FAILURE_STATUS, "err": "Image format is invalid"});
-            }
-        } else {
-            logger.info("Image not available to upload. Executing next instruction");
-            //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+      if (mimetype.indexOf(file.mimetype) != -1) {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir);
         }
-        if(filename){
-            recipe_obj.image='uploads/recipe/' + filename;  
-            var single_data = await recipes_helper.get_recipe_by_id(req.params.recipe_id);
-            try{
-                fs.unlink(single_data.recipe.image,function(){
-                    console.log("Image is deleted")
-                  });  
-            }   
-            catch(err){
-
-            }         
-                    
-        }
-        
-            let recipe_data = await recipes_helper.update_recipes_by_id(req.params.recipe_id,recipe_obj);
-            if (recipe_data.status === 0) {
-                logger.error("Error while updating recipe data = ", recipe_data);
-                return res.status(config.BAD_REQUEST).json({ recipe_data });
-            } else {
-                return res.status(config.OK_STATUS).json(recipe_data);
-            }
+        extention = path.extname(file.name);
+        filename = "recipe_" + new Date().getTime() + extention;
+        file.mv(dir + "/" + filename, function(err) {
+          if (err) {
+            logger.error("There was an issue in uploading image");
+            res.send({
+              status: config.MEDIA_ERROR_STATUS,
+              err: "There was an issue in uploading image"
+            });
+          } else {
+            logger.trace("image has been uploaded. Image name = ", filename);
+            //return res.send(200, "null");
+          }
+        });
+      } else {
+        logger.error("Image format is invalid");
+        res.send({
+          status: config.VALIDATION_FAILURE_STATUS,
+          err: "Image format is invalid"
+        });
+      }
     } else {
-        logger.error("Validation Error = ", errors);
-        res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+      logger.info("Image not available to upload. Executing next instruction");
+      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+    }
+    if (filename) {
+      recipe_obj.image = "uploads/recipe/" + filename;
+      var single_data = await recipes_helper.get_recipe_by_id(
+        req.params.recipe_id
+      );
+      try {
+        fs.unlink(single_data.recipe.image, function() {
+          console.log("Image is deleted");
+        });
+      } catch (err) {}
     }
 
+    let recipe_data = await recipes_helper.update_recipes_by_id(
+      req.params.recipe_id,
+      recipe_obj
+    );
+    if (recipe_data.status === 0) {
+      logger.error("Error while updating recipe data = ", recipe_data);
+      return res.status(config.BAD_REQUEST).json({ recipe_data });
+    } else {
+      return res.status(config.OK_STATUS).json(recipe_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+  }
 });
 /**
  * @api {delete} /admin/recipe/:recipe_id Delete
- * @apiName Delete  
+ * @apiName Delete
  * @apiGroup Recipes
- * 
+ *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:recipe_id", async (req, res) => {
-    
-    logger.trace("Delete recipe API - Id = ", req.params.recipe_id);
+  logger.trace("Delete recipe API - Id = ", req.params.recipe_id);
 
-    let recipe = await recipes_helper.delete_recipes_by_id(
-        req.params.recipe_id
-    );
+  let recipe = await recipes_helper.delete_recipes_by_id(req.params.recipe_id);
 
-    if (recipe.status === 0) {
-        res.status(config.INTERNAL_SERVER_ERROR).json(recipe);
-    } else {
-        res.status(config.OK_STATUS).json(recipe);
-    }
+  if (recipe.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(recipe);
+  } else {
+    res.status(config.OK_STATUS).json(recipe);
+  }
 });
 
 module.exports = router;

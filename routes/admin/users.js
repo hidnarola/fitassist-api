@@ -1,4 +1,3 @@
-
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
@@ -102,7 +101,7 @@ router.get("/:authUserId", async (req, res) => {
  */
 router.put("/:authUserId", async (req, res) => {
   authUserId = req.params.authUserId;
-  
+
   var schema = {
     firstName: {
       notEmpty: true,
@@ -116,11 +115,12 @@ router.put("/:authUserId", async (req, res) => {
       notEmpty: true,
       errorMessage: "Email address is required",
       isEmail: { errorMessage: "Please enter valid email address" }
-    },
+    }
   };
 
-
-   req.checkBody('email', 'This email is already taken').isEmailAvailable(authUserId);
+  req
+    .checkBody("email", "This email is already taken")
+    .isEmailAvailable(authUserId);
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -128,29 +128,26 @@ router.put("/:authUserId", async (req, res) => {
   // var errors = req.asyncValidationErrors();
 
   if (!errors) {
+    //   var resp_data = await user_helper.get_user_by_id(authUserId);
+    //   if (resp_data.status ===1) {
+    //   if(resp_data.user.email!=req.body.email)
+    //   {
+    //     console.log('not same');
+    //     checkemaildata = await user_helper.checkvalue({email:req.body.email,authUserId:{$ne:authUserId},});
+    //     if(checkemaildata.count!=0)
+    //     {
+    //       return res.status(config.BAD_REQUEST).json({ });
+    //     }
+    //   }
+    // }
 
-   
-    
-  //   var resp_data = await user_helper.get_user_by_id(authUserId);
-  //   if (resp_data.status ===1) {
-  //   if(resp_data.user.email!=req.body.email)
-  //   {
-  //     console.log('not same');
-  //     checkemaildata = await user_helper.checkvalue({email:req.body.email,authUserId:{$ne:authUserId},});
-  //     if(checkemaildata.count!=0)
-  //     {
-  //       return res.status(config.BAD_REQUEST).json({ });
-  //     }
-  //   }
-  // }
-
-    
     var user_obj = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
       gender: req.body.gender,
-      aboutMe: req.body.aboutMe
+      aboutMe: req.body.aboutMe,
+      modifiedAt: new Date()
     };
 
     if (req.body.mobileNumber) {
@@ -227,7 +224,7 @@ router.put("/:authUserId", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 

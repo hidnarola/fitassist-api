@@ -439,7 +439,8 @@ router.put("/:test_exercise_id", async (req, res) => {
       category: req.body.category,
       subCategory: req.body.subCategory,
       instructions: req.body.instructions,
-      format: req.body.format
+      format: req.body.format,
+      modifiedAt: new Date()
     };
     if (req.body.description) {
       test_exercise_obj.description = req.body.description;

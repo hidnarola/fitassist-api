@@ -355,7 +355,8 @@ router.put("/:exercise_id", async (req, res) => {
       difficltyLevel: req.body.difficltyLevel,
       steps: req.body.steps ? JSON.parse(req.body.steps) : null,
       tips: req.body.tips ? JSON.parse(req.body.tips) : null,
-      measures: req.body.measures
+      measures: req.body.measures,
+      modifiedAt: new Date()
     };
     exercise_id = req.params.exercise_id;
 

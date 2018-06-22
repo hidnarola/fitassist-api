@@ -262,7 +262,8 @@ router.post("/", async (req, res) => {
         thigh: thigh.baseValue,
         calf: calf.baseValue,
         weight: weight.baseValue,
-        height: height.baseValue
+        height: height.baseValue,
+        modifiedAt: new Date()
       };
     }
     var user_height_and_weight_object = {
@@ -388,12 +389,15 @@ async function badgesAssign(authUserId) {
     thigh_measurement_gain: resp_data.measurement.thigh,
     thigh_measurement_loss: resp_data.measurement.thigh,
     calf_measurement_gain: resp_data.measurement.calf,
-    calf_measurement_loss: resp_data.measurement.calf
+    calf_measurement_loss: resp_data.measurement.calf,
+    weight: resp_data.measurement.weight
   };
 
   var senderBadges = await badge_assign_helper.badge_assign(
     authUserId,
-    constant.BADGES_TYPE.BODY_MEASUREMENT,
+    constant.BADGES_TYPE.BODY_MEASUREMENT.concat(
+      constant.BADGES_TYPE.BODY_MASS
+    ),
     body_measurement_data
   );
   //badge assign end

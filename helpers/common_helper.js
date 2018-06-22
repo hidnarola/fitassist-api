@@ -6,6 +6,7 @@ var NutritionalLabels = require("./../models/nutritional_labels");
 var Nutritions = require("./../models/nutritions");
 var user_helper = require("./../helpers/user_helper");
 var notification_helper = require("./../helpers/notification_helper");
+var socket = require("../socket/socketServer");
 
 common_helper.hashPassword = function(callback) {
   bcrypt.compare(this.password, this.hash, function(err, res) {
@@ -185,10 +186,6 @@ common_helper.send_notification = async (notificationData, socket) => {
     authUserId: notificationData.receiverId
   });
 
-  let sender_data = await user_helper.get_user_by({
-    authUserId: notificationData.senderId
-  });
-
   if (receiver_data.status == 1) {
     var receiver = {
       firstName: receiver_data.user.firstName,
@@ -198,15 +195,27 @@ common_helper.send_notification = async (notificationData, socket) => {
       authUserId: receiver_data.user.authUserId
     };
   }
-  if (sender_data.status == 1) {
+
+  if (notificationData.senderId == "system") {
     var sender = {
-      firstName: sender_data.user.firstName,
-      lastName: sender_data.user.lastName,
-      avatar: sender_data.user.avatar,
-      username: sender_data.user.username,
-      authUserId: sender_data.user.authUserId
+      firstName: "System",
+      lastName: ""
     };
+  } else {
+    let sender_data = await user_helper.get_user_by({
+      authUserId: notificationData.senderId
+    });
+    if (sender_data.status == 1) {
+      var sender = {
+        firstName: sender_data.user.firstName,
+        lastName: sender_data.user.lastName,
+        avatar: sender_data.user.avatar,
+        username: sender_data.user.username,
+        authUserId: sender_data.user.authUserId
+      };
+    }
   }
+
   if (sender && receiver) {
     var notificationObj = {
       sender: sender,

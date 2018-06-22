@@ -13,7 +13,12 @@ var UserNotificationsSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["friend_request_approved", "like_post", "comment_post"],
+      enum: [
+        "friend_request_approved",
+        "like_post",
+        "comment_post",
+        "badge_gain"
+      ],
       required: true
     },
     timelineId: { type: String },

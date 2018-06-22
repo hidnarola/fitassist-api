@@ -674,7 +674,8 @@ router.put("/:badge_id", async (req, res) => {
       value: req.body.value,
       point: req.body.point,
       timeType: req.body.timeType,
-      status: req.body.status
+      status: req.body.status,
+      modifiedAt: new Date()
     };
 
     if (req.body.duration) {

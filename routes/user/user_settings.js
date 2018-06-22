@@ -110,7 +110,9 @@ router.post("/", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
-    var setting_obj = {};
+    var setting_obj = {
+      modifiedAt: new Date()
+    };
 
     if (req.body.distance) {
       setting_obj.distance = req.body.distance;
@@ -140,8 +142,6 @@ router.post("/", async (req, res) => {
       setting_obj.friendRequestAccessibility =
         req.body.friendRequestAccessibility;
     }
-
-    setting_obj.modifiedAt = new Date();
 
     let settings_data = await user_settings_helper.save_settings(
       { userId: authUserId },

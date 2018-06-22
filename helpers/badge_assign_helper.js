@@ -1,7 +1,12 @@
 var BadgesAssign = require("./../models/badges_assign");
+var UserNotifications = require("./../models/user_notifications");
 var Badges = require("./../models/badges");
 var _ = require("underscore");
 var measurement_helper = require("./measurement_helper");
+var notification_helper = require("./notification_helper");
+var user_helper = require("./user_helper");
+var socket = require("../socket/socketServer");
+var constant = require("../constant");
 
 var badges_assign_helper = {};
 
@@ -58,6 +63,7 @@ badges_assign_helper.badge_assign = async (
 ) => {
   try {
     var insert_batch_data = [];
+    var notification_badges_data = [];
 
     for (let element of badgesType) {
       var badge = await Badges.find({
@@ -88,6 +94,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
               }
             }
           }
@@ -100,6 +107,7 @@ badges_assign_helper.badge_assign = async (
                 task: single_badge.task
               };
               insert_batch_data.push(badge_assign_obj);
+              notification_badges_data.push(single_badge);
             }
           }
         }
@@ -118,6 +126,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
               }
             }
           }
@@ -130,6 +139,7 @@ badges_assign_helper.badge_assign = async (
                 task: single_badge.task
               };
               insert_batch_data.push(badge_assign_obj);
+              notification_badges_data.push(single_badge);
             }
           }
         }
@@ -148,6 +158,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
               }
             }
           }
@@ -160,11 +171,109 @@ badges_assign_helper.badge_assign = async (
                 task: single_badge.task
               };
               insert_batch_data.push(badge_assign_obj);
+              notification_badges_data.push(single_badge);
             }
           }
         }
       } else if (element == "weight_gain") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.weight;
+              var lastNeck = valueToBeCompare.weight;
+
+              if (lastNeck - firstNeck >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
+                console.log("weight gain badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "weight_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  userId: authUserId
+                },
+                { logDate: -1 },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await measurement_helper.get_body_measurement_id(
+                {
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                },
+                { logDate: 1 },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var firstNeck = resp_data.measurement.weight;
+              var lastNeck = valueToBeCompare.weight_loss;
+              if (lastNeck - firstNeck <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task
+                };
+                insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
+                console.log("weight loss badge assigned");
+              }
+            }
+          }
+        }
       } else if (element == "body_fat_gain") {
       } else if (element == "body_fat_loss") {
       } else if (element == "body_fat_average") {
@@ -212,6 +321,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("neck gain badge assigned");
               }
             }
@@ -260,6 +370,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("neck loss badge assigned");
               }
             }
@@ -307,6 +418,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("shoulders gain badge assigned");
               }
             }
@@ -355,6 +467,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("shoulders loss badge assigned");
               }
             }
@@ -402,16 +515,13 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("chest gain badge assigned");
               }
             }
           }
         }
       } else if (element == "chest_measurement_loss") {
-        console.log("------------------------------------");
-        console.log("chest : ");
-        console.log("------------------------------------");
-
         for (let single_badge of all_possible_badges) {
           var id = single_badge._id;
 
@@ -454,6 +564,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("chest loss badge assigned");
               }
             }
@@ -501,6 +612,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("upperArm gain badge assigned");
               }
             }
@@ -549,6 +661,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("upperArm loss badge assigned");
               }
             }
@@ -596,6 +709,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("waist gain badge assigned");
               }
             }
@@ -644,6 +758,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("waist loss badge assigned");
               }
             }
@@ -691,6 +806,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("forearm gain badge assigned");
               }
             }
@@ -739,6 +855,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("forearm loss badge assigned");
               }
             }
@@ -786,6 +903,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("hips gain badge assigned");
               }
             }
@@ -834,6 +952,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("hips loss badge assigned");
               }
             }
@@ -881,6 +1000,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("thigh gain badge assigned");
               }
             }
@@ -929,6 +1049,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("thigh loss badge assigned");
               }
             }
@@ -976,6 +1097,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("calf gain badge assigned");
               }
             }
@@ -1024,6 +1146,7 @@ badges_assign_helper.badge_assign = async (
                   task: single_badge.task
                 };
                 insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
                 console.log("calf loss badge assigned");
               }
             }
@@ -1168,8 +1291,38 @@ badges_assign_helper.badge_assign = async (
 
     try {
       let insert_badge = await BadgesAssign.insertMany(insert_batch_data);
+      let user = await user_helper.get_user_by_id(authUserId);
+
       if (insert_badge && insert_badge.length > 0) {
-        console.log("badges assignement completed");
+        var notification_data_array = [];
+        _.each(notification_badges_data, function(notification_badge) {
+          var tmp = {
+            sender: {
+              firstName: "system"
+            },
+            isSeen: 0,
+            receiver: {
+              firstName: user.user.firstName,
+              lastName: user.user.lastName,
+              avatar: user.user.avatar,
+              username: user.user.username,
+              authUserId: user.user.authUserId
+            },
+            type: constant.NOTIFICATION_MESSAGES.BADGE_GAIN.TYPE,
+            body: constant.NOTIFICATION_MESSAGES.BADGE_GAIN.MESSAGE.replace(
+              "{message}",
+              notification_badge.name
+            )
+          };
+          notification_data_array.push(tmp);
+        });
+
+        let notification_data = await notification_helper.add_notifications(
+          notification_data_array,
+          socket,
+          "multiple"
+        );
+
         // console.log("SEND NOTIFICATION TO USER USING SOCKET");
         return {
           status: 1,

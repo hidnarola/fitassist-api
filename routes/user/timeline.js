@@ -382,7 +382,9 @@ router.put("/:photo_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var user_post_obj = {};
+  var user_post_obj = {
+    modifiedAt: new Date()
+  };
 
   if (req.body.privacy) {
     user_post_obj.privacy = req.body.privacy;
