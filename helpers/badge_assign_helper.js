@@ -11,12 +11,12 @@ var constant = require("../constant");
 var badges_assign_helper = {};
 
 /*
- * get_all_badges is used to fetch all badges data
- * 
- * @return  status 0 - If any internal error occured while fetching badges data, with error
- *          status 1 - If badges data found, with badges object
- *          status 2 - If badges not found, with appropriate message
- */
+   * get_all_badges is used to fetch all badges data
+   *
+   * @return  status 0 - If any internal error occured while fetching badges data, with error
+   *          status 1 - If badges data found, with badges object
+   *          status 2 - If badges not found, with appropriate message
+   */
 badges_assign_helper.get_all_badges = async (
   condition = {},
   skip = {},
@@ -51,11 +51,11 @@ badges_assign_helper.get_all_badges = async (
 };
 
 /*
- * badge_assign is used to assign badge 
- * @return  status 0 - If any internal error occured while assigning badge data, with error
- *          status 1 - If badge assign, with badge object
- *          status 2 - If badge data not assign, with appropriate message
- */
+   * badge_assign is used to assign badge
+   * @return  status 0 - If any internal error occured while assigning badge data, with error
+   *          status 1 - If badge assign, with badge object
+   *          status 2 - If badge data not assign, with appropriate message
+   */
 badges_assign_helper.badge_assign = async (
   authUserId,
   badgesType,
@@ -1196,16 +1196,16 @@ badges_assign_helper.badge_assign = async (
       } else if (element == "calories_most_") {
       } else if (element == "calories_least_") {
       } else if (element == "calories_excess") {
-      } else if (element == "fat_saturated_total") {
-      } else if (element == "fat_saturated_average") {
-      } else if (element == "fat_saturated_most_") {
-      } else if (element == "fat_saturated_least_") {
-      } else if (element == "fat_saturated_excess") {
-      } else if (element == "fat_trans_total_") {
-      } else if (element == "fat_trans_average") {
-      } else if (element == "fat_trans_most_") {
-      } else if (element == "fat_trans_least_") {
-      } else if (element == "fat_trans_excess") {
+      } else if (element == "saturated_total") {
+      } else if (element == "saturated_average") {
+      } else if (element == "saturated_most_") {
+      } else if (element == "saturated_least_") {
+      } else if (element == "saturated_excess") {
+      } else if (element == "trans_total_") {
+      } else if (element == "trans_average") {
+      } else if (element == "trans_most_") {
+      } else if (element == "trans_least_") {
+      } else if (element == "trans_excess") {
       } else if (element == "folate_total_") {
       } else if (element == "folate_average") {
       } else if (element == "folate_most_") {
@@ -1246,41 +1246,21 @@ badges_assign_helper.badge_assign = async (
       } else if (element == "cholesterol_most") {
       } else if (element == "cholesterol_least") {
       } else if (element == "cholesterol_excess") {
-      } else if (element == "fat_polyunsaturated_total") {
-      } else if (element == "fat_polyunsaturated_average") {
-      } else if (element == "fat_polyunsaturated_most") {
-      } else if (element == "fat_polyunsaturated_least") {
-      } else if (element == "fat_polyunsaturated_excess") {
-      } else if (element == "cholesterol_total") {
-      } else if (element == "cholesterol_average") {
-      } else if (element == "cholesterol_most") {
-      } else if (element == "cholesterol_least") {
-      } else if (element == "cholesterol_excess") {
-      } else if (element == "fat_monounsaturated_total") {
-      } else if (element == "fat_monounsaturated_average") {
-      } else if (element == "fat_monounsaturated_most") {
-      } else if (element == "fat_monounsaturated_least") {
-      } else if (element == "fat_monounsaturated_excess") {
-      } else if (element == "fat_polyunsaturated_total") {
-      } else if (element == "fat_polyunsaturated_average") {
-      } else if (element == "fat_polyunsaturated_most") {
-      } else if (element == "fat_polyunsaturated_least") {
-      } else if (element == "fat_polyunsaturated_excess") {
+      } else if (element == "polyunsaturated_total") {
+      } else if (element == "polyunsaturated_average") {
+      } else if (element == "polyunsaturated_most") {
+      } else if (element == "polyunsaturated_least") {
+      } else if (element == "polyunsaturated_excess") {
+      } else if (element == "monounsaturated_total") {
+      } else if (element == "monounsaturated_average") {
+      } else if (element == "monounsaturated_most") {
+      } else if (element == "monounsaturated_least") {
+      } else if (element == "monounsaturated_excess") {
       } else if (element == "iron_total") {
       } else if (element == "iron_average") {
       } else if (element == "iron_most") {
       } else if (element == "iron_least") {
       } else if (element == "iron_excess") {
-      } else if (element == "sodium_total") {
-      } else if (element == "sodium_average") {
-      } else if (element == "sodium_most") {
-      } else if (element == "sodium_least") {
-      } else if (element == "sodium_excess") {
-      } else if (element == "protein_total") {
-      } else if (element == "protein_average") {
-      } else if (element == "protein_most") {
-      } else if (element == "protein_least_") {
-      } else if (element == "protein_excess") {
       } else if (element == "fiber_total") {
       } else if (element == "fiber_average") {
       } else if (element == "fiber_most") {
@@ -1353,12 +1333,12 @@ badges_assign_helper.badge_assign = async (
 };
 
 /*
- * insert_badge is used to insert into badge collection
- * @param   badge_obj     JSON object consist of all property that need to insert in collection
- * @return  status  0 - If any error occur in inserting badge, with error
- *          status  1 - If badge inserted, with inserted badge document and appropriate message
- * @developed by "amc"
- */
+   * insert_badge is used to insert into badge collection
+   * @param   badge_obj     JSON object consist of all property that need to insert in collection
+   * @return  status  0 - If any error occur in inserting badge, with error
+   *          status  1 - If badge inserted, with inserted badge document and appropriate message
+   * @developed by "amc"
+   */
 badges_assign_helper.insert_badge = async badge_obj => {
   console.log(badge_obj);
   let badge = new BadgesAssign(badge_obj);

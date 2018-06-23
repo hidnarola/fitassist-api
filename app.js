@@ -109,7 +109,6 @@ var admin = require("./routes/admin");
 var user = require("./routes/user");
 
 app.use("/", index);
-// app.use("/", static_data);
 app.use("/user", user);
 app.use("/admin", admin);
 
