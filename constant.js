@@ -247,8 +247,8 @@ module.exports = {
       MESSAGE: "approved your friend request"
     },
     BADGE_GAIN: {
-      TYPE: "badge_gain",
-      MESSAGE: "you have gained {message} badge"
+      TYPE: "badge_awarded",
+      MESSAGE: "You have been awarded <b>{message}</b> badge"
     }
   }
 };
