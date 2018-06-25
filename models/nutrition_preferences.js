@@ -29,7 +29,8 @@ var NutritionPreferenceSchema = new Schema(
       type: String,
       ref: "users",
       field: "authUserId",
-      required: true
+      required: true,
+      unique: true
     },
     dietRestrictionLabels: [
       { type: mongoose.Schema.Types.ObjectId, ref: "nutritional_labels" }

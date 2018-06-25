@@ -6,7 +6,13 @@ var Schema = mongoose.Schema;
 
 var UsersNutritions = new Schema(
   {
-    userId: { type: String, ref: "users", field: "authUserId", required: true },
+    userId: {
+      type: String,
+      ref: "users",
+      field: "authUserId",
+      required: true,
+      unique: true
+    },
     calories_total: { type: Number, default: 0 },
     calories_average: { type: Number, default: 0 },
     calories_most: { type: Number, default: 0 },

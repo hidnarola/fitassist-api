@@ -103,6 +103,8 @@ myIo.init = function(server) {
      * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
      */
     socket.on("get_user_conversation_by_channel", async function(data) {
+      console.log("I am at 1st line");
+
       var resp_data = {};
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
@@ -116,28 +118,29 @@ myIo.init = function(server) {
       };
 
       try {
-        resp_data = await chat_helper.get_conversation(
-          condition,
-          { $skip: start },
-          { $limit: limit }
-        );
-
-        if (resp_data.status == 0) {
-          logger.error(
-            "Error occured while fetching chat messages = ",
-            resp_data
-          );
-        } else {
-          logger.trace("chat messages got successfully = ", resp_data);
-        }
+        // resp_data = await chat_helper.get_conversation(
+        //   condition,
+        //   { $skip: start },
+        //   { $limit: limit }
+        // );
+        // if (resp_data.status == 0) {
+        //   logger.error(
+        //     "Error occured while fetching chat messages = ",
+        //     resp_data
+        //   );
+        // } else {
+        //   logger.trace("chat messages got successfully = ", resp_data);
+        // }
       } catch (error) {
-        resp_data.message = "Internal server error! please try again later.";
-        resp_data.status = 0;
+        // resp_data.message = "Internal server error! please try again later.";
+        // resp_data.status = 0;
       } finally {
+        console.log("I am here");
+
         socketIds.forEach(socketId => {
           io.to(socketId).emit(
             "receive_users_conversation_by_channel",
-            resp_data
+            "hello"
           );
         });
       }
@@ -156,9 +159,7 @@ myIo.init = function(server) {
         }
         socketToUsers.delete(socketId);
       }
-      console.log("------------------------------------");
-      console.log("disconnect : ");
-      console.log("------------------------------------");
+      console.log("**disconnect**");
     });
 
     console.log("Socket Connected With socket id : -", socket.id);
