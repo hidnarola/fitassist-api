@@ -31,6 +31,7 @@ var UserRecipes = new Schema(
     },
     metaData: { type: Object },
     date: { type: Date, default: Date.now, required: true },
+    isCompleted: { type: Number, default: 0 },
     status: { type: Number, default: 1 },
     isDeleted: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },

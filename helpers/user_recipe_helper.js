@@ -85,10 +85,58 @@ users_recipe_helper.insert_user_recipe = async user_recipe_object => {
   }
 };
 
+/*
+ * complete_recipe is used to Complete user_recipes collection
+ * 
+ * @param   id     JSON object consist of all property that need to complete in collection
+ * 
+ * @return  status  0 - If any error occur in completing user's recipe, with error
+ *          status  1 - If user's recipe completed, with completed user's recipe document and appropriate message
+ * 
+ * @developed by "amc"
+ */
+users_recipe_helper.complete_recipe = async id => {
+  try {
+    let user_recipe_data = await UsersRecipe.updateOne(
+      id,
+      {
+        isCompleted: 1
+      },
+      {
+        new: true
+      }
+    );
+
+    if (!user_recipe_data && user_recipe_data.n == 0) {
+      return { status: 2, message: "recipe not found" };
+    } else {
+      return {
+        status: 1,
+        message: "recipe is completed"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while completing user's recipe",
+      error: err
+    };
+  }
+};
+
+/*
+ * delete_user_recipe is used to delete user_recipes collection
+ * 
+ * @param   id     JSON object consist of all property that need to delete in collection
+ * 
+ * @return  status  0 - If any error occur in deleting user's recipe, with error
+ *          status  1 - If user's recipe deleted, with deleted user's recipe document and appropriate message
+ * 
+ * @developed by "amc"
+ */
 users_recipe_helper.delete_user_recipe = async id => {
   try {
     let user_recipe_data = await UsersRecipe.remove(id);
-    console.log("userdata", user_recipe_data.n);
 
     if (!user_recipe_data && user_recipe_data.n == 0) {
       return { status: 2, message: "recipe not found" };

@@ -1,14 +1,13 @@
 //Require Mongoose
 var mongoose = require("mongoose");
-
+var constant = require("../constant");
 //Define a schema
 
 var Schema = mongoose.Schema;
 
-var NutritionSchema = new Schema(
-{
+var NutritionSchema = new Schema({
   nutrition: { type: mongoose.Schema.Types.ObjectId, ref: "nutrition" },
-    units: { type: String, default: null }
+  units: { type: String, default: null }
 });
 
 var RecipesSchema = new Schema(
@@ -29,21 +28,15 @@ var RecipesSchema = new Schema(
       default: "easy"
     },
     rating: { type: Number, default: 0 },
-    recipeType: [{
-      type: String,
-      enum: [
-        "vegetarian",
-        "vegan",
-        "dairy-free",
-        "kosher",
-        "islam",
-        "coeliac",
-        "paleo",
-        "pescaterian"
-      ],
-      required: true
-    }],
-    nutritions: [NutritionSchema]
+    recipeType: [
+      {
+        type: String,
+        enum: constant.RECIPE_TYPE,
+        required: true
+      }
+    ],
+    nutritions: [NutritionSchema],
+    isCompleted: { type: Number, default: 0 }
   },
   { versionKey: false }
 );

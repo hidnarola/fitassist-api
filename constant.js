@@ -1,8 +1,22 @@
 module.exports = {
+  RECIPE_TYPE: [
+    "vegetarian",
+    "vegan",
+    "dairy-free",
+    "kosher",
+    "islam",
+    "coeliac",
+    "paleo",
+    "pescaterian"
+  ],
   UNIT_SETTING_DEFUALT_VALUE: {
-    distance: "km",
+    bodyMeasurement: "cm",
     weight: "kg",
-    body_measurement: "cm"
+    distance: "km",
+    postAccessibility: 3,
+    commentAccessibility: 3,
+    messageAccessibility: 3,
+    friendRequestAccessibility: 3
   },
 
   BADGES_TYPE: {

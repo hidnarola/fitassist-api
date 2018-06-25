@@ -6,7 +6,13 @@ var Schema = mongoose.Schema;
 
 var UserSettingSchema = new Schema(
   {
-    userId: { type: String, ref: "users", field: "authUserId", required: true },
+    userId: {
+      type: String,
+      ref: "users",
+      field: "authUserId",
+      required: true,
+      unique: true
+    },
     bodyMeasurement: {
       type: String,
       enum: ["cm", "inch"],

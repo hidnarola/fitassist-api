@@ -371,7 +371,6 @@ router.put("/:photo_id", async (req, res) => {
       user_post_obj.image = "uploads/gallery/" + filename;
     }
 
-    //        console.log(resp_data);
     resp_data = await user_posts_helper.update_user_post_photo(
       { _id: req.params.photo_id, userId: authUserId },
       user_post_obj

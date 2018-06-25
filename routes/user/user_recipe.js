@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-
+var mongoose = require("mongoose");
 var config = require("../../config");
 var constant = require("../../constant");
 var logger = config.logger;
@@ -11,6 +11,7 @@ var jwtDecode = require("jwt-decode");
 var moment = require("moment");
 
 var nutrition_preferences_helper = require("../../helpers/nutrition_preferences_helper");
+var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_recipe_helper = require("../../helpers/user_recipe_helper");
 
 /**
@@ -227,6 +228,112 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * @api {put} /user/recipe/:recipe_id Complete recipe
+ * @apiName Complete recipe
+ * @apiGroup User Recipe
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/:recipe_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  logger.trace("Delete user's recipe API - Id = ", req.params.recipe_id);
+  let user_recipe_data = await user_recipe_helper.complete_recipe({
+    _id: mongoose.Types.ObjectId(req.params.recipe_id)
+  });
+
+  if (user_recipe_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(user_recipe_data);
+  } else {
+    // badge_assign start;
+    var senderBadges = await badge_assign_helper.badge_assign(
+      authUserId,
+      constant.BADGES_TYPE.NUTRITIONS,
+      {
+        calories_total: "",
+        calories_average: "",
+        calories_most: "",
+        calories_least: "",
+        calories_excess: "",
+        saturated_total: "",
+        saturated_average: "",
+        saturated_most: "",
+        saturated_least: "",
+        saturated_excess: "",
+        trans_total: "",
+        trans_average: "",
+        trans_most: "",
+        trans_least: "",
+        trans_excess: "",
+        folate_total: "",
+        folate_average: "",
+        folate_most: "",
+        folate_least: "",
+        folate_excess: "",
+        potassium_total: "",
+        potassium_average: "",
+        potassium_most: "",
+        potassium_least: "",
+        potassium_excess: "",
+        magnesium_total: "",
+        magnesium_average: "",
+        magnesium_most: "",
+        magnesium_least: "",
+        magnesium_excess: "",
+        sodium_total: "",
+        sodium_average: "",
+        sodium_most: "",
+        sodium_least: "",
+        sodium_excess: "",
+        protein_total: "",
+        protein_average: "",
+        protein_most: "",
+        protein_least: "",
+        protein_excess: "",
+        calcium_total: "",
+        calcium_average: "",
+        calcium_most: "",
+        calcium_least: "",
+        calcium_excess: "",
+        carbs_total: "",
+        carbs_average: "",
+        carbs_most: "",
+        carbs_least: "",
+        carbs_excess: "",
+        cholesterol_total: "",
+        cholesterol_average: "",
+        cholesterol_most: "",
+        cholesterol_least: "",
+        cholesterol_excess: "",
+        polyunsaturated_total: "",
+        polyunsaturated_average: "",
+        polyunsaturated_most: "",
+        polyunsaturated_least: "",
+        polyunsaturated_excess: "",
+        monounsaturated_total: "",
+        monounsaturated_average: "",
+        monounsaturated_most: "",
+        monounsaturated_least: "",
+        monounsaturated_excess: "",
+        iron_total: "",
+        iron_average: "",
+        iron_most: "",
+        iron_least: "",
+        iron_excess: "",
+        fiber_total: "",
+        fiber_average: "",
+        fiber_most: "",
+        fiber_least: "",
+        fiber_excess: ""
+      }
+    );
+    //badge assign end
+
+    res.status(config.OK_STATUS).json(user_recipe_data);
+  }
+});
+/**
  * @api {delete} /user/recipe/:recipe_id Delete
  * @apiName Delete
  * @apiGroup User Recipe
@@ -241,7 +348,7 @@ router.delete("/:recipe_id", async (req, res) => {
   var authUserId = decoded.sub;
   logger.trace("Delete user's recipe API - Id = ", req.params.recipe_id);
   let user_recipe_data = await user_recipe_helper.delete_user_recipe({
-    _id: req.params.recipe_id
+    _id: mongoose.Types.ObjectId(req.params.recipe_id)
   });
 
   if (user_recipe_data.status === 0) {

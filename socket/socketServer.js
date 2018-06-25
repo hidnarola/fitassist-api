@@ -55,47 +55,6 @@ myIo.init = function(server) {
     });
 
     /**
-     * @api {socket on} user_notifications_count  Get user notification counts
-     * @apiName Get user notification counts
-     * @apiGroup  Sokets
-     * @apiParam {String} token Token of user
-     * @apiSuccess (Success 200) {Number} count count of notifications
-     */
-
-    socket.on("messages_by_channel", async function(data) {
-      var decoded = jwtDecode(data.token);
-      var authUserId = decoded.sub;
-      var user = users.get(authUserId);
-      var channel_id = {
-        _id: mongoose.Types.ObjectId(data.channel_id)
-      };
-
-      var start = parseInt(data.start ? data.start : 0);
-      var limit = parseInt(data.limit ? data.limit : 10);
-
-      var resp_data = await chat_helper.get_conversation(
-        channel_id,
-        { $skip: start },
-        { $limit: limit }
-      );
-
-      if (resp_data.status == 0) {
-        logger.error(
-          "Error occured while fetching chat messages = ",
-          resp_data
-        );
-      } else {
-        logger.trace("chat messages got successfully = ", resp_data);
-      }
-
-      // var socketIds = user.socketIds;
-      // socketIds.forEach(socketId => {
-      //   io.to(socketId).emit("receive_user_notification_count", {
-      //     count: user_notifications_count.count
-      //   });
-      // });
-    });
-    /**
      * @api {socket on} request_users_conversation_channels  Get user channels
      * @apiName Get user channels
      * @apiGroup  Sokets
@@ -110,9 +69,6 @@ myIo.init = function(server) {
       var socketIds = user.socketIds;
       var start = parseInt(data.start ? data.start : 0);
       var limit = parseInt(data.limit ? data.limit : 10);
-      console.log("------------------------------------");
-      console.log("start,limit : ", start, limit);
-      console.log("------------------------------------");
 
       try {
         resp_data = await chat_helper.get_messages(
@@ -120,9 +76,6 @@ myIo.init = function(server) {
           { $skip: start },
           { $limit: limit }
         );
-        console.log("------------------------------------");
-        console.log("resp_data : ", resp_data);
-        console.log("------------------------------------");
 
         if (resp_data.status == 0) {
           logger.error(
@@ -138,6 +91,54 @@ myIo.init = function(server) {
       } finally {
         socketIds.forEach(socketId => {
           io.to(socketId).emit("receive_users_conversation_channel", resp_data);
+        });
+      }
+    });
+
+    /**
+     * @api {socket on} get_user_conversation_by_channel  Get user's messages by channel ID
+     * @apiName Get user's messages by channel ID
+     * @apiGroup  Sokets
+     * @apiParam {Object} data Data of user(token,channel_id,start,end)
+     * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
+     */
+    socket.on("get_user_conversation_by_channel", async function(data) {
+      var resp_data = {};
+      var decoded = jwtDecode(data.token);
+      var authUserId = decoded.sub;
+      var user = users.get(authUserId);
+      var socketIds = user.socketIds;
+      var start = parseInt(data.start ? data.start : 0);
+      var limit = parseInt(data.limit ? data.limit : 10);
+      var condition = {
+        _id: mongoose.Types.ObjectId(data.channel_id),
+        $or: [{ userId: authUserId }, { friendId: authUserId }]
+      };
+
+      try {
+        resp_data = await chat_helper.get_conversation(
+          condition,
+          { $skip: start },
+          { $limit: limit }
+        );
+
+        if (resp_data.status == 0) {
+          logger.error(
+            "Error occured while fetching chat messages = ",
+            resp_data
+          );
+        } else {
+          logger.trace("chat messages got successfully = ", resp_data);
+        }
+      } catch (error) {
+        resp_data.message = "Internal server error! please try again later.";
+        resp_data.status = 0;
+      } finally {
+        socketIds.forEach(socketId => {
+          io.to(socketId).emit(
+            "receive_users_conversation_by_channel",
+            resp_data
+          );
         });
       }
     });

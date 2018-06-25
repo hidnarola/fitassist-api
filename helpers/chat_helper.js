@@ -111,11 +111,11 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
  *          status 1 - If chat conversation data found, with chat conversation object
  *          status 2 - If chat conversation not found, with appropriate message
  */
-chat_helper.get_conversation = async (channel_id, skip = {}, limit = {}) => {
+chat_helper.get_conversation = async (condition, skip = {}, limit = {}) => {
   try {
     var conversation = await Conversations.aggregate([
       {
-        $match: channel_id
+        $match: condition
       },
       {
         $lookup: {
@@ -128,6 +128,8 @@ chat_helper.get_conversation = async (channel_id, skip = {}, limit = {}) => {
       {
         $unwind: "$messages"
       },
+      skip,
+      limit,
       { $sort: { "messages.createdAt": -1 } },
       { $group: { _id: "$_id", messages: { $push: "$messages" } } }
     ]);
@@ -136,7 +138,7 @@ chat_helper.get_conversation = async (channel_id, skip = {}, limit = {}) => {
       return {
         status: 1,
         message: "conversation found",
-        conversations: conversation[0]
+        channel: conversation[0]
       };
     } else {
       return { status: 2, message: "No conversation available" };
