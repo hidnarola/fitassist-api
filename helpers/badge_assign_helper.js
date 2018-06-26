@@ -5,6 +5,7 @@ var _ = require("underscore");
 var measurement_helper = require("./measurement_helper");
 var notification_helper = require("./notification_helper");
 var user_helper = require("./user_helper");
+var user_recipe_helper = require("./user_recipe_helper");
 var socket = require("../socket/socketServer");
 var constant = require("../constant");
 
@@ -49,6 +50,60 @@ badges_assign_helper.get_all_badges = async (
     };
   }
 };
+async function badge_assign_for_nutrition(
+  authUserId,
+  first,
+  all_possible_badges,
+  user_gained_badges,
+  nutrients,
+  insert_batch_data,
+  notification_badges_data
+) {
+  var first = first;
+  for (let single_badge of all_possible_badges) {
+    var id = single_badge._id;
+    var badge_assigned = _.find(user_gained_badges, user_badge => {
+      return user_badge.badgeId.toString() === id.toString();
+    });
+    if (!badge_assigned) {
+      if (single_badge.timeType != "standard") {
+        var duration = parseInt(single_badge.baseDuration);
+        let user_nutritions = await user_recipe_helper.get_user_nutritions({
+          date: {
+            $gte: new Date(
+              new Date().getTime() - duration * 24 * 60 * 60 * 1000
+            )
+          },
+          userId: authUserId,
+          isCompleted: 1
+        });
+
+        first = user_nutritions.user_nutrients[nutrients];
+      }
+      console.log("------------------------------------");
+      console.log("nutrients : ", nutrients);
+      console.log("------------------------------------");
+
+      console.log("------------------------------------");
+      console.log("first : ", first);
+      console.log("------------------------------------");
+      console.log("------------------------------------");
+      console.log("single_badge.baseValue : ", single_badge.baseValue);
+      console.log("------------------------------------");
+
+      if (first >= single_badge.baseValue) {
+        var badge_assign_obj = {
+          userId: authUserId,
+          badgeId: single_badge._id,
+          task: single_badge.task
+        };
+        insert_batch_data.push(badge_assign_obj);
+        notification_badges_data.push(single_badge);
+        console.log(nutrients + " badge assigned");
+      }
+    }
+  }
+}
 
 /*
    * badge_assign is used to assign badge
@@ -209,10 +264,10 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.weight;
-              var lastNeck = valueToBeCompare.weight;
+              var first = resp_data.measurement.weight;
+              var last = valueToBeCompare.weight;
 
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -259,9 +314,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.weight;
-              var lastNeck = valueToBeCompare.weight_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.weight;
+              var last = valueToBeCompare.weight_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -312,9 +367,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.neck;
-              var lastNeck = valueToBeCompare.neck_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.neck;
+              var last = valueToBeCompare.neck_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -361,9 +416,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.neck;
-              var lastNeck = valueToBeCompare.neck_measurement_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.neck;
+              var last = valueToBeCompare.neck_measurement_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -409,9 +464,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.shoulders;
-              var lastNeck = valueToBeCompare.shoulders_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.shoulders;
+              var last = valueToBeCompare.shoulders_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -458,9 +513,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.shoulders;
-              var lastNeck = valueToBeCompare.shoulders_measurement_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.shoulders;
+              var last = valueToBeCompare.shoulders_measurement_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -506,9 +561,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.chest;
-              var lastNeck = valueToBeCompare.chest_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.chest;
+              var last = valueToBeCompare.chest_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -555,9 +610,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.chest;
-              var lastNeck = valueToBeCompare.chest_measurement_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.chest;
+              var last = valueToBeCompare.chest_measurement_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -603,9 +658,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.upperArm;
-              var lastNeck = valueToBeCompare.upper_arm_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.upperArm;
+              var last = valueToBeCompare.upper_arm_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -652,9 +707,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.upperArm;
-              var lastNeck = valueToBeCompare.upper_arm_measurement_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.upperArm;
+              var last = valueToBeCompare.upper_arm_measurement_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -700,9 +755,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.waist;
-              var lastNeck = valueToBeCompare.waist_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.waist;
+              var last = valueToBeCompare.waist_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -749,9 +804,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.waist;
-              var lastNeck = valueToBeCompare.waist_measurement_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.waist;
+              var last = valueToBeCompare.waist_measurement_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -797,9 +852,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.forearm;
-              var lastNeck = valueToBeCompare.forearm_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.forearm;
+              var last = valueToBeCompare.forearm_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -846,9 +901,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.forearm;
-              var lastNeck = valueToBeCompare.forearm_measurement_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.forearm;
+              var last = valueToBeCompare.forearm_measurement_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -894,9 +949,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.hips;
-              var lastNeck = valueToBeCompare.hips_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.hips;
+              var last = valueToBeCompare.hips_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -943,9 +998,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.hips;
-              var lastNeck = valueToBeCompare.hips_measurement_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.hips;
+              var last = valueToBeCompare.hips_measurement_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -991,9 +1046,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.thigh;
-              var lastNeck = valueToBeCompare.thigh_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.thigh;
+              var last = valueToBeCompare.thigh_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1040,9 +1095,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.thigh;
-              var lastNeck = valueToBeCompare.thigh_measurement_gain;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.thigh;
+              var last = valueToBeCompare.thigh_measurement_gain;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1088,9 +1143,9 @@ badges_assign_helper.badge_assign = async (
               );
             }
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.calf;
-              var lastNeck = valueToBeCompare.calf_measurement_gain;
-              if (lastNeck - firstNeck >= single_badge.baseValue) {
+              var first = resp_data.measurement.calf;
+              var last = valueToBeCompare.calf_measurement_gain;
+              if (last - first >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1137,9 +1192,9 @@ badges_assign_helper.badge_assign = async (
             }
 
             if (resp_data.status == 1) {
-              var firstNeck = resp_data.measurement.calf;
-              var lastNeck = valueToBeCompare.calf_measurement_loss;
-              if (lastNeck - firstNeck <= single_badge.baseValue) {
+              var first = resp_data.measurement.calf;
+              var last = valueToBeCompare.calf_measurement_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1191,82 +1246,96 @@ badges_assign_helper.badge_assign = async (
       } else if (element == "steps_average") {
       } else if (element == "steps_most") {
       } else if (element == "steps_least") {
-      } else if (element == "calories_total") {
-      } else if (element == "calories_average") {
-      } else if (element == "calories_most_") {
-      } else if (element == "calories_least_") {
-      } else if (element == "calories_excess") {
-      } else if (element == "saturated_total") {
-      } else if (element == "saturated_average") {
-      } else if (element == "saturated_most_") {
-      } else if (element == "saturated_least_") {
-      } else if (element == "saturated_excess") {
-      } else if (element == "trans_total_") {
-      } else if (element == "trans_average") {
-      } else if (element == "trans_most_") {
-      } else if (element == "trans_least_") {
-      } else if (element == "trans_excess") {
-      } else if (element == "folate_total_") {
-      } else if (element == "folate_average") {
-      } else if (element == "folate_most_") {
-      } else if (element == "folate_least_") {
-      } else if (element == "folate_excess") {
-      } else if (element == "potassium_total") {
-      } else if (element == "potassium_average") {
-      } else if (element == "potassium_most") {
-      } else if (element == "potassium_least") {
-      } else if (element == "potassium_excess") {
-      } else if (element == "magnesium_total") {
-      } else if (element == "magnesium_average") {
-      } else if (element == "magnesium_most") {
-      } else if (element == "magnesium_least") {
-      } else if (element == "magnesium_excess") {
-      } else if (element == "sodium_total") {
-      } else if (element == "sodium_average") {
-      } else if (element == "sodium_most") {
-      } else if (element == "sodium_least") {
-      } else if (element == "sodium_excess") {
-      } else if (element == "protein_total") {
-      } else if (element == "protein_average") {
-      } else if (element == "protein_most") {
-      } else if (element == "protein_least") {
-      } else if (element == "protein_excess") {
-      } else if (element == "calcium_total") {
-      } else if (element == "calcium_average") {
-      } else if (element == "calcium_most") {
-      } else if (element == "calcium_least") {
-      } else if (element == "calcium_excess") {
-      } else if (element == "carbs_total") {
-      } else if (element == "carbs_average") {
-      } else if (element == "carbs_most") {
-      } else if (element == "carbs_least") {
-      } else if (element == "carbs_excess") {
-      } else if (element == "cholesterol_total") {
-      } else if (element == "cholesterol_average") {
-      } else if (element == "cholesterol_most") {
-      } else if (element == "cholesterol_least") {
-      } else if (element == "cholesterol_excess") {
-      } else if (element == "polyunsaturated_total") {
-      } else if (element == "polyunsaturated_average") {
-      } else if (element == "polyunsaturated_most") {
-      } else if (element == "polyunsaturated_least") {
-      } else if (element == "polyunsaturated_excess") {
-      } else if (element == "monounsaturated_total") {
-      } else if (element == "monounsaturated_average") {
-      } else if (element == "monounsaturated_most") {
-      } else if (element == "monounsaturated_least") {
-      } else if (element == "monounsaturated_excess") {
-      } else if (element == "iron_total") {
-      } else if (element == "iron_average") {
-      } else if (element == "iron_most") {
-      } else if (element == "iron_least") {
-      } else if (element == "iron_excess") {
-      } else if (element == "fiber_total") {
-      } else if (element == "fiber_average") {
-      } else if (element == "fiber_most") {
-      } else if (element == "fiber_least_") {
-      } else if (element == "fiber_excess") {
+      } else if (
+        constant.BADGES_TYPE.NUTRITIONS.concat(
+          constant.BADGES_TYPE.CALORIES
+        ).indexOf(element) > 0
+      ) {
+        var data = badge_assign_for_nutrition(
+          authUserId,
+          valueToBeCompare.calories_total,
+          all_possible_badges,
+          user_gained_badges,
+          element,
+          insert_batch_data,
+          notification_badges_data
+        );
       }
+      // else if (element == "calories_average") {
+      // } else if (element == "calories_most_") {
+      // } else if (element == "calories_least_") {
+      // } else if (element == "calories_excess") {
+      // } else if (element == "saturated_total") {
+      // } else if (element == "saturated_average") {
+      // } else if (element == "saturated_most_") {
+      // } else if (element == "saturated_least_") {
+      // } else if (element == "saturated_excess") {
+      // } else if (element == "trans_total_") {
+      // } else if (element == "trans_average") {
+      // } else if (element == "trans_most_") {
+      // } else if (element == "trans_least_") {
+      // } else if (element == "trans_excess") {
+      // } else if (element == "folate_total_") {
+      // } else if (element == "folate_average") {
+      // } else if (element == "folate_most_") {
+      // } else if (element == "folate_least_") {
+      // } else if (element == "folate_excess") {
+      // } else if (element == "potassium_total") {
+      // } else if (element == "potassium_average") {
+      // } else if (element == "potassium_most") {
+      // } else if (element == "potassium_least") {
+      // } else if (element == "potassium_excess") {
+      // } else if (element == "magnesium_total") {
+      // } else if (element == "magnesium_average") {
+      // } else if (element == "magnesium_most") {
+      // } else if (element == "magnesium_least") {
+      // } else if (element == "magnesium_excess") {
+      // } else if (element == "sodium_total") {
+      // } else if (element == "sodium_average") {
+      // } else if (element == "sodium_most") {
+      // } else if (element == "sodium_least") {
+      // } else if (element == "sodium_excess") {
+      // } else if (element == "protein_total") {
+      // } else if (element == "protein_average") {
+      // } else if (element == "protein_most") {
+      // } else if (element == "protein_least") {
+      // } else if (element == "protein_excess") {
+      // } else if (element == "calcium_total") {
+      // } else if (element == "calcium_average") {
+      // } else if (element == "calcium_most") {
+      // } else if (element == "calcium_least") {
+      // } else if (element == "calcium_excess") {
+      // } else if (element == "carbs_total") {
+      // } else if (element == "carbs_average") {
+      // } else if (element == "carbs_most") {
+      // } else if (element == "carbs_least") {
+      // } else if (element == "carbs_excess") {
+      // } else if (element == "cholesterol_total") {
+      // } else if (element == "cholesterol_average") {
+      // } else if (element == "cholesterol_most") {
+      // } else if (element == "cholesterol_least") {
+      // } else if (element == "cholesterol_excess") {
+      // } else if (element == "polyunsaturated_total") {
+      // } else if (element == "polyunsaturated_average") {
+      // } else if (element == "polyunsaturated_most") {
+      // } else if (element == "polyunsaturated_least") {
+      // } else if (element == "polyunsaturated_excess") {
+      // } else if (element == "monounsaturated_total") {
+      // } else if (element == "monounsaturated_average") {
+      // } else if (element == "monounsaturated_most") {
+      // } else if (element == "monounsaturated_least") {
+      // } else if (element == "monounsaturated_excess") {
+      // } else if (element == "iron_total") {
+      // } else if (element == "iron_average") {
+      // } else if (element == "iron_most") {
+      // } else if (element == "iron_least") {
+      // } else if (element == "iron_excess") {
+      // } else if (element == "fiber_total") {
+      // } else if (element == "fiber_average") {
+      // } else if (element == "fiber_most") {
+      // } else if (element == "fiber_least_") {
+      // } else if (element == "fiber_excess") {
+      // }
     }
 
     try {

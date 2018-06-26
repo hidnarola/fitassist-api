@@ -88,16 +88,9 @@ user_notifications_helper.add_notifications = async (
   let notification_data;
   try {
     if (type != "") {
-      console.log("------------------------------------");
-      console.log("multiple : ");
-      console.log("------------------------------------");
-
       notification_data = await UserNotifications.insertMany(notificationObj);
       authUserId = notificationObj[0].receiver.authUserId;
     } else {
-      console.log("------------------------------------");
-      console.log("single : ");
-      console.log("------------------------------------");
       let notification = new UserNotifications(notificationObj);
       notification_data = await notification.save();
       authUserId = notificationObj.receiver.authUserId;

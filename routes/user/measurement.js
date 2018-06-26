@@ -393,7 +393,7 @@ async function badgesAssign(authUserId) {
     weight: resp_data.measurement.weight
   };
 
-  var senderBadges = await badge_assign_helper.badge_assign(
+  var badges = await badge_assign_helper.badge_assign(
     authUserId,
     constant.BADGES_TYPE.BODY_MEASUREMENT.concat(
       constant.BADGES_TYPE.BODY_MASS

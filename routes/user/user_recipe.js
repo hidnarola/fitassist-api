@@ -262,103 +262,40 @@ router.put("/", async (req, res) => {
   });
 
   if (user_recipe_data.status === 1) {
-    let user_recipe_of_day = await user_recipe_helper.get_user_nutritions_by_id(
+    let user_nutritions = await user_recipe_helper.get_user_nutritions({
+      userId: authUserId,
+      isCompleted: 1
+    });
+    delete user_nutritions.user_nutrients[0]._id;
+    var nutrition_obj = user_nutritions.user_nutrients[0];
+
+    var nutrition_data = await user_nutritions_helper.get_user_nutritions_by_id(
       {
-        date: {
-          $gte: startdate,
-          $lte: enddate
-        }
+        userId: authUserId
       }
     );
-
-    console.log("------------------------------------");
-    console.log("user_recipe_of_day : ", user_recipe_of_day);
-    console.log("------------------------------------");
+    if (nutrition_data.status == 1) {
+      var nutrition_data = await user_nutritions_helper.update_user_nutritions(
+        {
+          userId: authUserId
+        },
+        nutrition_obj
+      );
+    } else {
+      nutrition_obj.userId = authUserId;
+      var nutrition_data = await user_nutritions_helper.insert_user_nutritions(
+        nutrition_obj
+      );
+    }
+    res.status(config.OK_STATUS).json(user_recipe_data);
 
     // badge assign start;
-    // var senderBadges = await badge_assign_helper.badge_assign(
-    //   authUserId,
-    //   constant.BADGES_TYPE.NUTRITIONS,
-    //   {
-    //     calories_total: "",
-    //     calories_average: "",
-    //     calories_most: "",
-    //     calories_least: "",
-    //     calories_excess: "",
-    //     saturated_total: "",
-    //     saturated_average: "",
-    //     saturated_most: "",
-    //     saturated_least: "",
-    //     saturated_excess: "",
-    //     trans_total: "",
-    //     trans_average: "",
-    //     trans_most: "",
-    //     trans_least: "",
-    //     trans_excess: "",
-    //     folate_total: "",
-    //     folate_average: "",
-    //     folate_most: "",
-    //     folate_least: "",
-    //     folate_excess: "",
-    //     potassium_total: "",
-    //     potassium_average: "",
-    //     potassium_most: "",
-    //     potassium_least: "",
-    //     potassium_excess: "",
-    //     magnesium_total: "",
-    //     magnesium_average: "",
-    //     magnesium_most: "",
-    //     magnesium_least: "",
-    //     magnesium_excess: "",
-    //     sodium_total: "",
-    //     sodium_average: "",
-    //     sodium_most: "",
-    //     sodium_least: "",
-    //     sodium_excess: "",
-    //     protein_total: "",
-    //     protein_average: "",
-    //     protein_most: "",
-    //     protein_least: "",
-    //     protein_excess: "",
-    //     calcium_total: "",
-    //     calcium_average: "",
-    //     calcium_most: "",
-    //     calcium_least: "",
-    //     calcium_excess: "",
-    //     carbs_total: "",
-    //     carbs_average: "",
-    //     carbs_most: "",
-    //     carbs_least: "",
-    //     carbs_excess: "",
-    //     cholesterol_total: "",
-    //     cholesterol_average: "",
-    //     cholesterol_most: "",
-    //     cholesterol_least: "",
-    //     cholesterol_excess: "",
-    //     polyunsaturated_total: "",
-    //     polyunsaturated_average: "",
-    //     polyunsaturated_most: "",
-    //     polyunsaturated_least: "",
-    //     polyunsaturated_excess: "",
-    //     monounsaturated_total: "",
-    //     monounsaturated_average: "",
-    //     monounsaturated_most: "",
-    //     monounsaturated_least: "",
-    //     monounsaturated_excess: "",
-    //     iron_total: "",
-    //     iron_average: "",
-    //     iron_most: "",
-    //     iron_least: "",
-    //     iron_excess: "",
-    //     fiber_total: "",
-    //     fiber_average: "",
-    //     fiber_most: "",
-    //     fiber_least: "",
-    //     fiber_excess: ""
-    //   }
-    // );
+    var badges = await badge_assign_helper.badge_assign(
+      authUserId,
+      constant.BADGES_TYPE.NUTRITIONS.concat(constant.BADGES_TYPE.CALORIES),
+      nutrition_obj
+    );
     //badge assign end
-    res.status(config.OK_STATUS).json(user_recipe_data);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(user_recipe_data);
   }

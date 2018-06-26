@@ -38,48 +38,90 @@ users_recipe_helper.get_user_recipe_by_id = async id => {
  */
 users_recipe_helper.get_user_nutritions = async condition => {
   try {
-    var user_recipe = await UsersRecipe.aggregate([
+    var user_nutrients = await UsersRecipe.aggregate([
       {
-        $match: {
-          userId: "auth0|5ae705cd17688b753df7be17",
-          isCompleted: 1
-        }
+        $match: condition
       },
       { $unwind: "$totalNutrients" },
       {
         $group: {
           _id: "null",
-          EnergyMost: { $max: "$totalNutrients.ENERC_KCAL.quantity" },
-          Energy: { $sum: "$totalNutrients.ENERC_KCAL.quantity" },
-          Saturated: { $sum: "$totalNutrients.FASAT.quantity" },
-          Monounsaturated: { $sum: "$totalNutrients.FAMS.quantity" },
-          Polyunsaturated: { $sum: "$totalNutrients.FAPU.quantity" },
-          Trans: { $sum: "$totalNutrients.FATRN.quantity" },
-          Carbs: { $sum: "$totalNutrients.CHOCDF.quantity" },
-          Fiber: { $sum: "$totalNutrients.FIBTG.quantity" },
-          Protein: { $sum: "$totalNutrients.PROCNT.quantity" },
-          Cholesterol: { $sum: "$totalNutrients.CHOLE.quantity" },
-          Sodium: { $sum: "$totalNutrients.NA.quantity" },
-          Calcium: { $sum: "$totalNutrients.CA.quantity" },
-          Magnesium: { $sum: "$totalNutrients.MG.quantity" },
-          Potassium: { $sum: "$totalNutrients.K.quantity" },
-          Iron: { $sum: "$totalNutrients.FE.quantity" }
+          calories_total: { $sum: "$totalNutrients.ENERC_KCAL.quantity" },
+          calories_average: { $avg: "$totalNutrients.ENERC_KCAL.quantity" },
+          calories_most: { $max: "$totalNutrients.ENERC_KCAL.quantity" },
+          calories_least: { $min: "$totalNutrients.ENERC_KCAL.quantity" },
+          saturated_total: { $sum: "$totalNutrients.FASAT.quantity" },
+          saturated_average: { $avg: "$totalNutrients.FASAT.quantity" },
+          saturated_most: { $sum: "$totalNutrients.FASAT.quantity" },
+          saturated_least: { $sum: "$totalNutrients.FASAT.quantity" },
+          trans_total: { $sum: "$totalNutrients.FATRN.quantity" },
+          trans_average: { $avg: "$totalNutrients.FATRN.quantity" },
+          trans_most: { $sum: "$totalNutrients.FATRN.quantity" },
+          trans_least: { $sum: "$totalNutrients.FATRN.quantity" },
+          folate_total: { $sum: "$totalNutrients.FOLDFE.quantity" },
+          folate_average: { $avg: "$totalNutrients.FOLDFE.quantity" },
+          folate_most: { $sum: "$totalNutrients.FOLDFE.quantity" },
+          folate_least: { $sum: "$totalNutrients.FOLDFE.quantity" },
+          potassium_total: { $sum: "$totalNutrients.K.quantity" },
+          potassium_average: { $avg: "$totalNutrients.K.quantity" },
+          potassium_most: { $sum: "$totalNutrients.K.quantity" },
+          potassium_least: { $sum: "$totalNutrients.K.quantity" },
+          magnesium_total: { $sum: "$totalNutrients.MG.quantity" },
+          magnesium_average: { $avg: "$totalNutrients.MG.quantity" },
+          magnesium_most: { $sum: "$totalNutrients.MG.quantity" },
+          magnesium_least: { $sum: "$totalNutrients.MG.quantity" },
+          sodium_total: { $sum: "$totalNutrients.NA.quantity" },
+          sodium_average: { $avg: "$totalNutrients.NA.quantity" },
+          sodium_most: { $sum: "$totalNutrients.NA.quantity" },
+          sodium_least: { $sum: "$totalNutrients.NA.quantity" },
+          protein_total: { $sum: "$totalNutrients.PROCNT.quantity" },
+          protein_average: { $avg: "$totalNutrients.PROCNT.quantity" },
+          protein_most: { $sum: "$totalNutrients.PROCNT.quantity" },
+          protein_least: { $sum: "$totalNutrients.PROCNT.quantity" },
+          calcium_total: { $sum: "$totalNutrients.CA.quantity" },
+          calcium_average: { $avg: "$totalNutrients.CA.quantity" },
+          calcium_most: { $sum: "$totalNutrients.CA.quantity" },
+          calcium_least: { $sum: "$totalNutrients.CA.quantity" },
+          carbs_total: { $sum: "$totalNutrients.CHOCDF.quantity" },
+          carbs_average: { $avg: "$totalNutrients.CHOCDF.quantity" },
+          carbs_most: { $sum: "$totalNutrients.CHOCDF.quantity" },
+          carbs_least: { $sum: "$totalNutrients.CHOCDF.quantity" },
+          cholesterol_total: { $sum: "$totalNutrients.CHOLE.quantity" },
+          cholesterol_average: { $avg: "$totalNutrients.CHOLE.quantity" },
+          cholesterol_most: { $sum: "$totalNutrients.CHOLE.quantity" },
+          cholesterol_least: { $sum: "$totalNutrients.CHOLE.quantity" },
+          polyunsaturated_total: { $sum: "$totalNutrients.FAPU.quantity" },
+          polyunsaturated_average: { $avg: "$totalNutrients.FAPU.quantity" },
+          polyunsaturated_most: { $sum: "$totalNutrients.FAPU.quantity" },
+          polyunsaturated_least: { $sum: "$totalNutrients.FAPU.quantity" },
+          monounsaturated_total: { $sum: "$totalNutrients.FAMS.quantity" },
+          monounsaturated_average: { $avg: "$totalNutrients.FAMS.quantity" },
+          monounsaturated_most: { $sum: "$totalNutrients.FAMS.quantity" },
+          monounsaturated_least: { $sum: "$totalNutrients.FAMS.quantity" },
+          iron_total: { $sum: "$totalNutrients.FE.quantity" },
+          iron_average: { $avg: "$totalNutrients.FE.quantity" },
+          iron_most: { $sum: "$totalNutrients.FE.quantity" },
+          iron_least: { $sum: "$totalNutrients.FE.quantity" },
+          fiber_total: { $sum: "$totalNutrients.FIBTG.quantity" },
+          fiber_average: { $avg: "$totalNutrients.FIBTG.quantity" },
+          fiber_most: { $sum: "$totalNutrients.FIBTG.quantity" },
+          fiber_least: { $sum: "$totalNutrients.FIBTG.quantity" }
         }
       }
     ]);
-    if (user_recipe) {
+    if (user_nutrients) {
       return {
         status: 1,
-        message: "user's recipe details found",
-        user_recipe: user_recipe
+        message: "user's nutrients details found",
+        user_nutrients: user_nutrients
       };
     } else {
-      return { status: 2, message: "No user's recipe available" };
+      return { status: 2, message: "No user's nutrients available" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding user's recipe",
+      message: "Error occured while finding user's nutrients",
       error: err
     };
   }

@@ -228,7 +228,7 @@ router.put("/:request_id", async (req, res) => {
       2
     );
     // badge_assign start;
-    var senderBadges = await badge_assign_helper.badge_assign(
+    var badges = await badge_assign_helper.badge_assign(
       authUserId,
       constant.BADGES_TYPE.PROFILE,
       {
