@@ -117,14 +117,15 @@ router.get("/", async (req, res) => {
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} message message of chat conversation
  * @apiParam {String} friendId Id of friend
- * @apiSuccess (Success 200) {JSON} conversation message sent in conversations_replies detail
+ * @apiSuccess (Success 200) {JSON} channel message sent in conversations_replies detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
+  var timestamp = "req.body.timestamp";
+  var respObj = {};
   var schema = {
     friendId: { notEmpty: true, errorMessage: "friend Id is required" },
     message: { notEmpty: true, errorMessage: "message is required " }
@@ -143,11 +144,30 @@ router.post("/", async (req, res) => {
       conversations_obj,
       conversations_replies_obj
     );
-    if (chat_data.status === 0) {
+    if (chat_data.status === 1) {
+      var user = await user_helper.get_user_by_id(chat_data.channel.userId);
+      respObj.status = chat_data.status;
+      respObj.message = chat_data.message;
+      respObj.channel = {
+        _id: chat_data.channel._id,
+        isSeen: chat_data.channel.isSeen,
+        message: chat_data.channel.message,
+        createdAt: chat_data.channel.createdAt,
+        fullName:
+          user.user.firstName +
+          (user.user.lastName ? ` ${user.user.lastName}` : ""),
+        authUserId: user.user.authUserId,
+        username: user.user.username,
+        avatar: user.user.avatar,
+        flag: "sent"
+      };
+      respObj.metadata = {
+        timestamp: timestamp
+      };
+      return res.status(config.OK_STATUS).json(respObj);
+    } else {
       logger.error("Error while sending message = ", chat_data);
       return res.status(config.BAD_REQUEST).json({ chat_data });
-    } else {
-      return res.status(config.OK_STATUS).json(chat_data);
     }
   } else {
     logger.error("Validation Error = ", errors);

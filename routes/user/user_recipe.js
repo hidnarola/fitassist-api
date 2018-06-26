@@ -13,6 +13,7 @@ var moment = require("moment");
 var nutrition_preferences_helper = require("../../helpers/nutrition_preferences_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_recipe_helper = require("../../helpers/user_recipe_helper");
+var user_nutritions_helper = require("../../helpers/user_nutritions_helper");
 
 /**
  * @api {get} /user/recipe/ Get recipe
@@ -259,13 +260,21 @@ router.put("/", async (req, res) => {
       $lte: enddate
     }
   });
-  console.log("------------------------------------");
-  console.log("user_recipe_data : ", user_recipe_data);
-  console.log("------------------------------------");
 
-  if (user_recipe_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(user_recipe_data);
-  } else {
+  if (user_recipe_data.status === 1) {
+    let user_recipe_of_day = await user_recipe_helper.get_user_nutritions_by_id(
+      {
+        date: {
+          $gte: startdate,
+          $lte: enddate
+        }
+      }
+    );
+
+    console.log("------------------------------------");
+    console.log("user_recipe_of_day : ", user_recipe_of_day);
+    console.log("------------------------------------");
+
     // badge assign start;
     // var senderBadges = await badge_assign_helper.badge_assign(
     //   authUserId,
@@ -350,6 +359,8 @@ router.put("/", async (req, res) => {
     // );
     //badge assign end
     res.status(config.OK_STATUS).json(user_recipe_data);
+  } else {
+    res.status(config.INTERNAL_SERVER_ERROR).json(user_recipe_data);
   }
 });
 /**

@@ -11,10 +11,6 @@ var chat_helper = {};
  *          status 2 - If chat messages not found, with appropriate message
  */
 chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
-  console.log("------------------------------------");
-  console.log("userId : ", userId);
-  console.log("------------------------------------");
-
   try {
     var conversation = await Conversations.aggregate([
       {
@@ -84,9 +80,7 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
         }
       }
     ]);
-    console.log("------------------------------------");
-    console.log("conversation : ", conversation);
-    console.log("------------------------------------");
+
     if (conversation) {
       return {
         status: 1,
@@ -144,6 +138,7 @@ chat_helper.get_conversation = async (
       {
         $unwind: "$messages2"
       },
+      { $sort: { "messages.createdAt": -1 } },
       skip,
       limit,
       { $sort: { "messages.createdAt": 1 } },
@@ -314,7 +309,7 @@ chat_helper.send_message = async (
     chat_message_data = new ConversationsReplies(conversations_replies_obj);
     chat_message = await chat_message_data.save();
 
-    return { status: 1, message: "message sent", conversation: chat_message };
+    return { status: 1, message: "message sent", channel: chat_message };
   } catch (err) {
     return {
       status: 0,

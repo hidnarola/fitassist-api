@@ -30,6 +30,61 @@ users_recipe_helper.get_user_recipe_by_id = async id => {
 };
 
 /*
+ * get_user_nutritions_by_id is used to fetch all user_recipe's nutrition
+ * 
+ * @return  status 0 - If any internal error occured while fetching user's recipe nutrition data, with error
+ *          status 1 - If user's recipe nutrition data found, with user's recipe nutrition object
+ *          status 2 - If user's recipe nutrition not found, with appropriate message
+ */
+users_recipe_helper.get_user_nutritions = async condition => {
+  try {
+    var user_recipe = await UsersRecipe.aggregate([
+      {
+        $match: {
+          userId: "auth0|5ae705cd17688b753df7be17",
+          isCompleted: 1
+        }
+      },
+      { $unwind: "$totalNutrients" },
+      {
+        $group: {
+          _id: "null",
+          EnergyMost: { $max: "$totalNutrients.ENERC_KCAL.quantity" },
+          Energy: { $sum: "$totalNutrients.ENERC_KCAL.quantity" },
+          Saturated: { $sum: "$totalNutrients.FASAT.quantity" },
+          Monounsaturated: { $sum: "$totalNutrients.FAMS.quantity" },
+          Polyunsaturated: { $sum: "$totalNutrients.FAPU.quantity" },
+          Trans: { $sum: "$totalNutrients.FATRN.quantity" },
+          Carbs: { $sum: "$totalNutrients.CHOCDF.quantity" },
+          Fiber: { $sum: "$totalNutrients.FIBTG.quantity" },
+          Protein: { $sum: "$totalNutrients.PROCNT.quantity" },
+          Cholesterol: { $sum: "$totalNutrients.CHOLE.quantity" },
+          Sodium: { $sum: "$totalNutrients.NA.quantity" },
+          Calcium: { $sum: "$totalNutrients.CA.quantity" },
+          Magnesium: { $sum: "$totalNutrients.MG.quantity" },
+          Potassium: { $sum: "$totalNutrients.K.quantity" },
+          Iron: { $sum: "$totalNutrients.FE.quantity" }
+        }
+      }
+    ]);
+    if (user_recipe) {
+      return {
+        status: 1,
+        message: "user's recipe details found",
+        user_recipe: user_recipe
+      };
+    } else {
+      return { status: 2, message: "No user's recipe available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user's recipe",
+      error: err
+    };
+  }
+};
+/*
  * get_user_recipe_by_recipe_id is used to fetch all user_recipe by recipe ID
  * 
  * @return  status 0 - If any internal error occured while fetching user's recipe data, with error

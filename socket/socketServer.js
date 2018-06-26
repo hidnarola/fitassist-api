@@ -3,6 +3,7 @@ var jwtDecode = require("jwt-decode");
 var mongoose = require("mongoose");
 var user_notification_helper = require("../helpers/notification_helper");
 var chat_helper = require("../helpers/chat_helper");
+var user_helper = require("../helpers/user_helper");
 var config = require("../config");
 var logger = config.logger;
 
@@ -134,12 +135,87 @@ myIo.init = function(server) {
       } catch (error) {
         resp_data.message = "Internal server error! please try again later.";
         resp_data.status = 0;
+        logger.error(
+          "Error occured while fetching chat messages = ",
+          resp_data
+        );
       } finally {
         socketIds.forEach(socketId => {
           io.to(socketId).emit(
             "receive_users_conversation_by_channel",
             resp_data
           );
+        });
+      }
+    });
+
+    /**
+     * @api {socket on} send_new_message  Get user's messages by channel ID
+     * @apiName Get user's messages by channel ID
+     * @apiGroup  Sokets
+     * @apiParam {Object} data Data of user(token,channel_id,start,end)
+     * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
+     */
+    socket.on("send_new_message", async function(data) {
+      var resp_data = {};
+      var decoded = jwtDecode(data.token);
+      var authUserId = decoded.sub;
+      var user = users.get(authUserId);
+      var socketIds = user.socketIds ? user.socketIds : [];
+      var chat_data;
+      try {
+        var timestamp = data.timestamp;
+        var respObj = {};
+
+        var conversations_obj = {
+          userId: authUserId,
+          friendId: data.friendId
+        };
+        var conversations_replies_obj = {
+          userId: authUserId,
+          message: data.message
+        };
+        chat_data = await chat_helper.send_message(
+          conversations_obj,
+          conversations_replies_obj
+        );
+        if (chat_data.status === 1) {
+          var user = await user_helper.get_user_by_id(chat_data.channel.userId);
+          respObj.status = chat_data.status;
+          respObj.message = chat_data.message;
+          respObj.channel = {
+            _id: chat_data.channel.conversationId,
+            message: {},
+            metadata: {}
+          };
+          respObj.channel.metadata = {
+            timestamp: timestamp
+          };
+          respObj.channel.message = {
+            _id: chat_data.channel._id,
+            isSeen: chat_data.channel.isSeen,
+            message: chat_data.channel.message,
+            createdAt: chat_data.channel.createdAt,
+            fullName:
+              user.user.firstName +
+              (user.user.lastName ? ` ${user.user.lastName}` : ""),
+            authUserId: user.user.authUserId,
+            username: user.user.username,
+            avatar: user.user.avatar,
+            flag: "sent"
+          };
+
+          return res.status(config.OK_STATUS).json(respObj);
+        } else {
+          logger.error("Error while sending message = ", chat_data);
+          return res.status(config.BAD_REQUEST).json({ chat_data });
+        }
+      } catch (error) {
+        chat_data.message = "Internal server error! please try again later.";
+        chat_data.status = 0;
+      } finally {
+        socketIds.forEach(socketId => {
+          io.to(socketId).emit("receive_sent_new_message_response", respObj);
         });
       }
     });
