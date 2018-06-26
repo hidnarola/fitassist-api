@@ -160,8 +160,10 @@ myIo.init = function(server) {
       var resp_data = {};
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
-      var user = users.get(authUserId);
-      var socketIds = user.socketIds ? user.socketIds : [];
+      var sender = users.get(authUserId);
+      var socketIdsSender = sender.socketIds ? sender.socketIds : [];
+      var reciever = users.get(data.friendId);
+      var socketIdsForReceiver = reciever.socketIds ? reciever.socketIds : [];
       var chat_data;
       try {
         var timestamp = data.timestamp;
@@ -214,8 +216,11 @@ myIo.init = function(server) {
         chat_data.message = "Internal server error! please try again later.";
         chat_data.status = 0;
       } finally {
-        socketIds.forEach(socketId => {
+        socketIdsSender.forEach(socketId => {
           io.to(socketId).emit("receive_sent_new_message_response", respObj);
+        });
+        socketIdsForReceiver.forEach(socketId => {
+          io.to(socketId).emit("receive_new_message", respObj);
         });
       }
     });
