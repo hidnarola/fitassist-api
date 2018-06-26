@@ -111,7 +111,12 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
  *          status 1 - If chat conversation data found, with chat conversation object
  *          status 2 - If chat conversation not found, with appropriate message
  */
-chat_helper.get_conversation = async (condition, skip = {}, limit = {}) => {
+chat_helper.get_conversation = async (
+  authUserId,
+  condition,
+  skip = {},
+  limit = {}
+) => {
   try {
     var conversation = await Conversations.aggregate([
       {
@@ -128,12 +133,51 @@ chat_helper.get_conversation = async (condition, skip = {}, limit = {}) => {
       {
         $unwind: "$messages"
       },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "authUserId",
+          localField: "messages.userId",
+          as: "messages2"
+        }
+      },
+      {
+        $unwind: "$messages2"
+      },
       skip,
       limit,
-      { $sort: { "messages.createdAt": -1 } },
-      { $group: { _id: "$_id", messages: { $push: "$messages" } } }
+      { $sort: { "messages.createdAt": 1 } },
+      {
+        $group: {
+          _id: "$_id",
+          messages: {
+            $push: {
+              _id: "$messages._id",
+              isSeen: "$messages.isSeen",
+              message: "$messages.message",
+              createdAt: "$messages.createdAt",
+              fullName: {
+                $concat: [
+                  { $ifNull: ["$messages2.firstName", ""] },
+                  " ",
+                  { $ifNull: ["$messages2.lastName", ""] }
+                ]
+              },
+              authUserId: "$messages2.authUserId",
+              username: "$messages2.username",
+              avatar: "$messages2.avatar",
+              flag: {
+                $cond: {
+                  if: { $eq: ["$messages.userId", authUserId] },
+                  then: "sent",
+                  else: "recieved"
+                }
+              }
+            }
+          }
+        }
+      }
     ]);
-
     if (conversation) {
       return {
         status: 1,

@@ -368,7 +368,6 @@ router.get("/auth0_user_sync", async (req, res) => {
       response = JSON.parse(response);
       if (response.email && typeof response.email !== "undefined") {
         let data = await user_helper.checkvalue({ authUserId: response.sub });
-        console.log("data", data);
 
         if (data.count <= 0) {
           var user_obj = {
@@ -398,38 +397,28 @@ router.get("/auth0_user_sync", async (req, res) => {
           var user_data = await user_helper.insert_user(user_obj);
 
           var exercise_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
-              exercise_obj.userId = response.sub;
+          exercise_obj.userId = response.sub;
           var nutrition_obj = constant.NUTRITION_PREFERENCE_DEFUALT_VALUE;
-              nutrition_obj.userId = response.sub;
+          nutrition_obj.userId = response.sub;
           var setting_obj = constant.UNIT_SETTING_DEFUALT_VALUE;
-              setting_obj.userId = response.sub;
+          setting_obj.userId = response.sub;
           var user_nutritions_obj = { userId: response.sub };
 
           var exercise_data = await exercise_preference_helper.insert_exercise_prefernece(
             exercise_obj
           );
-          console.log("------------------------------------");
-          console.log("exercise_data : ", exercise_data);
-          console.log("------------------------------------");
 
           var nutrition_data = await nutrition_preferences_helper.insert_nutrition_preference(
             nutrition_obj
           );
-          console.log("------------------------------------");
-          console.log("nutrition_data : ", nutrition_data);
-          console.log("------------------------------------");
 
           var setting_data = await user_settings_helper.insert_setting(
             setting_obj
           );
-          console.log("------------------------------------");
-          console.log("setting_data : ", setting_data);
-          console.log("------------------------------------");
 
           var user_nutritions_data = await user_nutritions_helper.insert_user_nutritions(
             user_nutritions_obj
           );
-          console.log("user_nutritions_data", user_nutritions_data);
 
           res.status(config.OK_STATUS).json(user_data);
         } else {

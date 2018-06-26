@@ -8,10 +8,10 @@ var users_nutritions_helper = {};
  *          status 1 - If user's nutritions data found, with user's nutritions object
  *          status 2 - If user's nutritions not found, with appropriate message
  */
-users_nutritions_helper.get_user_nutritions_by_id = async id => {
+users_nutritions_helper.get_user_nutritions_by_id = async condition => {
   try {
-    var user_nutritions = await UsersNutritions.findOne(id);
-    if (user_nutritions && user_nutritions.length > 0) {
+    var user_nutritions = await UsersNutritions.findOne(condition);
+    if (user_nutritions) {
       return {
         status: 1,
         message: "user's nutritions details found",

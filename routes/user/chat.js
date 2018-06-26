@@ -60,6 +60,7 @@ router.get("/:channel_id/:start?/:limit?/", async (req, res) => {
   var limit = parseInt(req.params.limit ? req.params.limit : 10);
 
   var resp_data = await chat_helper.get_conversation(
+    authUserId,
     channel_id,
     { $skip: start },
     { $limit: limit }

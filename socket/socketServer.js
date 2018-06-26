@@ -107,7 +107,7 @@ myIo.init = function(server) {
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
-      var socketIds = user.socketIds;
+      var socketIds = user.socketIds ? user.socketIds : [];
       var start = parseInt(data.start ? data.start : 0);
       var limit = parseInt(data.limit ? data.limit : 10);
       var condition = {
@@ -117,6 +117,7 @@ myIo.init = function(server) {
 
       try {
         resp_data = await chat_helper.get_conversation(
+          authUserId,
           condition,
           { $skip: start },
           { $limit: limit }
@@ -134,8 +135,6 @@ myIo.init = function(server) {
         resp_data.message = "Internal server error! please try again later.";
         resp_data.status = 0;
       } finally {
-        console.log("I am here", resp_data);
-
         socketIds.forEach(socketId => {
           io.to(socketId).emit(
             "receive_users_conversation_by_channel",
@@ -158,10 +157,9 @@ myIo.init = function(server) {
         }
         socketToUsers.delete(socketId);
       }
-      console.log("**disconnect**");
+      console.log("Disconnect");
     });
-
-    console.log("Socket Connected With socket id : -", socket.id);
+    console.log("Connected : ", socket.id);
   });
   myIo.io = io;
   myIo.users = users;

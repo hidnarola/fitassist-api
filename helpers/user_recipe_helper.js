@@ -95,10 +95,10 @@ users_recipe_helper.insert_user_recipe = async user_recipe_object => {
  * 
  * @developed by "amc"
  */
-users_recipe_helper.complete_recipe = async id => {
+users_recipe_helper.complete_recipe = async condition => {
   try {
-    let user_recipe_data = await UsersRecipe.updateOne(
-      id,
+    let user_recipe_data = await UsersRecipe.updateMany(
+      condition,
       {
         isCompleted: 1
       },
