@@ -18,13 +18,16 @@ myIo.init = function(server) {
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
       if (user) {
-        user.socketIds.push(socket.id);
+        if (user.socketIds.indexOf(socket.id) < 0) {
+          user.socketIds.push(socket.id);
+        }
       } else {
         var obj = {
           socketIds: [socket.id]
         };
         users.set(authUserId, obj);
       }
+
       socketToUsers.set(socket.id, authUserId);
     });
 
