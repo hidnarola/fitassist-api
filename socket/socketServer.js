@@ -245,8 +245,6 @@ myIo.init = function(server) {
      * @apiSuccess (Success 200) {String} flag flag
      */
     socket.on("request_typing_start", async function(data) {
-      console.log("request_typing_start");
-
       var respObj = {
         status: 1,
         message: "typing"
@@ -267,11 +265,9 @@ myIo.init = function(server) {
      * @apiName Indicate user typing stop
      * @apiGroup  Sokets
      * @apiParam {Object} data {friendId:"",channelId:""} of friend
-     * @apiSuccess (Success 200) {String} flag flag
+     * @apiSuccess (Success 200) {Object} channel channel data
      */
     socket.on("request_typing_stop", async function(data) {
-      console.log("request_typing_stop");
-
       var respObj = {
         status: 1,
         message: "no typing"
@@ -285,6 +281,28 @@ myIo.init = function(server) {
       socketIds.forEach(socketId => {
         io.to(socketId).emit("message_typing_stop", respObj);
       });
+    });
+
+    /**
+     * @api {socket on} mark_message_as_read Mark messages as read
+     * @apiName Mark messages as read
+     * @apiGroup  Sokets
+     * @apiParam {Object} data {userId:"",channelId:""} of user
+     * @apiSuccess (Success 200) {String} flag flag
+     */
+    socket.on("mark_message_as_read", async function(data) {
+      var friendId = users.get(data.friendId);
+      var socketIds = friendId && friendId.socketIds ? friendId.socketIds : [];
+      let chat_data = await chat_helper.mark_message_as_read(
+        {
+          userId: data.friendId,
+          conversationId: data.channelId,
+          isSeen: 0
+        },
+        {
+          isSeen: 1
+        }
+      );
     });
 
     /**

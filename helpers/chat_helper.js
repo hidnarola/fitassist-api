@@ -76,7 +76,7 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
       },
       {
         $sort: {
-          lastReplyAt: -1
+          "conversations.createdAt": -1
         }
       }
     ]);
@@ -310,6 +310,37 @@ chat_helper.send_message = async (
     return {
       status: 0,
       message: "Error occured while sending message",
+      error: err
+    };
+  }
+};
+
+/*
+ * mark_message_as_read is used to delete chat_message from database
+ * 
+ * @param   condition object  _id of user that need to be delete
+ * @param   updateObject String  _id of user that need to be delete
+ * 
+ * @return  status  0 - If any error occur in deletion of chat_message, with error
+ *          status  1 - If chat_message deleted successfully, with appropriate message
+ * 
+ * @developed by "amc"
+ */
+chat_helper.mark_message_as_read = async (condition, updateObject) => {
+  try {
+    let resp_data = await ConversationsReplies.updateMany(
+      condition,
+      updateObject
+    );
+    if (resp_data) {
+      return { status: 2, message: "chat message not marked as read" };
+    } else {
+      return { status: 1, message: "chat message marked as read" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while marking as read",
       error: err
     };
   }
