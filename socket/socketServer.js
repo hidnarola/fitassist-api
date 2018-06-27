@@ -245,6 +245,8 @@ myIo.init = function(server) {
      * @apiSuccess (Success 200) {String} flag flag
      */
     socket.on("request_typing_start", async function(data) {
+      console.log("request_typing_start");
+
       var respObj = {
         status: 1,
         message: "typing"
@@ -268,6 +270,8 @@ myIo.init = function(server) {
      * @apiSuccess (Success 200) {String} flag flag
      */
     socket.on("request_typing_stop", async function(data) {
+      console.log("request_typing_stop");
+
       var respObj = {
         status: 1,
         message: "no typing"
