@@ -237,6 +237,58 @@ myIo.init = function(server) {
       }
     });
 
+    /**
+     * @api {socket on} request_typing_start  Indicate user typing...
+     * @apiName Indicate user typing...
+     * @apiGroup  Sokets
+     * @apiParam {Object} data {friendId:"",channelId:""} of friend
+     * @apiSuccess (Success 200) {String} flag flag
+     */
+    socket.on("request_typing_start", async function(data) {
+      var respObj = {
+        status: 1,
+        message: "typing"
+      };
+      var friendId = users.get(data.friendId);
+      var socketIds = friendId && friendId.socketIds ? friendId.socketIds : [];
+      respObj.channel = {
+        _id: data.channelId,
+        isTyping: true
+      };
+      socketIds.forEach(socketId => {
+        io.to(socketId).emit("message_typing_start", respObj);
+      });
+    });
+
+    /**
+     * @api {socket on} request_typing_stop Indicate user typing stop
+     * @apiName Indicate user typing stop
+     * @apiGroup  Sokets
+     * @apiParam {Object} data {friendId:"",channelId:""} of friend
+     * @apiSuccess (Success 200) {String} flag flag
+     */
+    socket.on("request_typing_stop", async function(data) {
+      var respObj = {
+        status: 1,
+        message: "no typing"
+      };
+      var friendId = users.get(data.friendId);
+      var socketIds = friendId && friendId.socketIds ? friendId.socketIds : [];
+      respObj.channel = {
+        _id: data.channelId,
+        isTyping: false
+      };
+      socketIds.forEach(socketId => {
+        io.to(socketId).emit("message_typing_stop", respObj);
+      });
+    });
+
+    /**
+     * @api {socket on} disconnect Disconnect Socket
+     * @apiName Disconnect Socket
+     * @apiGroup  Sokets
+     * @apiSuccess (Success 200) {String} flag flag
+     */
     socket.on("disconnect", function() {
       var socketId = this.id;
       var socketToUser = socketToUsers.get(socketId);

@@ -189,7 +189,7 @@ common_helper.send_notification = async (notificationData, socket) => {
   if (receiver_data.status == 1) {
     var receiver = {
       firstName: receiver_data.user.firstName,
-      lastName: receiver_data.user.lastName,
+      lastName: receiver_data.user.lastName ? receiver_data.user.lastName : "",
       avatar: receiver_data.user.avatar,
       username: receiver_data.user.username,
       authUserId: receiver_data.user.authUserId
@@ -208,7 +208,7 @@ common_helper.send_notification = async (notificationData, socket) => {
     if (sender_data.status == 1) {
       var sender = {
         firstName: sender_data.user.firstName,
-        lastName: sender_data.user.lastName,
+        lastName: sender_data.user.lastName ? sender_data.user.lastName : "",
         avatar: sender_data.user.avatar,
         username: sender_data.user.username,
         authUserId: sender_data.user.authUserId
@@ -222,9 +222,9 @@ common_helper.send_notification = async (notificationData, socket) => {
       receiver: receiver,
       type: notificationData.type,
       timelineId: notificationData.timelineId,
-      body: `${sender.firstName} ${sender.lastName} ${
-        notificationData.bodyMessage
-      }`
+      body: `${sender.firstName} ${
+        sender.lastName ? " " + sender.lastName : ""
+      } ${notificationData.bodyMessage}`
     };
 
     let notification_data = await notification_helper.add_notifications(

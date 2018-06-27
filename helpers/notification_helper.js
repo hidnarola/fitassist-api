@@ -17,7 +17,7 @@ user_notifications_helper.get_notifications = async userId => {
       },
       {
         $sort: {
-          createdAt: -1
+          _id: -1
         }
       }
     ]);
@@ -95,9 +95,6 @@ user_notifications_helper.add_notifications = async (
       notification_data = await notification.save();
       authUserId = notificationObj.receiver.authUserId;
     }
-    console.log("------------------------------------");
-    console.log("authUserId : ", authUserId);
-    console.log("------------------------------------");
 
     var user_notifications_count = await user_notifications_helper.get_notifications_count(
       {

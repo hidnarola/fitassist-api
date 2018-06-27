@@ -233,10 +233,6 @@ chat_helper.count_unread_messages = async userId => {
       { $group: { _id: "$_id", messages: { $push: "$messages" } } }
     ]);
 
-    console.log("------------------------------------");
-    console.log("conversation : ", conversation);
-    console.log("------------------------------------");
-
     var count = 0;
     _.each(conversation, function(single, index) {
       _.each(single.messages, function(single_msg) {
