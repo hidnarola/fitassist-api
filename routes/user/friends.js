@@ -148,6 +148,17 @@ router.post("/", async (req, res) => {
       logger.error("Error while inserting friend request = ", friend_data);
       return res.status(config.BAD_REQUEST).json({ friend_data });
     } else {
+      var user = socket.users.get(req.body.friendId);
+      var socketIds = user ? user.socketIds : [];
+      var user_friends_count = await friend_helper.count_friends(
+        req.body.friendId
+      );
+      socketIds.forEach(socketId => {
+        io.to(socketId).emit("receive_user_friends_count", {
+          count: user_friends_count.count
+        });
+      });
+
       return res.status(config.OK_STATUS).json(friend_data);
     }
   } else {

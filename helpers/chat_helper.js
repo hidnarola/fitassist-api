@@ -99,6 +99,57 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
     };
   }
 };
+
+/*
+ * get_channel_id is used to get channel ID of chat
+ * 
+ * @return  status 0 - If any internal error occured while fetching chat channel Id of user data, with error
+ *          status 1 - If chat channel Id found, with chat channel ID object
+ *          status 2 - If chat channel Id found, with appropriate message
+ */
+chat_helper.get_channel_id = async (userId, friendId) => {
+  try {
+    var conversation_id;
+    var conversation_pair = {
+      $or: [
+        {
+          $and: [{ userId: userId }, { friendId: friendId }]
+        },
+        {
+          $and: [{ userId: friendId }, { friendId: userId }]
+        }
+      ]
+    };
+
+    let check_conversation_channel = await Conversations.findOne(
+      conversation_pair
+    );
+    if (check_conversation_channel) {
+      conversation_id = check_conversation_channel._id;
+    } else {
+      let chat_message_data = new Conversations(conversations_obj);
+      let chat_message = await chat_message_data.save();
+      conversation_id = chat_message._id;
+    }
+
+    if (conversation_id) {
+      return {
+        status: 1,
+        message: "channel id found",
+        channelId: conversation_id
+      };
+    } else {
+      return { status: 2, message: "Could not find or create channel" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Could not find or create channel",
+      error: err
+    };
+  }
+};
+
 /*
  * get_conversation is used to fetch all conversation data
  * 
@@ -288,6 +339,10 @@ chat_helper.send_message = async (
     if (check_conversation_channel) {
       conversation_id = check_conversation_channel._id;
     } else {
+      var conversations_obj = {
+        userId: userId,
+        friendId: friendId
+      };
       let chat_message_data = new Conversations(conversations_obj);
       let chat_message = await chat_message_data.save();
       conversation_id = chat_message._id;

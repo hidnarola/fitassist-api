@@ -14,6 +14,11 @@ var socketToUsers = new Map();
 myIo.init = function(server) {
   io.attach(server);
   io.on("connection", function(socket) {
+    /**
+     * @api {socket on} join  Join user to socket
+     * @apiName Join user to socket
+     * @apiGroup  Sokets
+     */
     socket.on("join", function(token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
@@ -39,14 +44,16 @@ myIo.init = function(server) {
      * @apiParam {String} token Token of user
      * @apiSuccess (Success 200) {Number} count count of friends
      */
-
     socket.on("user_friends_count", async function(token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
-      var user_friends_count = await friend_helper.count_friends(authUserId);
-      var socketIds = user.socketIds;
+      var socketIds =
+        user && user.socketIds && user.socketIds.length > 0
+          ? user.socketIds
+          : [];
 
+      var user_friends_count = await friend_helper.count_friends(authUserId);
       socketIds.forEach(socketId => {
         io.to(socketId).emit("receive_user_friends_count", {
           count: user_friends_count.count
@@ -69,7 +76,10 @@ myIo.init = function(server) {
         authUserId
       );
 
-      var socketIds = user.socketIds;
+      var socketIds =
+        user && user.socketIds && user.socketIds.length > 0
+          ? user.socketIds
+          : [];
       socketIds.forEach(socketId => {
         io.to(socketId).emit("receive_user_messages_count", {
           count: user_messages_count.count
@@ -95,12 +105,47 @@ myIo.init = function(server) {
         }
       );
 
-      var socketIds = user.socketIds;
+      var socketIds = user ? user.socketIds : [];
       socketIds.forEach(socketId => {
         io.to(socketId).emit("receive_user_notification_count", {
           count: user_notifications_count.count
         });
       });
+    });
+
+    /**
+     * @api {socket on} get_channel_id  User Channel
+     * @apiName User Channel
+     * @apiGroup  Sokets
+     * @apiParam {Object} data Data of user
+     * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
+     */
+    socket.on("get_channel_id", async function(data) {
+      var resp_data = {};
+      var user = users.get(data.userId);
+      var socketIds =
+        user && user.socketIds && user.socketIds.length ? user.socketIds : [];
+      try {
+        resp_data = await chat_helper.get_channel_id(
+          data.userId,
+          data.friendId
+        );
+
+        if (resp_data.status == 0) {
+          logger.error("Error occured while fetching channel Id = ", resp_data);
+        } else {
+          logger.trace("channel Id got successfully = ", resp_data);
+        }
+      } catch (error) {
+        resp_data.message = "Internal server error! please try again later.";
+        resp_data.status = 0;
+      } finally {
+        socketIds.forEach(socketId => {
+          io.to(socketId).emit("receive_channel_id", {
+            channelId: resp_data.channelId
+          });
+        });
+      }
     });
 
     /**
@@ -115,7 +160,8 @@ myIo.init = function(server) {
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
-      var socketIds = user.socketIds;
+      var socketIds =
+        user && user.socketIds && user.socketIds.length ? user.socketIds : [];
       var start = parseInt(data.start ? data.start : 0);
       var limit = parseInt(data.limit ? data.limit : 10);
 
@@ -156,7 +202,10 @@ myIo.init = function(server) {
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
-      var socketIds = user.socketIds ? user.socketIds : [];
+      var socketIds =
+        user && user.socketIds && user.socketIds.length > 0
+          ? user.socketIds
+          : [];
       var start = parseInt(data.start ? data.start : 0);
       var limit = parseInt(data.limit ? data.limit : 10);
       var condition = {
@@ -211,10 +260,14 @@ myIo.init = function(server) {
       var authUserId = decoded.sub;
       var sender = users.get(authUserId);
       var socketIdsForSender =
-        sender && sender.socketIds ? sender.socketIds : [];
+        sender && sender.socketIds && sender.socketIds.length > 0
+          ? sender.socketIds
+          : [];
       var reciever = users.get(data.friendId);
       var socketIdsForReceiver =
-        reciever && reciever.socketIds ? reciever.socketIds : [];
+        reciever && reciever.socketIds && reciever.socketIds.length > 0
+          ? reciever.socketIds
+          : [];
       var chat_data;
 
       try {
@@ -286,7 +339,10 @@ myIo.init = function(server) {
         message: "typing"
       };
       var friendId = users.get(data.friendId);
-      var socketIds = friendId && friendId.socketIds ? friendId.socketIds : [];
+      var socketIds =
+        friendId && friendId.socketIds && friendId.socketIds.length > 0
+          ? friendId.socketIds
+          : [];
       respObj.channel = {
         _id: data.channelId,
         isTyping: true
@@ -309,7 +365,10 @@ myIo.init = function(server) {
         message: "no typing"
       };
       var friendId = users.get(data.friendId);
-      var socketIds = friendId && friendId.socketIds ? friendId.socketIds : [];
+      var socketIds =
+        friendId && friendId.socketIds && friendId.socketIds.length > 0
+          ? friendId.socketIds
+          : [];
       respObj.channel = {
         _id: data.channelId,
         isTyping: false
@@ -328,7 +387,10 @@ myIo.init = function(server) {
      */
     socket.on("mark_message_as_read", async function(data) {
       var friendId = users.get(data.friendId);
-      var socketIds = friendId && friendId.socketIds ? friendId.socketIds : [];
+      var socketIds =
+        friendId && friendId.socketIds && friendId.socketIds.length > 0
+          ? friendId.socketIds
+          : [];
       let chat_data = await chat_helper.mark_message_as_read(
         {
           userId: data.friendId,

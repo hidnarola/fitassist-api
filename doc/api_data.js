@@ -3817,6 +3817,55 @@ define({ "api": [
     "groupTitle": "Exercise_Type"
   },
   {
+    "type": "get",
+    "url": "/user/users_nutritions",
+    "title": "Get User Nutrition",
+    "name": "Get_User_Nutrition",
+    "group": "Get_User_Nutrition",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "notifications",
+            "description": "<p>Array of notifications document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/users_nutritions.js",
+    "groupTitle": "Get_User_Nutrition"
+  },
+  {
     "type": "post",
     "url": "/admin/ingredient",
     "title": "Add",
@@ -5991,6 +6040,29 @@ define({ "api": [
   },
   {
     "type": "socket on",
+    "url": "disconnect",
+    "title": "Disconnect Socket",
+    "name": "Disconnect_Socket",
+    "group": "Sokets",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "flag",
+            "description": "<p>flag</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
     "url": "request_users_conversation_channels",
     "title": "Get user channels",
     "name": "Get_user_channels",
@@ -6063,6 +6135,78 @@ define({ "api": [
   },
   {
     "type": "socket on",
+    "url": "user_friends_count",
+    "title": "Get user's friends count",
+    "name": "Get_user_s_friends_count",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token of user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>count of friends</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "send_new_message",
+    "title": "Get user's messages by channel ID",
+    "name": "Get_user_s_messages_by_channel_ID",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Data of user(token,channel_id,start,end)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "resp_data",
+            "description": "<p>resp_data of channel</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
     "url": "get_user_conversation_by_channel",
     "title": "Get user's messages by channel ID",
     "name": "Get_user_s_messages_by_channel_ID",
@@ -6076,6 +6220,196 @@ define({ "api": [
             "optional": false,
             "field": "data",
             "description": "<p>Data of user(token,channel_id,start,end)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "resp_data",
+            "description": "<p>resp_data of channel</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "user_messages_count",
+    "title": "Get user's unread messages count",
+    "name": "Get_user_s_unread_messages_count",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token of user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "count",
+            "description": "<p>count of messages</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "request_typing_start",
+    "title": "Indicate user typing...",
+    "name": "Indicate_user_typing___",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{friendId:&quot;&quot;,channelId:&quot;&quot;} of friend</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "flag",
+            "description": "<p>flag</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "request_typing_stop",
+    "title": "Indicate user typing stop",
+    "name": "Indicate_user_typing_stop",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{friendId:&quot;&quot;,channelId:&quot;&quot;} of friend</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": false,
+            "field": "channel",
+            "description": "<p>channel data</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "join",
+    "title": "Join user to socket",
+    "name": "Join_user_to_socket",
+    "group": "Sokets",
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "mark_message_as_read",
+    "title": "Mark messages as read",
+    "name": "Mark_messages_as_read",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>{userId:&quot;&quot;,channelId:&quot;&quot;} of user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "flag",
+            "description": "<p>flag</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "get_channel_id",
+    "title": "User Channel",
+    "name": "User_Channel",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Data of user</p>"
           }
         ]
       }
@@ -7477,7 +7811,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "conversation",
+            "field": "channel",
             "description": "<p>message sent in conversations_replies detail</p>"
           }
         ]
@@ -8813,6 +9147,55 @@ define({ "api": [
   },
   {
     "type": "put",
+    "url": "/user/users_nutritions/:notification_id",
+    "title": "Make Notification as Read",
+    "name": "Make_Notification_as_Read",
+    "group": "User_Notification",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/users_nutritions.js",
+    "groupTitle": "User_Notification"
+  },
+  {
+    "type": "put",
     "url": "/user/notification/:notification_id",
     "title": "Make Notification as Read",
     "name": "Make_Notification_as_Read",
@@ -8907,6 +9290,55 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/user/notifications.js",
+    "groupTitle": "User_Notification"
+  },
+  {
+    "type": "put",
+    "url": "/user/notification",
+    "title": "Mark as read",
+    "name": "Mark_as_read",
+    "group": "User_Notification",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/users_nutritions.js",
     "groupTitle": "User_Notification"
   },
   {
@@ -10095,6 +10527,68 @@ define({ "api": [
     "groupTitle": "User_Recipe"
   },
   {
+    "type": "put",
+    "url": "/user/recipe/",
+    "title": "Complete recipe",
+    "name": "Complete_recipe",
+    "group": "User_Recipe",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "date",
+            "description": "<p>date of recipe</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_recipe.js",
+    "groupTitle": "User_Recipe"
+  },
+  {
     "type": "delete",
     "url": "/user/recipe/:recipe_id",
     "title": "Delete",
@@ -11004,55 +11498,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/timeline/:post_id",
-    "title": "Get by ID",
-    "name": "Get_by_ID",
-    "group": "User_Timeline",
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "timeline",
-            "description": "<p>JSON of user_posts 's document</p>"
-          }
-        ]
-      }
-    },
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/timeline.js",
-    "groupTitle": "User_Timeline"
-  },
-  {
-    "type": "get",
     "url": "/user/timeline/:user_post_id",
     "title": "Get by ID",
     "name": "Get_by_ID",
@@ -11079,6 +11524,55 @@ define({ "api": [
             "optional": false,
             "field": "user_post_photo",
             "description": "<p>user_post_photo's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/timeline.js",
+    "groupTitle": "User_Timeline"
+  },
+  {
+    "type": "get",
+    "url": "/user/timeline/:post_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "User_Timeline",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "timeline",
+            "description": "<p>JSON of user_posts 's document</p>"
+          }
+        ]
+      }
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
           }
         ]
       }
