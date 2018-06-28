@@ -46,7 +46,6 @@ myIo.init = function(server) {
       var user_messages_count = await chat_helper.count_unread_messages(
         authUserId
       );
-
       console.log("------------------------------------");
       console.log("user_messages_count : ", user_messages_count);
       console.log("------------------------------------");
@@ -54,7 +53,7 @@ myIo.init = function(server) {
       var socketIds = user.socketIds;
       socketIds.forEach(socketId => {
         io.to(socketId).emit("receive_user_messages_count", {
-          user_messages_count
+          count: user_messages_count.count
         });
       });
     });
@@ -261,6 +260,7 @@ myIo.init = function(server) {
         socketIdsForReceiver.forEach(socketId => {
           io.to(socketId).emit("receive_new_message", respObj);
         });
+        
       }
     });
 

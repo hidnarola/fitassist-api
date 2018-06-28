@@ -50,16 +50,11 @@ user_notifications_helper.get_notifications = async userId => {
 user_notifications_helper.get_notifications_count = async userId => {
   try {
     var count = await UserNotifications.find(userId).count();
-
-    if (count) {
-      return {
-        status: 1,
-        message: "notifications found",
-        count: count
-      };
-    } else {
-      return { status: 2, message: "No notifications available" };
-    }
+    return {
+      status: 1,
+      message: "notifications found",
+      count: count
+    };
   } catch (err) {
     return {
       status: 0,

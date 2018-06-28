@@ -204,7 +204,7 @@ chat_helper.count_unread_messages = async userId => {
     var count = await Conversations.aggregate([
       {
         $match: {
-          $or: [{ userId: userId }, { userId: userId }]
+          $or: [{ userId: userId }, { friendId: userId }]
         }
       },
       {
@@ -219,7 +219,10 @@ chat_helper.count_unread_messages = async userId => {
         $unwind: "$messages"
       },
       {
-        $match: { "messages.isSeen": 0 }
+        $match: {
+          "messages.isSeen": 0,
+          "messages.userId": { $ne: userId }
+        }
       },
       {
         $group: {
