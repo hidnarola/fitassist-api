@@ -1,5 +1,6 @@
 var Conversations = require("./../models/conversations");
 var ConversationsReplies = require("./../models/conversations_replies");
+var mongoose = require("mongoose");
 var _ = require("underscore");
 var chat_helper = {};
 
@@ -80,9 +81,6 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
         }
       }
     ]);
-    console.log("------------------------------------");
-    console.log("conversation : ", conversation);
-    console.log("------------------------------------");
 
     if (conversation) {
       return {
@@ -309,7 +307,7 @@ chat_helper.send_message = async (
     chat_message = await chat_message_data.save();
 
     let lastReplyAt = await Conversations.update(
-      { _id: mongoose.Types.ObjectId(channel_id) },
+      { _id: mongoose.Types.ObjectId(conversation_id) },
       {
         $currentDate: {
           lastReplyAt: true

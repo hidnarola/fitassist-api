@@ -160,7 +160,8 @@ myIo.init = function(server) {
      * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
      */
     socket.on("send_new_message", async function(data) {
-      var resp_data = {};
+      var respObj = {};
+
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
 
@@ -178,7 +179,6 @@ myIo.init = function(server) {
 
       try {
         var timestamp = data.timestamp;
-        var respObj = {};
 
         var conversations_obj = {
           userId: authUserId,
