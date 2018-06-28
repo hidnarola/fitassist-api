@@ -58,7 +58,6 @@ router.get("/", async (req, res) => {
     // var randomStrat = Math.floor(Math.random() * 100 + 1);
     var randomStrat = 0;
     var toFrom = "&from=" + randomStrat + "&to=100";
-    //console.log("recipeUrl:-->  ", recipeUrl);
     var recipeName = "&q=";
     var Maximum_number_of_ingredients = "&ingr=10";
     var dietSearch = "";
@@ -112,7 +111,6 @@ router.get("/", async (req, res) => {
         excludedSearch +
         toFrom +
         nutritionTargetsSearch;
-      console.log("url", url);
 
       var options = {
         uri: url,
@@ -131,7 +129,6 @@ router.get("/", async (req, res) => {
               recipes_data[Math.floor(Math.random() * 100 + 1)].recipe,
             dinner: recipes_data[Math.floor(Math.random() * 100 + 1)].recipe
           };
-          //   console.log("after lunch",user_meal.after_lunch_snacks);
           var keys = Object.keys(user_meal);
           var insertDataArray = [];
           keys.forEach(async daydrive => {
@@ -154,13 +151,11 @@ router.get("/", async (req, res) => {
             recipeObj.dayDriveType = daydrive;
             recipeObj.date = new Date(Date.now()).toLocaleString();
 
-            //  console.log('recipeObj',recipeObj);
             insertDataArray.push(recipeObj);
           });
           let recipe_data = await user_recipe_helper.insert_user_recipe(
             insertDataArray
           );
-          // console.log('\nRESPONSE',recipe_data);
 
           if (recipe_data.status === 0) {
             logger.error("Error while inserting user recipe = ", recipe_data);

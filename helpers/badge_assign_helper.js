@@ -80,16 +80,6 @@ async function badge_assign_for_nutrition(
 
         first = user_nutritions.user_nutrients[nutrients];
       }
-      console.log("------------------------------------");
-      console.log("nutrients : ", nutrients);
-      console.log("------------------------------------");
-
-      console.log("------------------------------------");
-      console.log("first : ", first);
-      console.log("------------------------------------");
-      console.log("------------------------------------");
-      console.log("single_badge.baseValue : ", single_badge.baseValue);
-      console.log("------------------------------------");
 
       if (first >= single_badge.baseValue) {
         var badge_assign_obj = {
@@ -1372,7 +1362,6 @@ badges_assign_helper.badge_assign = async (
           "multiple"
         );
 
-        // console.log("SEND NOTIFICATION TO USER USING SOCKET");
         return {
           status: 1,
           message: "badges assigned",
@@ -1409,7 +1398,6 @@ badges_assign_helper.badge_assign = async (
    * @developed by "amc"
    */
 badges_assign_helper.insert_badge = async badge_obj => {
-  console.log(badge_obj);
   let badge = new BadgesAssign(badge_obj);
   try {
     let badge_data = await badge.save();

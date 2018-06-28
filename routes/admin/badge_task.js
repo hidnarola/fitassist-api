@@ -193,7 +193,6 @@ router.post("/", async (req, res) => {
  */
 router.put("/:badge_task_id", async (req, res) => {
   badge_task_id = req.params.badge_task_id;
-  console.log(badge_task_id);
   var schema = {
     name: {
       notEmpty: true,

@@ -53,7 +53,6 @@ var common_helper = require("../../helpers/common_helper");
 router.post("/filter", async (req, res) => {
   filter_object = common_helper.changeObject(req.body);
   let filtered_data = await recipes_helper.get_filtered_records(filter_object);
-  //console.log(filtered_data);
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
     return res.status(config.BAD_REQUEST).json({ filtered_data });
@@ -299,9 +298,7 @@ router.put("/:recipe_id", async (req, res) => {
         req.params.recipe_id
       );
       try {
-        fs.unlink(single_data.recipe.image, function() {
-          console.log("Image is deleted");
-        });
+        fs.unlink(single_data.recipe.image, function() {});
       } catch (err) {}
     }
 

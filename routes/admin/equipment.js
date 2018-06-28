@@ -146,8 +146,6 @@ router.post("/", async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
-    //console.log("Data = ",req.body);
-    //console.log("Files = ",req.files);
     var equipment_obj = {
       name: req.body.name,
       description: req.body.description ? req.body.description : null,
@@ -299,15 +297,12 @@ router.put("/:equipment_id", async (req, res) => {
       var resp_data = await equipment_helper.get_equipment_id(
         req.params.equipment_id
       );
-      console.log(resp_data);
       fs.unlink(resp_data.equipment.image, function(err, Success) {
         if (err) throw err;
-        console.log("image is deleted");
       });
       equipment_obj.image = "uploads/equipment/" + filename;
     }
 
-    console.log(equipment_obj);
     let equipment_data = await equipment_helper.update_equipment_by_id(
       req.params.equipment_id,
       equipment_obj
@@ -347,9 +342,7 @@ router.delete("/:equipment_id", async (req, res) => {
   if (equipment_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
   } else {
-    fs.unlink(resp_data.equipment.image, function() {
-      console.log("image is deleted");
-    });
+    fs.unlink(resp_data.equipment.image, function() {});
     res.status(config.OK_STATUS).json(equipment_data);
   }
 });

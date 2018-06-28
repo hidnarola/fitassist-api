@@ -167,7 +167,6 @@ exercise_helper.get_all_exercise_for_user = async () => {
       return { status: 2, message: "No exercise available" };
     }
   } catch (err) {
-    console.log("Error:", err);
     return {
       status: 0,
       message: "Error occured while finding exercise",
@@ -298,7 +297,6 @@ exercise_helper.delete_exercise_by_id = async exercise_id => {
  *          status 2 - If filtered not found, with appropriate message
  */
 exercise_helper.get_filtered_records = async filter_obj => {
-  console.log(filter_obj);
   skip = filter_obj.pageSize * filter_obj.page;
   try {
     var searched_record_count = await Exercise.aggregate([

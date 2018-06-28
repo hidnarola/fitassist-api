@@ -53,7 +53,6 @@ body_part_helper.get_body_part_id = async (id) => {
  * @developed by "amc"
  */
 body_part_helper.insert_body_part = async (body_part_obj) => {
-    console.log(body_part_obj);
     let bodypart = new BodyPart(body_part_obj);
     try {
         let bodypart_data = await bodypart.save();
@@ -76,7 +75,6 @@ body_part_helper.insert_body_part = async (body_part_obj) => {
  * @developed by "amc"
  */
 body_part_helper.update_bodypart_by_id = async (body_part_id, body_part_obj) => {
-    console.log(body_part_obj);
     try {
         let bodypart = await BodyPart.findOneAndUpdate({ _id: body_part_id }, body_part_obj, { new: true });
         if (!bodypart) {

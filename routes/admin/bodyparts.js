@@ -101,7 +101,6 @@ router.post("/", async (req, res) => {
  */
 router.put("/:body_part_id", async (req, res) => {
   body_part_id = req.params.body_part_id;
-  console.log(body_part_id);
   var schema = {
     bodypart: {
       notEmpty: true,

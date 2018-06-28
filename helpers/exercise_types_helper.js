@@ -57,7 +57,6 @@ exercise_types_helper.get_exercise_type_id = async (id) => {
  * @developed by "amc"
  */
 exercise_types_helper.insert_exercise_type = async (exercise_types_object) => {
-    console.log(exercise_types_object);
     let Exercise_type = new Exercise_types(exercise_types_object);
     try {
         let exercise_types_data = await Exercise_type.save();

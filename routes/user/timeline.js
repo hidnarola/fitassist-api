@@ -317,10 +317,6 @@ router.post("/", async (req, res) => {
                     }
                   );
 
-                  console.log(
-                    "resp_data_for_single_post",
-                    resp_data_for_single_post
-                  );
                   logger.error(
                     "successfully added timeline data = ",
                     user_timeline_data

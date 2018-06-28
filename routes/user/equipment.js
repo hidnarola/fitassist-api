@@ -84,7 +84,6 @@ router.post("/", async (req, res) => {
   var resp_data = await user_equipment_helper.get_all_user_equipment(
     authUserId
   );
-  console.log(resp_data);
   if (resp_data.status == 2) {
     let user_equipment_data = await user_equipment_helper.insert_user_equipment(
       user_equipment_obj

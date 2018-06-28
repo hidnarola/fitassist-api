@@ -49,8 +49,6 @@ router.post("/", async (req, res) => {
 
     start_date = await moment(start_date);
     end_date = await moment(end_date);
-    console.log("startdate", start_date);
-    console.log("enddate", end_date);
 
     let shopping_cart_data = await user_recipe_helper.get_user_recipe_by_id({
       userId: authUserId,
@@ -66,36 +64,25 @@ router.post("/", async (req, res) => {
         shopping_cart_data
       );
       return res.status(config.BAD_REQUEST).json({ shopping_cart_data });
-    }
-    else if(shopping_cart_data.status === 2){
-      logger.error(
-        "no shopping cart data found= ",
-        shopping_cart_data
-      );
+    } else if (shopping_cart_data.status === 2) {
+      logger.error("no shopping cart data found= ", shopping_cart_data);
       return res.status(config.OK_STATUS).json({ shopping_cart_data });
-    }else {
+    } else {
       data = shopping_cart_data.todays_meal;
-      console.log('data',shopping_cart_data);
-      
+
       var keys = Object.keys(data);
 
       keys.forEach(async key => {
         single_ingredient = data[key].ingredients;
 
         single_ingredient.forEach(ingredient => {
-          // console.log('ingredient.food',ingredient.food);
-          var foodName=ingredient.food.toLowerCase();
-          console.log(
-            "parseInt(ingredient.weight)",
-            parseInt(ingredient.weight)
-          );
+          var foodName = ingredient.food.toLowerCase();
 
           if (!ingredients[foodName]) {
             ingredients[foodName] = parseFloat(ingredient.weight);
           } else {
             ingredients[foodName] =
-              parseFloat(ingredients[foodName]) +
-              parseFloat(ingredient.weight);
+              parseFloat(ingredients[foodName]) + parseFloat(ingredient.weight);
           }
         });
       });

@@ -33,8 +33,7 @@ router.get("/", async (req, res) => {
     var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id(
       { userId: authUserId }
     );
-    console.log(resp_data);
-    console.log(resp_data2);
+
     if (resp_data2.status == 1) {
       resp_data.user_test_exercises = resp_data2.user_test_exercises;
     }
@@ -100,20 +99,18 @@ router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var test_exercise_array = [];
-  var temp=req.body.user_test_exercises;
+  var temp = req.body.user_test_exercises;
 
   Object.keys(temp).forEach(function(key) {
     var val = temp[key];
     test_exercise_array.push({
-      userId:authUserId,
-      format:val.format,
-      test_exercise_id:key,
-      [val.format]:val.value
-    })
-   
+      userId: authUserId,
+      format: val.format,
+      test_exercise_id: key,
+      [val.format]: val.value
+    });
   });
   // console.log('DATA',test_exercise_array);
-  
 
   var resp_data = await user_test_exercies_helper.delete_user_test_exercies({
     userId: authUserId

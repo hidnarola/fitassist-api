@@ -394,8 +394,6 @@ router.post("/", async (req, res) => {
     badge_obj.baseValue = base_value_and_unit.baseValue;
     badge_obj.baseUnit = base_value_and_unit.baseUnit;
 
-    // console.log("badge_obj", badge_obj);
-    // return res.send(badge_obj);
     let badge_data = await badge_helper.insert_badge(badge_obj);
     if (badge_data.status === 0) {
       logger.error("Error while inserting badge data = ", badge_data);

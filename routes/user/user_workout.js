@@ -59,8 +59,6 @@ router.post("/", async (req, res) => {
     .add(59, "minutes");
   end.toISOString();
   end.format();
-  console.log("start", start);
-  console.log("end", end);
 
   logger.trace("Get all user workouts  API called");
   var resp_data = await user_workout_helper.get_user_workout({

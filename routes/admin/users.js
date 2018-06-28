@@ -31,7 +31,6 @@ var common_helper = require("../../helpers/common_helper");
 router.post("/filter", async (req, res) => {
   filter_object = common_helper.changeObject(req.body);
   let filtered_data = await user_helper.get_filtered_records(filter_object);
-  //console.log(filtered_data);
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
     return res.status(config.BAD_REQUEST).json({ filtered_data });
@@ -125,22 +124,7 @@ router.put("/:authUserId", async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
 
-  // var errors = req.asyncValidationErrors();
-
   if (!errors) {
-    //   var resp_data = await user_helper.get_user_by_id(authUserId);
-    //   if (resp_data.status ===1) {
-    //   if(resp_data.user.email!=req.body.email)
-    //   {
-    //     console.log('not same');
-    //     checkemaildata = await user_helper.checkvalue({email:req.body.email,authUserId:{$ne:authUserId},});
-    //     if(checkemaildata.count!=0)
-    //     {
-    //       return res.status(config.BAD_REQUEST).json({ });
-    //     }
-    //   }
-    // }
-
     var user_obj = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -209,9 +193,7 @@ router.put("/:authUserId", async (req, res) => {
       user_obj.avatar = "uploads/user/" + filename;
       resp_data = await user_helper.get_user_by_id(authUserId);
       try {
-        fs.unlink(resp_data.user.avatar, function() {
-          // console.log("Image deleted");
-        });
+        fs.unlink(resp_data.user.avatar, function() {});
       } catch (err) {}
     }
 

@@ -62,7 +62,6 @@ equipment_helper.get_equipment_id = async id => {
  * @developed by "amc"
  */
 equipment_helper.insert_equipment = async equipment_object => {
-  console.log(equipment_object);
   let equipment = new Equipment(equipment_object);
   try {
     let equipment_data = await equipment.save();

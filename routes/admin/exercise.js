@@ -178,11 +178,8 @@ router.post("/", async (req, res) => {
       equipmentsData.push(mongoose.Types.ObjectId(element));
     });
   }
-  console.log("equipmentsData", equipmentsData);
 
   if (!errors) {
-    //console.log("Data = ",req.body);
-    //console.log("Files = ",req.files);
     var exercise_obj = {
       name: req.body.name,
       description: req.body.description,
@@ -200,8 +197,6 @@ router.post("/", async (req, res) => {
       measures: req.body.measures ? req.body.measures : "beginner"
     };
 
-    console.log(exercise_obj);
-    //return res.send(exercise_obj);
     async.waterfall(
       [
         function(callback) {
@@ -269,7 +264,6 @@ router.post("/", async (req, res) => {
       async (err, file_path_array) => {
         //End image upload
         exercise_obj.images = file_path_array;
-        console.log("exercise:", exercise_obj);
         let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
         if (exercise_data.status === 0) {
           logger.error("Error while inserting exercise data = ", exercise_data);
@@ -337,8 +331,6 @@ router.put("/:exercise_id", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
-    //console.log("Data = ",req.body);
-    //console.log("Files = ",req.files);
     var exercise_obj = {
       name: req.body.name,
       description: req.body.description,
@@ -375,9 +367,7 @@ router.put("/:exercise_id", async (req, res) => {
               var index = new_img_path_list.indexOf(element);
 
               if (index > -1) {
-                fs.unlink(element, function() {
-                  console.log("Image deleted: " + element);
-                });
+                fs.unlink(element, function() {});
 
                 new_img_path_list.splice(index, 1);
               }
@@ -388,10 +378,7 @@ router.put("/:exercise_id", async (req, res) => {
         function(new_img_path_list, callback) {
           //image upload
           var file_path_array = new_img_path_list;
-          //console.log(new_img_path_list);
           if (req.files && req.files["images"] && req.files != null) {
-            console.log("hey");
-            // var files = req.files['images'];
             var files = [].concat(req.files.images);
 
             var dir = "./uploads/exercise";
@@ -421,7 +408,6 @@ router.put("/:exercise_id", async (req, res) => {
                       );
                       location = "uploads/exercise/" + filename;
                       file_path_array.push(location);
-                      console.log(file_path_array);
                       loop_callback();
                     }
                   });
@@ -453,7 +439,6 @@ router.put("/:exercise_id", async (req, res) => {
       async (err, file_path_array) => {
         //End image upload
         exercise_obj.images = file_path_array;
-        console.log(exercise_obj);
         let exercise_data = await exercise_helper.update_exercise_by_id(
           req.params.exercise_id,
           exercise_obj
@@ -496,9 +481,7 @@ router.delete("/:exercise_id", async (req, res) => {
   } else {
     images = resp_data.exercise.images;
     images.forEach(image => {
-      fs.unlink(image, function() {
-        console.log("Image " + image + " is deleted");
-      });
+      fs.unlink(image, function() {});
     });
     res.status(config.OK_STATUS).json(exercise_data);
   }

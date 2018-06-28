@@ -326,7 +326,6 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
  * @developed by "amc"
  */
 friend_helper.send_friend_request = async friend_obj => {
-  console.log(friend_obj);
   let friend = new Friends(friend_obj);
   try {
     let badge_task_data = await friend.save();
@@ -409,6 +408,7 @@ friend_helper.reject_friend = async id => {
     };
   }
 };
+
 /*
  * get_filtered_records is used to fetch all filtered data
  * 
@@ -417,7 +417,6 @@ friend_helper.reject_friend = async id => {
  *          status 2 - If filtered not found, with appropriate message
  */
 friend_helper.get_filtered_records = async filter_obj => {
-  console.log(filter_obj);
   skip = filter_obj.pageSize * filter_obj.page;
   try {
     var searched_record_count = await Friends.aggregate([
@@ -451,6 +450,30 @@ friend_helper.get_filtered_records = async filter_obj => {
     return {
       status: 0,
       message: "Error occured while filtering data",
+      error: err
+    };
+  }
+};
+
+/*
+ * count_friends is used to count all friends data
+ * 
+ * @return  status 0 - If any internal error occured while couting friends data, with error
+ *          status 1 - If friends data found, with friends object
+ *          status 2 - If friends not found, with appropriate message
+ */
+friend_helper.count_friends = async id => {
+  try {
+    var count = await Friends.find({ friendId: id, status: 1 }).count();
+    return {
+      status: 1,
+      message: `Total ${count} pending request `,
+      count: count
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while couting friends",
       error: err
     };
   }

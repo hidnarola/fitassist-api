@@ -52,7 +52,6 @@ badge_category_helper.get_badge_category_id = async (id) => {
  * @developed by "amc"
  */
 badge_category_helper.insert_badge_category_part = async (badge_category_obj) => {
-    console.log(badge_category_obj);
     let badge_category = new BadgeCategory(badge_category_obj);
     try {
         let badge_category_data = await badge_category.save();
@@ -75,7 +74,6 @@ badge_category_helper.insert_badge_category_part = async (badge_category_obj) =>
  * @developed by "amc"
  */
 badge_category_helper.update_badge_category_by_id = async (badge_category_id, badge_category_obj) => {
-    console.log(badge_category_obj);
     try {
         let badge_category = await BadgeCategory.findOneAndUpdate({ _id: badge_category_id }, badge_category_obj, { new: true });
         if (!badge_category) {
@@ -119,7 +117,6 @@ badge_category_helper.delete_badge_category_by_id = async (badge_category_id) =>
  *          status 2 - If filtered not found, with appropriate message
  */
 badge_category_helper.get_filtered_records = async filter_obj => {
-    console.log(filter_obj);
     skip = filter_obj.pageSize * filter_obj.page;
     try {
       var searched_record_count = await BadgeCategory.aggregate([

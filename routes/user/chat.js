@@ -96,10 +96,6 @@ router.get("/", async (req, res) => {
 
   var resp_data = await chat_helper.count_unread_messages(authUserId);
 
-  console.log("------------------------------------");
-  console.log("resp_data : ", resp_data);
-  console.log("------------------------------------");
-
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching chat messages = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -124,7 +120,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var timestamp = "req.body.timestamp";
+  var timestamp = req.body.timestamp;
   var respObj = {};
   var schema = {
     friendId: { notEmpty: true, errorMessage: "friend Id is required" },

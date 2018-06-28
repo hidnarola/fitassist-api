@@ -15,7 +15,6 @@ user_equipments_helper.get_all_user_equipment = async user_auth_id => {
     var user_equipment = await UserEquipments.findOne({
       userId: user_auth_id
     });
-    console.log(user_equipment);
     if (user_equipment) {
       return {
         status: 1,
@@ -61,7 +60,6 @@ user_equipments_helper.get_all_equipment = async () => {
         }
       }
     ]);
-    console.log("data", equipment);
     if (equipment) {
       return { status: 1, message: "Equipments found", equipments: equipment };
     } else {

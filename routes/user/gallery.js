@@ -242,8 +242,6 @@ router.post("/", async (req, res) => {
                   timelineObj
                 );
 
-                console.log("user_timeline_data", user_timeline_data);
-
                 if (user_timeline_data.status === 0) {
                   logger.error(
                     "Error while inserting timeline data = ",
@@ -307,8 +305,6 @@ router.put("/:photo_id", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
-    //console.log("Data = ",req.body);
-    //console.log("Files = ",req.files);
     var user_post_obj = {
       modifiedAt: new Date()
     };
@@ -366,7 +362,6 @@ router.put("/:photo_id", async (req, res) => {
       });
       fs.unlink(resp_data.user_post_photo.image, function(err, Success) {
         if (err) throw err;
-        console.log("image is deleted");
       });
       user_post_obj.image = "uploads/gallery/" + filename;
     }

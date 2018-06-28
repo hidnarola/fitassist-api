@@ -339,9 +339,7 @@ router.put("/photo", async (req, res) => {
 
     resp_data = await user_helper.get_user_by_id(authUserId);
     try {
-      fs.unlink(resp_data.user.avatar, function() {
-        console.log("Image deleted");
-      });
+      fs.unlink(resp_data.user.avatar, function() {});
     } catch (err) {}
     let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
     if (user_data.status === 0) {

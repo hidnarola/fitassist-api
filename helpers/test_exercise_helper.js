@@ -41,28 +41,27 @@ test_exercise_helper.get_test_exercises = async () => {
  */
 test_exercise_helper.get_all_test_exercises = async () => {
   // try {
-    var test_exercises = await TestExercies.find({});
-    if (test_exercises) {
+  var test_exercises = await TestExercies.find({});
+  if (test_exercises) {
+    test_exercises = _.groupBy(test_exercises, category => {
+      return category.category;
+    });
 
-      test_exercises = _.groupBy(test_exercises,(category) => {
-        return category.category;
+    test_exercises = _.mapObject(test_exercises, (exercise, category) => {
+      exercise = _.groupBy(exercise, subCatgory => {
+        return subCatgory.subCategory;
       });
+      return exercise;
+    });
 
-      test_exercises = _.mapObject(test_exercises,(exercise,category) => {
-        exercise = _.groupBy(exercise,(subCatgory)=>{
-          return subCatgory.subCategory;
-        });
-        return exercise;
-      });
-
-      return {
-        status: 1,
-        message: "test exercises found",
-        test_exercises: test_exercises
-      };
-    } else {
-      return { status: 2, message: "No test exercises available" };
-    }
+    return {
+      status: 1,
+      message: "test exercises found",
+      test_exercises: test_exercises
+    };
+  } else {
+    return { status: 2, message: "No test exercises available" };
+  }
   // } catch (err) {
   //   return {
   //     status: 0,
@@ -111,7 +110,6 @@ test_exercise_helper.get_test_exercise_id = async id => {
  * @developed by "amc"
  */
 test_exercise_helper.insert_test_exercise = async test_exercise_obj => {
-  console.log(test_exercise_obj);
   let test_exercise = new TestExercies(test_exercise_obj);
   try {
     let test_exercise_data = await test_exercise.save();
@@ -207,7 +205,6 @@ test_exercise_helper.delete_test_exercise_by_id = async test_exercise_id => {
  *          status 2 - If filtered not found, with appropriate message
  */
 test_exercise_helper.get_filtered_records = async filter_obj => {
-  console.log(filter_obj);
   skip = filter_obj.pageSize * filter_obj.page;
   try {
     var searched_record_count = await TestExercies.aggregate([

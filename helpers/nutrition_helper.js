@@ -60,7 +60,6 @@ nutrition_helper.get_nutrition_by_id = async nutrition_id => {
  * @developed by "amc"
  */
 nutrition_helper.insert_nutrition = async nutrition_object => {
-  console.log("obj = ", nutrition_object);
   let nutrition = new Nutrition(nutrition_object);
   try {
     let nutrition_data = await nutrition.save();

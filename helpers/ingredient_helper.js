@@ -64,7 +64,6 @@ ingredients_helper.get_ingredient_id = async id => {
  * @developed by "amc"
  */
 ingredients_helper.insert_ingredient = async ingredient_obj => {
-  console.log(ingredient_obj);
   let ingredient = new Ingredients(ingredient_obj);
   try {
     let ingredient_data = await ingredient.save();
@@ -98,7 +97,6 @@ ingredients_helper.update_ingredient = async (
   ingredient_id,
   ingredient_obj
 ) => {
-  console.log(ingredient_obj);
   try {
     let ingredient = await Ingredients.findOneAndUpdate(
       { _id: ingredient_id },
@@ -158,7 +156,6 @@ ingredients_helper.delete_ingredient_by_id = async ingredient_id => {
  *          status 2 - If filtered not found, with appropriate message
  */
 ingredients_helper.get_filtered_records = async filter_obj => {
-  //console.log(filter_obj);
 
   skip = filter_obj.pageSize * filter_obj.page;
   try {

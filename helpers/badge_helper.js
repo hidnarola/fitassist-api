@@ -64,7 +64,6 @@ badge_helper.get_badge_id = async id => {
  * @developed by "amc"
  */
 badge_helper.insert_badge = async badge_obj => {
-  console.log(badge_obj);
   let badge = new Badges(badge_obj);
   try {
     let badge_data = await badge.save();
@@ -95,7 +94,6 @@ badge_helper.insert_badge = async badge_obj => {
  * @developed by "amc"
  */
 badge_helper.update_badge_by_id = async (badge_id, badge_obj) => {
-  console.log(badge_obj);
   try {
     let badge = await Badges.findOneAndUpdate({ _id: badge_id }, badge_obj, {
       new: true
@@ -185,7 +183,6 @@ badge_helper.undo_badge_by_id = async badge_id => {
  *          status 2 - If filtered not found, with appropriate message
  */
 badge_helper.get_filtered_records = async filter_obj => {
-  console.log(filter_obj);
   skip = filter_obj.pageSize * filter_obj.page;
   try {
     var searched_record_count = await Badges.aggregate([

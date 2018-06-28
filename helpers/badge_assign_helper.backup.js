@@ -54,10 +54,6 @@ badges_assign_helper.badge_assign = async (
   badgesType,
   valueToBeCompare
 ) => {
-  console.log("------------------------------------");
-  console.log("valueToBeCompare.post : ", valueToBeCompare.post);
-  console.log("------------------------------------");
-
   try {
     var insert_batch_data = [];
 
@@ -338,13 +334,8 @@ badges_assign_helper.badge_assign = async (
       }
     }
     try {
-      console.log("------------------------------------");
-      console.log("insert_batch_data : ", insert_batch_data);
-      console.log("------------------------------------");
-
       let insert_badge = await BadgesAssign.insertMany(insert_batch_data);
       if (insert_badge && insert_badge.length > 0) {
-        // console.log("SEND NOTIFICATION TO USER USING SOCKET");
         return {
           status: 1,
           message: "badges assigned",
@@ -381,7 +372,6 @@ badges_assign_helper.badge_assign = async (
  * @developed by "amc"
  */
 badges_assign_helper.insert_badge = async badge_obj => {
-  console.log(badge_obj);
   let badge = new BadgesAssign(badge_obj);
   try {
     let badge_data = await badge.save();

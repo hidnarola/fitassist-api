@@ -64,7 +64,6 @@ badge_task_helper.get_badge_task_id = async id => {
  * @developed by "amc"
  */
 badge_task_helper.insert_badge_task = async badge_task_obj => {
-  console.log(badge_task_obj);
   let badge_task = new BadgeTask(badge_task_obj);
   try {
     let badge_task_data = await badge_task.save();
@@ -98,7 +97,6 @@ badge_task_helper.update_badge_task_by_id = async (
   badge_task_id,
   badge_task_obj
 ) => {
-  console.log(badge_task_obj);
   try {
     let badge_task = await BadgeTask.findOneAndUpdate(
       { _id: badge_task_id },
@@ -161,7 +159,6 @@ badge_task_helper.delete_badge_task_by_id = async badge_task_id => {
  *          status 2 - If filtered not found, with appropriate message
  */
 badge_task_helper.get_filtered_records = async filter_obj => {
-  console.log(filter_obj);
   skip = filter_obj.pageSize * filter_obj.page;
   try {
     var searched_record_count = await BadgeTask.aggregate([

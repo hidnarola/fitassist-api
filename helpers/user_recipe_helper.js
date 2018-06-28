@@ -136,7 +136,6 @@ users_recipe_helper.get_user_nutritions = async condition => {
 users_recipe_helper.get_user_recipe_by_recipe_id = async id => {
   try {
     var user_recipe = await UsersRecipe.findOne(id);
-    console.log(user_recipe);
     if (user_recipe) {
       return {
         status: 1,

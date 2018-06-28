@@ -202,7 +202,6 @@ router.post("/", async (req, res) => {
       type: "progress_photo",
       privacy: req.body.privacy ? req.body.privacy : 3
     };
-    console.log("timelineObj", timelineObj);
 
     let user_timeline_data = await user_timeline_helper.insert_timeline_data(
       timelineObj
@@ -293,7 +292,6 @@ router.put("/", async (req, res) => {
         Success
       ) {
         if (err) throw err;
-        console.log("image is deleted");
       });
     }
   }

@@ -272,9 +272,7 @@ router.put("/:ingredient_id", async (req, res) => {
         req.params.ingredient_id
       );
       try {
-        fs.unlink(resp_data.ingredient.image, function() {
-          console.log("Image deleted");
-        });
+        fs.unlink(resp_data.ingredient.image, function() {});
       } catch (err) {}
     }
 
@@ -318,14 +316,6 @@ router.delete("/:ingredient_id", async (req, res) => {
   if (ingredient_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(ingredient_data);
   } else {
-    // try {
-    //   if (resp_data.ingredient.image != null) {
-    //     fs.unlink(resp_data.ingredient.image, function() {
-    //       console.log("image is deleted");
-    //     });
-    //   }
-    // } catch (err) {}
-
     res.status(config.OK_STATUS).json(ingredient_data);
   }
 });

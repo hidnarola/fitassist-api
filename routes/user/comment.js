@@ -89,9 +89,6 @@ router.post("/", async (req, res) => {
             notificationObj,
             socket
           );
-          console.log("------------------------------------");
-          console.log("notification_data : ", notification_data);
-          console.log("------------------------------------");
         }
 
         if (resp_data.status == 0) {
@@ -130,7 +127,6 @@ router.post("/", async (req, res) => {
  */
 
 router.put("/:comment_id", async (req, res) => {
-  console.log(req.params.comment_id);
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var schema = {

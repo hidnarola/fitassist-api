@@ -249,7 +249,6 @@ user_helper.delete_user_by_id = async (user_id, user_obj) => {
  *          status 2 - If filtered not found, with appropriate message
  */
 user_helper.get_filtered_records = async filter_obj => {
-  console.log(filter_obj);
   var skip = filter_obj.pageSize * filter_obj.page;
   try {
     var searched_record_count = await User.aggregate([

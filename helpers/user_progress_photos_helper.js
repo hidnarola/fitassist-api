@@ -74,9 +74,6 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
   search_obj,
   limit
 ) => {
-  console.log("Search", search_obj);
-  console.log("limit", limit);
-
   try {
     var user_progress_photos = await Users.aggregate([
       {
@@ -222,7 +219,6 @@ user_progress_photo_helper.get_first_and_last_user_progress_photos = async id =>
  *          status 2 - If user's progress Photos not added, with appropriate message
  */
 user_progress_photo_helper.insert_user_progress_photo = async user_progress_photo_obj => {
-  console.log(user_progress_photo_obj);
   let user_progress_photo = new UserProgressPhotos(user_progress_photo_obj);
   try {
     let user_progress_photo_data = await user_progress_photo.save();

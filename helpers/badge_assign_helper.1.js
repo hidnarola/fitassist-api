@@ -315,7 +315,6 @@ badges_assign_helper.badge_assign = async (
  * @developed by "amc"
  */
 badges_assign_helper.insert_badge = async badge_obj => {
-  console.log(badge_obj);
   let badge = new BadgesAssign(badge_obj);
   try {
     let badge_data = await badge.save();

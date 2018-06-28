@@ -37,7 +37,6 @@ like_comment_helper.get_like = async id => {
  * @developed by "amc"
  */
 like_comment_helper.insert_comment = async comment_obj => {
-  console.log(comment_obj);
   let comment = new Comments(comment_obj);
   try {
     let comment_data = await comment.save();
@@ -62,7 +61,6 @@ like_comment_helper.insert_comment = async comment_obj => {
  * @developed by "amc"
  */
 like_comment_helper.insert_like = async like_obj => {
-  console.log(like_obj);
   let like = new Likes(like_obj);
   try {
     let like_data = await like.save();

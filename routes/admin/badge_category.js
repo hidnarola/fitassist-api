@@ -165,7 +165,6 @@ router.post("/", async (req, res) => {
  */
 router.put("/:badge_category_id", async (req, res) => {
   badge_category_id = req.params.badge_category_id;
-  console.log(badge_category_id);
   var schema = {
     name: {
       notEmpty: true,

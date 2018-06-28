@@ -4,6 +4,7 @@ var mongoose = require("mongoose");
 var user_notification_helper = require("../helpers/notification_helper");
 var chat_helper = require("../helpers/chat_helper");
 var user_helper = require("../helpers/user_helper");
+var friend_helper = require("../helpers/friend_helper");
 var config = require("../config");
 var logger = config.logger;
 
@@ -32,13 +33,34 @@ myIo.init = function(server) {
     });
 
     /**
+     * @api {socket on} user_friends_count  Get user's friends count
+     * @apiName Get user's friends count
+     * @apiGroup  Sokets
+     * @apiParam {String} token Token of user
+     * @apiSuccess (Success 200) {Number} count count of friends
+     */
+
+    socket.on("user_friends_count", async function(token) {
+      var decoded = jwtDecode(token);
+      var authUserId = decoded.sub;
+      var user = users.get(authUserId);
+      var user_friends_count = await friend_helper.count_friends(authUserId);
+      var socketIds = user.socketIds;
+
+      socketIds.forEach(socketId => {
+        io.to(socketId).emit("receive_user_friends_count", {
+          count: user_friends_count.count
+        });
+      });
+    });
+
+    /**
      * @api {socket on} user_messages_count  Get user's unread messages count
      * @apiName Get user's unread messages count
      * @apiGroup  Sokets
      * @apiParam {String} token Token of user
      * @apiSuccess (Success 200) {Number} count count of messages
      */
-
     socket.on("user_messages_count", async function(token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
@@ -46,9 +68,6 @@ myIo.init = function(server) {
       var user_messages_count = await chat_helper.count_unread_messages(
         authUserId
       );
-      console.log("------------------------------------");
-      console.log("user_messages_count : ", user_messages_count);
-      console.log("------------------------------------");
 
       var socketIds = user.socketIds;
       socketIds.forEach(socketId => {
@@ -57,6 +76,7 @@ myIo.init = function(server) {
         });
       });
     });
+
     /**
      * @api {socket on} user_notifications_count  Get user notification counts
      * @apiName Get user notification counts
@@ -64,7 +84,6 @@ myIo.init = function(server) {
      * @apiParam {String} token Token of user
      * @apiSuccess (Success 200) {Number} count count of notifications
      */
-
     socket.on("user_notifications_count", async function(token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
@@ -190,22 +209,16 @@ myIo.init = function(server) {
 
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
-
       var sender = users.get(authUserId);
-
       var socketIdsForSender =
         sender && sender.socketIds ? sender.socketIds : [];
-
       var reciever = users.get(data.friendId);
-
       var socketIdsForReceiver =
         reciever && reciever.socketIds ? reciever.socketIds : [];
-
       var chat_data;
 
       try {
         var timestamp = data.timestamp;
-
         var conversations_obj = {
           userId: authUserId,
           friendId: data.friendId
@@ -244,11 +257,8 @@ myIo.init = function(server) {
             avatar: user.user.avatar,
             flag: "sent"
           };
-
-          return res.status(config.OK_STATUS).json(respObj);
         } else {
           logger.error("Error while sending message = ", chat_data);
-          return res.status(config.BAD_REQUEST).json({ chat_data });
         }
       } catch (error) {
         chat_data.message = "Internal server error! please try again later.";
@@ -260,7 +270,6 @@ myIo.init = function(server) {
         socketIdsForReceiver.forEach(socketId => {
           io.to(socketId).emit("receive_new_message", respObj);
         });
-        
       }
     });
 
@@ -355,6 +364,7 @@ myIo.init = function(server) {
     });
     console.log("Connected : ", socket.id);
   });
+
   myIo.io = io;
   myIo.users = users;
   myIo.socketToUser = socketToUsers;

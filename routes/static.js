@@ -702,8 +702,6 @@ router.get("/profile/photos", function(req, res, next) {
 });
 
 router.post("/post_name", function(req, res, next) {
-  console.log(req.body);
-
   res.json({ status: "success" });
 });
 

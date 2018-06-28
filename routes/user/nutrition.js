@@ -18,10 +18,10 @@ user_recipe_helper = require("../../helpers/user_recipe_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/recipe/:recipe_id", async (req, res) => {
-  console.log('recipe',req.params.recipe_id);
-  
   logger.trace("Get recipe API called");
-  var resp_data = await user_recipe_helper.get_user_recipe_by_recipe_id({_id:req.params.recipe_id});
+  var resp_data = await user_recipe_helper.get_user_recipe_by_recipe_id({
+    _id: req.params.recipe_id
+  });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user recipe = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -45,7 +45,6 @@ router.post("/todays_meal", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   date = req.body.date;
-  console.log("Date: ", date);
   var schema = {
     date: {
       notEmpty: true,
@@ -61,7 +60,6 @@ router.post("/todays_meal", async (req, res) => {
   };
   if (!errors) {
     var startdate = moment(date).utcOffset(0);
-    console.log("startdate", startdate);
 
     startdate.format();
 
@@ -71,7 +69,6 @@ router.post("/todays_meal", async (req, res) => {
       .add(59, "minutes");
     enddate.format();
 
-    console.log("enddate", enddate);
     logger.trace("Get user_recipe by date API called");
     var resp_data = await user_recipe_helper.get_user_recipe_by_id({
       userId: authUserId,
@@ -98,6 +95,5 @@ router.post("/todays_meal", async (req, res) => {
     res.status(config.BAD_REQUEST).json({ message: errors });
   }
 });
-
 
 module.exports = router;

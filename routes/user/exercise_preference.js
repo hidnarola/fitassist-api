@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
   var authUserId = decoded.sub;
   logger.trace("Get exercise preference by ID API called : ", authUserId);
   var resp_data = await exercise_preference_helper.get_exercise_preference_by_user_id(
-    {userId:authUserId}
+    { userId: authUserId }
   );
   if (resp_data.status == 0) {
     logger.error(
@@ -68,14 +68,14 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var exercise_preference_obj = { userId: authUserId };
-  if (req.body.workoutIntensity && req.body.workoutIntensity != 0) {  
+  if (req.body.workoutIntensity && req.body.workoutIntensity != 0) {
     exercise_preference_obj.workoutIntensity = req.body.workoutIntensity;
   } else {
     exercise_preference_obj.workoutIntensity = 0;
   }
   if (req.body.exerciseExperience && req.body.exerciseExperience != 0) {
     exercise_preference_obj.exerciseExperience = req.body.exerciseExperience;
-  }else {
+  } else {
     exercise_preference_obj.exerciseExperience = 0;
   }
   if (req.body.excludeExercise) {
@@ -87,20 +87,17 @@ router.post("/", async (req, res) => {
   if (req.body.existingInjuries) {
     exercise_preference_obj.existingInjuries = req.body.existingInjuries;
   }
-  if (req.body.workoutscheduletype && req.body.workoutscheduletype!=0) {
+  if (req.body.workoutscheduletype && req.body.workoutscheduletype != 0) {
     exercise_preference_obj.workoutscheduletype = req.body.workoutscheduletype;
-  }
-  else{
+  } else {
     exercise_preference_obj.workoutscheduletype = 0;
-
   }
   if (req.body.timeSchedule) {
     exercise_preference_obj.timeSchedule = req.body.timeSchedule;
   }
-  if (req.body.experienceLevel && req.body.experienceLevel!=0) {
+  if (req.body.experienceLevel && req.body.experienceLevel != 0) {
     exercise_preference_obj.experienceLevel = req.body.experienceLevel;
-  }
-  else{
+  } else {
     exercise_preference_obj.experienceLevel = 0;
   }
   if (req.body.workoutLocation) {
@@ -110,7 +107,6 @@ router.post("/", async (req, res) => {
   var resp_data = await exercise_preference_helper.get_exercise_preference_by_user_id(
     { userId: authUserId }
   );
-  console.log("resp_data",resp_data);
 
   if (resp_data.status == 1) {
     let exercise_preference_data = await exercise_preference_helper.update_exercise_preference_by_userid(
@@ -163,17 +159,16 @@ router.get("/reset", async (req, res) => {
     constant.EXERCISE_PREFERENCE_DEFUALT_VALUE
   );
   if (exercise_preference_data.status === 1) {
-    exercise_preference_data.message="Reset Exercise preference";
+    exercise_preference_data.message = "Reset Exercise preference";
     res.status(config.OK_STATUS).json(exercise_preference_data);
-    
   } else {
     logger.error(
       "Error while reseting exercise preferences = ",
       exercise_preference_data
     );
-   // exercise_preference_data.message="could not reset exercise preference";
+    // exercise_preference_data.message="could not reset exercise preference";
 
-    res.status(config.BAD_REQUEST).json({exercise_preference_data});
+    res.status(config.BAD_REQUEST).json({ exercise_preference_data });
   }
 });
 module.exports = router;

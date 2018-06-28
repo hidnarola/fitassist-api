@@ -496,7 +496,6 @@ router.put("/:test_exercise_id", async (req, res) => {
       if (req.body.title) {
         test_exercise_obj.title = JSON.parse(req.body.title);
       }
-      // console.log(test_exercise_obj);
       // return;
       test_exercise_obj.multiselect = [];
       test_exercise_obj.a_or_b = [];
@@ -620,7 +619,6 @@ router.put("/:test_exercise_id", async (req, res) => {
                 ) {
                   try {
                     fs.unlink(oldData[index].image, async () => {
-                      console.log("Image deleted");
                     });
                   } catch (err) {}
                   if (a_b_updateImageIndexLength > 1) {
@@ -633,7 +631,6 @@ router.put("/:test_exercise_id", async (req, res) => {
                   title: title,
                   image: url
                 });
-                console.log("DATA", data);
               });
             } else if (req.body.format == "multiselect") {
               var delete_multiselect_image_ids = req.body
