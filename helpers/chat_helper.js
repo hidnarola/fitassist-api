@@ -76,10 +76,13 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
       },
       {
         $sort: {
-          "conversations.createdAt": -1
+          lastReplyAt: -1
         }
       }
     ]);
+    console.log("------------------------------------");
+    console.log("conversation : ", conversation);
+    console.log("------------------------------------");
 
     if (conversation) {
       return {
@@ -304,6 +307,15 @@ chat_helper.send_message = async (
 
     chat_message_data = new ConversationsReplies(conversations_replies_obj);
     chat_message = await chat_message_data.save();
+
+    let lastReplyAt = await Conversations.update(
+      { _id: mongoose.Types.ObjectId(channel_id) },
+      {
+        $currentDate: {
+          lastReplyAt: true
+        }
+      }
+    );
 
     return { status: 1, message: "message sent", channel: chat_message };
   } catch (err) {
