@@ -32,6 +32,33 @@ myIo.init = function(server) {
     });
 
     /**
+     * @api {socket on} user_messages_count  Get user's unread messages count
+     * @apiName Get user's unread messages count
+     * @apiGroup  Sokets
+     * @apiParam {String} token Token of user
+     * @apiSuccess (Success 200) {Number} count count of messages
+     */
+
+    socket.on("user_messages_count", async function(token) {
+      var decoded = jwtDecode(token);
+      var authUserId = decoded.sub;
+      var user = users.get(authUserId);
+      var user_messages_count = await chat_helper.count_unread_messages(
+        authUserId
+      );
+
+      console.log("------------------------------------");
+      console.log("user_messages_count : ", user_messages_count);
+      console.log("------------------------------------");
+
+      var socketIds = user.socketIds;
+      socketIds.forEach(socketId => {
+        io.to(socketId).emit("receive_user_messages_count", {
+          user_messages_count
+        });
+      });
+    });
+    /**
      * @api {socket on} user_notifications_count  Get user notification counts
      * @apiName Get user notification counts
      * @apiGroup  Sokets

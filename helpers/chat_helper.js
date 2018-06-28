@@ -201,17 +201,10 @@ chat_helper.get_conversation = async (
  */
 chat_helper.count_unread_messages = async userId => {
   try {
-    var conversation = await Conversations.aggregate([
+    var count = await Conversations.aggregate([
       {
         $match: {
-          $or: [
-            {
-              userId: userId
-            },
-            {
-              friendId: userId
-            }
-          ]
+          $or: [{ userId: userId }, { userId: userId }]
         }
       },
       {
@@ -226,34 +219,29 @@ chat_helper.count_unread_messages = async userId => {
         $unwind: "$messages"
       },
       {
-        $match: {
-          "messages.isSeen": 0
-        }
+        $match: { "messages.isSeen": 0 }
       },
-
-      { $group: { _id: "$_id", messages: { $push: "$messages" } } }
+      {
+        $group: {
+          _id: "$_id",
+          messages: { $push: "$messages" }
+        }
+      }
     ]);
 
-    var count = 0;
-    _.each(conversation, function(single, index) {
-      _.each(single.messages, function(single_msg) {
-        if (single_msg.isSeen == 0) count++;
-      });
-    });
-
-    if (conversation) {
+    if (count) {
       return {
         status: 1,
-        message: `total ${count} unread messages`,
-        count: conversation
+        message: `total ${count.length} unread messages`,
+        count: count.length
       };
     } else {
-      return { status: 2, message: "No conversation available" };
+      return { status: 2, message: "No count available" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding conversation",
+      message: "Error occured while finding count",
       error: err
     };
   }
