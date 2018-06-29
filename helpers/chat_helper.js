@@ -163,7 +163,7 @@ chat_helper.get_channel_id = async (userId, friendId) => {
         $group: {
           _id: "$_id",
           userData: {
-            $push: {
+            $first: {
               fullName: {
                 $concat: [
                   { $ifNull: ["$userId.firstName", ""] },
@@ -177,7 +177,7 @@ chat_helper.get_channel_id = async (userId, friendId) => {
             }
           },
           friendData: {
-            $push: {
+            $first: {
               fullName: {
                 $concat: [
                   { $ifNull: ["$friendId.firstName", ""] },
