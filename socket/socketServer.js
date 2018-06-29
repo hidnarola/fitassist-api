@@ -130,9 +130,6 @@ myIo.init = function(server) {
           data.userId,
           data.friendId
         );
-        console.log("------------------------------------");
-        console.log("resp_data : ", resp_data);
-        console.log("------------------------------------");
 
         if (resp_data.status == 0) {
           logger.error("Error occured while fetching channel Id = ", resp_data);

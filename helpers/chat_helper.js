@@ -203,79 +203,116 @@ chat_helper.get_conversation = async (
   skip = {},
   limit = {}
 ) => {
-  try {
-    var conversation = await Conversations.aggregate([
-      {
-        $match: condition
-      },
-      {
-        $lookup: {
-          from: "conversations_replies",
-          foreignField: "conversationId",
-          localField: "_id",
-          as: "messages"
-        }
-      },
-      {
-        $unwind: "$messages"
-      },
-      {
-        $lookup: {
-          from: "users",
-          foreignField: "authUserId",
-          localField: "messages.userId",
-          as: "messages2"
-        }
-      },
-      {
-        $unwind: "$messages2"
-      },
-      { $sort: { "messages.createdAt": -1 } },
-      skip,
-      limit,
-      { $sort: { "messages.createdAt": 1 } },
-      {
-        $group: {
-          _id: "$_id",
-          messages: {
-            $push: {
-              _id: "$messages._id",
-              isSeen: "$messages.isSeen",
-              message: "$messages.message",
-              createdAt: "$messages.createdAt",
-              firstName: "$messages2.firstName",
-              lastName: "$messages2.lastName",
-              authUserId: "$messages2.authUserId",
-              username: "$messages2.username",
-              avatar: "$messages2.avatar",
-              flag: {
-                $cond: {
-                  if: { $eq: ["$messages.userId", authUserId] },
-                  then: "sent",
-                  else: "recieved"
-                }
+  // try {
+  var conversation = await Conversations.aggregate([
+    {
+      $match: condition
+    },
+    {
+      $lookup: {
+        from: "conversations_replies",
+        foreignField: "conversationId",
+        localField: "_id",
+        as: "messages"
+      }
+    },
+    {
+      $unwind: {
+        path: "$messages",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        foreignField: "authUserId",
+        localField: "messages.userId",
+        as: "messages2"
+      }
+    },
+    {
+      $unwind: {
+        path: "$messages2",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+    { $sort: { "messages.createdAt": -1 } },
+    skip,
+    limit,
+    { $sort: { "messages.createdAt": 1 } },
+    {
+      $group: {
+        _id: "$_id",
+        messageExists: {
+          $first: {
+            $cond: {
+              if: "$messages",
+              then: 1,
+              else: 0
+            }
+          }
+        },
+        messages: {
+          $push: {
+            _id: "$messages._id",
+            isSeen: "$messages.isSeen",
+            message: "$messages.message",
+            createdAt: "$messages.createdAt",
+            firstName: "$messages2.firstName",
+            lastName: "$messages2.lastName",
+            authUserId: "$messages2.authUserId",
+            username: "$messages2.username",
+            avatar: "$messages2.avatar",
+            flag: {
+              $cond: {
+                if: "$messages",
+                then: {
+                  $cond: {
+                    if: { $eq: ["$messages.userId", authUserId] },
+                    then: "sent",
+                    else: "recieved"
+                  }
+                },
+                else: null
               }
             }
           }
         }
       }
-    ]);
-    if (conversation) {
-      return {
-        status: 1,
-        message: "conversation found",
-        channel: conversation[0]
-      };
-    } else {
-      return { status: 2, message: "No conversation available" };
+    },
+    {
+      $project: {
+        _id: 1,
+        messages: {
+          $cond: {
+            if: "$messageExists",
+            then: "$messages",
+            else: []
+          }
+        }
+      }
     }
-  } catch (err) {
+  ]);
+  console.log("------------------------------------");
+  console.log("conversation : ", conversation);
+  console.log("------------------------------------");
+
+  if (conversation) {
     return {
-      status: 0,
-      message: "Error occured while finding conversation",
-      error: err
+      status: 1,
+      message: "conversation found",
+      channel: conversation[0]
     };
+  } else {
+    return { status: 2, message: "No conversation available" };
   }
+  // } catch (err) {
+  //   return {
+  //     status: 0,
+  //     message: "Error occured while finding conversation",
+  //     error: err
+  //   };
+  // }
 };
 
 /*
