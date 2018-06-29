@@ -302,9 +302,8 @@ myIo.init = function(server) {
             isSeen: chat_data.channel.isSeen,
             message: chat_data.channel.message,
             createdAt: chat_data.channel.createdAt,
-            fullName:
-              user.user.firstName +
-              (user.user.lastName ? ` ${user.user.lastName}` : ""),
+            firstName: user.user.firstName,
+            lastName: user.user.lastName,
             authUserId: user.user.authUserId,
             username: user.user.username,
             avatar: user.user.avatar,
