@@ -245,13 +245,8 @@ chat_helper.get_conversation = async (
               isSeen: "$messages.isSeen",
               message: "$messages.message",
               createdAt: "$messages.createdAt",
-              fullName: {
-                $concat: [
-                  { $ifNull: ["$messages2.firstName", ""] },
-                  " ",
-                  { $ifNull: ["$messages2.lastName", ""] }
-                ]
-              },
+              firstName: "$messages2.firstName",
+              lastName: "$messages2.lastName",
               authUserId: "$messages2.authUserId",
               username: "$messages2.username",
               avatar: "$messages2.avatar",
