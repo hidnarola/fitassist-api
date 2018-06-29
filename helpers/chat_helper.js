@@ -120,7 +120,7 @@ chat_helper.get_channel_id = async (userId, friendId) => {
         }
       ]
     };
-
+    var conversations_obj = { userId: userId, friendId: friendId };
     let check_conversation_channel = await Conversations.findOne(
       conversation_pair
     );
@@ -163,10 +163,10 @@ chat_helper.get_channel_id = async (userId, friendId) => {
         $group: {
           _id: "$_id",
           userData: {
-            $push: "$userId"
+            $first: "$userId"
           },
           friendData: {
-            $push: "$friendId"
+            $first: "$friendId"
           }
         }
       }
