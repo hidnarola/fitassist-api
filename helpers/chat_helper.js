@@ -166,9 +166,7 @@ chat_helper.get_channel_id = async (userId, friendId) => {
             $push: "$userId"
           },
           friendData: {
-            $push: {
-              $push: "$friendId"
-            }
+            $push: "$friendId"
           }
         }
       }
