@@ -118,7 +118,7 @@ myIo.init = function(server) {
      * @apiName User Channel
      * @apiGroup  Sokets
      * @apiParam {Object} data Data of user
-     * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
+     * @apiSuccess (Success 200) {JSON} channel channel of channel
      */
     socket.on("get_channel_id", async function(data) {
       var resp_data = {};
@@ -142,7 +142,7 @@ myIo.init = function(server) {
       } finally {
         socketIds.forEach(socketId => {
           io.to(socketId).emit("receive_channel_id", {
-            channelId: resp_data.channelId
+            resp_data
           });
         });
       }

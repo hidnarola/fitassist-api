@@ -131,12 +131,74 @@ chat_helper.get_channel_id = async (userId, friendId) => {
       let chat_message = await chat_message_data.save();
       conversation_id = chat_message._id;
     }
+    var conversation = await Conversations.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(conversation_id)
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "authUserId",
+          localField: "userId",
+          as: "userId"
+        }
+      },
+      {
+        $unwind: "$userId"
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "authUserId",
+          localField: "friendId",
+          as: "friendId"
+        }
+      },
+      {
+        $unwind: "$friendId"
+      },
+      {
+        $group: {
+          _id: "$_id",
+          userData: {
+            $push: {
+              fullName: {
+                $concat: [
+                  { $ifNull: ["$userId.firstName", ""] },
+                  " ",
+                  { $ifNull: ["$userId.lastName", ""] }
+                ]
+              },
+              authUserId: "$userId.authUserId",
+              username: "$userId.username",
+              avatar: "$userId.avatar"
+            }
+          },
+          friendData: {
+            $push: {
+              fullName: {
+                $concat: [
+                  { $ifNull: ["$friendId.firstName", ""] },
+                  " ",
+                  { $ifNull: ["$friendId.lastName", ""] }
+                ]
+              },
+              authUserId: "$friendId.authUserId",
+              username: "$friendId.username",
+              avatar: "$friendId.avatar"
+            }
+          }
+        }
+      }
+    ]);
 
-    if (conversation_id) {
+    if (conversation) {
       return {
         status: 1,
-        message: "channel id found",
-        channelId: conversation_id
+        message: "channel found",
+        channel: conversation[0]
       };
     } else {
       return { status: 2, message: "Could not find or create channel" };
