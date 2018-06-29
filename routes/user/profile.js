@@ -228,14 +228,16 @@ router.put("/", async (req, res) => {
           percentage += 10;
         } else if (key == "weight") {
           percentage += 10;
+        } else if (key == "weight") {
+          percentage += 10;
         } else if (key == "avatar") {
-          percentage += 15;
+          percentage += 10;
         } else if (key == "aboutMe") {
           percentage += 10;
         } else if (key == "lastName") {
           percentage += 10;
         } else if (key == "mobileNumber") {
-          percentage += 15;
+          percentage += 10;
         } else if (key == "goal") {
           percentage += 10;
         }

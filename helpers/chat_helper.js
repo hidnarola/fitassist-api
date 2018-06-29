@@ -293,9 +293,6 @@ chat_helper.get_conversation = async (
       }
     }
   ]);
-  console.log("------------------------------------");
-  console.log("conversation : ", conversation);
-  console.log("------------------------------------");
 
   if (conversation) {
     return {
