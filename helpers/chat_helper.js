@@ -163,31 +163,11 @@ chat_helper.get_channel_id = async (userId, friendId) => {
         $group: {
           _id: "$_id",
           userData: {
-            $first: {
-              fullName: {
-                $concat: [
-                  { $ifNull: ["$userId.firstName", ""] },
-                  " ",
-                  { $ifNull: ["$userId.lastName", ""] }
-                ]
-              },
-              authUserId: "$userId.authUserId",
-              username: "$userId.username",
-              avatar: "$userId.avatar"
-            }
+            $push: "$userId"
           },
           friendData: {
-            $first: {
-              fullName: {
-                $concat: [
-                  { $ifNull: ["$friendId.firstName", ""] },
-                  " ",
-                  { $ifNull: ["$friendId.lastName", ""] }
-                ]
-              },
-              authUserId: "$friendId.authUserId",
-              username: "$friendId.username",
-              avatar: "$friendId.avatar"
+            $push: {
+              $push: "$friendId"
             }
           }
         }
