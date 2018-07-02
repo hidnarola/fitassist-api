@@ -28,6 +28,7 @@ var personal_goals = require("./user/personal_goals");
 var badge = require("./user/badges");
 var notification = require("./user/notifications");
 var users_nutritions = require("./user/users_nutritions");
+var user_workouts = require("./user/user_workouts");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -46,7 +47,7 @@ router.use("/recipe", auth, recipe);
 router.use("/nutrition", auth, nutrition);
 router.use("/test_exercise", auth, test_exercises);
 router.use("/shopping_cart", auth, shopping_cart);
-router.use("/workout", auth, user_workout);
+// router.use("/workout", auth, user_workout);
 router.use("/timeline", auth, timeline);
 router.use("/search", auth, search);
 router.use("/chat", auth, chat);
@@ -56,5 +57,6 @@ router.use("/personal_goal", auth, personal_goals);
 router.use("/badge", auth, badge);
 router.use("/notification", auth, notification);
 router.use("/users_nutritions", auth, users_nutritions);
+router.use("/user_workout", auth, user_workouts);
 
 module.exports = router;

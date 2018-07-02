@@ -269,6 +269,7 @@ router.put("/", async (req, res) => {
         userId: authUserId
       }
     );
+
     if (nutrition_data.status == 1) {
       var nutrition_data = await user_nutritions_helper.update_user_nutritions(
         {
@@ -283,8 +284,7 @@ router.put("/", async (req, res) => {
       );
     }
     res.status(config.OK_STATUS).json(user_recipe_data);
-
-    // badge assign start;
+    //badge assign start;
     var badges = await badge_assign_helper.badge_assign(
       authUserId,
       constant.BADGES_TYPE.NUTRITIONS.concat(constant.BADGES_TYPE.CALORIES),
@@ -295,6 +295,7 @@ router.put("/", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(user_recipe_data);
   }
 });
+
 /**
  * @api {delete} /user/recipe/:recipe_id Delete
  * @apiName Delete

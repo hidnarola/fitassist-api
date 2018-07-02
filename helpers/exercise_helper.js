@@ -176,7 +176,7 @@ exercise_helper.get_all_exercise_for_user = async () => {
 };
 
 /*
- * get_exercise_id is used to fetch exercise by ID
+ * get_exercise_id is used to fetch all exercise data
  * 
  * @return  status 0 - If any internal error occured while fetching exercise data, with error
  *          status 1 - If exercise data found, with exercise object
@@ -184,9 +184,136 @@ exercise_helper.get_all_exercise_for_user = async () => {
  */
 exercise_helper.get_exercise_id = async id => {
   try {
-    var exercise = await Exercise.findOne({ _id: id });
+    var exercise = await Exercise.aggregate([
+      {
+        $match: id
+      },
+      {
+        $unwind: {
+          path: "$otherMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$detailedMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$mainMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$type",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$equipments",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "equipments",
+          localField: "equipments",
+          foreignField: "_id",
+          as: "equipments"
+        }
+      },
+      {
+        $unwind: {
+          path: "$equipments",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "bodyparts",
+          localField: "mainMuscleGroup",
+          foreignField: "_id",
+          as: "mainMuscleGroup"
+        }
+      },
+      {
+        $unwind: {
+          path: "$mainMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "bodyparts",
+          localField: "otherMuscleGroup",
+          foreignField: "_id",
+          as: "otherMuscleGroup"
+        }
+      },
+      {
+        $unwind: {
+          path: "$otherMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "bodyparts",
+          localField: "detailedMuscleGroup",
+          foreignField: "_id",
+          as: "detailedMuscleGroup"
+        }
+      },
+      {
+        $unwind: {
+          path: "$detailedMuscleGroup",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "exercise_types",
+          localField: "type",
+          foreignField: "_id",
+          as: "type"
+        }
+      },
+      {
+        $unwind: {
+          path: "$type",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $push: "$name" },
+          // cols:filter_object.columnFilter,
+          otherMuscleGroup: { $addToSet: "$otherMuscleGroup.bodypart" },
+          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
+          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
+          equipments: { $addToSet: "$equipments.name" },
+          type: { $first: "$type.name" },
+          mainMuscleGroup: { $first: "$mainMuscleGroup.bodypart" },
+          name: { $first: "$name" },
+          description: { $first: "$description" },
+          mechanics: { $first: "$mechanics" },
+          difficltyLevel: { $first: "$difficltyLevel" },
+          measures: { $first: "$measures" }
+        }
+      }
+    ]);
+
     if (exercise) {
-      return { status: 1, message: "exercise found", exercise: exercise };
+      return {
+        status: 1,
+        message: "Exercise found",
+        exercise: exercise[0]
+      };
     } else {
       return { status: 2, message: "No exercise available" };
     }
@@ -198,6 +325,30 @@ exercise_helper.get_exercise_id = async id => {
     };
   }
 };
+
+// /*
+//  * get_exercise_id is used to fetch exercise by ID
+//  *
+//  * @return  status 0 - If any internal error occured while fetching exercise data, with error
+//  *          status 1 - If exercise data found, with exercise object
+//  *          status 2 - If exercise not found, with appropriate message
+//  */
+// exercise_helper.get_exercise_id = async id => {
+//   try {
+//     var exercise = await Exercise.findOne({ _id: id });
+//     if (exercise) {
+//       return { status: 1, message: "exercise found", exercise: exercise };
+//     } else {
+//       return { status: 2, message: "No exercise available" };
+//     }
+//   } catch (err) {
+//     return {
+//       status: 0,
+//       message: "Error occured while finding exercise",
+//       error: err
+//     };
+//   }
+// };
 
 /*
  * insert_exercise is used to insert into exercise collection

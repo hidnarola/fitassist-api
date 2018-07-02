@@ -1,46 +1,18 @@
 //Require Mongoose
 var mongoose = require("mongoose");
+var constants = require("../constant");
 
 //Define a schema
 var Schema = mongoose.Schema;
 
-var ScheduleSchema = new Schema(
-  {
-    exerciseId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "exercise",
-      required: true
-    },
-    reps: { type: Number, required: true },
-    sets: { type: Number, required: true },
-    restTime: { type: Number, required: true },
-    oneSetTimer: { type: Number, required: true },
-    weight: { type: Number, required: true },
-    distance: { type: Number, required: true },
-    isCompleted: { type: Number, required: true },
-    createdBy: { type: Number, required: true },
-    createdDate: { type: Number, required: true },
-    completedDate: { type: Number, required: true },
-    isRestDay: { type: Number, required: true },
-    title: { type: Number, required: true },
-    description: { type: Number, required: true },
-    day: { type: Number, required: true }
-  },
-  { versionKey: false }
-);
-
 var UserWorkoutSchema = new Schema(
   {
-    userId: { type: String, ref: "users", field: "authUserId", required: true },
-    name: { type: String, required: true },
-    type: { type: String, enum: ["wormup", "cooldown"], default: true },
-    days: { type: String, default: true },
-    difficulty: { type: Number, default: 0, required: true },
-    schedule: [{ type: ScheduleSchema, required: false }],
-    date: { type: Date, required: true },
-    isCompleted: { type: Number, required: true },
-    status: { type: Number, default: 1 },
-    isDeleted: { type: Number, default: 0 },
+    title: { type: String },
+    description: { type: String },
+    isCompleted: { type: Number },
+    type: { type: String, enum: ["exercise", "restday"], default: "exercise" },
+    userId: { type: String, ref: "users", field: "authUserId" },
+    date: { type: Date },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },

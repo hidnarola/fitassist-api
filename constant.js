@@ -1,4 +1,5 @@
 module.exports = {
+  WORKOUTS_TYPE: ["warmup", "cooldown", "exercise"],
   RECIPE_TYPE: [
     "vegetarian",
     "vegan",

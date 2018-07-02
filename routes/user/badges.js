@@ -47,11 +47,6 @@ router.get("/:type/:start?/:limit?", async (req, res) => {
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    var total_count = await badge_assign_helper.count({
-      userId: authUserId,
-      isCompleted: type
-    });
-    resp_data.count = total_count.count;
     logger.trace("user personal goals got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }

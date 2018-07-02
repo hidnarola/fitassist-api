@@ -29,8 +29,34 @@ badges_assign_helper.get_all_badges = async (
       {
         $match: condition
       },
+      {
+        $lookup: {
+          from: "badges",
+          localField: "badgeId",
+          foreignField: "_id",
+          as: "badges"
+        }
+      },
+      {
+        $unwind: "$badges"
+      },
       skip,
       limit,
+      {
+        $group: {
+          _id: "$_id",
+          descriptionCompleted: { $first: "$badges.descriptionCompleted" },
+          descriptionInCompleted: { $first: "$badges.descriptionInCompleted" },
+          unit: { $first: "$badges.unit" },
+          value: { $first: "$badges.value" },
+          timeType: { $first: "$badges.timeType" },
+          duration: { $first: "$badges.duration" },
+          point: { $first: "$badges.point" },
+          name: { $first: "$badges.name" },
+          task: { $first: "$badges.task" },
+          createdAt: { $first: "$badges.createdAt" }
+        }
+      },
       sort
     ]);
     if (badges) {
@@ -50,6 +76,7 @@ badges_assign_helper.get_all_badges = async (
     };
   }
 };
+
 async function badge_assign_for_nutrition(
   authUserId,
   first,

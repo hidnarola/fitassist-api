@@ -40,6 +40,15 @@ users_recipe_helper.get_user_nutritions = async condition => {
   try {
     var user_nutrients = await UsersRecipe.aggregate([
       {
+        $project: {
+          _id: 1,
+          isDeleted: 1,
+          userId: 1,
+          totalNutrients: 1,
+          isCompleted: 1
+        }
+      },
+      {
         $match: condition
       },
       { $unwind: "$totalNutrients" },

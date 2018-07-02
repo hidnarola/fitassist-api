@@ -108,7 +108,7 @@ router.post("/", async (req, res) => {
   var schema = {
     friendId: {
       notEmpty: true,
-      errorMessage: "friendId is required to send friend request"
+      errorMessage: "Friend id is required"
     }
   };
 

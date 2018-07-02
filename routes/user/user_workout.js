@@ -6,7 +6,7 @@ var jwtDecode = require("jwt-decode");
 var moment = require("moment");
 var logger = config.logger;
 
-var user_workout_helper = require("../../helpers/user_workout_helper");
+var user_workout_helper = require("../../helpers/user_workout_helper.bkup");
 
 /**
  * @api {get} /user/workout/:workout_id Get user's workout by _id
