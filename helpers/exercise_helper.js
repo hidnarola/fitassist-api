@@ -8,9 +8,9 @@ var exercise_helper = {};
  *          status 1 - If exercise data found, with exercise object
  *          status 2 - If exercise not found, with appropriate message
  */
-exercise_helper.get_all_exercise = async () => {
+exercise_helper.get_all_exercise = async (condition = {}, project = {}) => {
   try {
-    var exercise = await Exercise.find();
+    var exercise = await Exercise.find(condition, project);
     if (exercise) {
       return { status: 1, message: "Exercise found", exercises: exercise };
     } else {

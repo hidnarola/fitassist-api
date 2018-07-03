@@ -57,6 +57,6 @@ router.use("/personal_goal", auth, personal_goals);
 router.use("/badge", auth, badge);
 router.use("/notification", auth, notification);
 router.use("/users_nutritions", auth, users_nutritions);
-router.use("/user_workout", auth, user_workouts);
+router.use("/user_workouts", auth, user_workouts);
 
 module.exports = router;

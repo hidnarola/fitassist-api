@@ -21,7 +21,7 @@ var socket = require("../../socket/socketServer");
  * @apiName Get User Workouts
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Date}  Date date(month/year) of user's workout program
+ * @apiParam {Date}  date Date of user's workout program
  * @apiSuccess (Success 200) {JSON} workouts JSON of user_workouts
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -79,6 +79,7 @@ router.post("/", async (req, res) => {
       userId: authUserId,
       date: req.body.date
     };
+
     var exercise_data = await exercise_helper.get_exercise_id({
       _id: mongoose.Types.ObjectId(req.body.exercise_id)
     });
@@ -94,10 +95,12 @@ router.post("/", async (req, res) => {
       distance: req.body.distance,
       sequence: 1
     };
+
     var workout_data = await user_workout_helper.insert_user_workouts(
       masterCollectionObject,
       childCollectionObject
     );
+
     if (workout_data.status == 1) {
       res.status(config.OK_STATUS).json(workout_data);
     } else {

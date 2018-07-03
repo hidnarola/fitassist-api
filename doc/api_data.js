@@ -11982,8 +11982,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "Date",
             "optional": false,
-            "field": "Date",
-            "description": "<p>date(month/year) of user's workout program</p>"
+            "field": "date",
+            "description": "<p>Date of user's workout program</p>"
           }
         ]
       }

@@ -85,25 +85,11 @@ user_workouts_helper.insert_user_workouts = async (
   masterCollectionObject,
   childCollectionObject
 ) => {
-  console.log("------------------------------------");
-  console.log("masterCollectionObject : ", masterCollectionObject);
-  console.log("------------------------------------");
-  console.log("------------------------------------");
-  console.log("BEFORE childCollectionObject : ", childCollectionObject);
-  console.log("------------------------------------");
-
   let user_workouts = new UserWorkouts(masterCollectionObject);
   try {
     var user_workouts_data = await user_workouts.save();
     if (user_workouts_data) {
       childCollectionObject.userWorkoutsId = user_workouts_data._id;
-      console.log("------------------------------------");
-      console.log(
-        "AFTER ADDED IN MASTER childCollectionObject : ",
-        childCollectionObject
-      );
-      console.log("------------------------------------");
-
       let user_workout_exercise = new UserWorkoutExercises(
         childCollectionObject
       );
