@@ -94,8 +94,9 @@ router.post("/", async (req, res) => {
   );
 
   var childCollectionObject = [];
+
   for (let ex of exercise_data.exercise) {
-    var data = _.find(exercises, async exercise => {
+    var data = _.find(exercises, exercise => {
       return exercise.exerciseId === ex._id.toString();
     });
     delete data.exerciseId;
@@ -114,6 +115,7 @@ router.post("/", async (req, res) => {
     data.baseDistanceUnits = baseDistance.baseUnit;
     data.baseDistanceValue = baseDistance.baseValue;
     data.exercise = ex;
+
     childCollectionObject.push(data);
   }
 
