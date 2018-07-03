@@ -90,10 +90,15 @@ user_workouts_helper.insert_user_workouts = async (
     var user_workouts_data = await user_workouts.save();
     if (user_workouts_data) {
       childCollectionObject.userWorkoutsId = user_workouts_data._id;
-      let user_workout_exercise = new UserWorkoutExercises(
+
+      childCollectionObject.forEach(element => {
+        element.userWorkoutsId = user_workouts_data._id;
+      });
+
+      var user_workouts_exercise = await UserWorkoutExercises.insertMany(
         childCollectionObject
       );
-      var user_workouts_exercise = await user_workout_exercise.save();
+
       if (user_workouts_exercise) {
         return {
           status: 1,

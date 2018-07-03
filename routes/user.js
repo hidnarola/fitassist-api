@@ -29,6 +29,7 @@ var badge = require("./user/badges");
 var notification = require("./user/notifications");
 var users_nutritions = require("./user/users_nutritions");
 var user_workouts = require("./user/user_workouts");
+var user_calendar = require("./user/user_calendar");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -58,5 +59,6 @@ router.use("/badge", auth, badge);
 router.use("/notification", auth, notification);
 router.use("/users_nutritions", auth, users_nutritions);
 router.use("/user_workouts", auth, user_workouts);
+router.use("/user_calendar", auth, user_calendar);
 
 module.exports = router;

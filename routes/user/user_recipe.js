@@ -26,14 +26,14 @@ var user_nutritions_helper = require("../../helpers/user_nutritions_helper");
 router.get("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Get all nutrition preference API called : ");
+  logger.trace("Get all user recipes API called : ");
   var resp_data = await nutrition_preferences_helper.get_all_nutrition_preferences(
     { userId: authUserId }
   );
 
   if (resp_data.status == 0) {
     logger.error(
-      "Error occured while fetching all user's nutrition preference = ",
+      "Error occured while fetching all user's user recipes = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);

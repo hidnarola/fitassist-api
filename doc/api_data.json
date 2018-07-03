@@ -8021,7 +8021,7 @@
             "group": "Success 200",
             "type": "Array",
             "optional": false,
-            "field": "exercise",
+            "field": "exercises",
             "description": "<p>Array of exercise_types's document</p>"
           }
         ]

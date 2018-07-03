@@ -7,6 +7,7 @@ var jwtDecode = require("jwt-decode");
 var router = express.Router();
 var mongoose = require("mongoose");
 var moment = require("moment");
+var _ = require("underscore");
 var constant = require("../../constant");
 
 var config = require("../../config");
@@ -14,6 +15,7 @@ var logger = config.logger;
 
 var user_workout_helper = require("../../helpers/user_workouts_helper");
 var exercise_helper = require("../../helpers/exercise_helper");
+var common_helper = require("../../helpers/common_helper");
 var socket = require("../../socket/socketServer");
 
 /**
@@ -55,8 +57,12 @@ router.post("/get_by_month", async (req, res) => {
  * @apiGroup  User Workouts
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} friendId Id of friend
- * @apiSuccess (Success 200) {JSON} friend request sent in friends detail
+ * @apiParam {String} title title of workout
+ * @apiParam {String} description description of workout
+ * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
+ * @apiParam {Date} date date of workout
+ * @apiParam {Array} exercises list of exercises of workout
+ * @apiSuccess (Success 200) {JSON} workout workout details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
@@ -64,49 +70,62 @@ router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var schema = {};
+  var masterCollectionObject = {
+    title: req.body.title,
+    description: req.body.description,
+    type: req.body.type,
+    userId: authUserId,
+    date: req.body.date
+  };
 
-  req.checkBody(schema);
-  var errors = req.validationErrors();
+  var exercises = req.body.exercises;
 
-  if (!errors) {
-    var masterCollectionObject = {
-      title: req.body.title,
-      description: req.body.description,
-      type: req.body.type,
-      userId: authUserId,
-      date: req.body.date
-    };
+  var exercise_ids = _.pluck(exercises, "exerciseId");
 
-    var exercise_data = await exercise_helper.get_exercise_id({
-      _id: mongoose.Types.ObjectId(req.body.exercise_id)
+  exercise_ids.forEach((id, index) => {
+    exercise_ids[index] = mongoose.Types.ObjectId(id);
+  });
+
+  var exercise_data = await exercise_helper.get_exercise_id(
+    {
+      _id: { $in: exercise_ids }
+    },
+    1
+  );
+
+  var childCollectionObject = [];
+  for (let ex of exercise_data.exercise) {
+    var data = _.find(exercises, async exercise => {
+      return exercise.exerciseId === ex._id.toString();
     });
+    delete data.exerciseId;
 
-    var childCollectionObject = {
-      type: req.body.type,
-      exercise: exercise_data.exercise,
-      reps: req.body.reps,
-      sets: req.body.sets,
-      restTime: req.body.restTime,
-      oneSetTimer: req.body.oneSetTimer,
-      weight: req.body.weight,
-      distance: req.body.distance,
-      sequence: 1
-    };
-
-    var workout_data = await user_workout_helper.insert_user_workouts(
-      masterCollectionObject,
-      childCollectionObject
+    var baseWeight = await common_helper.unit_converter(
+      data.weight,
+      data.weightUnits
+    );
+    var baseDistance = await common_helper.unit_converter(
+      data.distance,
+      data.distanceUnits
     );
 
-    if (workout_data.status == 1) {
-      res.status(config.OK_STATUS).json(workout_data);
-    } else {
-      res.status(config.BAD_REQUEST).json(workout_data);
-    }
+    data.baseWeightUnits = baseWeight.baseUnit;
+    data.baseWeightValue = baseWeight.baseValue;
+    data.baseDistanceUnits = baseDistance.baseUnit;
+    data.baseDistanceValue = baseDistance.baseValue;
+    data.exercise = ex;
+    childCollectionObject.push(data);
+  }
+
+  var workout_data = await user_workout_helper.insert_user_workouts(
+    masterCollectionObject,
+    childCollectionObject
+  );
+
+  if (workout_data.status == 1) {
+    res.status(config.OK_STATUS).json(workout_data);
   } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.BAD_REQUEST).json(workout_data);
   }
 });
 

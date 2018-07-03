@@ -182,7 +182,7 @@ exercise_helper.get_all_exercise_for_user = async () => {
  *          status 1 - If exercise data found, with exercise object
  *          status 2 - If exercise not found, with appropriate message
  */
-exercise_helper.get_exercise_id = async id => {
+exercise_helper.get_exercise_id = async (id, flag = 0) => {
   try {
     var exercise = await Exercise.aggregate([
       {
@@ -312,7 +312,7 @@ exercise_helper.get_exercise_id = async id => {
       return {
         status: 1,
         message: "Exercise found",
-        exercise: exercise[0]
+        exercise: flag ? exercise : exercise[0]
       };
     } else {
       return { status: 2, message: "No exercise available" };

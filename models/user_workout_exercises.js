@@ -20,6 +20,12 @@ var UserWorkoutExercises = new Schema(
     oneSetTimer: { type: Number },
     weight: { type: Number },
     distance: { type: Number },
+    weightUnits: { type: String },
+    distanceUnits: { type: String },
+    baseWeightUnits: { type: String },
+    baseDistanceUnits: { type: String },
+    baseWeightValue: { type: String },
+    baseDistanceValue: { type: String },
     isCompleted: { type: Number },
     completedDate: { type: Date },
     sequence: { type: Number }

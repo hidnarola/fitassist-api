@@ -11,15 +11,16 @@ var exercise_helper = require("../../helpers/exercise_helper");
  * @apiName Get all Exercise Name and ID
  * @apiGroup User Exercise
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {Array} exercise Array of exercise_types's document
+ * @apiSuccess (Success 200) {Array} exercises Array of exercise_types's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/names", async (req, res) => {
-  logger.trace("Get all Exercise API called");
+  logger.trace("Get all Exercise of name API called");
   var resp_data = await exercise_helper.get_all_exercise(
     {},
     { _id: 1, name: 1 }
   );
+
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching exercise = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
