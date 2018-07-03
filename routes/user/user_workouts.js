@@ -29,11 +29,9 @@ router.post("/get_by_month", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var date = req.body.date;
-
   var check = await moment(date).utc(0);
-  var startCheck = await moment(check).subtract(1, "month");
-  var endCheck = await moment(check).add(1, "month");
-
+  var startCheck = await moment(check).subtract(2, "month");
+  var endCheck = await moment(check).add(2, "month");
   var resp_data = await user_workout_helper.get_all_workouts({
     userId: authUserId,
     date: {

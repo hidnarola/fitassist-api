@@ -7515,55 +7515,6 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/user/chat/:username/:message_id",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/chat.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "delete",
     "url": "/user/chat/:username",
     "title": "Delete",
     "name": "Delete",
@@ -7612,10 +7563,10 @@ define({ "api": [
     "groupTitle": "User_Chat"
   },
   {
-    "type": "get",
-    "url": "/user/chat/channel_id/:start?/:limit?",
-    "title": "Get recently messages",
-    "name": "Get_recently_messages",
+    "type": "delete",
+    "url": "/user/chat/:username/:message_id",
+    "title": "Delete",
+    "name": "Delete",
     "group": "User_Chat",
     "header": {
       "fields": {
@@ -7635,10 +7586,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Array",
+            "type": "String",
             "optional": false,
-            "field": "channels",
-            "description": "<p>Array of conversations_replies document</p>"
+            "field": "Success",
+            "description": "<p>message</p>"
           }
         ]
       }
@@ -7687,6 +7638,55 @@ define({ "api": [
             "type": "Array",
             "optional": false,
             "field": "messages",
+            "description": "<p>Array of conversations_replies document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/chat.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "get",
+    "url": "/user/chat/channel_id/:start?/:limit?",
+    "title": "Get recently messages",
+    "name": "Get_recently_messages",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "channels",
             "description": "<p>Array of conversations_replies document</p>"
           }
         ]
@@ -7997,9 +7997,9 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/exercise",
-    "title": "Get all",
-    "name": "Get_all",
+    "url": "/user/exercise/names",
+    "title": "Get all Exercise Name and ID",
+    "name": "Get_all_Exercise_Name_and_ID",
     "group": "User_Exercise",
     "header": {
       "fields": {
