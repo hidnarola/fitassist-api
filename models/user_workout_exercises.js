@@ -24,8 +24,8 @@ var UserWorkoutExercises = new Schema(
     distanceUnits: { type: String },
     baseWeightUnits: { type: String },
     baseDistanceUnits: { type: String },
-    baseWeightValue: { type: String },
-    baseDistanceValue: { type: String },
+    baseWeightValue: { type: Number },
+    baseDistanceValue: { type: Number },
     isCompleted: { type: Number },
     completedDate: { type: Date },
     sequence: { type: Number }

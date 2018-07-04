@@ -15,7 +15,7 @@ user_calendar_helper.get_calendar = async condition => {
   try {
     var calendar = {
       workouts: [],
-      meal: []
+      meals: []
     };
 
     var meal_data = await user_recipe_helper.get_user_recipe_by_id(condition);
@@ -33,7 +33,7 @@ user_calendar_helper.get_calendar = async condition => {
       }
     ]);
     if (meal_data.status == 1) {
-      calendar.meal = meal_data.todays_meal;
+      calendar.meals = meal_data.todays_meal;
     }
     if (workout_data) {
       calendar.workouts = workout_data;

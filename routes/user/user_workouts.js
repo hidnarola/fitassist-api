@@ -110,10 +110,12 @@ router.post("/", async (req, res) => {
       data.distanceUnits
     );
 
-    data.baseWeightUnits = baseWeight.baseUnit;
-    data.baseWeightValue = baseWeight.baseValue;
-    data.baseDistanceUnits = baseDistance.baseUnit;
-    data.baseDistanceValue = baseDistance.baseValue;
+    data.baseWeightUnits = baseWeight.baseUnit ? baseWeight.baseUnit : "";
+    data.baseWeightValue = baseWeight.baseValue ? baseWeight.baseValue : 0;
+    data.baseDistanceUnits = baseDistance.baseUnit ? baseDistance.baseUnit : "";
+    data.baseDistanceValue = baseDistance.baseValue
+      ? baseDistance.baseValue
+      : 0;
     data.exercise = ex;
 
     childCollectionObject.push(data);
