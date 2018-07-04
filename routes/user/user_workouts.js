@@ -16,6 +16,7 @@ var logger = config.logger;
 var user_workout_helper = require("../../helpers/user_workouts_helper");
 var exercise_helper = require("../../helpers/exercise_helper");
 var common_helper = require("../../helpers/common_helper");
+var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var socket = require("../../socket/socketServer");
 
 /**
@@ -101,23 +102,25 @@ router.post("/", async (req, res) => {
     });
     delete data.exerciseId;
 
-    var baseWeight = await common_helper.unit_converter(
-      data.weight,
-      data.weightUnits
-    );
-    var baseDistance = await common_helper.unit_converter(
-      data.distance,
-      data.distanceUnits
-    );
+    if (data.weight) {
+      var baseWeight = await common_helper.unit_converter(
+        data.weight,
+        data.weightUnits
+      );
+      data.baseWeightUnits = baseWeight.baseUnit;
+      data.baseWeightValue = baseWeight.baseValue;
+    }
 
-    data.baseWeightUnits = baseWeight.baseUnit ? baseWeight.baseUnit : "";
-    data.baseWeightValue = baseWeight.baseValue ? baseWeight.baseValue : 0;
-    data.baseDistanceUnits = baseDistance.baseUnit ? baseDistance.baseUnit : "";
-    data.baseDistanceValue = baseDistance.baseValue
-      ? baseDistance.baseValue
-      : 0;
+    if (data.distance) {
+      var baseDistance = await common_helper.unit_converter(
+        data.distance,
+        data.distanceUnits
+      );
+      data.baseDistanceUnits = baseDistance.baseUnit;
+      data.baseDistanceValue = baseDistance.baseValue;
+    }
+    data.date = req.body.date;
     data.exercise = ex;
-
     childCollectionObject.push(data);
   }
 
@@ -134,6 +137,59 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * @api {put} /user/user_workouts/complete Complete User workout
+ * @apiName Complete User workout
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Date} date Date of Workout to be complete
+ * @apiSuccess (Success 200) {String} Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/complete", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var date = req.body.date;
+
+  var startdate = moment(date).utcOffset(0);
+  startdate.toISOString();
+  startdate.format();
+
+  var enddate = moment(date)
+    .utcOffset(0)
+    .add(23, "hours")
+    .add(59, "minutes");
+  enddate.toISOString();
+  enddate.format();
+
+  logger.trace("Complete workout API Called");
+  let workout_data = await user_workout_helper.complete_workout({
+    date: {
+      $gte: startdate,
+      $lte: enddate
+    }
+  });
+
+  if (workout_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
+  } else {
+    let workout_detail = await user_workout_helper.workout_detail_for_badges({
+      userId: authUserId
+    });
+    delete workout_detail.workouts._id;
+
+    //badge assign start;
+    var badges = await badge_assign_helper.badge_assign(
+      authUserId,
+      constant.BADGES_TYPE.WORKOUTS.concat(constant.BADGES_TYPE.WEIGHT_LIFTED),
+      workout_detail.workouts
+    );
+    //badge assign end
+
+    res.status(config.OK_STATUS).json(workout_data);
+  }
+});
+
+/**
  * @api {put} /user/user_workouts/:workout_id  Update User Workouts
  * @apiName Update User Workouts
  * @apiGroup  User Workouts
@@ -145,69 +201,6 @@ router.post("/", async (req, res) => {
 router.put("/:workout_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var workout_id = req.params.workout_id;
-  var schema = {
-    friendId: {
-      notEmpty: true,
-      errorMessage: "Friend id is required"
-    }
-  };
-
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-
-  if (!errors) {
-    if (authUserId === req.body.friendId) {
-      return res
-        .status(config.BAD_REQUEST)
-        .json({ message: "Can not send friend request yourself" });
-    }
-
-    check_workout_data = await user_workout_helper.checkFriend({
-      $or: [
-        { $and: [{ userId: authUserId }, { friendId: req.body.friendId }] },
-        { $and: [{ userId: req.body.friendId }, { friendId: authUserId }] }
-      ]
-    });
-    var msg = "is already friend";
-    if (check_workout_data.status == 1) {
-      if (check_workout_data.friends.length !== 0) {
-        if (check_workout_data.friends[0].status == 1) {
-          msg = "request is already in pending";
-        }
-        return res.status(config.BAD_REQUEST).json({ message: msg });
-      }
-    }
-
-    var friend_obj = {
-      userId: authUserId,
-      friendId: req.body.friendId
-    };
-
-    let workout_data = await user_workout_helper.send_friend_request(
-      friend_obj
-    );
-    if (workout_data.status === 0) {
-      logger.error("Error while inserting friend request = ", workout_data);
-      return res.status(config.BAD_REQUEST).json({ workout_data });
-    } else {
-      var user = socket.users.get(req.body.friendId);
-      var socketIds = user ? user.socketIds : [];
-      var user_friends_count = await user_workout_helper.count_friends(
-        req.body.friendId
-      );
-      socketIds.forEach(socketId => {
-        io.to(socketId).emit("receive_user_friends_count", {
-          count: user_friends_count.count
-        });
-      });
-
-      return res.status(config.OK_STATUS).json(workout_data);
-    }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
-  }
 });
 
 /**

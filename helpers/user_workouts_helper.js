@@ -43,6 +43,77 @@ user_workouts_helper.get_all_workouts = async condition => {
 };
 
 /*
+ * workout_detail_for_badges is used to fetch all user workout data for badges
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user workout data, with error
+ *          status 1 - If user workout data found, with user workout object
+ *          status 2 - If user workout not found, with appropriate message
+ */
+user_workouts_helper.workout_detail_for_badges = async condition => {
+  try {
+    var user_workouts = await UserWorkouts.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_workout_exercises",
+          foreignField: "userWorkoutsId",
+          localField: "_id",
+          as: "exercises"
+        }
+      },
+      {
+        $unwind: "$exercises"
+      },
+      {
+        $match: {
+          "exercises.isCompleted": 1
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          weight_lifted_total: { $sum: "$exercises.baseWeightValue" },
+          weight_lifted_average: { $avg: "$exercises.baseWeightValue" },
+          weight_lifted_most: { $max: "$exercises.baseWeightValue" },
+          weight_lifted_least: { $min: "$exercises.baseWeightValue" },
+          workouts_total: { $sum: 1 },
+          workouts_average: { $sum: 1 },
+          reps_least: { $min: "$exercises.reps" },
+          reps_total: { $sum: "$exercises.reps" },
+          reps_average: { $avg: "$exercises.reps" },
+          reps_most: { $max: "$exercises.reps" },
+          sets_least: { $min: "$exercises.sets" },
+          sets_total: { $sum: "$exercises.sets" },
+          sets_average: { $avg: "$exercises.sets" },
+          sets_most: { $max: "$exercises.sets" }
+        }
+      }
+    ]);
+    console.log("------------------------------------");
+    console.log("user_workouts : ", user_workouts);
+    console.log("------------------------------------");
+
+    if (user_workouts) {
+      return {
+        status: 1,
+        message: "user workouts found",
+        workouts: user_workouts[0]
+      };
+    } else {
+      return { status: 2, message: "No user workouts available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user workouts",
+      error: err
+    };
+  }
+};
+
+/*
  * get_user_workouts_by_id is used to fetch User workout by ID
  * 
  * @params id id of user_workoutss
@@ -160,6 +231,44 @@ user_workouts_helper.update_user_workouts_by_id = async (
     return {
       status: 0,
       message: "Error occured while updating user_workouts",
+      error: err
+    };
+  }
+};
+
+/*
+ * complete_workout is used to complete user workouts data based on user workouts date
+ * 
+ * @param   condition         Object  condition of user_workouts that need to be complete
+ * @return  status  0 - If any error occur in updating user_workouts, with error
+ *          status  1 - If user_workouts completed successfully, with appropriate message
+ *          status  2 - If user_workouts not completed, with appropriate message 
+ * @developed by "amc"
+ */
+user_workouts_helper.complete_workout = async condition => {
+  try {
+    let user_workouts_data = await UserWorkoutExercises.updateMany(
+      condition,
+      {
+        isCompleted: 1
+      },
+      {
+        new: true
+      }
+    );
+    if (!user_workouts_data) {
+      return { status: 2, message: "Workout not completed" };
+    } else {
+      return {
+        status: 1,
+        message: "Workout completed",
+        workout: user_workouts_data
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user workouts",
       error: err
     };
   }

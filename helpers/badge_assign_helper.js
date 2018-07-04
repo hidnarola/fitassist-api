@@ -6,6 +6,7 @@ var measurement_helper = require("./measurement_helper");
 var notification_helper = require("./notification_helper");
 var user_helper = require("./user_helper");
 var user_recipe_helper = require("./user_recipe_helper");
+var user_workouts_helper = require("./user_workouts_helper");
 var socket = require("../socket/socketServer");
 var constant = require("../constant");
 
@@ -77,6 +78,52 @@ badges_assign_helper.get_all_badges = async (
   }
 };
 
+async function badge_assign_for_workout(
+  authUserId,
+  first,
+  all_possible_badges,
+  user_gained_badges,
+  workout,
+  insert_batch_data,
+  notification_badges_data
+) {
+  var first = first;
+  for (let single_badge of all_possible_badges) {
+    var id = single_badge._id;
+    var badge_assigned = _.find(user_gained_badges, user_badge => {
+      return user_badge.badgeId.toString() === id.toString();
+    });
+    if (!badge_assigned) {
+      if (single_badge.timeType != "standard") {
+        var duration = parseInt(single_badge.baseDuration);
+        let user_workout = await user_workouts_helper.workout_detail_for_badges(
+          {
+            date: {
+              $gte: new Date(
+                new Date().getTime() - duration * 24 * 60 * 60 * 1000
+              )
+            },
+            userId: authUserId,
+            isCompleted: 1
+          }
+        );
+
+        first = user_workout.workouts[workout];
+      }
+
+      if (first >= single_badge.baseValue) {
+        var badge_assign_obj = {
+          userId: authUserId,
+          badgeId: single_badge._id,
+          task: single_badge.task
+        };
+        insert_batch_data.push(badge_assign_obj);
+        notification_badges_data.push(single_badge);
+        console.log(workout + " badge assigned");
+      }
+    }
+  }
+}
 async function badge_assign_for_nutrition(
   authUserId,
   first,
@@ -1224,6 +1271,20 @@ badges_assign_helper.badge_assign = async (
             }
           }
         }
+      } else if (
+        constant.BADGES_TYPE.WORKOUTS.concat(
+          constant.BADGES_TYPE.WEIGHT_LIFTED
+        ).indexOf(element) > 0
+      ) {
+        var data = badge_assign_for_workout(
+          authUserId,
+          valueToBeCompare[element],
+          all_possible_badges,
+          user_gained_badges,
+          element,
+          insert_batch_data,
+          notification_badges_data
+        );
       } else if (element == "weight_lifted_total") {
       } else if (element == "weight_lifted_average") {
       } else if (element == "weight_lifted_most") {
@@ -1270,7 +1331,7 @@ badges_assign_helper.badge_assign = async (
       ) {
         var data = badge_assign_for_nutrition(
           authUserId,
-          valueToBeCompare.calories_total,
+          valueToBeCompare[element],
           all_possible_badges,
           user_gained_badges,
           element,
