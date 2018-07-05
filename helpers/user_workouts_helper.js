@@ -160,21 +160,27 @@ user_workouts_helper.insert_user_workouts = async (
   try {
     var user_workouts_data = await user_workouts.save();
     if (user_workouts_data) {
-      childCollectionObject.userWorkoutsId = user_workouts_data._id;
+      if (childCollectionObject && childCollectionObject.length > 0) {
+        childCollectionObject.forEach(element => {
+          element.userWorkoutsId = user_workouts_data._id;
+        });
+        var user_workouts_exercise = await UserWorkoutExercises.insertMany(
+          childCollectionObject
+        );
+        if (user_workouts_exercise) {
+          return {
+            status: 1,
+            message: "User workout inserted",
+            workout: user_workouts_exercise
+          };
+        }
+      }
 
-      childCollectionObject.forEach(element => {
-        element.userWorkoutsId = user_workouts_data._id;
-      });
-
-      var user_workouts_exercise = await UserWorkoutExercises.insertMany(
-        childCollectionObject
-      );
-
-      if (user_workouts_exercise) {
+      if (user_workouts_data) {
         return {
           status: 1,
           message: "User workout inserted",
-          workout: user_workouts_exercise
+          workout: user_workouts_data
         };
       }
     } else {

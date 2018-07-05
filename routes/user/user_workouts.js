@@ -78,52 +78,50 @@ router.post("/", async (req, res) => {
     userId: authUserId,
     date: req.body.date
   };
+  var exercises = [];
+  if (req.body.type != "restday") {
+    exercises = req.body.exercises;
+    var exercise_ids = _.pluck(exercises, "exerciseId");
 
-  if(req.body.type!='restday'){
+    exercise_ids.forEach((id, index) => {
+      exercise_ids[index] = mongoose.Types.ObjectId(id);
+    });
 
+    var exercise_data = await exercise_helper.get_exercise_id(
+      {
+        _id: { $in: exercise_ids }
+      },
+      1
+    );
+    var tmp = 0;
+    exercises = exercises.map(async ex => {
+      ex.exercise = _.find(exercise_data.exercise, exercise => {
+        return exercise._id.toString() === ex.exerciseId.toString();
+      });
+      delete ex.exerciseId;
+      if (ex.weight) {
+        var baseWeight = await common_helper.unit_converter(
+          ex.weight,
+          ex.weightUnits
+        );
+        ex.baseWeightUnits = baseWeight.baseUnit;
+        ex.baseWeightValue = baseWeight.baseValue;
+      }
+
+      if (ex.distance) {
+        var baseDistance = await common_helper.unit_converter(
+          ex.distance,
+          ex.distanceUnits
+        );
+        ex.baseDistanceUnits = baseDistance.baseUnit;
+        ex.baseDistanceValue = baseDistance.baseValue;
+      }
+      ex.date = req.body.date;
+      return ex;
+    });
+    exercises = await Promise.all(exercises);
   }
 
-  var exercises = req.body.exercises;
-  var exercise_ids = _.pluck(exercises, "exerciseId");
-
-  exercise_ids.forEach((id, index) => {
-    exercise_ids[index] = mongoose.Types.ObjectId(id);
-  });
-
-  var exercise_data = await exercise_helper.get_exercise_id(
-    {
-      _id: { $in: exercise_ids }
-    },
-    1
-  );
-  var tmp = 0;
-  exercises = exercises.map(async ex => {
-    ex.exercise = _.find(exercise_data.exercise, exercise => {
-      return exercise._id.toString() === ex.exerciseId.toString();
-    });
-    delete ex.exerciseId;
-    if (ex.weight) {
-      var baseWeight = await common_helper.unit_converter(
-        ex.weight,
-        ex.weightUnits
-      );
-      ex.baseWeightUnits = baseWeight.baseUnit;
-      ex.baseWeightValue = baseWeight.baseValue;
-    }
-
-    if (ex.distance) {
-      var baseDistance = await common_helper.unit_converter(
-        ex.distance,
-        ex.distanceUnits
-      );
-      ex.baseDistanceUnits = baseDistance.baseUnit;
-      ex.baseDistanceValue = baseDistance.baseValue;
-    }
-    ex.date = req.body.date;
-    return ex;
-  });
-
-  exercises = await Promise.all(exercises);
   var workout_data = await user_workout_helper.insert_user_workouts(
     masterCollectionObject,
     exercises
