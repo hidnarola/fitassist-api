@@ -79,8 +79,11 @@ router.post("/", async (req, res) => {
     date: req.body.date
   };
 
-  var exercises = req.body.exercises;
+  if(req.body.type!='restday'){
 
+  }
+
+  var exercises = req.body.exercises;
   var exercise_ids = _.pluck(exercises, "exerciseId");
 
   exercise_ids.forEach((id, index) => {
@@ -93,40 +96,37 @@ router.post("/", async (req, res) => {
     },
     1
   );
-
-  var childCollectionObject = [];
-
-  for (let ex of exercise_data.exercise) {
-    var data = _.find(exercises, exercise => {
-      return exercise.exerciseId === ex._id.toString();
+  var tmp = 0;
+  exercises = exercises.map(async ex => {
+    ex.exercise = _.find(exercise_data.exercise, exercise => {
+      return exercise._id.toString() === ex.exerciseId.toString();
     });
-    delete data.exerciseId;
-
-    if (data.weight) {
+    delete ex.exerciseId;
+    if (ex.weight) {
       var baseWeight = await common_helper.unit_converter(
-        data.weight,
-        data.weightUnits
+        ex.weight,
+        ex.weightUnits
       );
-      data.baseWeightUnits = baseWeight.baseUnit;
-      data.baseWeightValue = baseWeight.baseValue;
+      ex.baseWeightUnits = baseWeight.baseUnit;
+      ex.baseWeightValue = baseWeight.baseValue;
     }
 
-    if (data.distance) {
+    if (ex.distance) {
       var baseDistance = await common_helper.unit_converter(
-        data.distance,
-        data.distanceUnits
+        ex.distance,
+        ex.distanceUnits
       );
-      data.baseDistanceUnits = baseDistance.baseUnit;
-      data.baseDistanceValue = baseDistance.baseValue;
+      ex.baseDistanceUnits = baseDistance.baseUnit;
+      ex.baseDistanceValue = baseDistance.baseValue;
     }
-    data.date = req.body.date;
-    data.exercise = ex;
-    childCollectionObject.push(data);
-  }
+    ex.date = req.body.date;
+    return ex;
+  });
 
+  exercises = await Promise.all(exercises);
   var workout_data = await user_workout_helper.insert_user_workouts(
     masterCollectionObject,
-    childCollectionObject
+    exercises
   );
 
   if (workout_data.status == 1) {

@@ -176,6 +176,41 @@ exercise_helper.get_all_exercise_for_user = async () => {
 };
 
 /*
+ * populate_exercise_data is used to fetch all exercise data
+ * 
+ * @return  status 0 - If any internal error occured while fetching exercise data, with error
+ *          status 1 - If exercise data found, with exercise object
+ *          status 2 - If exercise not found, with appropriate message
+ */
+exercise_helper.populate_exercise_data = async exercises => {
+  try {
+    let exercise = await Exercise.populate(exercise, {
+      path: "exerciseId",
+      model: "exercise"
+    });
+    console.log("------------------------------------");
+    console.log("exercise : ", exercise);
+    console.log("------------------------------------");
+
+    if (exercise) {
+      return {
+        status: 1,
+        message: "Exercise found",
+        exercise: flag ? exercise : exercise[0]
+      };
+    } else {
+      return { status: 2, message: "No exercise available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding exercise",
+      error: err
+    };
+  }
+};
+
+/*
  * get_exercise_id is used to fetch all exercise data
  * 
  * @return  status 0 - If any internal error occured while fetching exercise data, with error
