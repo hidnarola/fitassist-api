@@ -199,26 +199,86 @@ router.put("/complete", async (req, res) => {
 router.put("/:workout_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+
+  var masterCollectionObject = {
+    title: req.body.title,
+    description: req.body.description,
+    type: req.body.type,
+    userId: authUserId,
+    date: req.body.date
+  };
+  var exercises = [];
+  if (req.body.type != "restday") {
+    exercises = req.body.exercises;
+    var exercise_ids = _.pluck(exercises, "exerciseId");
+
+    exercise_ids.forEach((id, index) => {
+      exercise_ids[index] = mongoose.Types.ObjectId(id);
+    });
+
+    var exercise_data = await exercise_helper.get_exercise_id(
+      {
+        _id: { $in: exercise_ids }
+      },
+      1
+    );
+    var tmp = 0;
+    exercises = exercises.map(async ex => {
+      ex.exercise = _.find(exercise_data.exercise, exercise => {
+        return exercise._id.toString() === ex.exerciseId.toString();
+      });
+      delete ex.exerciseId;
+      if (ex.weight) {
+        var baseWeight = await common_helper.unit_converter(
+          ex.weight,
+          ex.weightUnits
+        );
+        ex.baseWeightUnits = baseWeight.baseUnit;
+        ex.baseWeightValue = baseWeight.baseValue;
+      }
+
+      if (ex.distance) {
+        var baseDistance = await common_helper.unit_converter(
+          ex.distance,
+          ex.distanceUnits
+        );
+        ex.baseDistanceUnits = baseDistance.baseUnit;
+        ex.baseDistanceValue = baseDistance.baseValue;
+      }
+      ex.date = req.body.date;
+      return ex;
+    });
+    exercises = await Promise.all(exercises);
+  }
+
+  var workout_data = await user_workout_helper.update_user_workouts_by_id(
+    req.params.workout_id,
+    masterCollectionObject,
+    exercises
+  );
+
+  if (workout_data.status == 1) {
+    res.status(config.OK_STATUS).json(workout_data);
+  } else {
+    res.status(config.BAD_REQUEST).json(workout_data);
+  }
 });
 
 /**
  * @api {delete} /user/user_workouts/:workout_id Delete User workout
  * @apiName Delete User workout
  * @apiGroup  User Workouts
- *
  * @apiHeader {String}  authorization User's unique access-key
- *
  * @apiSuccess (Success 200) {String} Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:workout_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Delete friend API - Id = ", req.params.workout_id);
-  let workout_data = await user_workout_helper.reject_friend({
-    _id: req.params.workout_id,
-    $or: [{ userId: authUserId }, { friendId: authUserId }]
-  });
+  logger.trace("Delete workout API - Id = ", req.params.workout_id);
+  let workout_data = await user_workout_helper.delete_user_workouts_by_id(
+    req.params.workout_id
+  );
 
   if (workout_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);

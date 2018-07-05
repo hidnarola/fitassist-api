@@ -205,8 +205,9 @@ user_workouts_helper.insert_user_workouts = async (
 /*
  * update_user_workouts_by_id is used to update user workouts data based on user workouts id
  * 
- * @param   user_workouts_id         String  _id of user_workouts that need to be update
- * @param   user_workouts_obj     JSON    object consist of all property that need to update
+ * @param   id         String  _id of user_workouts that need to be update
+ * @param   masterCollectionObject Object  masterCollectionObject of user_workouts's master collection that need to be update
+ * @param   childCollectionObject Object childCollectionObject of user_workout's child collection consist of all property that need to update
  * 
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts updated successfully, with appropriate message
@@ -215,28 +216,58 @@ user_workouts_helper.insert_user_workouts = async (
  * @developed by "amc"
  */
 user_workouts_helper.update_user_workouts_by_id = async (
-  user_workouts_id,
-  user_workouts_obj
+  id,
+  masterCollectionObject,
+  childCollectionObject
 ) => {
   try {
-    let user_workouts_data = await UserWorkouts.findOneAndUpdate(
-      { _id: user_workouts_id },
-      user_workouts_obj,
+    var user_workouts_data = await UserWorkouts.findOneAndUpdate(
+      { _id: id },
+      masterCollectionObject,
       { new: true }
     );
-    if (!user_workouts_data) {
-      return { status: 2, message: "Record has not updated" };
+    if (user_workouts_data) {
+      var user_workouts_exercise = await UserWorkoutExercises.remove({
+        userWorkoutsId: id
+      });
+      if (user_workouts_exercise) {
+        if (childCollectionObject && childCollectionObject.length > 0) {
+          childCollectionObject.forEach(element => {
+            element.userWorkoutsId = user_workouts_data._id;
+          });
+          var user_workouts_exercise = await UserWorkoutExercises.insertMany(
+            childCollectionObject
+          );
+          if (user_workouts_exercise) {
+            return {
+              status: 1,
+              message: "User workout updated",
+              workout: user_workouts_exercise
+            };
+          }
+        }
+      }
+      if (user_workouts_data) {
+        return {
+          status: 1,
+          message: "User workout updated",
+          workout: user_workouts_data
+        };
+      }
     } else {
+      var delete_user_workouts = await UserWorkouts.findByIdAndRemove({
+        _id: mongoose.Types.ObjectId(user_workouts_data._id)
+      });
       return {
-        status: 1,
-        message: "Record has been updated",
-        workout: user_workouts_data
+        status: 2,
+        message: "Error occured while updating User workout",
+        error: err
       };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while updating user_workouts",
+      message: "Error occured while inserting User workout",
       error: err
     };
   }
@@ -292,16 +323,21 @@ user_workouts_helper.complete_workout = async condition => {
  */
 user_workouts_helper.delete_user_workouts_by_id = async user_workouts_id => {
   try {
-    let user_workouts_data = await UserWorkouts.remove(user_workouts_id);
-    if (!user_workouts_data) {
-      return { status: 2, message: "User workout not found" };
+    let user_workouts_data1 = await UserWorkouts.remove({
+      _id: user_workouts_id
+    });
+    let user_workouts_data2 = await UserWorkoutExercises.remove({
+      userWorkoutsId: user_workouts_id
+    });
+    if (!user_workouts_data1 && !user_workouts_data2) {
+      return { status: 2, message: "User workouts not found" };
     } else {
-      return { status: 1, message: "User workout deleted" };
+      return { status: 1, message: "User workouts deleted" };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while deleting User workout",
+      message: "Error occured while deleting User workouts",
       error: err
     };
   }
