@@ -56,6 +56,43 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/user_calendar/by_month Get User Calendar
+ * @apiName Get User Calendar
+ * @apiGroup User Calendar
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {JSON} user_calendar
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/by_month", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var date = req.body.date;
+  var check = await moment(date).utc(0);
+  var startdate = await moment(check).subtract(2, "month");
+  var enddate = await moment(check).add(2, "month");
+
+  logger.trace("Get all calendar by month API called : ");
+
+  var resp_data = await user_calendar_helper.get_calendar({
+    date: {
+      $gte: new Date(startdate),
+      $lte: new Date(enddate)
+    },
+    userId: authUserId
+  });
+
+  if (resp_data.status == 0) {
+    logger.error(
+      "Error occured while fetching all user's calendar by month = ",
+      resp_data
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
  * @api {put} /user/user_calendar/ Complete Workout
  * @apiName Complete Workout
  * @apiGroup User Calendar

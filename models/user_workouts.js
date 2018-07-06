@@ -9,7 +9,7 @@ var UserWorkoutSchema = new Schema(
   {
     title: { type: String },
     description: { type: String },
-    isCompleted: { type: Number },
+    isCompleted: { type: Number, default: 0 },
     type: { type: String, enum: ["exercise", "restday"], default: "exercise" },
     userId: { type: String, ref: "users", field: "authUserId" },
     date: { type: Date },

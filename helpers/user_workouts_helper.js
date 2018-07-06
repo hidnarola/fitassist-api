@@ -9,7 +9,7 @@ var user_workouts_helper = {};
  *          status 1 - If user exercises data found, with user exercises object
  *          status 2 - If user exercises not found, with appropriate message
  */
-user_workouts_helper.get_all_workouts = async condition => {
+user_workouts_helper.get_all_workouts = async (condition, single = false) => {
   try {
     var user_workouts = await UserWorkouts.aggregate([
       {
@@ -28,7 +28,7 @@ user_workouts_helper.get_all_workouts = async condition => {
       return {
         status: 1,
         message: "user workouts found",
-        workouts: user_workouts
+        workouts: !single ? user_workouts : user_workouts[0]
       };
     } else {
       return { status: 2, message: "No user workouts available" };
@@ -91,9 +91,6 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
         }
       }
     ]);
-    console.log("------------------------------------");
-    console.log("user_workouts : ", user_workouts);
-    console.log("------------------------------------");
 
     if (user_workouts) {
       return {
@@ -272,7 +269,47 @@ user_workouts_helper.update_user_workouts_by_id = async (
     };
   }
 };
-
+/*
+ * complete_all_workout is used to complete user workouts data based on user workouts date
+ * 
+ * @param   condition         Object  condition of user_workouts that need to be complete
+ * @return  status  0 - If any error occur in updating user_workouts, with error
+ *          status  1 - If user_workouts completed successfully, with appropriate message
+ *          status  2 - If user_workouts not completed, with appropriate message 
+ * @developed by "amc"
+ */
+user_workouts_helper.complete_all_workout = async (id, updateObject) => {
+  try {
+    let user_workouts_data1 = await UserWorkouts.findByIdAndUpdate(
+      {
+        _id: id
+      },
+      updateObject,
+      {
+        new: true
+      }
+    );
+    let user_workouts_data2 = await UserWorkoutExercises.updateMany(
+      {
+        userWorkoutsId: id
+      },
+      updateObject,
+      {
+        new: true
+      }
+    );
+    return {
+      status: 1,
+      message: "Workout updated"
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user workouts",
+      error: err
+    };
+  }
+};
 /*
  * complete_workout is used to complete user workouts data based on user workouts date
  * 
@@ -282,24 +319,23 @@ user_workouts_helper.update_user_workouts_by_id = async (
  *          status  2 - If user_workouts not completed, with appropriate message 
  * @developed by "amc"
  */
-user_workouts_helper.complete_workout = async condition => {
+user_workouts_helper.complete_workout = async (condition, updateObject) => {
   try {
-    let user_workouts_data = await UserWorkoutExercises.updateMany(
+    let user_workouts_data = await UserWorkoutExercises.update(
       condition,
-      {
-        isCompleted: 1
-      },
+      updateObject,
       {
         new: true
       }
     );
+
     if (!user_workouts_data) {
-      return { status: 2, message: "Workout not completed" };
+      return { status: 2, message: "Workout not updated" };
     } else {
       return {
         status: 1,
-        message: "Workout completed",
-        workout: user_workouts_data
+        message: "Workout updated",
+        data: user_workouts_data
       };
     }
   } catch (err) {

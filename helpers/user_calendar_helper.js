@@ -32,15 +32,13 @@ user_calendar_helper.get_calendar = async condition => {
         }
       }
     ]);
+
     if (meal_data.status == 1) {
       calendar.meals = meal_data.todays_meal;
     }
     if (workout_data) {
       calendar.workouts = workout_data;
     }
-    console.log("------------------------------------");
-    console.log("calendar : ", calendar);
-    console.log("------------------------------------");
 
     if (calendar) {
       return {
