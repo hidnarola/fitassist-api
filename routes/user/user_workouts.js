@@ -170,6 +170,7 @@ router.put("/complete", async (req, res) => {
       },
       true
     );
+    workout.message = "Workout completed";
 
     res.status(config.OK_STATUS).json(workout);
 
@@ -222,11 +223,14 @@ router.put("/complete_all", async (req, res) => {
     });
     delete workout_detail.workouts._id;
 
-    let workout = await user_workout_helper.get_all_workouts({
-      userId: authUserId,
-      _id: parentId
-    });
-
+    let workout = await user_workout_helper.get_all_workouts(
+      {
+        userId: authUserId,
+        _id: parentId
+      },
+      true
+    );
+    workout.message = "Workout completed";
     res.status(config.OK_STATUS).json(workout);
 
     //badge assign start;
