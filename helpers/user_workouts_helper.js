@@ -1,6 +1,7 @@
 var UserWorkouts = require("./../models/user_workouts");
 var UserWorkoutExercises = require("./../models/user_workout_exercises");
 var user_workouts_helper = {};
+var _ = require("underscore");
 
 /*
  * get_all_workouts is used to fetch all user exercises data
@@ -24,11 +25,67 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
         }
       }
     ]);
+    _.each(user_workouts, user_workout => {
+      var tmp = [];
+      tmp = _.sortBy(user_workout.exercises, function(o) {
+        return o.sequence;
+      });
+      user_workout.exercises = tmp;
+    });
+
     if (user_workouts) {
       return {
         status: 1,
         message: "user workouts found",
         workouts: !single ? user_workouts : user_workouts[0]
+      };
+    } else {
+      return { status: 2, message: "No user workouts available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user workouts",
+      error: err
+    };
+  }
+};
+/*
+ * count_all_completed_workouts is used to count all user completed exercises data
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user exercises data, with error
+ *          status 1 - If user exercises data found, with user exercises object
+ *          status 2 - If user exercises not found, with appropriate message
+ */
+user_workouts_helper.count_all_completed_workouts = async condition => {
+  try {
+    var user_workouts = await UserWorkouts.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_workout_exercises",
+          foreignField: "userWorkoutsId",
+          localField: "_id",
+          as: "exercises"
+        }
+      },
+      {
+        $unwind: "$exercises"
+      },
+      {
+        $match: {
+          "exercises.isCompleted": 0
+        }
+      }
+    ]);
+
+    if (user_workouts) {
+      return {
+        status: 1,
+        message: "user workouts found",
+        count: user_workouts.length
       };
     } else {
       return { status: 2, message: "No user workouts available" };
@@ -265,6 +322,39 @@ user_workouts_helper.update_user_workouts_by_id = async (
     return {
       status: 0,
       message: "Error occured while inserting User workout",
+      error: err
+    };
+  }
+};
+/*
+ * complete_master_event is used to complete user workouts data based on user workouts date
+ * 
+ * @param   condition         Object  condition of user_workouts that need to be complete
+ * @return  status  0 - If any error occur in updating user_workouts, with error
+ *          status  1 - If user_workouts completed successfully, with appropriate message
+ *          status  2 - If user_workouts not completed, with appropriate message 
+ * @developed by "amc"
+ */
+user_workouts_helper.complete_master_event = async (id, updateObject) => {
+  try {
+    let user_workouts_data1 = await UserWorkouts.findByIdAndUpdate(
+      {
+        _id: id
+      },
+      updateObject,
+      {
+        new: true
+      }
+    );
+
+    return {
+      status: 1,
+      message: "Workout updated"
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user workouts",
       error: err
     };
   }

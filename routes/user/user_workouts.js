@@ -150,7 +150,7 @@ router.put("/complete", async (req, res) => {
   var authUserId = decoded.sub;
   // var date = req.body.date;
   var childId = req.body.childId;
-  var parentId = req.body.parentId;
+  var parentId = mongoose.Types.ObjectId(req.body.parentId);
   var isCompleted = {
     isCompleted: req.body.isCompleted
   };
@@ -164,6 +164,25 @@ router.put("/complete", async (req, res) => {
   );
 
   if (workout_data.status === 1) {
+    let count = await user_workout_helper.count_all_completed_workouts({
+      userId: authUserId,
+      _id: mongoose.Types.ObjectId(parentId)
+    });
+
+    if (count.status == 1) {
+      if (count.count === 0) {
+        let updateMasterCollectionCompleted = await user_workout_helper.complete_master_event(
+          parentId,
+          { isCompleted: 1 }
+        );
+      } else {
+        let updateMasterCollectionCompleted = await user_workout_helper.complete_master_event(
+          parentId,
+          { isCompleted: 0 }
+        );
+      }
+    }
+
     let workout = await user_workout_helper.get_all_workouts(
       {
         _id: mongoose.Types.ObjectId(parentId)
@@ -221,6 +240,7 @@ router.put("/complete_all", async (req, res) => {
     let workout_detail = await user_workout_helper.workout_detail_for_badges({
       userId: authUserId
     });
+
     delete workout_detail.workouts._id;
 
     let workout = await user_workout_helper.get_all_workouts(
@@ -230,6 +250,7 @@ router.put("/complete_all", async (req, res) => {
       },
       true
     );
+
     workout.message = "Workout completed";
     res.status(config.OK_STATUS).json(workout);
 
