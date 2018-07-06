@@ -278,7 +278,6 @@ router.put("/complete_all", async (req, res) => {
 router.put("/:workout_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
   var masterCollectionObject = {
     title: req.body.title,
     description: req.body.description,
@@ -287,6 +286,7 @@ router.put("/:workout_id", async (req, res) => {
     date: req.body.date
   };
   var exercises = [];
+
   if (req.body.type != "restday") {
     exercises = req.body.exercises;
     var exercise_ids = _.pluck(exercises, "exerciseId");
@@ -301,6 +301,7 @@ router.put("/:workout_id", async (req, res) => {
       },
       1
     );
+
     var tmp = 0;
     exercises = exercises.map(async ex => {
       ex.exercise = _.find(exercise_data.exercise, exercise => {
