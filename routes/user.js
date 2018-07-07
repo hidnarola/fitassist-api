@@ -30,7 +30,9 @@ var notification = require("./user/notifications");
 var users_nutritions = require("./user/users_nutritions");
 var user_workouts = require("./user/user_workouts");
 var user_calendar = require("./user/user_calendar");
+var user_program = require("./user/user_program");
 
+// router.use("/workout", auth, user_workout);
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
 router.use("/profile", auth, profile);
@@ -48,7 +50,6 @@ router.use("/recipe", auth, recipe);
 router.use("/nutrition", auth, nutrition);
 router.use("/test_exercise", auth, test_exercises);
 router.use("/shopping_cart", auth, shopping_cart);
-// router.use("/workout", auth, user_workout);
 router.use("/timeline", auth, timeline);
 router.use("/search", auth, search);
 router.use("/chat", auth, chat);
@@ -60,5 +61,6 @@ router.use("/notification", auth, notification);
 router.use("/users_nutritions", auth, users_nutritions);
 router.use("/user_workouts", auth, user_workouts);
 router.use("/user_calendar", auth, user_calendar);
+router.use("/user_program", auth, user_program);
 
 module.exports = router;

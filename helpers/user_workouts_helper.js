@@ -25,6 +25,7 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
         }
       }
     ]);
+
     _.each(user_workouts, user_workout => {
       var tmp = [];
       tmp = _.sortBy(user_workout.exercises, function(o) {

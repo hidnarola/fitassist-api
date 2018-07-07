@@ -47,7 +47,7 @@ router.get("/:type/:start?/:limit?", async (req, res) => {
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.trace("user personal goals got successfully = ", resp_data);
+    logger.trace("user personal goals got   = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
