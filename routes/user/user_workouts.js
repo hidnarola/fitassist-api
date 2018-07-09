@@ -142,7 +142,7 @@ router.post("/", async (req, res) => {
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String}  programId Program ID of program
  * @apiParam {Date}  date Date of program
- * @apiSuccess (Success 200) {JSON} program JSON of user_programs document
+ * @apiSuccess (Success 200) {JSON} workout JSON of user_programs document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/assign_program", async (req, res) => {
