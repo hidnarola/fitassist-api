@@ -13,6 +13,9 @@ user_program_helper.get_user_programs_in_details = async condition => {
   try {
     var user_program = await UserPrograms.aggregate([
       {
+        $match: condition
+      },
+      {
         $lookup: {
           from: "user_workouts_program",
           foreignField: "programId",
@@ -47,6 +50,7 @@ user_program_helper.get_user_programs_in_details = async condition => {
     };
   }
 };
+
 /*
  * get_user_programs is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
@@ -54,7 +58,10 @@ user_program_helper.get_user_programs_in_details = async condition => {
  *          status 1 - If user program data found, with user program object
  *          status 2 - If user program not found, with appropriate message
  */
-user_program_helper.get_user_programs = async (condition, single = false) => {
+user_program_helper.get_user_programs = async (
+  condition = {},
+  single = false
+) => {
   try {
     var user_program = await UserPrograms.aggregate([
       {
@@ -128,6 +135,34 @@ user_program_helper.get_user_program_by_id = async id => {
  * @developed by "amc"
  */
 user_program_helper.add_program = async programObj => {
+  let user_program = new UserPrograms(programObj);
+  try {
+    var user_program_data = await user_program.save();
+    return {
+      status: 1,
+      message: "User program inserted",
+      program: user_program_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting User program",
+      error: err
+    };
+  }
+};
+
+/*
+ * assign_program is used to assign program 
+ * 
+ * @param   user_program_obj     JSON object consist of all property that need to insert in collection
+ * 
+ * @return  status  0 - If any error occur in assigning User program, with error
+ *          status  1 - If User program assigned, with inserted User program document and appropriate message
+ * 
+ * @developed by "amc"
+ */
+user_program_helper.assign_program = async programObj => {
   let user_program = new UserPrograms(programObj);
   try {
     var user_program_data = await user_program.save();

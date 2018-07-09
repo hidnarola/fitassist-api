@@ -17,6 +17,7 @@ var user_workout_helper = require("../../helpers/user_workouts_helper");
 var exercise_helper = require("../../helpers/exercise_helper");
 var common_helper = require("../../helpers/common_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
+var user_program_helper = require("../../helpers/user_program_helper");
 var socket = require("../../socket/socketServer");
 
 /**
@@ -131,6 +132,76 @@ router.post("/", async (req, res) => {
     res.status(config.OK_STATUS).json(workout_data);
   } else {
     res.status(config.BAD_REQUEST).json(workout_data);
+  }
+});
+
+/**
+ * @api {post} /user/user_workouts/assign_program Assign user's program
+ * @apiName Assign user's program
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String}  programId Program ID of program
+ * @apiParam {Date}  date Date of program
+ * @apiSuccess (Success 200) {JSON} program JSON of user_programs document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/assign_program", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var date = req.body.date;
+  var masterCollectionObject;
+  var childCollectionObject;
+  var exForProgram;
+
+  var program_id = mongoose.Types.ObjectId(req.body.programId);
+  var program_data = await user_program_helper.get_user_programs_in_details({
+    _id: program_id
+  });
+
+  var user_workouts_program = program_data.programs[0].user_workouts_program;
+  var user_workout_exercises_program =
+    program_data.programs[0].user_workout_exercises_program;
+  for (let program of user_workouts_program) {
+    exForProgram = _.filter(
+      user_workout_exercises_program,
+      program_exercise => {
+        return (
+          program_exercise.userWorkoutsProgramId.toString() ===
+          program._id.toString()
+        );
+      }
+    );
+    masterCollectionObject = {
+      title: program.title,
+      userId: authUserId,
+      isCompleted: 0,
+      description: program.description,
+      type: program.type,
+      date: moment(date)
+        .utcOffset(0)
+        .add(program.day, "days")
+    };
+
+    childCollectionObject = exForProgram.map(single => {
+      var newSingle = Object.assign({}, single);
+      delete newSingle._id;
+      delete newSingle.userWorkoutsProgramId;
+      return newSingle;
+    });
+
+    var resp_data = await user_workout_helper.insert_user_workouts(
+      masterCollectionObject,
+      childCollectionObject
+    );
+  }
+
+  logger.trace("Assign user programs  API called");
+  if (resp_data.status == 0) {
+    logger.error("Error occured while assigning user programs = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("user programs assigning successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

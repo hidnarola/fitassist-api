@@ -29,7 +29,7 @@ var UserWorkoutExercises = new Schema(
     isCompleted: { type: Number, default: 0 },
     date: { type: Date },
     completedDate: { type: Date },
-    sequence: { type: Number }
+    sequence: { type: Number, default: 0 }
   },
   { versionKey: false }
 );
