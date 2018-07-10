@@ -87,7 +87,7 @@ router.get("/:program_id", async (req, res) => {
       status: resp_data.status,
       message: resp_data.message,
       program: {
-        programdetail: {
+        progamDetails: {
           _id: resp_data.program[0]._id,
           name: resp_data.program[0].name,
           description: resp_data.program[0].description,
@@ -98,18 +98,18 @@ router.get("/:program_id", async (req, res) => {
       }
     };
     var data = resp_data.program[0];
-    var programdetail = data.programdetail;
+    var progamDetails = data.progamDetails;
     var workouts = data.workouts;
 
-    programdetail = programdetail.map(async ex => {
+    progamDetails = progamDetails.map(async ex => {
       ex.exercises = _.filter(workouts, w => {
         return w.userWorkoutsProgramId.toString() === ex._id.toString();
       });
       return ex;
     });
-    programdetail = await Promise.all(programdetail);
-    // resp_data.program = programdetail;
-    returnObject.program.workouts = programdetail;
+    progamDetails = await Promise.all(progamDetails);
+    // resp_data.program = progamDetails;
+    returnObject.program.workouts = progamDetails;
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(returnObject);
   } else {
