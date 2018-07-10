@@ -154,9 +154,11 @@ router.post("/assign_program", async (req, res) => {
   var exForProgram;
 
   var program_id = mongoose.Types.ObjectId(req.body.programId);
-  var program_data = await user_program_helper.get_user_programs_in_details({
-    _id: program_id
-  });
+  var program_data = await user_program_helper.get_user_programs_in_details_for_assign(
+    {
+      _id: program_id
+    }
+  );
 
   var user_workouts_program = program_data.programs[0].user_workouts_program;
   var user_workout_exercises_program =
