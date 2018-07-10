@@ -4,10 +4,13 @@ var router = express.Router();
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
 var mongoose = require("mongoose");
+var _ = require("underscore");
 var moment = require("moment");
 var logger = config.logger;
 
 var user_program_helper = require("../../helpers/user_program_helper");
+var exercise_helper = require("../../helpers/exercise_helper");
+var common_helper = require("../../helpers/common_helper");
 
 /**
  * @api {get} /user/user_program/ Get user's program
@@ -69,7 +72,7 @@ router.get("/:program_id", async (req, res) => {
   var program_id = mongoose.Types.ObjectId(req.params.program_id);
 
   logger.trace("Get all user programs API called ID:" + program_id);
-  var resp_data = await user_program_helper.get_user_programs(
+  var resp_data = await user_program_helper.get_user_programs_in_details(
     {
       _id: program_id
     },
@@ -113,6 +116,168 @@ router.post("/", async (req, res) => {
   } else {
     logger.trace("user programs added successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
+ * @api {post} /user/user_program/exercises Add user's program's exercises
+ * @apiName Add user's program's exercises
+ * @apiGroup  User Program
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String}  programId Id of program
+ * @apiParam {String} title title of workout
+ * @apiParam {String} description description of workout
+ * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
+ * @apiParam {Date} date date of workout
+ * @apiParam {Array} exercises list of exercises of workout
+ * @apiSuccess (Success 200) {JSON} program JSON of user_programs document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/exercises", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var masterProgramCollectionObject = {
+    programId: "5b42eba532859ecdf1c6629c",
+    title: req.body.title,
+    description: req.body.description,
+    type: req.body.type,
+    day: req.body.day
+  };
+  var exercises = [];
+  if (req.body.type != "restday") {
+    exercises = req.body.exercises;
+    var exercise_ids = _.pluck(exercises, "exerciseId");
+
+    exercise_ids.forEach((id, index) => {
+      exercise_ids[index] = mongoose.Types.ObjectId(id);
+    });
+
+    var exercise_data = await exercise_helper.get_exercise_id(
+      {
+        _id: { $in: exercise_ids }
+      },
+      1
+    );
+    var tmp = 0;
+    exercises = exercises.map(async ex => {
+      ex.exercise = _.find(exercise_data.exercise, exercise => {
+        return exercise._id.toString() === ex.exerciseId.toString();
+      });
+      delete ex.exerciseId;
+      if (ex.weight) {
+        var baseWeight = await common_helper.unit_converter(
+          ex.weight,
+          ex.weightUnits
+        );
+        ex.baseWeightUnits = baseWeight.baseUnit;
+        ex.baseWeightValue = baseWeight.baseValue;
+      }
+
+      if (ex.distance) {
+        var baseDistance = await common_helper.unit_converter(
+          ex.distance,
+          ex.distanceUnits
+        );
+        ex.baseDistanceUnits = baseDistance.baseUnit;
+        ex.baseDistanceValue = baseDistance.baseValue;
+      }
+      ex.date = req.body.date;
+      return ex;
+    });
+    exercises = await Promise.all(exercises);
+  }
+
+  var workout_data = await user_program_helper.insert_program_workouts(
+    masterProgramCollectionObject,
+    exercises
+  );
+
+  if (workout_data.status == 1) {
+    res.status(config.OK_STATUS).json(workout_data);
+  } else {
+    res.status(config.BAD_REQUEST).json(workout_data);
+  }
+});
+/**
+ * @api {put} /user/user_program/exercises/:program_day_id Update user's program's exercises
+ * @apiName Update user's program's exercises
+ * @apiGroup  User Program
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String}  programId Id of program
+ * @apiParam {String} title title of workout
+ * @apiParam {String} description description of workout
+ * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
+ * @apiParam {Date} date date of workout
+ * @apiParam {Array} exercises list of exercises of workout
+ * @apiSuccess (Success 200) {JSON} program JSON of user_programs document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/exercises/:program_day_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var program_day_id = mongoose.Types.ObjectId(req.params.program_day_id);
+
+  var masterProgramCollectionObject = {
+    programId: req.body.programId,
+    title: req.body.title,
+    description: req.body.description,
+    type: req.body.type,
+    day: req.body.day
+  };
+  var exercises = [];
+  if (req.body.type != "restday") {
+    exercises = req.body.exercises;
+    var exercise_ids = _.pluck(exercises, "exerciseId");
+
+    exercise_ids.forEach((id, index) => {
+      exercise_ids[index] = mongoose.Types.ObjectId(id);
+    });
+
+    var exercise_data = await exercise_helper.get_exercise_id(
+      {
+        _id: { $in: exercise_ids }
+      },
+      1
+    );
+    var tmp = 0;
+    exercises = exercises.map(async ex => {
+      ex.exercise = _.find(exercise_data.exercise, exercise => {
+        return exercise._id.toString() === ex.exerciseId.toString();
+      });
+      delete ex.exerciseId;
+      if (ex.weight) {
+        var baseWeight = await common_helper.unit_converter(
+          ex.weight,
+          ex.weightUnits
+        );
+        ex.baseWeightUnits = baseWeight.baseUnit;
+        ex.baseWeightValue = baseWeight.baseValue;
+      }
+
+      if (ex.distance) {
+        var baseDistance = await common_helper.unit_converter(
+          ex.distance,
+          ex.distanceUnits
+        );
+        ex.baseDistanceUnits = baseDistance.baseUnit;
+        ex.baseDistanceValue = baseDistance.baseValue;
+      }
+      return ex;
+    });
+    exercises = await Promise.all(exercises);
+  }
+
+  var program_workout_data = await user_program_helper.update_program_workouts(
+    program_day_id,
+    masterProgramCollectionObject,
+    exercises
+  );
+
+  if (program_workout_data.status == 1) {
+    res.status(config.OK_STATUS).json(program_workout_data);
+  } else {
+    res.status(config.BAD_REQUEST).json(program_workout_data);
   }
 });
 

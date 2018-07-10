@@ -27,8 +27,6 @@ var UserWorkoutExercisesProgramSchema = new Schema(
     baseWeightValue: { type: Number },
     baseDistanceValue: { type: Number },
     isCompleted: { type: Number, default: 0 },
-    date: { type: Date },
-    completedDate: { type: Date },
     sequence: { type: Number }
   },
   { versionKey: false }
