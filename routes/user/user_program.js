@@ -86,7 +86,7 @@ router.get("/:program_id", async (req, res) => {
     var returnObject = {
       status: resp_data.status,
       message: resp_data.message,
-      progam: {
+      program: {
         programdetail: {
           _id: resp_data.program[0]._id,
           name: resp_data.program[0].name,
@@ -109,7 +109,7 @@ router.get("/:program_id", async (req, res) => {
     });
     programdetail = await Promise.all(programdetail);
     // resp_data.program = programdetail;
-    returnObject.progam.workouts = programdetail;
+    returnObject.program.workouts = programdetail;
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(returnObject);
   } else {
