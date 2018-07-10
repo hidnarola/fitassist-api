@@ -394,15 +394,30 @@ user_program_helper.update_user_program_by_id = async (id, programObj) => {
  */
 user_program_helper.delete_user_program = async user_program_id => {
   try {
-    let user_program_data = await UserPrograms.remove({
-      _id: user_program_id
+    let programId = await userWorkoutsProgram.aggregate([
+      {
+        $match: { programId: user_program_id }
+      },
+      {
+        $project: {
+          _id: 1
+        }
+      }
+    ]);
+    var Ids = _.pluck(programId, "_id");
+
+    let programExercise = await userWorkoutExercisesProgram.remove({
+      userWorkoutsProgramId: { $in: Ids }
     });
 
-    if (!user_program_data) {
-      return { status: 2, message: "User program not found" };
-    } else {
-      return { status: 1, message: "User program deleted" };
-    }
+    let programDays = await userWorkoutsProgram.remove({
+      _id: { $in: Ids }
+    });
+
+    let program = await UserPrograms.remove({
+      _id: user_program_id
+    });
+    return { status: 1, message: "User program deleted" };
   } catch (err) {
     return {
       status: 0,

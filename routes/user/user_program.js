@@ -328,9 +328,7 @@ router.delete("/:program_id", async (req, res) => {
   var program_id = mongoose.Types.ObjectId(req.params.program_id);
 
   logger.trace("Delete user program  API called ID:" + program_id);
-  var resp_data = await user_program_helper.delete_user_program({
-    _id: program_id
-  });
+  var resp_data = await user_program_helper.delete_user_program(program_id);
 
   if (resp_data.status == 0) {
     logger.error("Error occured while deleting user program = ", resp_data);
