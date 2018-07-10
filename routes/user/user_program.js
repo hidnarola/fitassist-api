@@ -229,6 +229,7 @@ router.post("/exercises", async (req, res) => {
     res.status(config.BAD_REQUEST).json(workout_data);
   }
 });
+
 /**
  * @api {put} /user/user_program/exercises/:program_day_id Update user's program's exercises
  * @apiName Update user's program's exercises

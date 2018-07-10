@@ -113,13 +113,28 @@ user_program_helper.get_user_programs = async (
         }
       },
       {
+        $lookup: {
+          from: "user_workout_exercises_program",
+          localField: "programId._id",
+          foreignField: "userWorkoutsProgramId",
+          as: "userWorkoutsProgramId"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userWorkoutsProgramId",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $group: {
           _id: "$_id",
           name: { $first: "$name" },
           description: { $first: "$description" },
           userId: { $first: "$userId" },
           type: { $first: "$type" },
-          totalDays: { $addToSet: "$programId" }
+          totalDays: { $addToSet: "$programId" },
+          totalWorkouts: { $addToSet: "$userWorkoutsProgramId" }
         }
       },
       {
@@ -129,6 +144,7 @@ user_program_helper.get_user_programs = async (
           description: 1,
           userId: 1,
           type: 1,
+          totalWorkouts: { $size: "$totalWorkouts" },
           totalDays: { $size: "$totalDays" }
         }
       }
@@ -162,7 +178,6 @@ user_program_helper.get_user_programs = async (
 
 /*
  * get_user_program_by_id is used to fetch User program by ID
- * 
  * @params id id of user_programs
  * @return  status 0 - If any internal error occured while fetching user program data, with error
  *          status 1 - If User program data found, with user program object
@@ -191,12 +206,9 @@ user_program_helper.get_user_program_by_id = async id => {
 
 /*
  * add_program is used to insert into user_program collection
- * 
  * @param   user_program_obj     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting User program, with error
  *          status  1 - If User program inserted, with inserted User program document and appropriate message
- * 
  * @developed by "amc"
  */
 user_program_helper.add_program = async programObj => {
@@ -219,13 +231,10 @@ user_program_helper.add_program = async programObj => {
 
 /*
  * insert_program_workouts is used to insert into user_programs collection
- * 
  * @param   masterCollectionObject     JSON object consist of all property that need to insert in to master collection
  * @param   childCollectionObject     JSON object consist of all property that need to insert in to child collection
- * 
  * @return  status  0 - If any error occur in inserting User Program, with error
  *          status  1 - If User Program inserted, with inserted User Program document and appropriate message
- * 
  * @developed by "amc"
  */
 user_program_helper.insert_program_workouts = async (
@@ -280,15 +289,12 @@ user_program_helper.insert_program_workouts = async (
 
 /*
  * update_program_workouts is used to update user program workouts data based on user program workouts id
- * 
  * @param   id         String  _id of user program workouts that need to be update
  * @param   masterCollectionObject Object  masterCollectionObject of user program workouts's master collection that need to be update
  * @param   childCollectionObject Object childCollectionObject of user program workout's child collection consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating user program workouts, with error
  *          status  1 - If user program workouts updated successfully, with appropriate message
  *          status  2 - If use program workouts not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 user_program_helper.update_program_workouts = async (
@@ -352,12 +358,9 @@ user_program_helper.update_program_workouts = async (
 
 /*
  * assign_program is used to assign program 
- * 
  * @param   user_program_obj     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in assigning User program, with error
  *          status  1 - If User program assigned, with inserted User program document and appropriate message
- * 
  * @developed by "amc"
  */
 user_program_helper.assign_program = async programObj => {
@@ -380,14 +383,11 @@ user_program_helper.assign_program = async programObj => {
 
 /*
  * update_user_program_by_id is used to update user program data based on user program id
- * 
  * @param   id         String  _id of user_program that need to be update
  * @param   programObj Object programObj of user_programs's programObj consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating user_program, with error
  *          status  1 - If user_program updated successfully, with appropriate message
  *          status  2 - If user_program not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 user_program_helper.update_user_program_by_id = async (id, programObj) => {
@@ -413,12 +413,9 @@ user_program_helper.update_user_program_by_id = async (id, programObj) => {
 
 /*
  * delete_user_program is used to delete user_program from database
- * 
  * @param   user_program_id String  _id of user_program that need to be delete
- * 
  * @return  status  0 - If any error occur in deletion of user_program, with error
  *          status  1 - If user_program deleted successfully, with appropriate message
- * 
  * @developed by "amc"
  */
 user_program_helper.delete_user_program = async user_program_id => {
