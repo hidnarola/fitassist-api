@@ -100,7 +100,7 @@ router.get("/:program_id", async (req, res) => {
     var data = resp_data.program[0];
     var progamDetails = data.progamDetails;
     var workouts = data.workouts;
-
+    
     progamDetails = progamDetails.map(async ex => {
       ex.exercises = _.filter(workouts, w => {
         return w.userWorkoutsProgramId.toString() === ex._id.toString();

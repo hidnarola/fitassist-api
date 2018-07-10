@@ -47,7 +47,7 @@ user_program_helper.get_user_programs_in_details = async condition => {
           description: { $first: "$description" },
           userId: { $first: "$userId" },
           type: { $first: "$type" },
-          programdetail: {
+          progamDetails: {
             $addToSet: {
               _id: "$user_workouts_program._id",
               programId: "$user_workouts_program.programId",
