@@ -78,13 +78,43 @@ router.get("/:program_id", async (req, res) => {
     },
     true
   );
+  console.log("------------------------------------");
+  console.log("resp_data : ", resp_data);
+  console.log("------------------------------------");
 
-  if (resp_data.status == 0) {
+  if (resp_data.status == 1) {
+    var returnObject = {
+      status: resp_data.status,
+      message: resp_data.message,
+      progam: {
+        programdetail: {
+          _id: resp_data.program[0]._id,
+          name: resp_data.program[0].name,
+          description: resp_data.program[0].description,
+          userId: resp_data.program[0].userId,
+          type: resp_data.program[0].type
+        },
+        workouts: []
+      }
+    };
+    var data = resp_data.program[0];
+    var programdetail = data.programdetail;
+    var workouts = data.workouts;
+
+    programdetail = programdetail.map(async ex => {
+      ex.exercises = _.filter(workouts, w => {
+        return w.userWorkoutsProgramId.toString() === ex._id.toString();
+      });
+      return ex;
+    });
+    programdetail = await Promise.all(programdetail);
+    // resp_data.program = programdetail;
+    returnObject.progam.workouts = programdetail;
+    logger.trace("user program got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(returnObject);
+  } else {
     logger.error("Error occured while fetching user program = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user program got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

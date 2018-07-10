@@ -26,11 +26,40 @@ user_program_helper.get_user_programs_in_details = async condition => {
         }
       },
       {
+        $unwind: "$user_workouts_program"
+      },
+
+      {
         $lookup: {
           from: "user_workout_exercises_program",
           foreignField: "userWorkoutsProgramId",
           localField: "user_workouts_program._id",
           as: "user_workout_exercises_program"
+        }
+      },
+      {
+        $unwind: "$user_workout_exercises_program"
+      },
+      {
+        $group: {
+          _id: "$_id",
+          name: { $first: "$name" },
+          description: { $first: "$description" },
+          userId: { $first: "$userId" },
+          type: { $first: "$type" },
+          programdetail: {
+            $addToSet: {
+              _id: "$user_workouts_program._id",
+              programId: "$user_workouts_program.programId",
+              title: "$user_workouts_program.title",
+              description: "$user_workouts_program.description",
+              type: "$user_workouts_program.type",
+              day: "$user_workouts_program.day"
+            }
+          },
+          workouts: {
+            $addToSet: "$user_workout_exercises_program"
+          }
         }
       }
     ]);
@@ -404,20 +433,25 @@ user_program_helper.delete_user_program = async user_program_id => {
         }
       }
     ]);
-    var Ids = _.pluck(programId, "_id");
+    var ids = _.pluck(programId, "_id");
 
     let programExercise = await userWorkoutExercisesProgram.remove({
-      userWorkoutsProgramId: { $in: Ids }
+      userWorkoutsProgramId: { $in: ids }
     });
 
     let programDays = await userWorkoutsProgram.remove({
-      _id: { $in: Ids }
+      _id: { $in: ids }
     });
 
     let program = await UserPrograms.remove({
       _id: user_program_id
     });
-    return { status: 1, message: "User program deleted" };
+
+    if (program && program.n > 0) {
+      return { status: 1, message: "User program deleted" };
+    } else {
+      return { status: 0, message: "User program not deleted" };
+    }
   } catch (err) {
     return {
       status: 0,
