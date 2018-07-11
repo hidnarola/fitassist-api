@@ -31,6 +31,7 @@ var users_nutritions = require("./user/users_nutritions");
 var user_workouts = require("./user/user_workouts");
 var user_calendar = require("./user/user_calendar");
 var user_program = require("./user/user_program");
+var user_leaderboard = require("./user/user_leaderboard");
 
 // router.use("/workout", auth, user_workout);
 router.use("/measurement", auth, body_measurement);
@@ -62,5 +63,6 @@ router.use("/users_nutritions", auth, users_nutritions);
 router.use("/user_workouts", auth, user_workouts);
 router.use("/user_calendar", auth, user_calendar);
 router.use("/user_program", auth, user_program);
+router.use("/user_leaderboard", auth, user_leaderboard);
 
 module.exports = router;

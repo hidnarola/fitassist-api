@@ -136,8 +136,6 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
           weight_lifted_average: { $avg: "$exercises.baseWeightValue" },
           weight_lifted_most: { $max: "$exercises.baseWeightValue" },
           weight_lifted_least: { $min: "$exercises.baseWeightValue" },
-          workouts_total: { $sum: 1 },
-          workouts_average: { $sum: 1 },
           reps_least: { $min: "$exercises.reps" },
           reps_total: { $sum: "$exercises.reps" },
           reps_average: { $avg: "$exercises.reps" },
@@ -145,7 +143,26 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
           sets_least: { $min: "$exercises.sets" },
           sets_total: { $sum: "$exercises.sets" },
           sets_average: { $avg: "$exercises.sets" },
-          sets_most: { $max: "$exercises.sets" }
+          sets_most: { $max: "$exercises.sets" },
+          workouts_total: { $addToSet: "$exercises" }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          weight_lifted_total: 1,
+          weight_lifted_average: 1,
+          weight_lifted_most: 1,
+          weight_lifted_least: 1,
+          reps_least: 1,
+          reps_total: 1,
+          reps_average: 1,
+          reps_most: 1,
+          sets_least: 1,
+          sets_total: 1,
+          sets_average: 1,
+          sets_most: 1,
+          workouts_total: { $size: "$workouts_total" }
         }
       }
     ]);

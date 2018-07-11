@@ -79,7 +79,6 @@ user_program_helper.get_user_programs_in_details = async condition => {
           preserveNullAndEmptyArrays: true
         }
       },
-
       {
         $lookup: {
           from: "user_workout_exercises_program",
@@ -303,9 +302,11 @@ user_program_helper.insert_program_workouts = async (
         childCollectionObject.forEach(element => {
           element.userWorkoutsProgramId = user_master_program_data._id;
         });
+
         var user_program_workouts_exercise = await userWorkoutExercisesProgram.insertMany(
           childCollectionObject
         );
+
         if (user_program_workouts_exercise) {
           return {
             status: 1,

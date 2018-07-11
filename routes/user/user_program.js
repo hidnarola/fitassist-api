@@ -78,9 +78,6 @@ router.get("/:program_id", async (req, res) => {
     },
     true
   );
-  console.log("------------------------------------");
-  console.log("resp_data : ", resp_data);
-  console.log("------------------------------------");
 
   if (resp_data.status == 1) {
     var returnObject = {
@@ -109,7 +106,7 @@ router.get("/:program_id", async (req, res) => {
     });
     programDetails = await Promise.all(programDetails);
     // resp_data.program = programDetails;
-    programDetails=_.sortBy(programDetails, function(pd) {
+    programDetails = _.sortBy(programDetails, function(pd) {
       return pd.day;
     });
     returnObject.program.workouts = programDetails;
@@ -171,7 +168,7 @@ router.post("/exercises", async (req, res) => {
   var authUserId = decoded.sub;
 
   var masterProgramCollectionObject = {
-    programId: "5b42eba532859ecdf1c6629c",
+    programId: req.body.programId,
     title: req.body.title,
     description: req.body.description,
     type: req.body.type,
