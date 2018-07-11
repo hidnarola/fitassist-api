@@ -109,6 +109,9 @@ router.get("/:program_id", async (req, res) => {
     });
     programDetails = await Promise.all(programDetails);
     // resp_data.program = programDetails;
+    programDetails=_.sortBy(programDetails, function(pd) {
+      return pd.day;
+    });
     returnObject.program.workouts = programDetails;
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(returnObject);

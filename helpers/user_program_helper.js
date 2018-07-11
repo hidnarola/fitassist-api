@@ -74,7 +74,10 @@ user_program_helper.get_user_programs_in_details = async condition => {
         }
       },
       {
-        $unwind: "$user_workouts_program"
+        $unwind: {
+          path: "$user_workouts_program",
+          preserveNullAndEmptyArrays: true
+        }
       },
 
       {
@@ -86,7 +89,10 @@ user_program_helper.get_user_programs_in_details = async condition => {
         }
       },
       {
-        $unwind: "$user_workout_exercises_program"
+        $unwind: {
+          path: "$user_workout_exercises_program",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $group: {
