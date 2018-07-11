@@ -186,8 +186,8 @@ user_program_helper.get_user_programs = async (
           description: { $first: "$description" },
           userId: { $first: "$userId" },
           type: { $first: "$type" },
-          totalDays: { $addToSet: "$programId" },
-          totalWorkouts: { $addToSet: "$userWorkoutsProgramId" }
+          totalDays: { $addToSet: "$userWorkoutsProgramId" },
+          totalWorkouts: { $addToSet: "$programId" }
         }
       },
       {
@@ -197,8 +197,7 @@ user_program_helper.get_user_programs = async (
           description: 1,
           userId: 1,
           type: 1,
-          totalWorkouts: { $size: "$totalWorkouts" },
-          totalDays: { $size: "$totalDays" }
+          totalWorkouts: { $size: "$totalWorkouts" }
         }
       }
     ]);
