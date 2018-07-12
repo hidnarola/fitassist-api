@@ -97,19 +97,23 @@ router.get("/:program_id", async (req, res) => {
     var data = resp_data.program[0];
     var programDetails = data.programDetails;
     var workouts = data.workouts;
-
-    programDetails = programDetails.map(async ex => {
-      ex.exercises = _.filter(workouts, w => {
-        return w.userWorkoutsProgramId.toString() === ex._id.toString();
+    if (workouts && workouts.length > 0) {
+      programDetails = programDetails.map(async ex => {
+        var filteredExercises = _.filter(workouts, w => {
+          return w.userWorkoutsProgramId.toString() === ex._id.toString();
+        });
+        if (filteredExercises && filteredExercises.length > 0) {
+          ex.exercises = filteredExercises;
+        }
+        return ex;
       });
-      return ex;
-    });
-    programDetails = await Promise.all(programDetails);
-    // resp_data.program = programDetails;
-    programDetails = _.sortBy(programDetails, function(pd) {
-      return pd.day;
-    });
-    returnObject.program.workouts = programDetails;
+      programDetails = await Promise.all(programDetails);
+      // resp_data.program = programDetails;
+      programDetails = _.sortBy(programDetails, function(pd) {
+        return pd.day;
+      });
+      returnObject.program.workouts = programDetails;
+    }
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(returnObject);
   } else {
@@ -365,7 +369,7 @@ router.delete("/:program_id", async (req, res) => {
     logger.error("Error occured while deleting user program = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.trace("user program got delete successgully = ", resp_data);
+    logger.trace("user program got delete successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
@@ -392,18 +396,18 @@ router.post("/delete/exercises", async (req, res) => {
     exercise_ids
   );
 
-  if (resp_data.status == 0) {
+  if (resp_data.status == 1) {
+    logger.trace(
+      "user program's exercise got delete successfully = ",
+      resp_data
+    );
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
     logger.error(
       "Error occured while deleting user program's exercise = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace(
-      "user program's exercise got delete successgully = ",
-      resp_data
-    );
-    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 module.exports = router;
