@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
  * @apiName Mark as read
  * @apiGroup  User Notification
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
@@ -70,7 +70,7 @@ router.put("/", async (req, res) => {
  * @apiName Make Notification as Read
  * @apiGroup  User Notification
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:notification_id?", async (req, res) => {

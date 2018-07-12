@@ -158,7 +158,7 @@ router.post("/", async (req, res) => {
  * @apiName Delete
  * @apiGroup User Secondary Goal
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:goal_id", async (req, res) => {

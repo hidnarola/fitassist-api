@@ -229,7 +229,7 @@ router.post("/", async (req, res) => {
  * @apiGroup User Recipe
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {Date}  date date of recipe
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
@@ -303,7 +303,7 @@ router.put("/", async (req, res) => {
  *
  * @apiHeader {String}  authorization user's unique access-key
  *
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:recipe_id", async (req, res) => {

@@ -215,7 +215,7 @@ router.post("/assign_program", async (req, res) => {
  * @apiParam {String} childId Id of Workout to be complete
  * @apiParam {String} parentId Id of Workout to be return as response
  * @apiParam {String} isCompleted isCompleted status of Workout to be complete
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/complete", async (req, res) => {
@@ -290,7 +290,7 @@ router.put("/complete", async (req, res) => {
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} parentId parent Id of Workout's event to be complete
  * @apiParam {String} isCompleted isCompleted status of Workout to be complete
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/complete_all", async (req, res) => {
@@ -422,7 +422,7 @@ router.put("/:workout_id", async (req, res) => {
  * @apiName Delete User workout
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:workout_id", async (req, res) => {

@@ -98,7 +98,7 @@ router.post("/by_month", async (req, res) => {
  * @apiGroup User Calendar
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {Date}  date date of Workout
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {

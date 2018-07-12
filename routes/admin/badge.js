@@ -727,7 +727,7 @@ router.put("/:badge_id", async (req, res) => {
  * @apiGroup  Badge
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:badge_id", async (req, res) => {
@@ -746,7 +746,7 @@ router.delete("/:badge_id", async (req, res) => {
  * @apiName Undo
  * @apiGroup  Badge
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/undo/:badge_id", async (req, res) => {

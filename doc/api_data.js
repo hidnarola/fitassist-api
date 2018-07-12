@@ -38,8 +38,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -87,8 +87,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -625,8 +625,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -870,8 +870,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -1127,8 +1127,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -1524,8 +1524,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -1963,8 +1963,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -2269,8 +2269,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -2687,8 +2687,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -3014,8 +3014,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -3501,8 +3501,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -3981,8 +3981,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -4789,8 +4789,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -5109,8 +5109,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -5694,8 +5694,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -5939,8 +5939,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -6603,8 +6603,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -7552,8 +7552,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -7699,8 +7699,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -7748,8 +7748,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -8545,8 +8545,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -8803,8 +8803,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -9430,8 +9430,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -9479,8 +9479,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -9528,8 +9528,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -9577,8 +9577,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -9905,8 +9905,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -10211,8 +10211,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -11072,8 +11072,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -11428,8 +11428,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -11477,8 +11477,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -11727,8 +11727,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -12287,8 +12287,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -12920,8 +12920,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -12989,8 +12989,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -13038,8 +13038,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }

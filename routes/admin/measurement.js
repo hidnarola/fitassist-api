@@ -300,7 +300,7 @@ router.put("/:measurement_id", async (req, res) => {
  * @apiGroup Measurement
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:measurement_id", async (req, res) => {

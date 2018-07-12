@@ -176,7 +176,7 @@ router.post("/", async (req, res) => {
  * @apiName Delete
  * @apiGroup  User Chat
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:username", async (req, res) => {
@@ -214,7 +214,7 @@ router.delete("/:username", async (req, res) => {
  * @apiName Delete
  * @apiGroup  User Chat
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:username/:message_id", async (req, res) => {

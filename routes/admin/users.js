@@ -216,7 +216,7 @@ router.put("/:authUserId", async (req, res) => {
  * @apiGroup Admin Side User
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:authUserId", async (req, res) => {
@@ -243,7 +243,7 @@ router.delete("/:authUserId", async (req, res) => {
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} email email to be check uniqueness
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/checkemail", async (req, res) => {

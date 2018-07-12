@@ -205,7 +205,7 @@ router.put("/:badge_category_id", async (req, res) => {
  * @apiGroup  Badge Category
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {String} Success message
+ * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:badge_category_id", async (req, res) => {
