@@ -7675,55 +7675,6 @@
   },
   {
     "type": "delete",
-    "url": "/user/chat/:username/:message_id",
-    "title": "Delete",
-    "name": "Delete",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/chat.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "delete",
     "url": "/user/chat/:username",
     "title": "Delete",
     "name": "Delete",
@@ -7772,10 +7723,10 @@
     "groupTitle": "User_Chat"
   },
   {
-    "type": "get",
-    "url": "/user/chat/messages/:start?/:limit?",
-    "title": "Get recently messages",
-    "name": "Get_recently_messages",
+    "type": "delete",
+    "url": "/user/chat/:username/:message_id",
+    "title": "Delete",
+    "name": "Delete",
     "group": "User_Chat",
     "header": {
       "fields": {
@@ -7795,10 +7746,10 @@
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Array",
+            "type": "String",
             "optional": false,
-            "field": "messages",
-            "description": "<p>Array of conversations_replies document</p>"
+            "field": "Success",
+            "description": "<p>message</p>"
           }
         ]
       }
@@ -7847,6 +7798,55 @@
             "type": "Array",
             "optional": false,
             "field": "channels",
+            "description": "<p>Array of conversations_replies document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/chat.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "get",
+    "url": "/user/chat/messages/:start?/:limit?",
+    "title": "Get recently messages",
+    "name": "Get_recently_messages",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "messages",
             "description": "<p>Array of conversations_replies document</p>"
           }
         ]
@@ -9406,55 +9406,6 @@
   },
   {
     "type": "put",
-    "url": "/user/notification/:notification_id",
-    "title": "Make Notification as Read",
-    "name": "Make_Notification_as_Read",
-    "group": "User_Notification",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "Success",
-            "description": "<p>message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/notifications.js",
-    "groupTitle": "User_Notification"
-  },
-  {
-    "type": "put",
     "url": "/user/users_nutritions/:notification_id",
     "title": "Make Notification as Read",
     "name": "Make_Notification_as_Read",
@@ -9500,6 +9451,55 @@
     },
     "version": "0.0.0",
     "filename": "routes/user/users_nutritions.js",
+    "groupTitle": "User_Notification"
+  },
+  {
+    "type": "put",
+    "url": "/user/notification/:notification_id",
+    "title": "Make Notification as Read",
+    "name": "Make_Notification_as_Read",
+    "group": "User_Notification",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "Success",
+            "description": "<p>message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/notifications.js",
     "groupTitle": "User_Notification"
   },
   {
@@ -10582,10 +10582,10 @@
     "groupTitle": "User_Program"
   },
   {
-    "type": "get",
-    "url": "/user/user_program/",
-    "title": "Get user's program",
-    "name": "Get_user_s_program",
+    "type": "post",
+    "url": "/user/user_program/delete/exercises",
+    "title": "Delete user's program's exercise by _ids",
+    "name": "Delete_user_s_program_s_exercise_by__ids",
     "group": "User_Program",
     "header": {
       "fields": {
@@ -10600,15 +10600,28 @@
         ]
       }
     },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "exercisesIds",
+            "description": "<p>Array list of exercises ids</p>"
+          }
+        ]
+      }
+    },
     "success": {
       "fields": {
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "JSON",
+            "type": "String",
             "optional": false,
-            "field": "programs",
-            "description": "<p>JSON of user_programs document</p>"
+            "field": "message",
+            "description": ""
           }
         ]
       }
@@ -10657,6 +10670,55 @@
             "type": "JSON",
             "optional": false,
             "field": "user_programs",
+            "description": "<p>JSON of user_programs document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_program.js",
+    "groupTitle": "User_Program"
+  },
+  {
+    "type": "get",
+    "url": "/user/user_program/",
+    "title": "Get user's program",
+    "name": "Get_user_s_program",
+    "group": "User_Program",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "programs",
             "description": "<p>JSON of user_programs document</p>"
           }
         ]
