@@ -369,4 +369,41 @@ router.delete("/:program_id", async (req, res) => {
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
+
+/**
+ * @api {post} /user/user_program/delete/exercises Delete user's program's exercise by _ids
+ * @apiName Delete user's program's exercise by _ids
+ * @apiGroup  User Program
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Array}  exercisesIds Array list of exercises ids
+ * @apiSuccess (Success 200) {String} message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/delete/exercises", async (req, res) => {
+  var exercise_ids = req.body.exercisesIds ? req.body.exercisesIds : [];
+  exercise_ids.forEach((id, index) => {
+    exercise_ids[index] = mongoose.Types.ObjectId(id);
+  });
+
+  logger.trace(
+    "Delete user program's exercise  API called IDs:" + exercise_ids
+  );
+  var resp_data = await user_program_helper.delete_user_program_exercise(
+    exercise_ids
+  );
+
+  if (resp_data.status == 0) {
+    logger.error(
+      "Error occured while deleting user program's exercise = ",
+      resp_data
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace(
+      "user program's exercise got delete successgully = ",
+      resp_data
+    );
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
 module.exports = router;
