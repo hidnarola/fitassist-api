@@ -457,18 +457,18 @@ user_workouts_helper.complete_workout = async (condition, updateObject) => {
 
 /*
  * delete_user_workouts_by_days is used to delete user_workouts from database
- * @param   exerciseId String  _id of user_workouts that need to be delete
+ * @param   exerciseIds String  _id of user_workouts that need to be delete
  * @return  status  0 - If any error occur in deletion of user_workouts, with error
  *          status  1 - If user_workouts deleted successfully, with appropriate message
  * @developed by "amc"
  */
-user_workouts_helper.delete_user_workouts_by_days = async exerciseId => {
+user_workouts_helper.delete_user_workouts_by_days = async exerciseIds => {
   try {
     let user_workouts_data1 = await UserWorkoutExercises.remove({
-      userWorkoutsId: { $in: exerciseId }
+      userWorkoutsId: { $in: exerciseIds }
     });
     let user_workouts_data2 = await UserWorkouts.remove({
-      _id: { $in: exerciseId }
+      _id: { $in: exerciseIds }
     });
     if (user_workouts_data2) {
       return { status: 1, message: "User workouts deleted" };

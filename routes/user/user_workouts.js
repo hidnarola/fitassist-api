@@ -445,20 +445,20 @@ router.delete("/:workout_id", async (req, res) => {
  * @apiName Multiple Workout delete by Days
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Array} exerciseId ids of Days
+ * @apiParam {Array} exerciseIds ids of Days
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/delete", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var exerciseId = req.body.exerciseId;
-  exerciseId.forEach((id, index) => {
-    exerciseId[index] = mongoose.Types.ObjectId(id);
+  var exerciseIds = req.body.exerciseIds;
+  exerciseIds.forEach((id, index) => {
+    exerciseIds[index] = mongoose.Types.ObjectId(id);
   });
-  logger.trace("Delete workout days - Id = ", exerciseId);
+  logger.trace("Delete workout days - Id = ", exerciseIds);
   let workout_data = await user_workout_helper.delete_user_workouts_by_days(
-    exerciseId
+    exerciseIds
   );
 
   if (workout_data.status === 0) {
