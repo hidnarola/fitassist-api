@@ -441,6 +441,38 @@ router.delete("/:workout_id", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/user_workouts/bulk_complete Multiple Workout completed by exerciseDay
+ * @apiName Multiple Workout completed by exerciseDay
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Array} exerciseIds ids of Days
+ * @apiParam {Object} isCompleted status of workout
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/bulk_complete", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var exerciseIds = req.body.exerciseIds;
+  var isCompleted = req.body.isCompleted;
+  exerciseIds.forEach((id, index) => {
+    exerciseIds[index] = mongoose.Types.ObjectId(id);
+  });
+  logger.trace("Complete workout by days - Id = ", exerciseIds);
+  let workout_data = await user_workout_helper.complete_workout_by_days(
+    exerciseIds,
+    {
+      isCompleted: isCompleted
+    }
+  );
+
+  if (workout_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
+  } else {
+    res.status(config.OK_STATUS).json(workout_data);
+  }
+});
+/**
  * @api {post} /user/user_workouts/delete Multiple Workout delete by Days
  * @apiName Multiple Workout delete by Days
  * @apiGroup  User Workouts

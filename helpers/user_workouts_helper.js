@@ -512,4 +512,42 @@ user_workouts_helper.delete_user_workouts_by_id = async user_workouts_id => {
   }
 };
 
+/*
+ * complete_workout_by_days is used to complete user workouts data based on user workouts date
+ * 
+ * @param   condition         Object  condition of user_workouts that need to be complete
+ * @return  status  0 - If any error occur in updating user_workouts, with error
+ *          status  1 - If user_workouts completed successfully, with appropriate message
+ *          status  2 - If user_workouts not completed, with appropriate message 
+ * @developed by "amc"
+ */
+user_workouts_helper.complete_workout_by_days = async (id, updateObject) => {
+  try {
+    let user_workouts_data1 = await UserWorkouts.updateMany(
+      { _id: { $in: id } },
+      updateObject,
+      {
+        new: true
+      }
+    );
+    let user_workouts_data2 = await UserWorkoutExercises.updateMany(
+      { userWorkoutsId: { $in: id } },
+      updateObject,
+      {
+        new: true
+      }
+    );
+
+    return {
+      status: 1,
+      message: "Workout completed"
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user workouts completed",
+      error: err
+    };
+  }
+};
 module.exports = user_workouts_helper;
