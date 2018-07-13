@@ -78,6 +78,9 @@ router.get("/:program_id", async (req, res) => {
     },
     true
   );
+  console.log("------------------------------------");
+  console.log("resp_data : ", resp_data);
+  console.log("------------------------------------");
 
   if (resp_data.status == 1) {
     var returnObject = {
@@ -99,7 +102,6 @@ router.get("/:program_id", async (req, res) => {
     var workouts = data.workouts;
 
     programDetails = programDetails.map(async ex => {
-      ex.exercises = [];
       if (workouts && workouts.length > 0) {
         var filteredExercises = _.filter(workouts, w => {
           return w.userWorkoutsProgramId.toString() === ex._id.toString();
@@ -111,7 +113,6 @@ router.get("/:program_id", async (req, res) => {
       return ex;
     });
     programDetails = await Promise.all(programDetails);
-    // resp_data.program = programDetails;
     programDetails = _.sortBy(programDetails, function(pd) {
       return pd.day;
     });
