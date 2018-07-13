@@ -300,19 +300,27 @@ user_program_helper.insert_program_workouts = async (
         );
 
         if (user_program_workouts_exercise) {
+          var _user_program_workouts_exercise = user_program_workouts_exercise;
+          if (user_program_workouts_exercise.length > 0) {
+            _user_program_workouts_exercise = user_program_workouts_exercise[0];
+          }
           return {
             status: 1,
             message: "Program workout inserted",
-            workout: user_program_workouts_exercise
+            workout: _user_program_workouts_exercise
           };
         }
       }
 
       if (user_master_program_data) {
+        var _user_master_program_data = user_master_program_data;
+        if (user_master_program_data.length > 0) {
+          _user_master_program_data = user_master_program_data[0];
+        }
         return {
           status: 1,
           message: "Program workout inserted",
-          workout: user_master_program_data
+          workout: _user_master_program_data
         };
       }
     } else {
@@ -372,19 +380,28 @@ user_program_helper.update_program_workouts = async (
             childCollectionObject
           );
           if (user_workout_exercises_program) {
+            var _user_workout_exercises_program = user_workout_exercises_progra;
+            if (user_workout_exercises_program.length > 0) {
+              _user_workout_exercises_program =
+                user_workout_exercises_program[0];
+            }
             return {
               status: 1,
               message: "User Program Exercises updated",
-              program: user_workout_exercises_program
+              workout: _user_workout_exercises_program
             };
           }
         }
       }
       if (user_program_workout) {
+        var _user_program_workout = user_program_workout;
+        if (user_program_workout.length > 0) {
+          _user_program_workout = user_program_workout[0];
+        }
         return {
           status: 1,
           message: "User Program Exercises updated",
-          program: user_program_workout
+          workout: _user_program_workout
         };
       }
     } else {

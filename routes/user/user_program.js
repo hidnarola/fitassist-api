@@ -78,9 +78,6 @@ router.get("/:program_id", async (req, res) => {
     },
     true
   );
-  console.log("------------------------------------");
-  console.log("resp_data : ", resp_data);
-  console.log("------------------------------------");
 
   if (resp_data.status == 1) {
     var returnObject = {
@@ -168,7 +165,7 @@ router.post("/", async (req, res) => {
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
  * @apiParam {Date} date date of workout
  * @apiParam {Array} exercises list of exercises of workout
- * @apiSuccess (Success 200) {JSON} program JSON of user_programs document
+ * @apiSuccess (Success 200) {JSON} workout JSON of user_programs document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/exercises", async (req, res) => {
@@ -249,7 +246,7 @@ router.post("/exercises", async (req, res) => {
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
  * @apiParam {Date} date date of workout
  * @apiParam {Array} exercises list of exercises of workout
- * @apiSuccess (Success 200) {JSON} program JSON of user_programs document
+ * @apiSuccess (Success 200) {JSON} workout JSON of user_programs document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/exercises/:program_day_id", async (req, res) => {

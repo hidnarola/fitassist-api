@@ -65,4 +65,59 @@ router.get("/:type", async (req, res) => {
   }
 });
 
+// [
+//   {
+//       $lookup:
+//       {
+//           from: "user_workouts",
+//           localField: "userWorkoutsId",
+//           foreignField: "_id",
+//           as: "workout"
+//       }
+//   },
+//   {
+//       $unwind:"$workout"
+//   },
+//   {
+//       $lookup:
+//       {
+//           from: "users",
+//           localField: "workout.userId",
+//           foreignField: "authUserId",
+//           as: "user"
+//       }
+//   },
+//   {
+//       $unwind:"$user"
+//   },
+//   {
+//       $group:{
+//           _id:"$user.authUserId",
+//           weight_lifted_total: { $sum: "baseWeightValue" },
+//           weight_lifted_average: { $avg: "$baseWeightValue" },
+//           weight_lifted_most: { $max: "$baseWeightValue" },
+//           weight_lifted_least: { $min: "$baseWeightValue" },
+//           reps_least: { $min: "$reps" },
+//           reps_total: { $sum: "$reps" },
+//           reps_average: { $avg: "$reps" },
+//           reps_most: { $max: "$reps" },
+//           sets_least: { $min: "$sets" },
+//           sets_total: { $sum: "$sets" },
+//           sets_average: { $avg: "$sets" },
+//           sets_most: { $max: "$sets" },
+//           workouts_total: { $sum: 1 },
+//           firstName: {$first:"$user.firstName"},
+//           lastName: {$first:"$user.lastName"},
+//           avatar: {$first:"$user.avatar"},
+//           username: {$first:"$user.username"},
+//           authUserId: {$first:"$user.authUserId"},
+//       }
+//   },
+//   {
+//       $sort:{
+//           weight_lifted_total:-1
+//           }
+//   }
+
+//   ]
 module.exports = router;

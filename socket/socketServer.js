@@ -1,6 +1,7 @@
 var io = require("socket.io")();
 var jwtDecode = require("jwt-decode");
 var mongoose = require("mongoose");
+var _ = require("underscore");
 var user_notification_helper = require("../helpers/notification_helper");
 var chat_helper = require("../helpers/chat_helper");
 var user_helper = require("../helpers/user_helper");
@@ -40,6 +41,32 @@ myIo.init = function(server) {
         },
         2
       );
+      var usersFriendsSocketIds = [];
+      var onlineFriends = [];
+      user_friends.friends.forEach((element, index) => {
+        var socketId = users.get(element.authUserId);
+
+        if (socketId) {
+          onlineFriends.push(element.authUserId);
+          usersFriendsSocketIds = _.union(
+            usersFriendsSocketIds,
+            socketId.socketIds
+          );
+        }
+      });
+
+      io.to(socket.id).emit("receive_user_friends_count", {
+        onlinePerson: {
+          authUserId: authUserId
+        }
+      });
+      usersFriendsSocketIds.forEach(socketId => {
+        io.to(socketId).emit("receive_user_friends_count", {
+          onlinePerson: {
+            authUserId: authUserId
+          }
+        });
+      });
     });
 
     /**
