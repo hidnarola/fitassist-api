@@ -263,7 +263,6 @@ router.put("/complete", async (req, res) => {
       true
     );
     workout.message = "Workout completed";
-
     res.status(config.OK_STATUS).json(workout);
 
     let workout_detail = await user_workout_helper.workout_detail_for_badges({
@@ -458,7 +457,7 @@ router.post("/bulk_complete", async (req, res) => {
   exerciseIds.forEach((id, index) => {
     exerciseIds[index] = mongoose.Types.ObjectId(id);
   });
-  logger.trace("Complete workout by days - Id = ", exerciseIds);
+  logger.trace("Complete workout by id = ", exerciseIds);
   let workout_data = await user_workout_helper.complete_workout_by_days(
     exerciseIds,
     {
@@ -488,7 +487,7 @@ router.post("/delete", async (req, res) => {
   exerciseIds.forEach((id, index) => {
     exerciseIds[index] = mongoose.Types.ObjectId(id);
   });
-  logger.trace("Delete workout days - Id = ", exerciseIds);
+  logger.trace("Delete workout by - Id = ", exerciseIds);
   let workout_data = await user_workout_helper.delete_user_workouts_by_days(
     exerciseIds
   );

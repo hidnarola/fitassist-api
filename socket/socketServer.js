@@ -19,7 +19,7 @@ myIo.init = function(server) {
      * @apiName Join user to socket
      * @apiGroup  Sokets
      */
-    socket.on("join", function(token) {
+    socket.on("join", async function(token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
@@ -33,8 +33,13 @@ myIo.init = function(server) {
         };
         users.set(authUserId, obj);
       }
-
       socketToUsers.set(socket.id, authUserId);
+      var user_friends = await friend_helper.get_friend_by_username(
+        {
+          username: "amc"
+        },
+        2
+      );
     });
 
     /**

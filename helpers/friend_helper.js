@@ -286,25 +286,24 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
       ]);
     }
 
-    _.each(friends[0].user, (friend, index) => {
-      var total_friends = friend.totalFriends;
-
-      var cnt = 0;
-      _.each(total_friends, (frd, i) => {
-        if (frd.status == 2) {
-          cnt++;
-        }
-      });
-
-      friend.friendsCount = cnt;
-      delete friend.totalFriends;
-    });
-
     if (friends && friends.length > 0) {
+      _.each(friends[0].user, (friend, index) => {
+        var total_friends = friend.totalFriends;
+
+        var cnt = 0;
+        _.each(total_friends, (frd, i) => {
+          if (frd.status == 2) {
+            cnt++;
+          }
+        });
+
+        friend.friendsCount = cnt;
+        delete friend.totalFriends;
+      });
       return {
         status: 1,
         message: "friends found",
-        friends: friends[0].user
+        friends: friends[0].user ? friends[0].user : []
       };
     } else {
       return { status: 2, message: "No friend available", friends: [] };

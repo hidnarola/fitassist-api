@@ -97,23 +97,26 @@ router.get("/:program_id", async (req, res) => {
     var data = resp_data.program[0];
     var programDetails = data.programDetails;
     var workouts = data.workouts;
-    if (workouts && workouts.length > 0) {
-      programDetails = programDetails.map(async ex => {
+
+    programDetails = programDetails.map(async ex => {
+      ex.exercises = [];
+      if (workouts && workouts.length > 0) {
         var filteredExercises = _.filter(workouts, w => {
           return w.userWorkoutsProgramId.toString() === ex._id.toString();
         });
         if (filteredExercises && filteredExercises.length > 0) {
           ex.exercises = filteredExercises;
         }
-        return ex;
-      });
-      programDetails = await Promise.all(programDetails);
-      // resp_data.program = programDetails;
-      programDetails = _.sortBy(programDetails, function(pd) {
-        return pd.day;
-      });
-      returnObject.program.workouts = programDetails;
-    }
+      }
+      return ex;
+    });
+    programDetails = await Promise.all(programDetails);
+    // resp_data.program = programDetails;
+    programDetails = _.sortBy(programDetails, function(pd) {
+      return pd.day;
+    });
+    returnObject.program.workouts = programDetails;
+
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(returnObject);
   } else {
