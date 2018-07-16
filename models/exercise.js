@@ -30,10 +30,10 @@ var ExerciseSchema = new Schema(
       }
     ],
     category: {
-      type: String,
+      type: String
     },
     subCategory: {
-      type: String,
+      type: String
     },
     mechanics: {
       type: String,
@@ -51,11 +51,6 @@ var ExerciseSchema = new Schema(
     steps: { type: Array, required: false, default: [] },
     tips: { type: Array, required: false, default: [] },
     images: { type: Array, required: false, default: [] },
-    measures: {
-      type: String,
-      enum: ["beginner", "intermediate", "expert", ""],
-      required: false
-    },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },

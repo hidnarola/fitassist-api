@@ -94,30 +94,37 @@ router.post("/", async (req, res) => {
       },
       1
     );
-    var tmp = 0;
     exercises = exercises.map(async ex => {
+      var setDetail = {};
       ex.exercise = _.find(exercise_data.exercise, exercise => {
         return exercise._id.toString() === ex.exerciseId.toString();
       });
       delete ex.exerciseId;
-      if (ex.weight) {
-        var baseWeight = await common_helper.unit_converter(
-          ex.weight,
-          ex.weightUnits
-        );
-        ex.baseWeightUnits = baseWeight.baseUnit;
-        ex.baseWeightValue = baseWeight.baseValue;
-      }
+      var setsDetails = ex.setsDetails;
 
-      if (ex.distance) {
-        var baseDistance = await common_helper.unit_converter(
-          ex.distance,
-          ex.distanceUnits
-        );
-        ex.baseDistanceUnits = baseDistance.baseUnit;
-        ex.baseDistanceValue = baseDistance.baseValue;
-      }
-      ex.date = req.body.date;
+      setsDetails.forEach(element => {
+        console.log("------------------------------------");
+        console.log("element : ", element);
+        console.log("------------------------------------");
+      });
+
+      // if (ex.setsDetails.weight) {
+      //   var baseWeight = await common_helper.unit_converter(
+      //     ex.setsDetails.weight,
+      //     ex.setsDetails.weightUnits
+      //   );
+      //   ex.baseWeightUnits = baseWeight.baseUnit;
+      //   ex.baseWeightValue = baseWeight.baseValue;
+      // }
+
+      // if (ex.setsDetails.distance) {
+      //   var baseDistance = await common_helper.unit_converter(
+      //     ex.setsDetails.distance,
+      //     ex.setsDetails.distanceUnits
+      //   );
+      //   ex.baseDistanceUnits = baseDistance.baseUnit;
+      //   ex.baseDistanceValue = baseDistance.baseValue;
+      // }
       return ex;
     });
     exercises = await Promise.all(exercises);
@@ -374,7 +381,6 @@ router.put("/:workout_id", async (req, res) => {
       1
     );
 
-    var tmp = 0;
     exercises = exercises.map(async ex => {
       ex.exercise = _.find(exercise_data.exercise, exercise => {
         return exercise._id.toString() === ex.exerciseId.toString();

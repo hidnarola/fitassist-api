@@ -263,19 +263,12 @@ module.exports = {
     "tricep_extension",
     "pull_down",
     "machines",
-    "bench_press",
-    "dips",
-    "cleans",
-    "deadlift",
-    "squats",
-    "pullups",
-    "shoulder_press",
-    "bent_over_row",
-    "bodyweight",
-    "bicep_curls",
-    "tricep_extension",
-    "pull_down",
-    "machines"
+    "isometric_stretching",
+    "active_isolated_stretching",
+    "ballistic_stretching",
+    "dynamic_stretching",
+    "passive_stretching",
+    "static_stretching"
   ],
 
   EXERCISES_TYPE: {
@@ -313,19 +306,12 @@ module.exports = {
       "machines"
     ],
     FLEXIBILITY: [
-      "bench_press",
-      "dips",
-      "cleans",
-      "deadlift",
-      "squats",
-      "pullups",
-      "shoulder_press",
-      "bent_over_row",
-      "bodyweight",
-      "bicep_curls",
-      "tricep_extension",
-      "pull_down",
-      "machines"
+      "isometric_stretching",
+      "active_isolated_stretching",
+      "ballistic_stretching",
+      "dynamic_stretching",
+      "passive_stretching",
+      "static_stretching"
     ],
     BALANCE: []
   }

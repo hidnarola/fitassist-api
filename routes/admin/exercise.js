@@ -134,7 +134,6 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiParam {Array} [steps] Steps of Exercise
  * @apiParam {Array} [tips] tips of Exercise
  * @apiParam {Files} [images] Images of Exercise
- * @apiParam {Enum} [measures] Measures of Exercise
  * @apiSuccess (Success 200) {JSON} exercise Exercise details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -215,7 +214,6 @@ router.post("/", async (req, res) => {
       difficltyLevel: req.body.difficltyLevel,
       steps: req.body.steps ? JSON.parse(req.body.steps) : [],
       tips: req.body.tips ? JSON.parse(req.body.tips) : [],
-      measures: req.body.measures ? req.body.measures : "beginner"
     };
     if (req.body.subCategory) {
       exercise_obj.subCategory = req.body.subCategory;
@@ -323,7 +321,6 @@ router.post("/", async (req, res) => {
  * @apiParam {Array} [tips] tips of Exercise
  * @apiParam {Array} [delete_images] Path of all images to be delete
  * @apiParam {File} [images] New Images of Exercise
- * @apiParam {Enum} [measures] Measures of Exercise
  * @apiSuccess (Success 200) {Array} exercise Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -388,7 +385,6 @@ router.put("/:exercise_id", async (req, res) => {
       difficltyLevel: req.body.difficltyLevel,
       steps: req.body.steps ? JSON.parse(req.body.steps) : null,
       tips: req.body.tips ? JSON.parse(req.body.tips) : null,
-      measures: req.body.measures,
       modifiedAt: new Date()
     };
 
