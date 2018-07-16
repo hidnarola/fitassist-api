@@ -618,8 +618,7 @@ router.put("/:test_exercise_id", async (req, res) => {
                   a_b_updateImageIndex.indexOf(index) >= 0
                 ) {
                   try {
-                    fs.unlink(oldData[index].image, async () => {
-                    });
+                    fs.unlink(oldData[index].image, async () => {});
                   } catch (err) {}
                   if (a_b_updateImageIndexLength > 1) {
                     url = file_path_array[index];

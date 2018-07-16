@@ -15,28 +15,34 @@ var ExerciseSchema = new Schema(
       ref: "bodyparts",
       required: true
     },
-    otherMuscleGroup: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "bodyparts",
-      required: true
-    }],
-    detailedMuscleGroup: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "bodyparts",
-      required: true
-    }],
-    type: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "exercise_types",
-      default: null,
-      required: true
+    otherMuscleGroup: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "bodyparts",
+        required: true
+      }
+    ],
+    detailedMuscleGroup: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "bodyparts",
+        required: true
+      }
+    ],
+    category: {
+      type: String,
+    },
+    subCategory: {
+      type: String,
     },
     mechanics: {
       type: String,
       enum: ["compound", "isolation"],
       required: false
     },
-    equipments: [{ type: mongoose.Schema.Types.ObjectId, default: [], required: true }],
+    equipments: [
+      { type: mongoose.Schema.Types.ObjectId, default: [], required: true }
+    ],
     difficltyLevel: {
       type: String,
       enum: ["beginner", "intermediate", "expert"],
@@ -47,7 +53,7 @@ var ExerciseSchema = new Schema(
     images: { type: Array, required: false, default: [] },
     measures: {
       type: String,
-      enum: ["beginner", "intermediate", "expert",""],
+      enum: ["beginner", "intermediate", "expert", ""],
       required: false
     },
     createdAt: { type: Date, default: Date.now },

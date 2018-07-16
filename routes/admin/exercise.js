@@ -6,6 +6,7 @@ var mongoose = require("mongoose");
 var router = express.Router();
 
 var config = require("../../config");
+var constants = require("../../constant");
 var logger = config.logger;
 
 var exercise_helper = require("../../helpers/exercise_helper");
@@ -16,26 +17,26 @@ var common_helper = require("../../helpers/common_helper");
  * @apiName Filter
  * @apiDescription Request Object :<pre><code>
  * {
-  pageSize: 10,
-  page: 0,
-  columnFilter: [
-    {
-      id: "firstName",
-      value: "mi"
-    }
-  ],
-  columnSort: [
-    {
-      id: "firstName",
-      value: true
-    }
-  ],
-  columnFilterEqual: [
-    {
-      id: "email",
-      value: "ake@narola.email"
-    }
-  ]
+	pageSize: 10,
+	page: 0,
+	columnFilter: [
+		{
+			id: "firstName",
+			value: "mi"
+		}
+	],
+	columnSort: [
+		{
+			id: "firstName",
+			value: true
+		}
+	],
+	columnFilterEqual: [
+		{
+			id: "email",
+			value: "ake@narola.email"
+		}
+	]
 }</code></pre>
  * @apiGroup Exercise
  *
@@ -98,11 +99,17 @@ router.get("/", async (req, res) => {
 router.get("/:exercise_id", async (req, res) => {
   exercise_id = req.params.exercise_id;
   logger.trace("Get all exercise API called");
-  var resp_data = await exercise_helper.get_exercise_id(exercise_id);
+  var resp_data = await exercise_helper.get_exercise_id({
+    _id: mongoose.Types.ObjectId(exercise_id)
+  });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching exercise = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
+    console.log("------------------------------------");
+    console.log("resp_data : ", resp_data);
+    console.log("------------------------------------");
+
     logger.trace("Exercises got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
@@ -119,7 +126,8 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiParam {String} mainMuscleGroup Reference id of from muscles group collection
  * @apiParam {Array} [otherMuscleGroup] Reference ids of from muscles group collection
  * @apiParam {Array} [detailedMuscleGroup] Reference ids of from muscles group collection
- * @apiParam {Array} [type] Type of exercise (reference id from exercise type collection)
+ * @apiParam {Array} category Category of exercise
+ * @apiParam {Array} subCategory Sub Category of exercise
  * @apiParam {Enum} [mechanics] Mechanics of Exercise | Possible Values('Compound', 'Isolation')
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
@@ -139,25 +147,38 @@ router.post("/", async (req, res) => {
     },
     mainMuscleGroup: {
       notEmpty: true,
-      errorMessage: "mainMuscleGroup is required"
+      errorMessage: "Main Muscle Group is required"
     },
-    type: {
+    category: {
       notEmpty: true,
-      errorMessage: "type	 is required"
+      isIn: {
+        options: [constants.EXERCISES_CATEGORIES],
+        errorMessage: "Please select valid Category"
+      },
+      errorMessage: "Category  is required"
     },
     equipments: {
       notEmpty: true,
-      errorMessage: "equipments is required"
+      errorMessage: "Equipments is required"
     },
     difficltyLevel: {
       notEmpty: true,
-      errorMessage: "difficltyLevel is required"
+      errorMessage: "Difficlty Level is required"
     }
   };
+  if (req.body.subCategory) {
+    schema.subCategory = {
+      notEmpty: false,
+      isIn: {
+        options: [constants.EXERCISES_SUBCATEGORIES],
+        errorMessage: "Please enter valid Sub category "
+      },
+      errorMessage: "Sub Category is required"
+    };
+  }
 
   req.checkBody(schema);
   var errors = req.validationErrors();
-  typeData = mongoose.Types.ObjectId(req.body.type);
   mainMuscleGroupData = mongoose.Types.ObjectId(req.body.mainMuscleGroup);
   detailedMuscleGroupData = [];
   equipmentsData = [];
@@ -188,7 +209,7 @@ router.post("/", async (req, res) => {
       detailedMuscleGroup: detailedMuscleGroupData
         ? detailedMuscleGroupData
         : [],
-      type: typeData,
+      category: req.body.category,
       mechanics: req.body.mechanics,
       equipments: equipmentsData ? equipmentsData : [],
       difficltyLevel: req.body.difficltyLevel,
@@ -196,6 +217,9 @@ router.post("/", async (req, res) => {
       tips: req.body.tips ? JSON.parse(req.body.tips) : [],
       measures: req.body.measures ? req.body.measures : "beginner"
     };
+    if (req.body.subCategory) {
+      exercise_obj.subCategory = req.body.subCategory;
+    }
 
     async.waterfall(
       [
@@ -290,7 +314,8 @@ router.post("/", async (req, res) => {
  * @apiParam {String} mainMuscleGroup Reference id of from muscles group collection
  * @apiParam {Array} [otherMuscleGroup] Reference ids of from muscles group collection
  * @apiParam {Array} [detailedMuscleGroup] Reference ids of from muscles group collection
- * @apiParam {Array} [type] Type of exercise (reference id from exercise type collection)
+ * @apiParam {Array} category Category of exercise
+ * @apiParam {Array} subCategory Sub Category of exercise
  * @apiParam {Enum} [mechanics] Mechanics of Exercise | Possible Values('Compound', 'Isolation')
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
@@ -303,7 +328,8 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:exercise_id", async (req, res) => {
-  // return res.send({"after delete":new_img_path_list});
+  var exercise_id = mongoose.Types.ObjectId(req.params.exercise_id);
+
   var schema = {
     name: {
       notEmpty: true,
@@ -313,9 +339,13 @@ router.put("/:exercise_id", async (req, res) => {
       notEmpty: true,
       errorMessage: "mainMuscleGroup is required"
     },
-    type: {
+    category: {
       notEmpty: true,
-      errorMessage: "type	 is required"
+      isIn: {
+        options: [constants.EXERCISES_CATEGORIES],
+        errorMessage: "Please select valid Category"
+      },
+      errorMessage: "Category  is required"
     },
     equipments: {
       notEmpty: true,
@@ -326,6 +356,17 @@ router.put("/:exercise_id", async (req, res) => {
       errorMessage: "difficltyLevel is required"
     }
   };
+
+  if (req.body.subCategory) {
+    schema.subCategory = {
+      notEmpty: false,
+      isIn: {
+        options: [constants.EXERCISES_SUBCATEGORIES],
+        errorMessage: "Please enter valid Sub category "
+      },
+      errorMessage: "Sub Category is required"
+    };
+  }
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -341,7 +382,7 @@ router.put("/:exercise_id", async (req, res) => {
       detailedMuscleGroup: req.body.detailedMuscleGroup
         ? JSON.parse(req.body.detailedMuscleGroup)
         : null,
-      type: req.body.type,
+      category: req.body.category,
       mechanics: req.body.mechanics,
       equipments: req.body.equipments ? JSON.parse(req.body.equipments) : null,
       difficltyLevel: req.body.difficltyLevel,
@@ -350,9 +391,15 @@ router.put("/:exercise_id", async (req, res) => {
       measures: req.body.measures,
       modifiedAt: new Date()
     };
-    exercise_id = req.params.exercise_id;
 
-    var resp_data = await exercise_helper.get_exercise_id(exercise_id);
+    if (req.body.subCategory) {
+      exercise_obj.subCategory = req.body.subCategory;
+    }
+
+    var resp_data = await exercise_helper.get_exercise_id({
+      _id: exercise_id
+    });
+
     new_img_path_list = resp_data["exercise"]["images"];
 
     async.waterfall(

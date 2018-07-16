@@ -124,20 +124,6 @@ exercise_helper.get_all_exercise_for_user = async () => {
         }
       },
       {
-        $lookup: {
-          from: "exercise_types",
-          localField: "type",
-          foreignField: "_id",
-          as: "type"
-        }
-      },
-      {
-        $unwind: {
-          path: "$type",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
         $group: {
           _id: "$_id",
           name: { $push: "$name" },
@@ -146,9 +132,10 @@ exercise_helper.get_all_exercise_for_user = async () => {
           detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
           detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
           equipments: { $addToSet: "$equipments.name" },
-          type: { $first: "$type.name" },
           mainMuscleGroup: { $first: "$mainMuscleGroup.bodypart" },
           name: { $first: "$name" },
+          category: { $first: "$category" },
+          subCategory: { $first: "$subCategory" },
           description: { $first: "$description" },
           mechanics: { $first: "$mechanics" },
           difficltyLevel: { $first: "$difficltyLevel" },
@@ -203,12 +190,6 @@ exercise_helper.get_exercise_id = async (id, flag = 0) => {
       {
         $unwind: {
           path: "$mainMuscleGroup",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$type",
           preserveNullAndEmptyArrays: true
         }
       },
@@ -275,32 +256,20 @@ exercise_helper.get_exercise_id = async (id, flag = 0) => {
         }
       },
       {
-        $lookup: {
-          from: "exercise_types",
-          localField: "type",
-          foreignField: "_id",
-          as: "type"
-        }
-      },
-      {
-        $unwind: {
-          path: "$type",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
         $group: {
           _id: "$_id",
           name: { $push: "$name" },
           // cols:filter_object.columnFilter,
-          otherMuscleGroup: { $addToSet: "$otherMuscleGroup.bodypart" },
-          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
-          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
-          equipments: { $addToSet: "$equipments.name" },
-          type: { $first: "$type.name" },
-          mainMuscleGroup: { $first: "$mainMuscleGroup.bodypart" },
+          otherMuscleGroup: { $addToSet: "$otherMuscleGroup._id" },
+          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup._id" },
+          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup._id" },
+          equipments: { $addToSet: "$equipments._id" },
+          category: { $first: "$category" },
+          subCategory: { $first: "$subCategory" },
+          mainMuscleGroup: { $first: "$mainMuscleGroup._id" },
           name: { $first: "$name" },
           description: { $first: "$description" },
+          images: { $addToSet: "$images" },
           mechanics: { $first: "$mechanics" },
           difficltyLevel: { $first: "$difficltyLevel" },
           measures: { $first: "$measures" }
@@ -491,17 +460,6 @@ exercise_helper.get_filtered_records = async filter_obj => {
       {
         $unwind: "$detailedMuscle"
       },
-      {
-        $lookup: {
-          from: "exercise_types",
-          localField: "type",
-          foreignField: "_id",
-          as: "type"
-        }
-      },
-      {
-        $unwind: "$type"
-      },
 
       {
         $group: {
@@ -511,7 +469,8 @@ exercise_helper.get_filtered_records = async filter_obj => {
           otherMuscle: { $addToSet: "$otherMuscle" },
           detailedMuscle: { $addToSet: "$detailedMuscle" },
           detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup" },
-          type: { $addToSet: "$type" },
+          category: { $first: "$category" },
+          subCategory: { $first: "$subCategory" },
           mainMuscle: { $first: "$mainMuscle" },
           name: { $first: "$name" },
           description: { $first: "$description" },
@@ -519,8 +478,7 @@ exercise_helper.get_filtered_records = async filter_obj => {
           otherMuscleGroup: { $addToSet: "$otherMuscleGroup" },
           mechanics: { $first: "$mechanics" },
           difficltyLevel: { $first: "$difficltyLevel" },
-          measures: { $first: "$measures" },
-          type: { $first: "$type" }
+          measures: { $first: "$measures" }
         }
       },
       {

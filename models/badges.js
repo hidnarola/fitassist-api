@@ -12,7 +12,7 @@ var BadgesSchema = new Schema(
       default: "congratulations you have earned badge"
     },
     descriptionInCompleted: { type: String, default: "" },
-    unit: {
+    unit: { 
       type: String,
       enum: [
         "n/a",
