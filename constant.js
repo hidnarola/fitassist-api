@@ -1,5 +1,5 @@
 module.exports = {
-  WORKOUTS_TYPE: ["warmup", "cooldown", "exercise"],
+  WORKOUTS_TYPE: ["warmup", "cooldown", "exercise", "circuit", "superset"],
   RECIPE_TYPE: [
     "vegetarian",
     "vegan",

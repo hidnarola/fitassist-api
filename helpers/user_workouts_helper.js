@@ -130,21 +130,38 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
         }
       },
       {
+        $unwind: "$exercises"
+      },
+      {
+        $unwind: "$exercises.exercises"
+      },
+      {
+        $unwind: "$exercises.exercises.setsDetails"
+      },
+      {
         $group: {
           _id: null,
-          weight_lifted_total: { $sum: "$exercises.baseWeightValue" },
-          weight_lifted_average: { $avg: "$exercises.baseWeightValue" },
-          weight_lifted_most: { $max: "$exercises.baseWeightValue" },
-          weight_lifted_least: { $min: "$exercises.baseWeightValue" },
-          reps_least: { $min: "$exercises.reps" },
-          reps_total: { $sum: "$exercises.reps" },
-          reps_average: { $avg: "$exercises.reps" },
-          reps_most: { $max: "$exercises.reps" },
-          sets_least: { $min: "$exercises.sets" },
-          sets_total: { $sum: "$exercises.sets" },
-          sets_average: { $avg: "$exercises.sets" },
-          sets_most: { $max: "$exercises.sets" },
-          workouts_total: { $addToSet: "$exercises" }
+          weight_lifted_total: {
+            $sum: "$exercises.exercises.setsDetails.baseWeightValue"
+          },
+          weight_lifted_average: {
+            $avg: "$exercises.exercises.setsDetails.baseWeightValue"
+          },
+          weight_lifted_most: {
+            $max: "$exercises.exercises.setsDetails.baseWeightValue"
+          },
+          weight_lifted_least: {
+            $min: "$exercises.exercises.setsDetails.baseWeightValue"
+          },
+          reps_least: { $min: "$exercises.exercises.setsDetails.reps" },
+          reps_total: { $sum: "$exercises.exercises.setsDetails.reps" },
+          reps_average: { $avg: "$exercises.exercises.setsDetails.reps" },
+          reps_most: { $max: "$exercises.exercises.setsDetails.reps" },
+          sets_least: { $min: "$exercises.exercises.sets" },
+          sets_total: { $sum: "$exercises.exercises.sets" },
+          sets_average: { $avg: "$exercises.exercises.sets" },
+          sets_most: { $max: "$exercises.exercises.sets" },
+          workouts_total: { $addToSet: "$exercises.exercises.exercises" }
         }
       },
       {
@@ -377,6 +394,7 @@ user_workouts_helper.complete_master_event = async (id, updateObject) => {
     };
   }
 };
+
 /*
  * complete_all_workout is used to complete user workouts data based on user workouts date
  * 
@@ -406,6 +424,7 @@ user_workouts_helper.complete_all_workout = async (id, updateObject) => {
         new: true
       }
     );
+
     return {
       status: 1,
       message: "Workout updated"

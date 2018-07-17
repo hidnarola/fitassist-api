@@ -138,7 +138,7 @@ exercise_helper.get_all_exercise_for_user = async () => {
           subCategory: { $first: "$subCategory" },
           description: { $first: "$description" },
           mechanics: { $first: "$mechanics" },
-          difficltyLevel: { $first: "$difficltyLevel" },
+          difficltyLevel: { $first: "$difficltyLevel" }
         }
       }
     ]);
@@ -268,9 +268,11 @@ exercise_helper.get_exercise_id = async (id, flag = 0) => {
           mainMuscleGroup: { $first: "$mainMuscleGroup._id" },
           name: { $first: "$name" },
           description: { $first: "$description" },
-          images: { $addToSet: "$images" },
+          images: { $first: "$images" },
+          steps: { $first: "$steps" },
+          tips: { $first: "$tips" },
           mechanics: { $first: "$mechanics" },
-          difficltyLevel: { $first: "$difficltyLevel" },
+          difficltyLevel: { $first: "$difficltyLevel" }
         }
       }
     ]);
@@ -475,7 +477,7 @@ exercise_helper.get_filtered_records = async filter_obj => {
           mainMuscleGroup: { $first: "$mainMuscleGroup" },
           otherMuscleGroup: { $addToSet: "$otherMuscleGroup" },
           mechanics: { $first: "$mechanics" },
-          difficltyLevel: { $first: "$difficltyLevel" },
+          difficltyLevel: { $first: "$difficltyLevel" }
         }
       },
       {

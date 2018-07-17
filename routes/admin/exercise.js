@@ -213,7 +213,7 @@ router.post("/", async (req, res) => {
       equipments: equipmentsData ? equipmentsData : [],
       difficltyLevel: req.body.difficltyLevel,
       steps: req.body.steps ? JSON.parse(req.body.steps) : [],
-      tips: req.body.tips ? JSON.parse(req.body.tips) : [],
+      tips: req.body.tips ? JSON.parse(req.body.tips) : []
     };
     if (req.body.subCategory) {
       exercise_obj.subCategory = req.body.subCategory;
@@ -286,6 +286,7 @@ router.post("/", async (req, res) => {
       async (err, file_path_array) => {
         //End image upload
         exercise_obj.images = file_path_array;
+
         let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
         if (exercise_data.status === 0) {
           logger.error("Error while inserting exercise data = ", exercise_data);
@@ -395,8 +396,7 @@ router.put("/:exercise_id", async (req, res) => {
     var resp_data = await exercise_helper.get_exercise_id({
       _id: exercise_id
     });
-
-    new_img_path_list = resp_data["exercise"]["images"];
+    new_img_path_list = resp_data.exercise.images;
 
     async.waterfall(
       [
@@ -482,6 +482,7 @@ router.put("/:exercise_id", async (req, res) => {
       async (err, file_path_array) => {
         //End image upload
         exercise_obj.images = file_path_array;
+
         let exercise_data = await exercise_helper.update_exercise_by_id(
           req.params.exercise_id,
           exercise_obj

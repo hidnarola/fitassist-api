@@ -148,7 +148,8 @@ common_helper.unit_converter = async (data, unit) => {
       return { baseValue: calculatedData, baseUnit: "minute" };
       break;
     case "minute":
-      return { baseValue: data, baseUnit: "minute" };
+      calculatedData = data * 60;
+      return { baseValue: data, baseUnit: "second" };
       break;
     case "km":
       calculatedData = data * 1000;

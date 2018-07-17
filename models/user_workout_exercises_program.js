@@ -13,21 +13,7 @@ var UserWorkoutExercisesProgramSchema = new Schema(
       required: true
     },
     type: { type: String, enum: constants.WORKOUTS_TYPE },
-    exercise: { type: Object, default: {} },
-    reps: { type: Number },
-    sets: { type: Number },
-    restTime: { type: Number },
-    oneSetTimer: { type: Number },
-    weight: { type: Number },
-    distance: { type: Number },
-    weightUnits: { type: String },
-    distanceUnits: { type: String },
-    baseWeightUnits: { type: String },
-    baseDistanceUnits: { type: String },
-    baseWeightValue: { type: Number },
-    baseDistanceValue: { type: Number },
-    isCompleted: { type: Number, default: 0 },
-    sequence: { type: Number }
+    exercises: { type: Array }
   },
   { versionKey: false }
 );

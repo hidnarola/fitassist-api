@@ -4,7 +4,14 @@ var constants = require("../constant");
 
 //Define a schema
 var Schema = mongoose.Schema;
-
+var ExercisesSchema = new Schema(
+  {
+    sets: { type: Number },
+    setsDetails: { type: Array },
+    exercises: { type: Object }
+  },
+  { versionKey: false }
+);
 var UserWorkoutExercises = new Schema(
   {
     userWorkoutsId: {
@@ -13,10 +20,7 @@ var UserWorkoutExercises = new Schema(
       required: true
     },
     type: { type: String, enum: constants.WORKOUTS_TYPE },
-    exercise: { type: Object, default: {} },
-    reps: { type: Number },
-    sets: { type: Number },
-    setsDetails: { type: Array },
+    exercises: [{ type: ExercisesSchema }],
     isCompleted: { type: Number, default: 0 },
     date: { type: Date },
     completedDate: { type: Date },
