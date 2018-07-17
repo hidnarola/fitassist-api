@@ -94,7 +94,7 @@ app.use(function(req, res, next) {
 
   // If option request, send okay response
   if (req.method == "OPTIONS") {
-    res.status(200).json();
+    res.status(200);
   } else {
     next();
   }

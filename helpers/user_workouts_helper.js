@@ -232,60 +232,68 @@ user_workouts_helper.get_user_workouts_by_id = async id => {
 };
 
 /*
- * insert_user_workouts is used to insert into user_workouts collection
+ * insert_user_workouts_exercises is used to insert into user_workouts's exercises collection
  * 
- * @param   user_workouts_obj     JSON object consist of all property that need to insert in collection
+ * @param   childCollectionObject     JSON object consist of all property that need to insert in collection
+ * 
+ * @return  status  0 - If any error occur in inserting User workout exercise, with error
+ *          status  1 - If User workout inserted, with inserted User workout exercise document and appropriate message
+ * 
+ * @developed by "amc"
+ */
+user_workouts_helper.insert_user_workouts_exercises = async childCollectionObject => {
+  try {
+    let user_workouts_exercise = new UserWorkoutExercises(
+      childCollectionObject
+    );
+    var user_workouts_exercise_data = await user_workouts_exercise.save();
+    if (user_workouts_exercise_data) {
+      return {
+        status: 1,
+        message: "User workout exercises inserted",
+        exercises: user_workouts_exercise_data
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting User workout exercises",
+      error: err
+    };
+  }
+};
+
+/*
+ * insert_user_workouts_day is used to insert into user_workouts master collection
+ * 
+ * @param   masterCollectionObject     JSON object consist of all property that need to insert in collection
  * 
  * @return  status  0 - If any error occur in inserting User workout, with error
  *          status  1 - If User workout inserted, with inserted User workout document and appropriate message
  * 
  * @developed by "amc"
  */
-user_workouts_helper.insert_user_workouts = async (
-  masterCollectionObject,
-  childCollectionObject
-) => {
-  let user_workouts = new UserWorkouts(masterCollectionObject);
+user_workouts_helper.insert_user_workouts_day = async masterCollectionObject => {
   try {
-    var user_workouts_data = await user_workouts.save();
-    if (user_workouts_data) {
-      if (childCollectionObject && childCollectionObject.length > 0) {
-        childCollectionObject.forEach(element => {
-          element.userWorkoutsId = user_workouts_data._id;
-        });
-        var user_workouts_exercise = await UserWorkoutExercises.insertMany(
-          childCollectionObject
-        );
-        if (user_workouts_exercise) {
-          return {
-            status: 1,
-            message: "User workout inserted",
-            workout: user_workouts_exercise
-          };
-        }
-      }
-
-      if (user_workouts_data) {
-        return {
-          status: 1,
-          message: "User workout inserted",
-          workout: user_workouts_data
-        };
-      }
+    let user_workouts = new UserWorkouts(masterCollectionObject);
+    var workout_day = await user_workouts.save();
+    if (workout_day) {
+      return {
+        status: 1,
+        message: "Day Added successfully",
+        day: workout_day
+      };
     } else {
-      var delete_user_workouts = await UserWorkouts.findByIdAndRemove({
-        _id: mongoose.Types.ObjectId(user_workouts_data._id)
-      });
       return {
         status: 2,
-        message: "Error occured while inserting User workout",
+        message: "Error occured while inserting User workout day",
         error: err
       };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while inserting User workout",
+      message: "Error occured while inserting User workout day",
       error: err
     };
   }

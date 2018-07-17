@@ -54,8 +54,8 @@ router.post("/get_by_month", async (req, res) => {
 });
 
 /**
- * @api {post} /user/user_workouts Add User Workouts
- * @apiName Add User Workouts
+ * @api {post} /user/user_workouts/day Add User Workouts day
+ * @apiName Add User Workouts day
  * @apiGroup  User Workouts
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
@@ -63,12 +63,10 @@ router.post("/get_by_month", async (req, res) => {
  * @apiParam {String} description description of workout
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
  * @apiParam {Date} date date of workout
- * @apiParam {Array} workouts list of exercises of workout
  * @apiSuccess (Success 200) {JSON} workout workout details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-
-router.post("/", async (req, res) => {
+router.post("/day", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
@@ -80,19 +78,55 @@ router.post("/", async (req, res) => {
     date: req.body.date
   };
 
+  console.log("------------------------------------");
+  console.log("masterCollectionObject : ", masterCollectionObject);
+  console.log("------------------------------------");
+
+  var workout_day = await user_workout_helper.insert_user_workouts_day(
+    masterCollectionObject
+  );
+  console.log("------------------------------------");
+  console.log("workout_day : ", workout_day);
+  console.log("------------------------------------");
+
+  if (workout_day.status == 1) {
+    res.status(config.OK_STATUS).json(workout_day);
+  } else {
+    res.status(config.BAD_REQUEST).json(workout_day);
+  }
+});
+
+/**
+ * @api {post} /user/user_workouts/exercises Add User Workouts
+ * @apiName Add User Workouts
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} type type of workout
+ * @apiParam {String} date date of workout
+ * @apiParam {Array} exercises exercises of workout
+ * @apiParam {Number} sequence sequence of workout
+ * @apiSuccess (Success 200) {JSON} workout workout details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/exercises", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var dayId = req.body.dayId;
+
   var workouts = [];
   if (req.body.type != "restday") {
-    workouts = req.body.workouts;
+    var workouts = req.body.workouts;
     var totalExerciseIds = [];
     var exercise_ids = [];
-    for (let w of workouts) {
-      exercise_ids = _.pluck(w.exercises, "exerciseId");
 
-      totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
-    }
+    exercise_ids = _.pluck(workouts.exercises, "exerciseId");
+    totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
+
     totalExerciseIds.forEach((id, index) => {
       totalExerciseIds[index] = mongoose.Types.ObjectId(id);
     });
+
     var exercise_data = await exercise_helper.get_exercise_id(
       {
         _id: { $in: totalExerciseIds }
@@ -145,20 +179,18 @@ router.post("/", async (req, res) => {
           }
         }
       }
-
       return singleWorkout;
     });
     workouts = await Promise.all(workouts);
   }
-  var workout_data = await user_workout_helper.insert_user_workouts(
-    masterCollectionObject,
+  var workout_day = await user_workout_helper.insert_user_workouts_exercises(
     workouts
   );
 
-  if (workout_data.status == 1) {
-    res.status(config.OK_STATUS).json(workout_data);
+  if (workout_day.status == 1) {
+    res.status(config.OK_STATUS).json(workout_day);
   } else {
-    res.status(config.BAD_REQUEST).json(workout_data);
+    res.status(config.BAD_REQUEST).json(workout_day);
   }
 });
 
