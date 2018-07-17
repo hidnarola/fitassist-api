@@ -63,7 +63,7 @@ router.post("/get_by_month", async (req, res) => {
  * @apiParam {String} description description of workout
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
  * @apiParam {Date} date date of workout
- * @apiSuccess (Success 200) {JSON} workout workout details
+ * @apiSuccess (Success 200) {JSON} day workout day details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/day", async (req, res) => {
@@ -78,16 +78,9 @@ router.post("/day", async (req, res) => {
     date: req.body.date
   };
 
-  console.log("------------------------------------");
-  console.log("masterCollectionObject : ", masterCollectionObject);
-  console.log("------------------------------------");
-
   var workout_day = await user_workout_helper.insert_user_workouts_day(
     masterCollectionObject
   );
-  console.log("------------------------------------");
-  console.log("workout_day : ", workout_day);
-  console.log("------------------------------------");
 
   if (workout_day.status == 1) {
     res.status(config.OK_STATUS).json(workout_day);
@@ -114,19 +107,31 @@ router.post("/exercises", async (req, res) => {
   var authUserId = decoded.sub;
   var dayId = req.body.dayId;
 
-  var workouts = [];
+  var exercises = [];
   if (req.body.type != "restday") {
-    var workouts = req.body.workouts;
+    exercises = req.body.exercises;
+    console.log("------------------------------------");
+    console.log("exercises : ", exercises);
+    console.log("------------------------------------");
+
     var totalExerciseIds = [];
     var exercise_ids = [];
+    for (let e of exercises) {
+      console.log("------------------------------------");
+      console.log("e : ", e);
+      console.log("------------------------------------");
 
-    exercise_ids = _.pluck(workouts.exercises, "exerciseId");
-    totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
+      exercise_ids = _.pluck(e.exercises, "exerciseId");
 
+      totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
+    }
+    console.log("------------------------------------");
+    console.log(" exercise_ids: ", exercise_ids);
+    console.log("------------------------------------");
+    return;
     totalExerciseIds.forEach((id, index) => {
       totalExerciseIds[index] = mongoose.Types.ObjectId(id);
     });
-
     var exercise_data = await exercise_helper.get_exercise_id(
       {
         _id: { $in: totalExerciseIds }
@@ -179,11 +184,15 @@ router.post("/exercises", async (req, res) => {
           }
         }
       }
+
       return singleWorkout;
     });
     workouts = await Promise.all(workouts);
   }
+  return res.status(config.OK_STATUS).json(workouts);
+
   var workout_day = await user_workout_helper.insert_user_workouts_exercises(
+    dayId,
     workouts
   );
 
