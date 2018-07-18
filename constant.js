@@ -280,6 +280,7 @@ module.exports = {
     "tricep_extension",
     "pull_down",
     "machines",
+    "strong_man",
     "isometric_stretching",
     "active_isolated_stretching",
     "ballistic_stretching",
@@ -320,7 +321,8 @@ module.exports = {
       "bicep_curls",
       "tricep_extension",
       "pull_down",
-      "machines"
+      "machines",
+      "strong_man"
     ],
     FLEXIBILITY: [
       "isometric_stretching",

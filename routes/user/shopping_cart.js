@@ -14,8 +14,8 @@ var shopping_cart_helper = require("../../helpers/shopping_cart_helper");
 var user_recipe_helper = require("../../helpers/user_recipe_helper");
 
 /**
- * @api {post} /user/shopping_cart  Get shopping cart
- * @apiName Get shopping cart
+ * @api {post} /user/shopping_cart  Get Shopping Cart
+ * @apiName Get Shopping Cart
  * @apiGroup  Shopping Cart
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
@@ -96,31 +96,6 @@ router.post("/", async (req, res) => {
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
-  }
-});
-
-/**
- * @api {delete} /user/shopping_cart/:shopping_cart_id Delete
- * @apiName Delete
- * @apiGroup  Shopping Cart
- *
- * @apiHeader {String}  authorization User's unique access-key
- *
- * @apiSuccess (Success 200) {String} message Success message
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.delete("/:shopping_cart_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  logger.trace("Delete shopping cart API - Id = ", req.params.shopping_cart_id);
-  let shopping_cart_data = await shopping_cart_helper.delete_shopping_cart_by_id(
-    { _id: req.params.shopping_cart_id, userId: authUserId }
-  );
-
-  if (shopping_cart_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(shopping_cart_data);
-  } else {
-    res.status(config.OK_STATUS).json(shopping_cart_data);
   }
 });
 

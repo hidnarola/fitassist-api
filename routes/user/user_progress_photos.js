@@ -123,7 +123,7 @@ router.get("/:user_photo_id", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  *
- * @apiParam {file} image User's Progress Image
+ * @apiParam {File} image User's Progress Image
  * @apiParam {String} description Description of progress
  * @apiParam {Date} date date of progress photo
  *
@@ -227,7 +227,7 @@ router.post("/", async (req, res) => {
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {file} image User's Progress Image
+ * @apiParam {File} image User's Progress Image
  * @apiParam {String} description Description of progress
  * @apiSuccess (Success 200) {JSON} user_progress_photo user_progress_photo details
  * @apiError (Error 4xx) {String} message Validation or error message.

@@ -149,7 +149,7 @@ myIo.init = function(server) {
      * @api {socket on} get_channel_id  User Channel
      * @apiName User Channel
      * @apiGroup  Sokets
-     * @apiParam {Object} data Data of user
+     * @apiParam {JSON} data Data of user
      * @apiSuccess (Success 200) {JSON} channel channel of channel
      */
     socket.on("get_channel_id", async function(data) {
@@ -184,7 +184,7 @@ myIo.init = function(server) {
      * @api {socket on} request_users_conversation_channels  Get user channels
      * @apiName Get user channels
      * @apiGroup  Sokets
-     * @apiParam {Object} data Data of user
+     * @apiParam {JSON} data Data of user
      * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
      */
     socket.on("request_users_conversation_channels", async function(data) {
@@ -226,7 +226,7 @@ myIo.init = function(server) {
      * @api {socket on} get_user_conversation_by_channel  Get user's messages by channel ID
      * @apiName Get user's messages by channel ID
      * @apiGroup  Sokets
-     * @apiParam {Object} data Data of user(token,channel_id,start,end)
+     * @apiParam {JSON} data Data of user(token,channel_id,start,end)
      * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
      */
     socket.on("get_user_conversation_by_channel", async function(data) {
@@ -282,7 +282,7 @@ myIo.init = function(server) {
      * @api {socket on} send_new_message  Get user's messages by channel ID
      * @apiName Get user's messages by channel ID
      * @apiGroup  Sokets
-     * @apiParam {Object} data Data of user(token,channel_id,start,end)
+     * @apiParam {JSON} data Data of user(token,channel_id,start,end)
      * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
      */
     socket.on("send_new_message", async function(data) {
@@ -361,7 +361,7 @@ myIo.init = function(server) {
      * @api {socket on} request_typing_start  Indicate user typing...
      * @apiName Indicate user typing...
      * @apiGroup  Sokets
-     * @apiParam {Object} data {friendId:"",channelId:""} of friend
+     * @apiParam {JSON} data {friendId:"",channelId:""} of friend
      * @apiSuccess (Success 200) {String} flag flag
      */
     socket.on("request_typing_start", async function(data) {
@@ -387,8 +387,8 @@ myIo.init = function(server) {
      * @api {socket on} request_typing_stop Indicate user typing stop
      * @apiName Indicate user typing stop
      * @apiGroup  Sokets
-     * @apiParam {Object} data {friendId:"",channelId:""} of friend
-     * @apiSuccess (Success 200) {Object} channel channel data
+     * @apiParam {JSON} data {friendId:"",channelId:""} of friend
+     * @apiSuccess (Success 200) {JSON} channel channel data
      */
     socket.on("request_typing_stop", async function(data) {
       var respObj = {
@@ -413,7 +413,7 @@ myIo.init = function(server) {
      * @api {socket on} mark_message_as_read Mark messages as read
      * @apiName Mark messages as read
      * @apiGroup  Sokets
-     * @apiParam {Object} data {userId:"",channelId:""} of user
+     * @apiParam {JSON} data {userId:"",channelId:""} of user
      * @apiSuccess (Success 200) {String} flag flag
      */
     socket.on("mark_message_as_read", async function(data) {

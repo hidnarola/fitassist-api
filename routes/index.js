@@ -26,7 +26,7 @@ router.get("/", function(req, res, next) {
 /**
  * @api {post} /user_login User Login
  * @apiName User Login
- * @apiGroup Login/Register API
+ * @apiGroup Login API
  *
  * @apiDescription  Login request for user role
  *
@@ -152,7 +152,7 @@ router.post("/user_login", async (req, res) => {
 /**
  * @api {post} /admin_login Admin Login
  * @apiName Admin Login
- * @apiGroup Login/Register API
+ * @apiGroup Login API
  *
  * @apiDescription Login request for admin role
  *
@@ -276,16 +276,17 @@ router.post("/admin_login", async (req, res) => {
 });
 
 /**
+ * @apiIgnore Not finished Method
  * @api {post} /user_signup User Signup
  * @apiName User Signup
- * @apiGroup Login/Register API
+ * @apiGroup Login API
  *
  * @apiDescription  Signup request for user role
  *
  * @apiHeader {String}  Content-Type application/json
  *
- * @apiParam {String} first_name First name of user
- * @apiParam {String} last_name Last name of user
+ * @apiParam {String} firstName First name of user
+ * @apiParam {String} lastName Last name of user
  * @apiParam {String} username Username
  * @apiParam {String} email Email address
  * @apiParam {String} password Password

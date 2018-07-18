@@ -10,7 +10,6 @@ var exerciseMeasurementsSchema = new Schema(
     time: { type: Boolean },
     disatance: { type: Boolean },
     reps: { type: Boolean },
-    evalation: { type: Boolean },
     timeUnit: [
       {
         type: String,
@@ -21,12 +20,6 @@ var exerciseMeasurementsSchema = new Schema(
       {
         type: String,
         enum: ["meter", "feet", "km", "mile"]
-      }
-    ],
-    evalationUnit: [
-      {
-        type: String,
-        enum: ["meter", "feet"]
       }
     ],
     createdAt: { type: Date, default: Date.now }

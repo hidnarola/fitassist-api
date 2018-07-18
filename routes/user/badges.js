@@ -12,8 +12,6 @@ var badge_assign_helper = require("../../helpers/badge_assign_helper");
  * @apiName Get all
  * @apiGroup User Badges
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {Number}  start start of records
- * @apiParam {Number}  offset offset of records
  * @apiSuccess (Success 200) {JSON} goals JSON of badges_assign's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

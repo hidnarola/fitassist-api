@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
  *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  *
- * @apiSuccess (Success 200) {Array} nutrition nutrition's document
+ * @apiSuccess (Success 200) {Object} nutrition nutrition's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:nutrition_id", async (req, res) => {

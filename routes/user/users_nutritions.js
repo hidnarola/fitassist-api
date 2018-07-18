@@ -16,7 +16,7 @@ var user_nutritions_helper = require("../../helpers/user_nutritions_helper");
  * @apiName  Get User Nutrition
  * @apiGroup  Get User Nutrition
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {JSON} notifications Array of notifications document
+ * @apiSuccess (Success 200) {JSON} user_nutritions Array of user_nutritions document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {

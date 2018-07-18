@@ -118,7 +118,7 @@ router.get("/:equipment_id", async (req, res) => {
  * @apiParam {String} name Name of Equipment Equipment
  * @apiParam {Boolean} status status of Equipment
  * @apiParam {String} [description] Description of Equipment
- * @apiParam {file} [equipment_img] Equipment image
+ * @apiParam {File} [equipment_img] Equipment image
  *
  * @apiSuccess (Success 200) {JSON} equipment Equipment details
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -218,7 +218,7 @@ router.post("/", async (req, res) => {
  *
  * @apiParam {String} name Name of equipment Equipment
  * @apiParam {String} [description] Description of equipment
- * @apiParam {file} [equipment_img] Equipment image
+ * @apiParam {File} [equipment_img] Equipment image
  * @apiParam {String} category_id Equipment's Category id
  * @apiParam {Boolean} status Status for equipment
  * @apiSuccess (Success 200) {JSON} equipment Equipment details

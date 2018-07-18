@@ -46,7 +46,7 @@ var common_helper = require("../../helpers/common_helper");
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
  * @apiParam {Number} page page number
- * @apiSuccess (Success 200) {JSON} filtered_ingredients filtered details
+ * @apiSuccess (Success 200) {Array} filtered_ingredients filtered details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
@@ -93,7 +93,7 @@ router.get("/", async (req, res) => {
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * * @apiParam {String} ingredient_id ID of Ingredient
 
- * @apiSuccess (Success 200) {Object} ingredient Object of Ingredient document
+ * @apiSuccess (Success 200) {JSON} ingredient Object of Ingredient document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:ingredient_id", async (req, res) => {

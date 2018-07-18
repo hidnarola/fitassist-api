@@ -46,7 +46,7 @@ var common_helper = require("../../helpers/common_helper");
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
  * @apiParam {Number} page page number
- * @apiSuccess (Success 200) {JSON} filtered_recipes filtered details
+ * @apiSuccess (Success 200) {Array} filtered_recipes filtered details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
@@ -86,7 +86,7 @@ router.get("/", async (req, res) => {
  * @apiName Get by ID
  * @apiGroup Recipes
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {Array} recipe Array of Recipes document
+ * @apiSuccess (Success 200) {JSON} recipe Array of Recipes document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:recipe_id", async (req, res) => {
@@ -118,7 +118,7 @@ router.get("/:recipe_id", async (req, res) => {
  * @apiParam {Array} recipeType recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
  * @apiParam {Array} nutritions nutritions Object Array
  * @apiParam {File} [recipe_img] recipe image
- * @apiSuccess (Success 200) {Array} recipe Array of recipes document
+ * @apiSuccess (Success 200) {JSON} recipe Array of recipes document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
@@ -221,7 +221,7 @@ router.post("/", async (req, res) => {
  * @apiParam {Array} recipeType recipe Type | Possible Values ('pescaterian','paleo','vegetarian','vegan','dairy-free','kosher','islam','coeliac')
  * @apiParam {Array} nutritions nutritions Object Array
  * @apiParam {File} [recipe_img] recipe image
- * @apiSuccess (Success 200) {Array} recipe Array of recipes document
+ * @apiSuccess (Success 200) {JSON} recipe JSON of recipes document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:recipe_id", async (req, res) => {

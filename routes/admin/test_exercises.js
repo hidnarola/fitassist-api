@@ -69,7 +69,7 @@ var common_helper = require("../../helpers/common_helper");
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
  * @apiParam {Number} page page number
- * @apiSuccess (Success 200) {JSON} filtered_test_exercises filtered details
+ * @apiSuccess (Success 200) {Array} filtered_test_exercises filtered details
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
@@ -120,7 +120,7 @@ router.get("/", async (req, res) => {
  * @apiName Get Test Exercises by ID
  * @apiGroup  Test Exercises
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {Array} test_exercise Array of test_exercises document
+ * @apiSuccess (Success 200) {JSON} test_exercise JSON of test_exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:test_exercise_id", async (req, res) => {

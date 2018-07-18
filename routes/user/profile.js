@@ -23,7 +23,7 @@ var socket = require("../../socket/socketServer");
  * @api {get} /user/profile/preferences Get User Profile preferences
  * @apiName Get Profile preferences
  * @apiGroup User
- * @apiSuccess (Success 200) {Array} user_settings Array of users_settings document
+ * @apiSuccess (Success 200) {JSON} user_settings JSON of users_settings document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/preferences", async (req, res) => {
@@ -69,7 +69,7 @@ router.get("/", async (req, res) => {
  * @api {get} /user/profile/:username Get User Profile by username
  * @apiName Get Profile by username
  * @apiGroup User
- * @apiSuccess (Success 200) {Array} user Array of users document
+ * @apiSuccess (Success 200) {JSON} user JSON of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:username", async (req, res) => {
@@ -165,7 +165,7 @@ router.get("/:username", async (req, res) => {
  * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {String} [workoutLocation] workoutLocation
  * @apiParam {Boolean} [status] status of profile
- * @apiSuccess (Success 200) {Array} user Array of users document
+ * @apiSuccess (Success 200) {JSON} user JSON of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
