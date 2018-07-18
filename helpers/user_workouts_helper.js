@@ -35,11 +35,27 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
     });
 
     if (user_workouts) {
-      return {
-        status: 1,
-        message: "user workouts found",
-        workouts: !single ? user_workouts : user_workouts[0]
-      };
+      if (!single) {
+        return {
+          status: 1,
+          message: "user workouts found",
+          workouts: user_workouts
+        };
+      } else {
+        if (user_workouts.length > 0) {
+          return {
+            status: 1,
+            message: "user workouts found",
+            workouts: user_workouts[0]
+          };
+        } else {
+          return {
+            status: 1,
+            message: "user workouts not found",
+            workouts: {}
+          };
+        }
+      }
     } else {
       return { status: 2, message: "No user workouts available" };
     }

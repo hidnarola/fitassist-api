@@ -58,7 +58,6 @@ router.post("/get_by_month", async (req, res) => {
  * @apiName Get User Workouts
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Date}  date Date of user's workout program
  * @apiSuccess (Success 200) {JSON} workouts JSON of user_workouts
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
