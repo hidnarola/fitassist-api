@@ -18,7 +18,12 @@ router.get("/names", async (req, res) => {
   logger.trace("Get all Exercise of name API called");
   var resp_data = await exercise_helper.get_all_exercise(
     {},
-    { _id: 1, name: 1 }
+    {
+      _id: 1,
+      name: 1,
+      category: 1,
+      subCategory: 1
+    }
   );
 
   if (resp_data.status == 0) {

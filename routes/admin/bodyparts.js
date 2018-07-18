@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
  * @apiName Body Part - Body Parts by ID
  * @apiGroup  Body Parts
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {Array} bodypart Array of Body part document
+ * @apiSuccess (Success 200) {JSON} bodypart JSON of Body part document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:body_part_id", async (req, res) => {
@@ -96,7 +96,7 @@ router.post("/", async (req, res) => {
  * @apiGroup  Body Parts
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} bodypart Name of Body Part
- * @apiSuccess (Success 200) {Array} bodypart Array of bodypart document
+ * @apiSuccess (Success 200) {JSON} bodypart JSON of bodypart document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:body_part_id", async (req, res) => {
@@ -136,9 +136,7 @@ router.put("/:body_part_id", async (req, res) => {
  * @api {delete} /admin/bodypart/:body_part_id Delete
  * @apiName Delete
  * @apiGroup  Body Parts
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

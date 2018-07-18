@@ -15,16 +15,14 @@ var common_helper = require("../../helpers/common_helper");
  * @api {post} /admin/user/filter User Filter
  * @apiName User User Filter
  * @apiGroup Admin Side User
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
  * @apiParam {Number} page page number
- * @apiSuccess (Success 200) {JSON} filtered_users filtered details
+ * @apiSuccess (Success 200) {Array} filtered_users filtered details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
@@ -64,7 +62,7 @@ router.get("/", async (req, res) => {
  * @apiName Users by authUserId
  * @apiGroup Admin Side User
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * @apiSuccess (Success 200) {Array} user Array of user document
+ * @apiSuccess (Success 200) {JSON} user JSON of user document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:authUserId", async (req, res) => {
@@ -89,13 +87,16 @@ router.get("/:authUserId", async (req, res) => {
  * @apiParam {String} lastName Last name of user
  * @apiParam {String} email Email address
  * @apiParam {Number} [mobileNumber] mobileNumber
- * @apiParam {Enum} gender gender | Possible Values ('male', 'female', 'transgender')
+ * @apiParam {Enum} gender gender | <code>Possible Values ('male', 'female', 'transgender')</code>
  * @apiParam {Date} [dateOfBirth] Date of Birth
- * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')
+ * @apiParam {Object} [goal] goal  of user><br><pre>example. {
+        "name" : "gain_muscle",
+        "start" : 0
+    }</pre><code>Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</code>
  * @apiParam {File} [user_img] avatar
  * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {Boolean} status status
- * @apiSuccess (Success 200) {Array} user Array of users document
+ * @apiSuccess (Success 200) {JSON} user JSON of users document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:authUserId", async (req, res) => {
@@ -240,24 +241,24 @@ router.delete("/:authUserId", async (req, res) => {
  * @api {post} /admin/user/checkemail Check Unique
  * @apiName Check Unique
  * @apiGroup Admin Side User
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} email email to be check uniqueness
  * @apiSuccess (Success 200) {String} message Success message
+ * @apiSuccess (Success 200) {String} count no of existing email
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/checkemail", async (req, res) => {
   logger.trace("Get check email API called");
-  var resp_data = await user_helper.check_email_uniqueness(req.body.email);
-  if (resp_data.status == 0) {
+  var resp_data = await user_helper.checkvalue({ email: req.body.email });
+  if (resp_data.status == 1) {
+    logger.trace("check email Api is called = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
     logger.error(
       "Error occured while checking email uniqueness  = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("Email is Unique found successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

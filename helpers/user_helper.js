@@ -303,7 +303,7 @@ user_helper.checkvalue = async value => {
     if (count == 0) {
       return { status: 1, message: "Value is not exists", count: count };
     } else if (count == 1) {
-      return { status: 1, message: "Value is Unique", count: count };
+      return { status: 1, message: "Value is exists", count: count };
     } else {
       return { status: 2, message: "Value is not Unique", count: count };
     }

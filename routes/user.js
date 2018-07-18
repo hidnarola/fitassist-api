@@ -1,8 +1,6 @@
 var express = require("express");
 var router = express.Router();
 
-
-
 var auth = require("../middlewares/user_auth");
 var body_measurement = require("./user/measurement");
 var nutrition_preference = require("./user/nutrition_preferences");
@@ -35,6 +33,7 @@ var user_workouts = require("./user/user_workouts");
 var user_calendar = require("./user/user_calendar");
 var user_program = require("./user/user_program");
 var user_leaderboard = require("./user/user_leaderboard");
+var exercise_measurements = require("./user/exercise_measurements");
 
 // router.use("/workout", auth, user_workout);
 router.use("/measurement", auth, body_measurement);
@@ -67,5 +66,6 @@ router.use("/user_workouts", auth, user_workouts);
 router.use("/user_calendar", auth, user_calendar);
 router.use("/user_program", auth, user_program);
 router.use("/user_leaderboard", auth, user_leaderboard);
+router.use("/exercise_measurements", auth, exercise_measurements);
 
 module.exports = router;

@@ -425,7 +425,6 @@ router.put("/complete_all", async (req, res) => {
  * @apiParam {String} description description of workout
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
  * @apiParam {Date} date date of workout
- * @apiParam {Array} workouts list of exercises of workout
  * @apiSuccess (Success 200) {JSON} friend approved friend detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -439,87 +438,37 @@ router.put("/:workout_id", async (req, res) => {
     userId: authUserId,
     date: req.body.date
   };
-  var workouts = [];
-  if (req.body.type != "restday") {
-    workouts = req.body.workouts;
-    var totalExerciseIds = [];
-    var exercise_ids = [];
-    for (let w of workouts) {
-      exercise_ids = _.pluck(w.exercises, "exerciseId");
-
-      totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
-    }
-    totalExerciseIds.forEach((id, index) => {
-      totalExerciseIds[index] = mongoose.Types.ObjectId(id);
-    });
-    var exercise_data = await exercise_helper.get_exercise_id(
-      {
-        _id: { $in: totalExerciseIds }
-      },
-      1
-    );
-    var workouts = workouts.map(async singleWorkout => {
-      for (let single of singleWorkout.exercises) {
-        single.exercises = _.find(exercise_data.exercise, exerciseDb => {
-          return exerciseDb._id.toString() === single.exerciseId.toString();
-        });
-        delete single.exerciseId;
-        var setsDetails = single.setsDetails;
-        if (setsDetails) {
-          for (let tmp of setsDetails) {
-            if (tmp.weight) {
-              var baseWeight = await common_helper.unit_converter(
-                tmp.weight,
-                tmp.weightUnit
-              );
-              tmp.baseWeightUnit = baseWeight.baseUnit;
-              tmp.baseWeightValue = baseWeight.baseValue;
-            }
-            if (tmp.distance) {
-              var baseDistance = await common_helper.unit_converter(
-                tmp.distance,
-                tmp.distanceUnit
-              );
-              tmp.baseDistanceUnits = baseDistance.baseUnit;
-              tmp.baseDistanceValue = baseDistance.baseValue;
-            }
-            if (tmp.restTime) {
-              var baseTime = await common_helper.unit_converter(
-                tmp.restTime,
-                tmp.restTimeUnit
-              );
-              tmp.baseRestTimeUnit = baseTime.baseUnit;
-              tmp.baseRestTimeValue = baseTime.baseValue;
-            }
-
-            if (tmp.oneSetTime) {
-              var baseOneSetTime = await common_helper.unit_converter(
-                tmp.oneSetTime,
-                tmp.oneSetTimeUnit
-              );
-
-              tmp.baseOneSetTimeUnits = baseOneSetTime.baseUnit;
-              tmp.baseOneSetTimeValue = baseOneSetTime.baseValue;
-            }
-          }
-        }
-      }
-
-      return singleWorkout;
-    });
-    workouts = await Promise.all(workouts);
-  }
 
   var workout_data = await user_workout_helper.update_user_workouts_by_id(
     req.params.workout_id,
-    masterCollectionObject,
-    workouts
+    masterCollectionObject
   );
 
   if (workout_data.status == 1) {
     res.status(config.OK_STATUS).json(workout_data);
   } else {
     res.status(config.BAD_REQUEST).json(workout_data);
+  }
+});
+
+/**
+ * @api {delete} /user/user_workouts/exercise/:exercise_id Delete User workout exercise
+ * @apiName Delete User workout exercise
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.delete("/exercise/:exercise_id", async (req, res) => {
+  exercise_id = mongoose.Types.ObjectId(req.params.exercise_id);
+  logger.trace("Delete workout exercise API - Id = ", exercise_id);
+  let workout_data = await user_workout_helper.delete_user_workouts_exercise({
+    _id: exercise_id
+  });
+  if (workout_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
+  } else {
+    res.status(config.OK_STATUS).json(workout_data);
   }
 });
 

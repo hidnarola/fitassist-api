@@ -32,7 +32,7 @@ var common_helper = require("../../helpers/common_helper");
   columnFilterEqual: [
     {
       id: "email",
-      value: "ake@narola.email"
+      value: "amc@narola.email"
     }
   ]
 }</code></pre>

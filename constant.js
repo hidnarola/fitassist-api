@@ -1,5 +1,22 @@
 module.exports = {
   WORKOUTS_TYPE: ["warmup", "cooldown", "exercise", "circuit", "superset"],
+  BADGES_UNIT: [
+    "n/a",
+    "cm",
+    "feet",
+    "kg",
+    "lb",
+    "percentage",
+    "in",
+    "number",
+    "hour",
+    "minute",
+    "meter",
+    "km",
+    "mile",
+    "g",
+    "mg"
+  ],
   RECIPE_TYPE: [
     "vegetarian",
     "vegan",
