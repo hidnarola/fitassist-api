@@ -54,6 +54,35 @@ router.post("/get_by_month", async (req, res) => {
 });
 
 /**
+ * @api {get} /user/user_workouts/:workout_id Get User Workouts
+ * @apiName Get User Workouts
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Date}  date Date of user's workout program
+ * @apiSuccess (Success 200) {JSON} workouts JSON of user_workouts
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/:workout_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
+  var resp_data = await user_workout_helper.get_all_workouts(
+    {
+      _id: workout_id
+    },
+    true
+  );
+
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching user workouts = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("user workouts got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
  * @api {post} /user/user_workouts/day Add User Workouts day
  * @apiName Add User Workouts day
  * @apiGroup  User Workouts
@@ -107,28 +136,12 @@ router.post("/exercises", async (req, res) => {
   var authUserId = decoded.sub;
   var dayId = req.body.dayId;
 
-  var exercises = [];
   if (req.body.type != "restday") {
-    exercises = req.body.exercises;
-    console.log("------------------------------------");
-    console.log("exercises : ", exercises);
-    console.log("------------------------------------");
-
+    var exercises = req.body.exercises;
     var totalExerciseIds = [];
-    var exercise_ids = [];
-    for (let e of exercises) {
-      console.log("------------------------------------");
-      console.log("e : ", e);
-      console.log("------------------------------------");
+    var exercise_ids = _.pluck(exercises, "exerciseId");
+    var totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
 
-      exercise_ids = _.pluck(e.exercises, "exerciseId");
-
-      totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
-    }
-    console.log("------------------------------------");
-    console.log(" exercise_ids: ", exercise_ids);
-    console.log("------------------------------------");
-    return;
     totalExerciseIds.forEach((id, index) => {
       totalExerciseIds[index] = mongoose.Types.ObjectId(id);
     });
@@ -138,58 +151,56 @@ router.post("/exercises", async (req, res) => {
       },
       1
     );
-    var workouts = workouts.map(async singleWorkout => {
-      for (let single of singleWorkout.exercises) {
-        single.exercises = _.find(exercise_data.exercise, exerciseDb => {
-          return exerciseDb._id.toString() === single.exerciseId.toString();
-        });
-        delete single.exerciseId;
-        var setsDetails = single.setsDetails;
-        if (setsDetails) {
-          for (let tmp of setsDetails) {
-            if (tmp.weight) {
-              var baseWeight = await common_helper.unit_converter(
-                tmp.weight,
-                tmp.weightUnit
-              );
-              tmp.baseWeightUnit = baseWeight.baseUnit;
-              tmp.baseWeightValue = baseWeight.baseValue;
-            }
-            if (tmp.distance) {
-              var baseDistance = await common_helper.unit_converter(
-                tmp.distance,
-                tmp.distanceUnit
-              );
-              tmp.baseDistanceUnits = baseDistance.baseUnit;
-              tmp.baseDistanceValue = baseDistance.baseValue;
-            }
-            if (tmp.restTime) {
-              var baseTime = await common_helper.unit_converter(
-                tmp.restTime,
-                tmp.restTimeUnit
-              );
-              tmp.baseRestTimeUnit = baseTime.baseUnit;
-              tmp.baseRestTimeValue = baseTime.baseValue;
-            }
 
-            if (tmp.oneSetTime) {
-              var baseOneSetTime = await common_helper.unit_converter(
-                tmp.oneSetTime,
-                tmp.oneSetTimeUnit
-              );
+    for (let single of exercises) {
+      single.exercises = _.find(exercise_data.exercise, exerciseDb => {
+        return exerciseDb._id.toString() === single.exerciseId.toString();
+      });
+      delete single.exerciseId;
 
-              tmp.baseOneSetTimeUnits = baseOneSetTime.baseUnit;
-              tmp.baseOneSetTimeValue = baseOneSetTime.baseValue;
-            }
-          }
+      for (let tmp of single.setsDetails) {
+        if (tmp.weight) {
+          var baseWeight = await common_helper.unit_converter(
+            tmp.weight,
+            tmp.weightUnit
+          );
+          tmp.baseWeightUnit = baseWeight.baseUnit;
+          tmp.baseWeightValue = baseWeight.baseValue;
+        }
+        if (tmp.distance) {
+          var baseDistance = await common_helper.unit_converter(
+            tmp.distance,
+            tmp.distanceUnit
+          );
+          tmp.baseDistanceUnits = baseDistance.baseUnit;
+          tmp.baseDistanceValue = baseDistance.baseValue;
+        }
+        if (tmp.restTime) {
+          var baseTime = await common_helper.unit_converter(
+            tmp.restTime,
+            tmp.restTimeUnit
+          );
+          tmp.baseRestTimeUnit = baseTime.baseUnit;
+          tmp.baseRestTimeValue = baseTime.baseValue;
+        }
+
+        if (tmp.oneSetTime) {
+          var baseOneSetTime = await common_helper.unit_converter(
+            tmp.oneSetTime,
+            tmp.oneSetTimeUnit
+          );
+
+          tmp.baseOneSetTimeUnits = baseOneSetTime.baseUnit;
+          tmp.baseOneSetTimeValue = baseOneSetTime.baseValue;
         }
       }
-
-      return singleWorkout;
-    });
-    workouts = await Promise.all(workouts);
+    }
   }
-  return res.status(config.OK_STATUS).json(workouts);
+  console.log("------------------------------------");
+  console.log("exercises : ", exercises);
+  console.log("------------------------------------");
+
+  return res.status(config.OK_STATUS).json(exercises);
 
   var workout_day = await user_workout_helper.insert_user_workouts_exercises(
     dayId,
