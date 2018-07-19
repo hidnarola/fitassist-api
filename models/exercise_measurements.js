@@ -6,20 +6,36 @@ var Schema = mongoose.Schema;
 
 var exerciseMeasurementsSchema = new Schema(
   {
-    workoutType: { type: String },
-    time: { type: Boolean },
-    disatance: { type: Boolean },
-    reps: { type: Boolean },
-    timeUnit: [
+    category: { type: String, required: true },
+    subCategory: { type: String, required: true },
+    field1: [
       {
         type: String,
-        enum: ["second", "minutes", "hours"]
+        enum: [
+          "second",
+          "minutes",
+          "hours",
+          "meter",
+          "feet",
+          "km",
+          "mile",
+          "reps"
+        ],
+        default: []
       }
     ],
-    disatanceUnit: [
+    field2: [
       {
         type: String,
-        enum: ["meter", "feet", "km", "mile"]
+        enum: ["effort", "kmph", "mph", "lb", "kg", "one_rm"],
+        default: []
+      }
+    ],
+    field3: [
+      {
+        type: String,
+        enum: ["rep_time", "set_time", "reps"],
+        default: []
       }
     ],
     createdAt: { type: Date, default: Date.now }

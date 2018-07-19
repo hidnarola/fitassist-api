@@ -1,11 +1,10 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
-var config = require('../../config');
+var config = require("../../config");
 var logger = config.logger;
 
-var body_part_helper = require('../../helpers/body_parts_helper');
-
+var body_part_helper = require("../../helpers/body_parts_helper");
 
 /**
  * @api {get} /user/bodypart Get all
@@ -16,18 +15,14 @@ var body_part_helper = require('../../helpers/body_parts_helper');
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-
-    logger.trace("Get all body parts API called");
-    var resp_data = await body_part_helper.get_all_body_parts();
-    if (resp_data.status == 0) {
-      logger.error("Error occured while fetching body parts = ", resp_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-      logger.trace("Body Parts got successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    }
-  });
-
-
-
+  logger.trace("Get all body parts API called");
+  var resp_data = await body_part_helper.get_all_body_parts();
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching body parts = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Body Parts got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
 module.exports = router;
