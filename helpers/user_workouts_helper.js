@@ -26,6 +26,9 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
         }
       }
     ]);
+    console.log("------------------------------------");
+    console.log("user_workouts : ", user_workouts);
+    console.log("------------------------------------");
 
     _.each(user_workouts, user_workout => {
       var tmp = [];
@@ -248,7 +251,7 @@ user_workouts_helper.insert_user_workouts_exercises = async (
       return {
         status: 1,
         message: "User workout exercises inserted",
-        exercises: user_workouts_exercise_data
+        workout: user_workouts_exercise_data
       };
     }
   } catch (err) {

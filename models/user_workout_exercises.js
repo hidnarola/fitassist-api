@@ -29,7 +29,7 @@ var UserWorkoutExercises = new Schema(
     isCompleted: { type: Number, default: 0 },
     exercises: [{ type: ExercisesSchema }],
     date: { type: Date },
-    completedDate: { type: Date, default: Date.now }
+    completedDate: { type: Date }
   },
   { versionKey: false }
 );

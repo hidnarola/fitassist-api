@@ -62,8 +62,6 @@ router.post("/get_by_month", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:workout_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
   var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
   var resp_data = await user_workout_helper.get_all_workouts(
     {
@@ -124,13 +122,13 @@ router.post("/day", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {String} type type of workout
- * @apiParam {String} date date of workout
+ * @apiParam {String} subType subType of workout
+ * @apiParam {String} userWorkoutsId userWorkoutsId of workout
  * @apiParam {Array} exercises exercises of workout
- * @apiParam {Number} sequence sequence of workout
  * @apiSuccess (Success 200) {JSON} workout workout details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post("/exercises", async (req, res) => {
+router.post("/workout", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
@@ -247,6 +245,12 @@ router.post("/exercises", async (req, res) => {
     );
 
     if (workout_day.status == 1) {
+      workout_day = await user_workout_helper.get_all_workouts(
+        {
+          _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
+        },
+        true
+      );
       res.status(config.OK_STATUS).json(workout_day);
     } else {
       res.status(config.BAD_REQUEST).json(workout_day);
@@ -327,6 +331,7 @@ router.post("/assign_program", async (req, res) => {
 });
 
 /**
+ *
  * @api {put} /user/user_workouts/complete Complete User workout
  * @apiName Complete User workout
  * @apiGroup  User Workouts
@@ -424,7 +429,8 @@ router.put("/complete_all", async (req, res) => {
 
   if (workout_data.status === 1) {
     let workout_detail = await user_workout_helper.workout_detail_for_badges({
-      userId: authUserId
+      userId: authUserId,
+      isCompleted: 1
     });
 
     delete workout_detail.workouts._id;
