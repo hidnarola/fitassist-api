@@ -1,5 +1,6 @@
 module.exports = {
-  WORKOUTS_TYPE: ["warmup", "cooldown", "exercise", "circuit", "superset"],
+  WORKOUTS_TYPE: ["warmup", "cooldown", "exercise"],
+  WORKOUTS_SUB_TYPE: ["exercise", "circuit", "superset"],
   BADGES_UNIT: [
     "n/a",
     "cm",

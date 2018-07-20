@@ -1,5 +1,6 @@
 var UserWorkouts = require("./../models/user_workouts");
 var UserWorkoutExercises = require("./../models/user_workout_exercises");
+var WorkoutLogs = require("./../models/workout_logs");
 var user_workouts_helper = {};
 var _ = require("underscore");
 
@@ -126,59 +127,34 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
         $match: condition
       },
       {
-        $lookup: {
-          from: "user_workout_exercises",
-          foreignField: "userWorkoutsId",
-          localField: "_id",
-          as: "exercises"
-        }
-      },
-      {
-        $unwind: "$exercises"
-      },
-      {
-        $match: {
-          "exercises.isCompleted": 1
-        }
-      },
-      {
-        $unwind: "$exercises"
-      },
-      {
-        $unwind: "$exercises.exercises"
-      },
-      {
-        $unwind: "$exercises.exercises.setsDetails"
-      },
-      {
         $group: {
           _id: null,
           weight_lifted_total: {
-            $sum: "$exercises.exercises.setsDetails.baseWeightValue"
+            $sum: "$weight"
           },
           weight_lifted_average: {
-            $avg: "$exercises.exercises.setsDetails.baseWeightValue"
+            $avg: "$weight"
           },
           weight_lifted_most: {
-            $max: "$exercises.exercises.setsDetails.baseWeightValue"
+            $max: "$weight"
           },
           weight_lifted_least: {
-            $min: "$exercises.exercises.setsDetails.baseWeightValue"
+            $min: "$weight"
           },
-          reps_least: { $min: "$exercises.exercises.setsDetails.reps" },
-          reps_total: { $sum: "$exercises.exercises.setsDetails.reps" },
-          reps_average: { $avg: "$exercises.exercises.setsDetails.reps" },
-          reps_most: { $max: "$exercises.exercises.setsDetails.reps" },
-          sets_least: { $min: "$exercises.exercises.sets" },
-          sets_total: { $sum: "$exercises.exercises.sets" },
-          sets_average: { $avg: "$exercises.exercises.sets" },
-          sets_most: { $max: "$exercises.exercises.sets" },
-          workouts_total: { $addToSet: "$exercises.exercises.exercises" }
+          reps_least: { $min: "$reps" },
+          reps_total: { $sum: "$reps" },
+          reps_average: { $avg: "$reps" },
+          reps_most: { $max: "$reps" },
+          sets_least: { $min: "$reps" },
+          sets_total: { $sum: "$reps" },
+          sets_average: { $avg: "$reps" },
+          sets_most: { $max: "$reps" },
+          workouts_total: { $sum: 1 }
         }
       },
       {
         $project: {
-          _id: 1,
+          _id: 0,
           weight_lifted_total: 1,
           weight_lifted_average: 1,
           weight_lifted_most: 1,
@@ -191,7 +167,7 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
           sets_total: 1,
           sets_average: 1,
           sets_most: 1,
-          workouts_total: { $size: "$workouts_total" }
+          workouts_total: 1
         }
       }
     ]);
@@ -253,12 +229,21 @@ user_workouts_helper.get_user_workouts_by_id = async id => {
  * 
  * @developed by "amc"
  */
-user_workouts_helper.insert_user_workouts_exercises = async childCollectionObject => {
+user_workouts_helper.insert_user_workouts_exercises = async (
+  childCollectionObject,
+  workoutLogsArray
+) => {
   try {
     let user_workouts_exercise = new UserWorkoutExercises(
       childCollectionObject
     );
     var user_workouts_exercise_data = await user_workouts_exercise.save();
+
+    workoutLogsArray.forEach((element, index) => {
+      element.workoutExerciseId = user_workouts_exercise_data._id;
+    });
+
+    let workout_logs_data = await WorkoutLogs.insertMany(workoutLogsArray);
     if (user_workouts_exercise_data) {
       return {
         status: 1,
@@ -354,6 +339,7 @@ user_workouts_helper.update_user_workouts_by_id = async (
     };
   }
 };
+
 /*
  * complete_master_event is used to complete user workouts data based on user workouts date
  * 
@@ -365,7 +351,7 @@ user_workouts_helper.update_user_workouts_by_id = async (
  */
 user_workouts_helper.complete_master_event = async (id, updateObject) => {
   try {
-    let user_workouts_data1 = await UserWorkouts.findByIdAndUpdate(
+    let user_workouts_data = await UserWorkouts.findByIdAndUpdate(
       {
         _id: id
       },
@@ -490,6 +476,7 @@ user_workouts_helper.delete_user_workouts_exercise = async exerciseId => {
     };
   }
 };
+
 /*
  * delete_user_workouts_by_days is used to delete user_workouts from database
  * @param   exerciseIds String  _id of user_workouts that need to be delete
@@ -518,6 +505,7 @@ user_workouts_helper.delete_user_workouts_by_days = async exerciseIds => {
     };
   }
 };
+
 /*
  * delete_user_workouts_by_id is used to delete user_workouts from database
  * @param   user_workouts_id String  _id of user_workouts that need to be delete

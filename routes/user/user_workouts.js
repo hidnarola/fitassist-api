@@ -133,13 +133,12 @@ router.post("/day", async (req, res) => {
 router.post("/exercises", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var dayId = req.body.dayId;
 
+  var workoutLogsObj = {};
+  var insertWorkoutLogArray = [];
   if (req.body.type != "restday") {
     var exercises = req.body.exercises;
-    var totalExerciseIds = [];
-    var exercise_ids = _.pluck(exercises, "exerciseId");
-    var totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
+    var totalExerciseIds = _.pluck(exercises, "exerciseId");
 
     totalExerciseIds.forEach((id, index) => {
       totalExerciseIds[index] = mongoose.Types.ObjectId(id);
@@ -152,64 +151,106 @@ router.post("/exercises", async (req, res) => {
     );
 
     for (let single of exercises) {
+      var time = 0;
+      var distance = 0;
+      var effort = 0;
+      var weight = 0;
+      var repTime = 0;
+      var setTime = 0;
+      var reps = 0;
+      var sets = 0;
+      sets += single.sets ? single.sets : 0;
       single.exercises = _.find(exercise_data.exercise, exerciseDb => {
         return exerciseDb._id.toString() === single.exerciseId.toString();
       });
+      var data = await common_helper.unit_converter(
+        single.restTime,
+        single.restTimeUnit
+      );
+
+      single.baseRestTimeUnit = data.baseUnit;
+      single.baseRestTime = data.baseValue;
       delete single.exerciseId;
 
       for (let tmp of single.setsDetails) {
-        if (tmp.weight) {
-          var baseWeight = await common_helper.unit_converter(
-            tmp.weight,
-            tmp.weightUnit
+        if (tmp.field1) {
+          var data = await common_helper.unit_converter(
+            tmp.field1.value,
+            tmp.field1.unit
           );
-          tmp.baseWeightUnit = baseWeight.baseUnit;
-          tmp.baseWeightValue = baseWeight.baseValue;
-        }
-        if (tmp.distance) {
-          var baseDistance = await common_helper.unit_converter(
-            tmp.distance,
-            tmp.distanceUnit
-          );
-          tmp.baseDistanceUnits = baseDistance.baseUnit;
-          tmp.baseDistanceValue = baseDistance.baseValue;
-        }
-        if (tmp.restTime) {
-          var baseTime = await common_helper.unit_converter(
-            tmp.restTime,
-            tmp.restTimeUnit
-          );
-          tmp.baseRestTimeUnit = baseTime.baseUnit;
-          tmp.baseRestTimeValue = baseTime.baseValue;
+          tmp.field1.baseUnit = data.baseUnit;
+          tmp.field1.baseValue = data.baseValue;
+          if (data.baseUnit === "second") {
+            time += data.baseValue;
+          } else if (data.baseUnit === "reps") {
+            reps += data.baseValue;
+          } else {
+            distance += data.baseValue;
+          }
         }
 
-        if (tmp.oneSetTime) {
-          var baseOneSetTime = await common_helper.unit_converter(
-            tmp.oneSetTime,
-            tmp.oneSetTimeUnit
+        if (tmp.field2) {
+          var data = await common_helper.unit_converter(
+            tmp.field2.value,
+            tmp.field2.unit
           );
+          tmp.field2.baseUnit = data.baseUnit;
+          tmp.field2.baseValue = data.baseValue;
+          if (data.baseUnit === "g") {
+            weight += data.baseValue;
+          } else if (data.baseUnit == "effort") {
+            effort += data.baseValue;
+          }
 
-          tmp.baseOneSetTimeUnits = baseOneSetTime.baseUnit;
-          tmp.baseOneSetTimeValue = baseOneSetTime.baseValue;
+          if (tmp.field3) {
+            var data = await common_helper.unit_converter(
+              tmp.field3.value,
+              tmp.field3.unit
+            );
+            tmp.field3.baseUnit = data.baseUnit;
+            tmp.field3.baseValue = data.baseValue;
+            if (data.baseUnit === "reps") {
+              reps += data.baseValue;
+            } else if (data.baseUnit === "rep_time") {
+              repTime += data.baseValue;
+            } else if (data.baseUnit === "set_time") {
+              setTime += data.baseValue;
+            }
+          }
         }
+        workoutLogsObj = {
+          userId: authUserId,
+          time,
+          distance,
+          effort,
+          weight,
+          repTime,
+          setTime,
+          reps,
+          sets
+        };
+        insertWorkoutLogArray.push(workoutLogsObj);
       }
     }
-  }
-  console.log("------------------------------------");
-  console.log("exercises : ", exercises);
-  console.log("------------------------------------");
 
-  return res.status(config.OK_STATUS).json(exercises);
+    var insertObj = {
+      userWorkoutsId: req.body.userWorkoutsId,
+      type: req.body.type,
+      subType: req.body.subType,
+      exercises: exercises,
+      date: req.body.date
+    };
 
-  var workout_day = await user_workout_helper.insert_user_workouts_exercises(
-    dayId,
-    workouts
-  );
+    var workout_day = await user_workout_helper.insert_user_workouts_exercises(
+      insertObj,
+      insertWorkoutLogArray
+    );
 
-  if (workout_day.status == 1) {
-    res.status(config.OK_STATUS).json(workout_day);
-  } else {
-    res.status(config.BAD_REQUEST).json(workout_day);
+    if (workout_day.status == 1) {
+      res.status(config.OK_STATUS).json(workout_day);
+    } else {
+      res.status(config.BAD_REQUEST).json(workout_day);
+    }
   }
 });
 
@@ -321,17 +362,14 @@ router.put("/complete", async (req, res) => {
     });
 
     if (count.status == 1) {
+      var isCompleted = { isCompleted: 0 };
       if (count.count === 0) {
-        let updateMasterCollectionCompleted = await user_workout_helper.complete_master_event(
-          parentId,
-          { isCompleted: 1 }
-        );
-      } else {
-        let updateMasterCollectionCompleted = await user_workout_helper.complete_master_event(
-          parentId,
-          { isCompleted: 0 }
-        );
+        isCompleted = { isCompleted: 1 };
       }
+      let updateMasterCollectionCompleted = await user_workout_helper.complete_master_event(
+        parentId,
+        isCompleted
+      );
     }
 
     let workout = await user_workout_helper.get_all_workouts(
@@ -346,7 +384,6 @@ router.put("/complete", async (req, res) => {
     let workout_detail = await user_workout_helper.workout_detail_for_badges({
       userId: authUserId
     });
-    delete workout_detail.workouts._id;
 
     //badge assign start;
     var badges = await badge_assign_helper.badge_assign(
@@ -506,8 +543,6 @@ router.delete("/:workout_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/bulk_complete", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
   var exerciseIds = req.body.exerciseIds;
   var isCompleted = req.body.isCompleted;
   exerciseIds.forEach((id, index) => {

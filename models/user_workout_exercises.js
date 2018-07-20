@@ -6,9 +6,14 @@ var constants = require("../constant");
 var Schema = mongoose.Schema;
 var ExercisesSchema = new Schema(
   {
+    exercises: { type: Object },
     sets: { type: Number },
-    setsDetails: { type: Array },
-    exercises: { type: Object }
+    restTime: { type: Number },
+    restTimeUnit: { type: String },
+    baseRestTime: { type: Number },
+    baseRestTimeUnit: { type: String },
+    differentSets: { type: Number },
+    setsDetails: { type: Array }
   },
   { versionKey: false }
 );
@@ -20,11 +25,11 @@ var UserWorkoutExercises = new Schema(
       required: true
     },
     type: { type: String, enum: constants.WORKOUTS_TYPE },
-    exercises: [{ type: ExercisesSchema }],
+    subType: { type: String, enum: constants.WORKOUTS_SUB_TYPE },
     isCompleted: { type: Number, default: 0 },
+    exercises: [{ type: ExercisesSchema }],
     date: { type: Date },
-    completedDate: { type: Date },
-    sequence: { type: Number, default: 0 }
+    completedDate: { type: Date, default: Date.now }
   },
   { versionKey: false }
 );
