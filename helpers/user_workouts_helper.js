@@ -26,9 +26,6 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
         }
       }
     ]);
-    console.log("------------------------------------");
-    console.log("user_workouts : ", user_workouts);
-    console.log("------------------------------------");
 
     _.each(user_workouts, user_workout => {
       var tmp = [];
@@ -67,6 +64,84 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
     };
   }
 };
+
+/*
+ * get_all_workouts_group_by is used to fetch all user exercises data
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user exercises data, with error
+ *          status 1 - If user exercises data found, with user exercises object
+ *          status 2 - If user exercises not found, with appropriate message
+ */
+user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
+  try {
+    var user_workouts = await UserWorkouts.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_workout_exercises",
+          foreignField: "userWorkoutsId",
+          localField: "_id",
+          as: "exercises"
+        }
+      },
+      {
+        $unwind: {
+          path: "$exercises",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: "$exercises.type",
+          type: { $first: "$exercises.type" },
+          exercises: { $addToSet: "$exercises" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          type: 1,
+          exercises: 1
+        }
+      }
+    ]);
+
+    if (user_workouts) {
+      var returnObj = {
+        warmup: [],
+        exercise: [],
+        cooldown: []
+      };
+
+      _.each(user_workouts, o => {
+        if (o.type === "cooldown") {
+          returnObj.cooldown = o.exercises;
+        } else if (o.type === "exercise") {
+          returnObj.exercise = o.exercises;
+        } else if (o.type === "warmup") {
+          returnObj.warmup = o.exercises;
+        }
+      });
+
+      return {
+        status: 1,
+        message: "User workouts found",
+        workouts: returnObj
+      };
+    } else {
+      return { status: 2, message: "No user workouts available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user workouts",
+      error: err
+    };
+  }
+};
+
 /*
  * count_all_completed_workouts is used to count all user completed exercises data
  * @params condition condition of aggregate pipeline.
@@ -241,9 +316,11 @@ user_workouts_helper.insert_user_workouts_exercises = async (
       childCollectionObject
     );
     var user_workouts_exercise_data = await user_workouts_exercise.save();
+    var exerciseIds = _.pluck(user_workouts_exercise_data.exercises, "_id");
 
     workoutLogsArray.forEach((element, index) => {
-      element.workoutExerciseId = user_workouts_exercise_data._id;
+      element.workoutId = user_workouts_exercise_data._id;
+      element.exerciseId = exerciseIds[index];
     });
 
     let workout_logs_data = await WorkoutLogs.insertMany(workoutLogsArray);
@@ -388,7 +465,7 @@ user_workouts_helper.complete_master_event = async (id, updateObject) => {
  */
 user_workouts_helper.complete_all_workout = async (id, updateObject) => {
   try {
-    let user_workouts_data1 = await UserWorkouts.findByIdAndUpdate(
+    let user_workouts_data1 = await UserWorkouts.update(
       {
         _id: id
       },
@@ -397,9 +474,28 @@ user_workouts_helper.complete_all_workout = async (id, updateObject) => {
         new: true
       }
     );
+
     let user_workouts_data2 = await UserWorkoutExercises.updateMany(
       {
         userWorkoutsId: id
+      },
+      updateObject,
+      {
+        new: true
+      }
+    );
+
+    let user_workoutsids = await UserWorkoutExercises.find(
+      {
+        userWorkoutsId: id
+      },
+      { _id: 1 }
+    );
+    user_workoutsids = _.pluck(user_workoutsids, "_id");
+
+    let user_workouts_data3 = await WorkoutLogs.updateMany(
+      {
+        workoutId: { $in: user_workoutsids }
       },
       updateObject,
       {
@@ -428,10 +524,28 @@ user_workouts_helper.complete_all_workout = async (id, updateObject) => {
  *          status  2 - If user_workouts not completed, with appropriate message 
  * @developed by "amc"
  */
-user_workouts_helper.complete_workout = async (condition, updateObject) => {
+user_workouts_helper.complete_workout = async (id, updateObject) => {
   try {
     let user_workouts_data = await UserWorkoutExercises.update(
-      condition,
+      id,
+      updateObject,
+      {
+        new: true
+      }
+    );
+
+    let user_workoutsids = await UserWorkoutExercises.find(
+      {
+        _id: id
+      },
+      { _id: 1 }
+    );
+    user_workoutsids = _.pluck(user_workoutsids, "_id");
+
+    let user_workouts_data3 = await WorkoutLogs.updateMany(
+      {
+        workoutId: { $in: user_workoutsids }
+      },
       updateObject,
       {
         new: true
@@ -489,6 +603,20 @@ user_workouts_helper.delete_user_workouts_exercise = async exerciseId => {
  */
 user_workouts_helper.delete_user_workouts_by_days = async exerciseIds => {
   try {
+    let ids = await UserWorkoutExercises.find(
+      {
+        userWorkoutsId: { $in: exerciseIds }
+      },
+      { _id: 1 }
+    );
+
+    ids = _.pluck(user_workouts_data1, "_id");
+    console.log("------------------------------------");
+    console.log("ids : ", ids);
+    console.log("------------------------------------");
+
+    return { status: 1, message: "User workouts deleted" };
+
     let user_workouts_data1 = await UserWorkoutExercises.remove({
       userWorkoutsId: { $in: exerciseIds }
     });
@@ -556,6 +684,7 @@ user_workouts_helper.complete_workout_by_days = async (id, updateObject) => {
         new: true
       }
     );
+
     let user_workouts_data2 = await UserWorkoutExercises.updateMany(
       { userWorkoutsId: { $in: id } },
       updateObject,

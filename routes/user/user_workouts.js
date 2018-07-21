@@ -63,11 +63,11 @@ router.post("/get_by_month", async (req, res) => {
  */
 router.get("/:workout_id", async (req, res) => {
   var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
-  var resp_data = await user_workout_helper.get_all_workouts(
+  var resp_data = await user_workout_helper.get_all_workouts_group_by(
     {
       _id: workout_id
     },
-    true
+    false
   );
 
   if (resp_data.status == 0) {
@@ -345,8 +345,7 @@ router.post("/assign_program", async (req, res) => {
 router.put("/complete", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  // var date = req.body.date;
-  var childId = req.body.childId;
+  var childId = mongoose.Types.ObjectId(req.body.childId);
   var parentId = mongoose.Types.ObjectId(req.body.parentId);
   var isCompleted = {
     isCompleted: req.body.isCompleted
@@ -355,7 +354,7 @@ router.put("/complete", async (req, res) => {
   logger.trace("Complete workout API Called");
   let workout_data = await user_workout_helper.complete_workout(
     {
-      _id: mongoose.Types.ObjectId(childId)
+      _id: childId
     },
     isCompleted
   );
@@ -363,7 +362,7 @@ router.put("/complete", async (req, res) => {
   if (workout_data.status === 1) {
     let count = await user_workout_helper.count_all_completed_workouts({
       userId: authUserId,
-      _id: mongoose.Types.ObjectId(parentId)
+      _id: parentId
     });
 
     if (count.status == 1) {
@@ -579,8 +578,6 @@ router.post("/bulk_complete", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/delete", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
   var exerciseIds = req.body.exerciseIds;
   exerciseIds.forEach((id, index) => {
     exerciseIds[index] = mongoose.Types.ObjectId(id);
