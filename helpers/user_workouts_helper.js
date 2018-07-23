@@ -717,7 +717,8 @@ user_workouts_helper.delete_user_workouts_by_id = async user_workouts_id => {
       userWorkoutsId: user_workouts_id
     });
     let workout_logs_data = await WorkoutLogs.remove({
-      exerciseId: { $in: ids }
+      exerciseId: { $in: ids },
+      isCompleted: 0
     });
     if (!user_workouts_data1 && !user_workouts_data2) {
       return { status: 2, message: "User workouts not found" };

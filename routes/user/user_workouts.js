@@ -644,10 +644,10 @@ router.delete("/exercise/:exercise_id", async (req, res) => {
   let workout_data = await user_workout_helper.delete_user_workouts_exercise({
     _id: exercise_id
   });
-  if (workout_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
-  } else {
+  if (workout_data.status === 1) {
     res.status(config.OK_STATUS).json(workout_data);
+  } else {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }
 });
 
@@ -669,10 +669,10 @@ router.delete("/:workout_id", async (req, res) => {
     req.params.workout_id
   );
 
-  if (workout_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
-  } else {
+  if (workout_data.status === 1) {
     res.status(config.OK_STATUS).json(workout_data);
+  } else {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }
 });
 
@@ -724,7 +724,6 @@ async function assign_badges(authUserId) {
   );
   //badge assign end
 }
-
 // /**
 //  * @api {put} /user/user_workouts/complete_all Complete all User workout
 //  * @apiName Complete all User workout
