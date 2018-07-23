@@ -402,6 +402,61 @@ user_workouts_helper.insert_user_workouts_day = async masterCollectionObject => 
 };
 
 /*
+ * update_user_workout_exercise is used to update user workout exercise data based on user workouts id
+ * 
+ * @param   id         String  _id of user_workouts exercise that need to be update
+ * @param   childCollectionObject Object  childCollectionObject of user_workouts's exercise child collection that need to be update
+ * 
+ * @return  status  0 - If any error occur in updating user_workout exercise, with error
+ *          status  1 - If user_workout exercise updated successfully, with appropriate message
+ *          status  2 - If user_workout exercise not updated, with appropriate message
+ * 
+ * @developed by "amc"
+ */
+user_workouts_helper.update_user_workout_exercise = async (
+  id,
+  childCollectionObject,
+  workoutLogsObj
+) => {
+  try {
+    var user_workouts_data = await UserWorkoutExercises.findOneAndUpdate(
+      { _id: id },
+      childCollectionObject,
+      { new: true }
+    );
+    var delete_workout_log = await UserWorkoutExercises.remove({
+      exerciseId: id
+    });
+    if (delete_workout_log) {
+      workoutLogsArray.forEach((element, index) => {
+        element.exerciseId = id;
+      });
+      let workout_logs_data = await WorkoutLogs.insertMany(workoutLogsArray);
+    }
+
+    if (user_workouts_data) {
+      return {
+        status: 1,
+        message: "User workout updated",
+        workout: user_workouts_data
+      };
+    } else {
+      return {
+        status: 2,
+        message: "Error occured while updating User workout",
+        error: err
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting User workout",
+      error: err
+    };
+  }
+};
+
+/*
  * update_user_workouts_by_id is used to update user workouts data based on user workouts id
  * 
  * @param   id         String  _id of user_workouts that need to be update
@@ -593,7 +648,10 @@ user_workouts_helper.delete_user_workouts_exercise = async exerciseId => {
     ids = _.pluck(ids, "_id");
     let user_workouts_exercise = await UserWorkoutExercises.remove(exerciseId);
     let user_workouts_exercise_workout_log = await UserWorkoutExercises.remove({
-      exerciseId: { $in: ids }
+      exerciseId: {
+        $in: ids
+      },
+      isCompleted: 0
     });
     if (user_workouts_exercise.n > 0) {
       return { status: 1, message: "User workouts exercise deleted" };
@@ -618,27 +676,11 @@ user_workouts_helper.delete_user_workouts_exercise = async exerciseId => {
  */
 user_workouts_helper.delete_user_workouts_by_days = async exerciseIds => {
   try {
-    let ids = await UserWorkoutExercises.find(
-      {
-        userWorkoutsId: { $in: exerciseIds }
-      },
-      { _id: 1 }
-    );
-
-    ids = _.pluck(user_workouts_data1, "_id");
-    console.log("------------------------------------");
-    console.log("ids : ", ids);
-    console.log("------------------------------------");
-
-    return { status: 1, message: "User workouts deleted" };
-
-    let user_workouts_data1 = await UserWorkoutExercises.remove({
+    let user_workouts_data = await UserWorkoutExercises.remove({
       userWorkoutsId: { $in: exerciseIds }
     });
-    let user_workouts_data2 = await UserWorkouts.remove({
-      _id: { $in: exerciseIds }
-    });
-    if (user_workouts_data2) {
+
+    if (user_workouts_data) {
       return { status: 1, message: "User workouts deleted" };
     } else {
       return { status: 1, message: "User workouts not deleted" };
