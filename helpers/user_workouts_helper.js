@@ -96,20 +96,38 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
         $group: {
           _id: "$exercises.type",
           type: { $first: "$exercises.type" },
-          exercises: { $addToSet: "$exercises" }
+          exercises: { $addToSet: "$exercises" },
+          isCompleted: { $first: "$isCompleted" },
+          type: { $first: "$type" },
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          userId: { $first: "$userId" },
+          date: { $first: "$date" }
         }
       },
       {
         $project: {
           _id: 0,
           type: 1,
-          exercises: 1
+          exercises: 1,
+          isCompleted: 1,
+          type: 1,
+          title: 1,
+          description: 1,
+          userId: 1,
+          date: 1
         }
       }
     ]);
 
     if (user_workouts) {
       var returnObj = {
+        isCompleted: user_workouts[0].isCompleted,
+        type: user_workouts[0].type,
+        title: user_workouts[0].title,
+        description: user_workouts[0].description,
+        userId: user_workouts[0].userId,
+        date: user_workouts[0].date,
         warmup: [],
         exercise: [],
         cooldown: []
