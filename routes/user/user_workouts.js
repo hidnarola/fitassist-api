@@ -245,12 +245,13 @@ router.post("/workout", async (req, res) => {
     );
 
     if (workout_day.status == 1) {
-      workout_day = await user_workout_helper.get_all_workouts(
+      workout_day = await user_workout_helper.get_all_workouts_group_by(
         {
           _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
         },
         true
       );
+      workout_day.message = "Workout Added";
       res.status(config.OK_STATUS).json(workout_day);
     } else {
       res.status(config.BAD_REQUEST).json(workout_day);
@@ -345,7 +346,11 @@ router.post("/assign_program", async (req, res) => {
 router.put("/complete", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var childId = mongoose.Types.ObjectId(req.body.childId);
+  var childIds = req.body.childIds;
+  childIds.forEach((id, index) => {
+    childIds[index] = mongoose.Types.ObjectId(id);
+  });
+
   var parentId = mongoose.Types.ObjectId(req.body.parentId);
   var isCompleted = {
     isCompleted: req.body.isCompleted
@@ -353,9 +358,7 @@ router.put("/complete", async (req, res) => {
 
   logger.trace("Complete workout API Called");
   let workout_data = await user_workout_helper.complete_workout(
-    {
-      _id: childId
-    },
+    childIds,
     isCompleted
   );
 
@@ -384,78 +387,104 @@ router.put("/complete", async (req, res) => {
     );
     workout.message = "Workout completed";
     res.status(config.OK_STATUS).json(workout);
-
-    let workout_detail = await user_workout_helper.workout_detail_for_badges({
-      userId: authUserId
-    });
-
-    //badge assign start;
-    var badges = await badge_assign_helper.badge_assign(
-      authUserId,
-      constant.BADGES_TYPE.WORKOUTS.concat(constant.BADGES_TYPE.WEIGHT_LIFTED),
-      workout_detail.workouts
-    );
-    //badge assign end
+    //CALL assign_badges function for assigning badges for workout
+    assign_badges(authUserId);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }
 });
 
 /**
- * @api {put} /user/user_workouts/complete_all Complete all User workout
- * @apiName Complete all User workout
+ * @api {post} /user/user_workouts/bulk_complete Multiple Workout completed by exerciseDay
+ * @apiName Multiple Workout completed by exerciseDay
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} parentId parent Id of Workout's event to be complete
- * @apiParam {String} isCompleted isCompleted status of Workout to be complete
+ * @apiParam {Array} exerciseIds ids of Days
+ * @apiParam {Object} isCompleted status of workout
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/complete_all", async (req, res) => {
+router.post("/bulk_complete", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var parentId = mongoose.Types.ObjectId(req.body.parentId);
-  var isCompleted = {
-    isCompleted: req.body.isCompleted
-  };
-
-  logger.trace("Complete all workout API Called");
-  let workout_data = await user_workout_helper.complete_all_workout(
-    parentId,
-    isCompleted
+  var exerciseIds = req.body.exerciseIds;
+  var isCompleted = req.body.isCompleted;
+  exerciseIds.forEach((id, index) => {
+    exerciseIds[index] = mongoose.Types.ObjectId(id);
+  });
+  logger.trace("Complete workout by id = ", exerciseIds);
+  let workout_data = await user_workout_helper.complete_workout_by_days(
+    exerciseIds,
+    {
+      isCompleted: isCompleted
+    }
   );
 
   if (workout_data.status === 1) {
-    let workout_detail = await user_workout_helper.workout_detail_for_badges({
-      userId: authUserId,
-      isCompleted: 1
-    });
-
-    delete workout_detail.workouts._id;
-
-    let workout = await user_workout_helper.get_all_workouts(
-      {
-        userId: authUserId,
-        _id: parentId
-      },
-      true
-    );
-
-    workout.message = "Workout completed";
-    res.status(config.OK_STATUS).json(workout);
-
-    //badge assign start;
-    var badges = await badge_assign_helper.badge_assign(
-      authUserId,
-      constant.BADGES_TYPE.WORKOUTS.concat(constant.BADGES_TYPE.WEIGHT_LIFTED),
-      workout_detail.workouts
-    );
-    //badge assign end
+    res.status(config.OK_STATUS).json(workout_data);
+    //CALL assign_badges function for assigning badges for workout
+    assign_badges(authUserId);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }
 });
+
+// /**
+//  * @api {put} /user/user_workouts/complete_all Complete all User workout
+//  * @apiName Complete all User workout
+//  * @apiGroup  User Workouts
+//  * @apiHeader {String}  authorization User's unique access-key
+//  * @apiParam {String} parentId parent Id of Workout's event to be complete
+//  * @apiParam {String} isCompleted isCompleted status of Workout to be complete
+//  * @apiSuccess (Success 200) {String} message Success message
+//  * @apiError (Error 4xx) {String} message Validation or error message.
+//  */
+// router.put("/complete_all", async (req, res) => {
+//   var decoded = jwtDecode(req.headers["authorization"]);
+//   var authUserId = decoded.sub;
+
+//   var parentId = mongoose.Types.ObjectId(req.body.parentId);
+//   var isCompleted = {
+//     isCompleted: req.body.isCompleted
+//   };
+
+//   logger.trace("Complete all workout API Called");
+//   let workout_data = await user_workout_helper.complete_all_workout(
+//     parentId,
+//     isCompleted
+//   );
+
+//   if (workout_data.status === 1) {
+//     let workout_detail = await user_workout_helper.workout_detail_for_badges({
+//       userId: authUserId,
+//       isCompleted: 1
+//     });
+
+//     delete workout_detail.workouts._id;
+
+//     let workout = await user_workout_helper.get_all_workouts(
+//       {
+//         userId: authUserId,
+//         _id: parentId
+//       },
+//       true
+//     );
+
+//     workout.message = "Workout completed";
+//     res.status(config.OK_STATUS).json(workout);
+
+//     //badge assign start;
+//     var badges = await badge_assign_helper.badge_assign(
+//       authUserId,
+//       constant.BADGES_TYPE.WORKOUTS.concat(constant.BADGES_TYPE.WEIGHT_LIFTED),
+//       workout_detail.workouts
+//     );
+//     //badge assign end
+//   } else {
+//     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
+//   }
+// });
 
 /**
  * @api {put} /user/user_workouts/:workout_id  Update User Workouts
@@ -540,37 +569,6 @@ router.delete("/:workout_id", async (req, res) => {
 });
 
 /**
- * @api {post} /user/user_workouts/bulk_complete Multiple Workout completed by exerciseDay
- * @apiName Multiple Workout completed by exerciseDay
- * @apiGroup  User Workouts
- * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Array} exerciseIds ids of Days
- * @apiParam {Object} isCompleted status of workout
- * @apiSuccess (Success 200) {String} message Success message
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.post("/bulk_complete", async (req, res) => {
-  var exerciseIds = req.body.exerciseIds;
-  var isCompleted = req.body.isCompleted;
-  exerciseIds.forEach((id, index) => {
-    exerciseIds[index] = mongoose.Types.ObjectId(id);
-  });
-  logger.trace("Complete workout by id = ", exerciseIds);
-  let workout_data = await user_workout_helper.complete_workout_by_days(
-    exerciseIds,
-    {
-      isCompleted: isCompleted
-    }
-  );
-
-  if (workout_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
-  } else {
-    res.status(config.OK_STATUS).json(workout_data);
-  }
-});
-
-/**
  * @api {post} /user/user_workouts/delete Multiple Workout delete by Days
  * @apiName Multiple Workout delete by Days
  * @apiGroup  User Workouts
@@ -595,5 +593,19 @@ router.post("/delete", async (req, res) => {
     res.status(config.OK_STATUS).json(workout_data);
   }
 });
+
+async function assign_badges(authUserId) {
+  let workout_detail = await user_workout_helper.workout_detail_for_badges({
+    userId: authUserId
+  });
+
+  //badge assign start;
+  var badges = await badge_assign_helper.badge_assign(
+    authUserId,
+    constant.BADGES_TYPE.WORKOUTS.concat(constant.BADGES_TYPE.WEIGHT_LIFTED),
+    workout_detail.workouts
+  );
+  //badge assign end
+}
 
 module.exports = router;
