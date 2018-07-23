@@ -319,8 +319,8 @@ user_workouts_helper.insert_user_workouts_exercises = async (
     var exerciseIds = _.pluck(user_workouts_exercise_data.exercises, "_id");
 
     workoutLogsArray.forEach((element, index) => {
-      element.workoutId = user_workouts_exercise_data._id;
-      element.exerciseId = exerciseIds[index];
+      element.exerciseId = user_workouts_exercise_data._id;
+      // element.setsDetailId = exerciseIds[index];
     });
 
     let workout_logs_data = await WorkoutLogs.insertMany(workoutLogsArray);
@@ -579,7 +579,12 @@ user_workouts_helper.complete_workout = async (id, updateObject) => {
  */
 user_workouts_helper.delete_user_workouts_exercise = async exerciseId => {
   try {
+    let ids = await UserWorkoutExercises.find(exerciseId, { _id: 1 });
+    ids = _.pluck(ids, "_id");
     let user_workouts_exercise = await UserWorkoutExercises.remove(exerciseId);
+    let user_workouts_exercise_workout_log = await UserWorkoutExercises.remove({
+      exerciseId: { $in: ids }
+    });
     if (user_workouts_exercise.n > 0) {
       return { status: 1, message: "User workouts exercise deleted" };
     } else {
@@ -649,8 +654,18 @@ user_workouts_helper.delete_user_workouts_by_id = async user_workouts_id => {
     let user_workouts_data1 = await UserWorkouts.remove({
       _id: user_workouts_id
     });
+    let ids = await UserWorkoutExercises.find(
+      {
+        userWorkoutsId: user_workouts_id
+      },
+      { _id: 1 }
+    );
+    ids = _.pluck(ids, "_id");
     let user_workouts_data2 = await UserWorkoutExercises.remove({
       userWorkoutsId: user_workouts_id
+    });
+    let workout_logs_data = await WorkoutLogs.remove({
+      exerciseId: { $in: ids }
     });
     if (!user_workouts_data1 && !user_workouts_data2) {
       return { status: 2, message: "User workouts not found" };

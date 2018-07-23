@@ -523,6 +523,8 @@ router.delete("/exercise/:exercise_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:workout_id", async (req, res) => {
+  console.log("here", req.params.workout_id);
+
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete workout API - Id = ", req.params.workout_id);
