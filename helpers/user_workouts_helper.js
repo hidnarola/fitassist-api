@@ -95,10 +95,11 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
       {
         $group: {
           _id: "$exercises.type",
+          userWorkoutsId: { $first: "$_id" },
           type: { $first: "$exercises.type" },
           exercises: { $addToSet: "$exercises" },
           isCompleted: { $first: "$isCompleted" },
-          type: { $first: "$type" },
+          dayType: { $first: "$type" },
           title: { $first: "$title" },
           description: { $first: "$description" },
           userId: { $first: "$userId" },
@@ -107,11 +108,12 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
       },
       {
         $project: {
-          _id: 0,
+          _id: 1,
+          userWorkoutsId: 1,
           type: 1,
           exercises: 1,
           isCompleted: 1,
-          type: 1,
+          dayType: 1,
           title: 1,
           description: 1,
           userId: 1,
@@ -122,8 +124,9 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
 
     if (user_workouts) {
       var returnObj = {
+        _id: user_workouts[0].userWorkoutsId,
         isCompleted: user_workouts[0].isCompleted,
-        type: user_workouts[0].type,
+        type: user_workouts[0].dayType,
         title: user_workouts[0].title,
         description: user_workouts[0].description,
         userId: user_workouts[0].userId,
@@ -142,6 +145,10 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
           returnObj.warmup = o.exercises;
         }
       });
+
+      console.log("------------------------------------");
+      console.log("returnObj : ", returnObj);
+      console.log("------------------------------------");
 
       return {
         status: 1,
