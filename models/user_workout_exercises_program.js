@@ -4,7 +4,19 @@ var constants = require("../constant");
 
 //Define a schema
 var Schema = mongoose.Schema;
-
+var ExercisesSchema = new Schema(
+  {
+    exercises: { type: Object },
+    sets: { type: Number },
+    restTime: { type: Number },
+    restTimeUnit: { type: String },
+    baseRestTime: { type: Number },
+    baseRestTimeUnit: { type: String },
+    differentSets: { type: Number },
+    setsDetails: { type: Array }
+  },
+  { versionKey: false }
+);
 var UserWorkoutExercisesProgramSchema = new Schema(
   {
     userWorkoutsProgramId: {
@@ -13,7 +25,8 @@ var UserWorkoutExercisesProgramSchema = new Schema(
       required: true
     },
     type: { type: String, enum: constants.WORKOUTS_TYPE },
-    exercises: { type: Array }
+    subType: { type: String, enum: constants.WORKOUTS_SUB_TYPE },
+    exercises: [{ type: ExercisesSchema }]
   },
   { versionKey: false }
 );

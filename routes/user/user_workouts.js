@@ -631,19 +631,28 @@ router.post("/workout/:workout_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/user_workouts/exercise/:exercise_id Delete User workout exercise
+ * @api {post} /user/user_workouts/delete/exercise Delete User workout exercise
  * @apiName Delete User workout exercise
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String}  child User's unique access-key
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/exercise/:exercise_id", async (req, res) => {
-  exercise_id = mongoose.Types.ObjectId(req.params.exercise_id);
-  logger.trace("Delete workout exercise API - Id = ", exercise_id);
-  let workout_data = await user_workout_helper.delete_user_workouts_exercise({
-    _id: exercise_id
+router.post("/delete/exercise", async (req, res) => {
+  var parentId = mongoose.Types.ObjectId(req.body.parentId);
+  var childId = mongoose.Types.ObjectId(req.body.childId);
+  var subChildIds = req.body.subChildIds;
+
+  subChildIds.forEach((id, index) => {
+    subChildIds[index] = mongoose.Types.ObjectId(id);
   });
+
+  logger.trace("Delete workout exercise API - Id = ", childId);
+  let workout_data = await user_workout_helper.delete_user_workouts_exercise(
+    childId,
+    subChildIds
+  );
   if (workout_data.status === 1) {
     res.status(config.OK_STATUS).json(workout_data);
   } else {
@@ -692,8 +701,9 @@ router.post("/delete", async (req, res) => {
   exerciseIds.forEach((id, index) => {
     exerciseIds[index] = mongoose.Types.ObjectId(id);
   });
+
   logger.trace("Delete workout by - Id = ", exerciseIds);
-  let workout_data = await user_workout_helper.delete_user_workouts_by_days(
+  let workout_data = await user_workout_helper.delete_user_workouts_by_exercise_ids(
     exerciseIds
   );
   var workout_day = await user_workout_helper.get_all_workouts_group_by(
@@ -703,6 +713,7 @@ router.post("/delete", async (req, res) => {
     true
   );
   workout_day.message = "Exercises Delete";
+
   if (workout_data.status === 1) {
     res.status(config.OK_STATUS).json(workout_day);
   } else {

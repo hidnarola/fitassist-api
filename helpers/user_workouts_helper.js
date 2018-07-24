@@ -345,7 +345,7 @@ user_workouts_helper.insert_user_workouts_exercises = async (
 
     workoutLogsArray.forEach((element, index) => {
       element.exerciseId = user_workouts_exercise_data._id;
-      // element.setsDetailId = exerciseIds[index];
+      element.setsDetailId = exerciseIds[index];
     });
 
     let workout_logs_data = await WorkoutLogs.insertMany(workoutLogsArray);
@@ -642,17 +642,28 @@ user_workouts_helper.complete_workout = async (id, updateObject) => {
  *          status  1 - If user_workouts exercise deleted successfully, with appropriate message
  * @developed by "amc"
  */
-user_workouts_helper.delete_user_workouts_exercise = async exerciseId => {
+user_workouts_helper.delete_user_workouts_exercise = async (
+  childId,
+  subChildIds
+) => {
   try {
-    let ids = await UserWorkoutExercises.find(exerciseId, { _id: 1 });
-    ids = _.pluck(ids, "_id");
-    let user_workouts_exercise = await UserWorkoutExercises.remove(exerciseId);
-    let user_workouts_exercise_workout_log = await UserWorkoutExercises.remove({
-      exerciseId: {
-        $in: ids
-      },
-      isCompleted: 0
+    let user_workouts_exercise = await UserWorkoutExercises.update(
+      { _id: childId },
+      { $pull: { exercises: { _id: { $in: subChildIds } } } },
+      { new: true }
+    );
+    let user_workouts_exercise2 = await WorkoutLogs.remove({
+      exerciseId: { $in: subChildIds }
     });
+
+    if (
+      user_workouts_exercise.exercises &&
+      user_workouts_exercise.exercises.length < 0
+    ) {
+      let data = await UserWorkoutExercises.remove({
+        _id: childId
+      });
+    }
     if (user_workouts_exercise.n > 0) {
       return { status: 1, message: "User workouts exercise deleted" };
     } else {
@@ -668,22 +679,34 @@ user_workouts_helper.delete_user_workouts_exercise = async exerciseId => {
 };
 
 /*
- * delete_user_workouts_by_days is used to delete user_workouts from database
+ * delete_user_workouts_by_exercise_ids is used to delete user_workouts from database
  * @param   exerciseIds String  _id of user_workouts that need to be delete
  * @return  status  0 - If any error occur in deletion of user_workouts, with error
  *          status  1 - If user_workouts deleted successfully, with appropriate message
  * @developed by "amc"
  */
-user_workouts_helper.delete_user_workouts_by_days = async exerciseIds => {
+user_workouts_helper.delete_user_workouts_by_exercise_ids = async exerciseIds => {
   try {
+    let ids = await UserWorkoutExercises.find(
+      {
+        _id: { $in: exerciseIds }
+      },
+      { _id: 1 }
+    );
+    ids = _.pluck(ids, "_id");
+
     let user_workouts_data = await UserWorkoutExercises.remove({
-      userWorkoutsId: { $in: exerciseIds }
+      _id: { $in: exerciseIds }
     });
 
+    let workout_logs_data = await WorkoutLogs.remove({
+      exerciseId: { $in: ids },
+      isCompleted: 0
+    });
     if (user_workouts_data) {
       return { status: 1, message: "User workouts deleted" };
     } else {
-      return { status: 1, message: "User workouts not deleted" };
+      return { status: 2, message: "User workouts not deleted" };
     }
   } catch (err) {
     return {
