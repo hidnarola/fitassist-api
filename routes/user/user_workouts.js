@@ -132,8 +132,6 @@ router.post("/workout", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var workoutLogsObj = {};
-  var insertWorkoutLogArray = [];
   if (req.body.type != "restday") {
     var exercises = req.body.exercises;
     var totalExerciseIds = _.pluck(exercises, "exerciseId");
@@ -149,15 +147,6 @@ router.post("/workout", async (req, res) => {
     );
 
     for (let single of exercises) {
-      var time = 0;
-      var distance = 0;
-      var effort = 0;
-      var weight = 0;
-      var repTime = 0;
-      var setTime = 0;
-      var reps = 0;
-      var sets = 0;
-      sets += single.sets ? single.sets : 0;
       single.exercises = _.find(exercise_data.exercise, exerciseDb => {
         return exerciseDb._id.toString() === single.exerciseId.toString();
       });
@@ -178,13 +167,6 @@ router.post("/workout", async (req, res) => {
           );
           tmp.field1.baseUnit = data.baseUnit;
           tmp.field1.baseValue = data.baseValue;
-          if (data.baseUnit === "second") {
-            time += data.baseValue;
-          } else if (data.baseUnit === "reps") {
-            reps += data.baseValue;
-          } else {
-            distance += data.baseValue;
-          }
         }
 
         if (tmp.field2) {
@@ -194,40 +176,16 @@ router.post("/workout", async (req, res) => {
           );
           tmp.field2.baseUnit = data.baseUnit;
           tmp.field2.baseValue = data.baseValue;
-          if (data.baseUnit === "g") {
-            weight += data.baseValue;
-          } else if (data.baseUnit == "effort") {
-            effort += data.baseValue;
-          }
-
-          if (tmp.field3) {
-            var data = await common_helper.unit_converter(
-              tmp.field3.value,
-              tmp.field3.unit
-            );
-            tmp.field3.baseUnit = data.baseUnit;
-            tmp.field3.baseValue = data.baseValue;
-            if (data.baseUnit === "reps") {
-              reps += data.baseValue;
-            } else if (data.baseUnit === "rep_time") {
-              repTime += data.baseValue;
-            } else if (data.baseUnit === "set_time") {
-              setTime += data.baseValue;
-            }
-          }
         }
-        workoutLogsObj = {
-          userId: authUserId,
-          time,
-          distance,
-          effort,
-          weight,
-          repTime,
-          setTime,
-          reps,
-          sets
-        };
-        insertWorkoutLogArray.push(workoutLogsObj);
+
+        if (tmp.field3) {
+          var data = await common_helper.unit_converter(
+            tmp.field3.value,
+            tmp.field3.unit
+          );
+          tmp.field3.baseUnit = data.baseUnit;
+          tmp.field3.baseValue = data.baseValue;
+        }
       }
     }
 
@@ -241,7 +199,7 @@ router.post("/workout", async (req, res) => {
 
     var workout_day = await user_workout_helper.insert_user_workouts_exercises(
       insertObj,
-      insertWorkoutLogArray
+      authUserId
     );
 
     if (workout_day.status == 1) {
@@ -368,7 +326,6 @@ router.post("/bulk_complete", async (req, res) => {
 });
 
 /**
- *
  * @api {put} /user/user_workouts/complete Complete User workout
  * @apiName Complete User workout
  * @apiGroup  User Workouts
@@ -502,7 +459,6 @@ router.post("/workout/:workout_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var workout_id = req.param.workout_id;
-  var workoutLogsObj = {};
   var insertWorkoutLogArray = [];
   if (req.body.type != "restday") {
     var exercises = req.body.exercises;
@@ -519,15 +475,6 @@ router.post("/workout/:workout_id", async (req, res) => {
     );
 
     for (let single of exercises) {
-      var time = 0;
-      var distance = 0;
-      var effort = 0;
-      var weight = 0;
-      var repTime = 0;
-      var setTime = 0;
-      var reps = 0;
-      var sets = 0;
-      sets += single.sets ? single.sets : 0;
       single.exercises = _.find(exercise_data.exercise, exerciseDb => {
         return exerciseDb._id.toString() === single.exerciseId.toString();
       });
@@ -548,13 +495,6 @@ router.post("/workout/:workout_id", async (req, res) => {
           );
           tmp.field1.baseUnit = data.baseUnit;
           tmp.field1.baseValue = data.baseValue;
-          if (data.baseUnit === "second") {
-            time += data.baseValue;
-          } else if (data.baseUnit === "reps") {
-            reps += data.baseValue;
-          } else {
-            distance += data.baseValue;
-          }
         }
 
         if (tmp.field2) {
@@ -564,11 +504,6 @@ router.post("/workout/:workout_id", async (req, res) => {
           );
           tmp.field2.baseUnit = data.baseUnit;
           tmp.field2.baseValue = data.baseValue;
-          if (data.baseUnit === "g") {
-            weight += data.baseValue;
-          } else if (data.baseUnit == "effort") {
-            effort += data.baseValue;
-          }
 
           if (tmp.field3) {
             var data = await common_helper.unit_converter(
@@ -577,27 +512,8 @@ router.post("/workout/:workout_id", async (req, res) => {
             );
             tmp.field3.baseUnit = data.baseUnit;
             tmp.field3.baseValue = data.baseValue;
-            if (data.baseUnit === "reps") {
-              reps += data.baseValue;
-            } else if (data.baseUnit === "rep_time") {
-              repTime += data.baseValue;
-            } else if (data.baseUnit === "set_time") {
-              setTime += data.baseValue;
-            }
           }
         }
-        workoutLogsObj = {
-          userId: authUserId,
-          time,
-          distance,
-          effort,
-          weight,
-          repTime,
-          setTime,
-          reps,
-          sets
-        };
-        insertWorkoutLogArray.push(workoutLogsObj);
       }
     }
 

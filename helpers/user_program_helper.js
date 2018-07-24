@@ -286,36 +286,25 @@ user_program_helper.insert_program_workouts = async (
   masterCollectionObject,
   childCollectionObject
 ) => {
-  let user_program = new userWorkoutsProgram(masterCollectionObject);
   try {
+    let user_program = new userWorkoutsProgram(masterCollectionObject);
     var user_master_program_data = await user_program.save();
     if (user_master_program_data) {
-      if (childCollectionObject && childCollectionObject.length > 0) {
-        childCollectionObject.forEach(element => {
-          element.userWorkoutsProgramId = user_master_program_data._id;
-        });
+      if (childCollectionObject) {
+        childCollectionObject.userWorkoutsProgramId =
+          user_master_program_data._id;
 
-        var user_program_workouts_exercise = await userWorkoutExercisesProgram.insertMany(
+        let user_program_exercise = new userWorkoutExercisesProgram(
           childCollectionObject
         );
-
-        if (user_program_workouts_exercise) {
-          var _user_program_workouts_exercise = user_program_workouts_exercise;
-          if (user_program_workouts_exercise.length > 0) {
-            _user_program_workouts_exercise = user_program_workouts_exercise[0];
-          }
-          return {
-            status: 1,
-            message: "Program workout inserted",
-            workout: _user_program_workouts_exercise
-          };
-        }
+        var user_master_program_exercise_data = await user_program_exercise.save();
       }
 
-      if (user_master_program_data) {
-        var _user_master_program_data = user_master_program_data;
-        if (user_master_program_data.length > 0) {
-          _user_master_program_data = user_master_program_data[0];
+      if (user_master_program_exercise_data) {
+        var _user_master_program_exercise_data = user_master_program_exercise_data;
+        if (user_master_program_exercise_data.length > 0) {
+          _user_master_program_exercise_data =
+            user_master_program_exercise_data[0];
         }
         return {
           status: 1,

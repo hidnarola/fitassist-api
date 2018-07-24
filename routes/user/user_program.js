@@ -177,11 +177,10 @@ router.post("/exercises", async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     type: req.body.type,
+    userId: authUserId,
     day: req.body.day
   };
 
-  var workoutLogsObj = {};
-  var insertWorkoutLogArray = [];
   if (req.body.type != "restday") {
     var exercises = req.body.exercises;
     var totalExerciseIds = _.pluck(exercises, "exerciseId");
@@ -197,15 +196,6 @@ router.post("/exercises", async (req, res) => {
     );
 
     for (let single of exercises) {
-      var time = 0;
-      var distance = 0;
-      var effort = 0;
-      var weight = 0;
-      var repTime = 0;
-      var setTime = 0;
-      var reps = 0;
-      var sets = 0;
-      sets += single.sets ? single.sets : 0;
       single.exercises = _.find(exercise_data.exercise, exerciseDb => {
         return exerciseDb._id.toString() === single.exerciseId.toString();
       });
@@ -226,13 +216,6 @@ router.post("/exercises", async (req, res) => {
           );
           tmp.field1.baseUnit = data.baseUnit;
           tmp.field1.baseValue = data.baseValue;
-          if (data.baseUnit === "second") {
-            time += data.baseValue;
-          } else if (data.baseUnit === "reps") {
-            reps += data.baseValue;
-          } else {
-            distance += data.baseValue;
-          }
         }
 
         if (tmp.field2) {
@@ -242,60 +225,45 @@ router.post("/exercises", async (req, res) => {
           );
           tmp.field2.baseUnit = data.baseUnit;
           tmp.field2.baseValue = data.baseValue;
-          if (data.baseUnit === "g") {
-            weight += data.baseValue;
-          } else if (data.baseUnit == "effort") {
-            effort += data.baseValue;
-          }
-
-          if (tmp.field3) {
-            var data = await common_helper.unit_converter(
-              tmp.field3.value,
-              tmp.field3.unit
-            );
-            tmp.field3.baseUnit = data.baseUnit;
-            tmp.field3.baseValue = data.baseValue;
-            if (data.baseUnit === "reps") {
-              reps += data.baseValue;
-            } else if (data.baseUnit === "rep_time") {
-              repTime += data.baseValue;
-            } else if (data.baseUnit === "set_time") {
-              setTime += data.baseValue;
-            }
-          }
         }
-        workoutLogsObj = {
-          userId: authUserId,
-          time,
-          distance,
-          effort,
-          weight,
-          repTime,
-          setTime,
-          reps,
-          sets
-        };
-        insertWorkoutLogArray.push(workoutLogsObj);
+
+        if (tmp.field3) {
+          var data = await common_helper.unit_converter(
+            tmp.field3.value,
+            tmp.field3.unit
+          );
+          tmp.field3.baseUnit = data.baseUnit;
+          tmp.field3.baseValue = data.baseValue;
+        }
       }
     }
 
     var insertObj = {
-      userWorkoutsId: req.body.userWorkoutsId,
+      userWorkoutsProgramId: "",
       type: req.body.type,
       subType: req.body.subType,
-      exercises: exercises,
-      date: req.body.date
+      exercises: exercises
     };
+    console.log("------------------------------------");
+    console.log(
+      "masterProgramCollectionObject : ",
+      masterProgramCollectionObject
+    );
+    console.log("------------------------------------");
 
-    var workout_data = await user_program_helper.insert_program_workouts(
+    var workout_day = await user_program_helper.insert_program_workouts(
       masterProgramCollectionObject,
       insertObj
     );
 
-    if (workout_data.status == 1) {
-      res.status(config.OK_STATUS).json(workout_data);
+    console.log("------------------------------------");
+    console.log("workout_day : ", workout_day);
+    console.log("------------------------------------");
+
+    if (workout_day.status == 1) {
+      res.status(config.OK_STATUS).json(workout_day);
     } else {
-      res.status(config.BAD_REQUEST).json(workout_data);
+      res.status(config.BAD_REQUEST).json(workout_day);
     }
   }
 });

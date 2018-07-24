@@ -9,7 +9,7 @@ var WorkoutLogsSchema = new Schema(
     userId: { type: String, ref: "users", field: "authUserId", required: true },
     setsDetailId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true
+      required: false
     },
     exerciseId: {
       type: mongoose.Schema.Types.ObjectId,

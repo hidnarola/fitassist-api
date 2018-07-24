@@ -14,10 +14,9 @@ var UserWorkoutProgramSchema = new Schema(
     },
     title: { type: String },
     description: { type: String },
-    isCompleted: { type: Number, default: 0 },
     type: { type: String, enum: ["exercise", "restday"], default: "exercise" },
     userId: { type: String, ref: "users", field: "authUserId" },
-    date: { type: Date },
+    day: { type: Number },
     createdAt: { type: Date, default: Date.now },
     modifiedAt: { type: Date, default: Date.now }
   },
