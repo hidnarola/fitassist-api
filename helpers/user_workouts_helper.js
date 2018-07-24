@@ -323,7 +323,7 @@ user_workouts_helper.get_user_workouts_by_id = async id => {
 };
 
 /*
- * insert_user_workouts_exercises is used to insert into user_workouts's exercises collection
+ * insert_exercises is used to insert into user_workouts's exercises collection
  * 
  * @param   childCollectionObject     JSON object consist of all property that need to insert in collection
  * 
@@ -653,22 +653,19 @@ user_workouts_helper.delete_user_workouts_exercise = async (
       { new: true }
     );
     let user_workouts_exercise2 = await WorkoutLogs.remove({
-      exerciseId: { $in: subChildIds }
+      setsDetailId: { $in: subChildIds },
+      isCompleted: 0
+    });
+    let exercise = await UserWorkoutExercises.findOne({
+      _id: childId
     });
 
-    if (
-      user_workouts_exercise.exercises &&
-      user_workouts_exercise.exercises.length < 0
-    ) {
+    if (exercise && exercise.exercises.length === 0) {
       let data = await UserWorkoutExercises.remove({
         _id: childId
       });
     }
-    if (user_workouts_exercise.n > 0) {
-      return { status: 1, message: "User workouts exercise deleted" };
-    } else {
-      return { status: 0, message: "User workouts exercise not deleted" };
-    }
+    return { status: 1, message: "User workouts exercise deleted" };
   } catch (err) {
     return {
       status: 0,

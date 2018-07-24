@@ -179,16 +179,13 @@ router.post("/exercises", async (req, res) => {
     type: req.body.type,
     day: req.body.day
   };
-  var workouts = [];
-  if (req.body.type != "restday") {
-    workouts = req.body.workouts;
-    var totalExerciseIds = [];
-    var exercise_ids = [];
-    for (let w of workouts) {
-      exercise_ids = _.pluck(w.exercises, "exerciseId");
 
-      totalExerciseIds = _.union(totalExerciseIds, exercise_ids);
-    }
+  var workoutLogsObj = {};
+  var insertWorkoutLogArray = [];
+  if (req.body.type != "restday") {
+    var exercises = req.body.exercises;
+    var totalExerciseIds = _.pluck(exercises, "exerciseId");
+
     totalExerciseIds.forEach((id, index) => {
       totalExerciseIds[index] = mongoose.Types.ObjectId(id);
     });
@@ -198,67 +195,108 @@ router.post("/exercises", async (req, res) => {
       },
       1
     );
-    var workouts = workouts.map(async singleWorkout => {
-      for (let single of singleWorkout.exercises) {
-        single.exercises = _.find(exercise_data.exercise, exerciseDb => {
-          return exerciseDb._id.toString() === single.exerciseId.toString();
-        });
-        delete single.exerciseId;
-        var setsDetails = single.setsDetails;
-        if (setsDetails) {
-          for (let tmp of setsDetails) {
-            if (tmp.weight) {
-              var baseWeight = await common_helper.unit_converter(
-                tmp.weight,
-                tmp.weightUnit
-              );
-              tmp.baseWeightUnit = baseWeight.baseUnit;
-              tmp.baseWeightValue = baseWeight.baseValue;
-            }
-            if (tmp.distance) {
-              var baseDistance = await common_helper.unit_converter(
-                tmp.distance,
-                tmp.distanceUnit
-              );
-              tmp.baseDistanceUnits = baseDistance.baseUnit;
-              tmp.baseDistanceValue = baseDistance.baseValue;
-            }
-            if (tmp.restTime) {
-              var baseTime = await common_helper.unit_converter(
-                tmp.restTime,
-                tmp.restTimeUnit
-              );
-              tmp.baseRestTimeUnit = baseTime.baseUnit;
-              tmp.baseRestTimeValue = baseTime.baseValue;
-            }
 
-            if (tmp.oneSetTime) {
-              var baseOneSetTime = await common_helper.unit_converter(
-                tmp.oneSetTime,
-                tmp.oneSetTimeUnit
-              );
+    for (let single of exercises) {
+      var time = 0;
+      var distance = 0;
+      var effort = 0;
+      var weight = 0;
+      var repTime = 0;
+      var setTime = 0;
+      var reps = 0;
+      var sets = 0;
+      sets += single.sets ? single.sets : 0;
+      single.exercises = _.find(exercise_data.exercise, exerciseDb => {
+        return exerciseDb._id.toString() === single.exerciseId.toString();
+      });
+      var data = await common_helper.unit_converter(
+        single.restTime,
+        single.restTimeUnit
+      );
 
-              tmp.baseOneSetTimeUnits = baseOneSetTime.baseUnit;
-              tmp.baseOneSetTimeValue = baseOneSetTime.baseValue;
+      single.baseRestTimeUnit = data.baseUnit;
+      single.baseRestTime = data.baseValue;
+      delete single.exerciseId;
+
+      for (let tmp of single.setsDetails) {
+        if (tmp.field1) {
+          var data = await common_helper.unit_converter(
+            tmp.field1.value,
+            tmp.field1.unit
+          );
+          tmp.field1.baseUnit = data.baseUnit;
+          tmp.field1.baseValue = data.baseValue;
+          if (data.baseUnit === "second") {
+            time += data.baseValue;
+          } else if (data.baseUnit === "reps") {
+            reps += data.baseValue;
+          } else {
+            distance += data.baseValue;
+          }
+        }
+
+        if (tmp.field2) {
+          var data = await common_helper.unit_converter(
+            tmp.field2.value,
+            tmp.field2.unit
+          );
+          tmp.field2.baseUnit = data.baseUnit;
+          tmp.field2.baseValue = data.baseValue;
+          if (data.baseUnit === "g") {
+            weight += data.baseValue;
+          } else if (data.baseUnit == "effort") {
+            effort += data.baseValue;
+          }
+
+          if (tmp.field3) {
+            var data = await common_helper.unit_converter(
+              tmp.field3.value,
+              tmp.field3.unit
+            );
+            tmp.field3.baseUnit = data.baseUnit;
+            tmp.field3.baseValue = data.baseValue;
+            if (data.baseUnit === "reps") {
+              reps += data.baseValue;
+            } else if (data.baseUnit === "rep_time") {
+              repTime += data.baseValue;
+            } else if (data.baseUnit === "set_time") {
+              setTime += data.baseValue;
             }
           }
         }
+        workoutLogsObj = {
+          userId: authUserId,
+          time,
+          distance,
+          effort,
+          weight,
+          repTime,
+          setTime,
+          reps,
+          sets
+        };
+        insertWorkoutLogArray.push(workoutLogsObj);
       }
+    }
 
-      return singleWorkout;
-    });
-    workouts = await Promise.all(workouts);
-  }
+    var insertObj = {
+      userWorkoutsId: req.body.userWorkoutsId,
+      type: req.body.type,
+      subType: req.body.subType,
+      exercises: exercises,
+      date: req.body.date
+    };
 
-  var workout_data = await user_program_helper.insert_program_workouts(
-    masterProgramCollectionObject,
-    workouts
-  );
+    var workout_data = await user_program_helper.insert_program_workouts(
+      masterProgramCollectionObject,
+      insertObj
+    );
 
-  if (workout_data.status == 1) {
-    res.status(config.OK_STATUS).json(workout_data);
-  } else {
-    res.status(config.BAD_REQUEST).json(workout_data);
+    if (workout_data.status == 1) {
+      res.status(config.OK_STATUS).json(workout_data);
+    } else {
+      res.status(config.BAD_REQUEST).json(workout_data);
+    }
   }
 });
 

@@ -635,7 +635,9 @@ router.post("/workout/:workout_id", async (req, res) => {
  * @apiName Delete User workout exercise
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String}  child User's unique access-key
+ * @apiParam {String}  parentId Parent Id of workout.[ collection name : user_workouts]
+ * @apiParam {String}  childId childId Id of workout's exercise.[ collection name : user_workouts_exercise ]
+ * @apiParam {Array}  subChildIds subChildIds Ids of workout's exercise'subCollection
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -654,7 +656,14 @@ router.post("/delete/exercise", async (req, res) => {
     subChildIds
   );
   if (workout_data.status === 1) {
-    res.status(config.OK_STATUS).json(workout_data);
+    var workout_day = await user_workout_helper.get_all_workouts_group_by(
+      {
+        _id: mongoose.Types.ObjectId(parentId)
+      },
+      true
+    );
+    workout_day.message = "Exercises Delete";
+    res.status(config.OK_STATUS).json(workout_day);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }
