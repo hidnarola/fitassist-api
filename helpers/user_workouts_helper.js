@@ -270,7 +270,7 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
         }
       }
     ]);
-
+    //DUmmy
     if (user_workouts) {
       return {
         status: 1,
