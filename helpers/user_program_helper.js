@@ -309,7 +309,7 @@ user_program_helper.insert_program_workouts = async (
         return {
           status: 1,
           message: "Program workout inserted",
-          workout: _user_master_program_data
+          workout: _user_master_program_exercise_data
         };
       }
     } else {

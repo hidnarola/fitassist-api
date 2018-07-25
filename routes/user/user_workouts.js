@@ -116,7 +116,7 @@ router.post("/day", async (req, res) => {
 });
 
 /**
- * @api {post} /user/user_workouts/exercises Add User Workouts
+ * @api {post} /user/user_workouts/workout Add User Workouts
  * @apiName Add User Workouts
  * @apiGroup  User Workouts
  * @apiHeader {String}  Content-Type application/json
@@ -209,11 +209,49 @@ router.post("/workout", async (req, res) => {
         },
         true
       );
+
       workout_day.message = "Workout Added";
       res.status(config.OK_STATUS).json(workout_day);
     } else {
       res.status(config.BAD_REQUEST).json(workout_day);
     }
+  }
+});
+
+/**
+ * @api {post} /user/user_workouts/copy Copy User Workouts
+ * @apiName Copy User Workouts
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} exerciseId exerciseId of workout
+ * @apiParam {String} date date of workout
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/copy", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var exerciseId = mongoose.Types.ObjectId(req.body.exerciseId);
+  var date = req.body.date;
+
+  var workout_day = await user_workout_helper.copy_exercise_by_id(
+    exerciseId,
+    date,
+    authUserId
+  );
+
+  if (workout_day.status == 1) {
+    workout_day = await user_workout_helper.get_all_workouts_group_by(
+      {
+        _id: mongoose.Types.ObjectId(workout_day.copiedId)
+      },
+      true
+    );
+    workout_day.message = "Workout Copied";
+    delete workout_day.copiedId;
+    res.status(config.OK_STATUS).json(workout_day);
+  } else {
+    res.status(config.BAD_REQUEST).json(workout_day);
   }
 });
 
