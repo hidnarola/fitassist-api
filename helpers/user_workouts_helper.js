@@ -270,7 +270,7 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
         }
       }
     ]);
-    //DUmmy
+
     if (user_workouts) {
       return {
         status: 1,
@@ -546,11 +546,11 @@ user_workouts_helper.copy_exercise_by_id = async (
     );
 
     if (inserted_exercise_data) {
-      var get_data_for_workout_log = await UserWorkoutExercises.find({
-        userWorkoutsId: workout_day._id
-      });
+      // var get_data_for_workout_log = await UserWorkoutExercises.find({
+      //   userWorkoutsId: workout_day._id
+      // });
       // _.each(get_data_for_workout_log, mainExercise => {
-      for (let mainExercise of get_data_for_workout_log) {
+      for (let mainExercise of inserted_exercise_data) {
         // _.each(mainExercise.exercises, childExercises => {
         for (let childExercises of mainExercise.exercises) {
           if (childExercises.differentSets) {
@@ -1004,30 +1004,27 @@ user_workouts_helper.delete_user_workouts_by_exercise_ids = async exerciseIds =>
  *          status  1 - If user_workouts deleted successfully, with appropriate message
  * @developed by "amc"
  */
-user_workouts_helper.delete_user_workouts_by_id = async user_workouts_id => {
+user_workouts_helper.delete_user_workouts_by_id = async exerciseIds => {
   try {
     let user_workouts_data1 = await UserWorkouts.remove({
-      _id: user_workouts_id
+      _id: { $in: exerciseIds }
     });
+
     let ids = await UserWorkoutExercises.find(
       {
-        userWorkoutsId: user_workouts_id
+        userWorkoutsId: { $in: exerciseIds }
       },
       { _id: 1 }
     );
     ids = _.pluck(ids, "_id");
     let user_workouts_data2 = await UserWorkoutExercises.remove({
-      userWorkoutsId: user_workouts_id
+      userWorkoutsId: { $in: exerciseIds }
     });
     let workout_logs_data = await WorkoutLogs.remove({
       exerciseId: { $in: ids },
       isCompleted: 0
     });
-    if (!user_workouts_data1 && !user_workouts_data2) {
-      return { status: 2, message: "User workouts not found" };
-    } else {
-      return { status: 1, message: "User workouts deleted" };
-    }
+    return { status: 1, message: "User workouts deleted" };
   } catch (err) {
     return {
       status: 0,

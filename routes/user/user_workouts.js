@@ -624,21 +624,24 @@ router.post("/delete/exercise", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/user_workouts/:workout_id Delete User workout
+ * @api {post} /user/user_workouts/workout_delete Delete User workout
  * @apiName Delete User workout
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/:workout_id", async (req, res) => {
-  console.log("here", req.params.workout_id);
-
+router.post("/workout_delete", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Delete workout API - Id = ", req.params.workout_id);
+
+  var exerciseIds = req.body.exerciseIds;
+  exerciseIds.forEach((id, index) => {
+    exerciseIds[index] = mongoose.Types.ObjectId(id);
+  });
+  logger.trace("Delete workout API - Ids = ", exerciseIds);
   let workout_data = await user_workout_helper.delete_user_workouts_by_id(
-    req.params.workout_id
+    exerciseIds
   );
 
   if (workout_data.status === 1) {
