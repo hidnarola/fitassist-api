@@ -18,6 +18,7 @@ var exercise_helper = require("../../helpers/exercise_helper");
 var common_helper = require("../../helpers/common_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_program_helper = require("../../helpers/user_program_helper");
+var exercise_measurements_helper = require("../../helpers/exercise_measurements_helper");
 var socket = require("../../socket/socketServer");
 
 /**
@@ -96,22 +97,36 @@ router.post("/day", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var masterCollectionObject = {
-    title: req.body.title,
-    description: req.body.description,
-    type: req.body.type,
-    userId: authUserId,
-    date: req.body.date
+  var schema = {
+    title: {
+      notEmpty: true,
+      errorMessage: "Title is required"
+    }
   };
 
-  var workout_day = await user_workout_helper.insert_user_workouts_day(
-    masterCollectionObject
-  );
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    var masterCollectionObject = {
+      title: req.body.title,
+      description: req.body.description,
+      type: req.body.type,
+      userId: authUserId,
+      date: req.body.date
+    };
 
-  if (workout_day.status == 1) {
-    res.status(config.OK_STATUS).json(workout_day);
+    var workout_day = await user_workout_helper.insert_user_workouts_day(
+      masterCollectionObject
+    );
+
+    if (workout_day.status == 1) {
+      res.status(config.OK_STATUS).json(workout_day);
+    } else {
+      res.status(config.BAD_REQUEST).json(workout_day);
+    }
   } else {
-    res.status(config.BAD_REQUEST).json(workout_day);
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -131,90 +146,321 @@ router.post("/day", async (req, res) => {
 router.post("/workout", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
-  if (req.body.type != "restday") {
-    var exercises = req.body.exercises;
-    var totalExerciseIds = _.pluck(exercises, "exerciseId");
-
-    totalExerciseIds.forEach((id, index) => {
-      totalExerciseIds[index] = mongoose.Types.ObjectId(id);
-    });
-    var exercise_data = await exercise_helper.get_exercise_id(
-      {
-        _id: { $in: totalExerciseIds }
+  var error = {};
+  var isError = false;
+  var schema = {
+    type: {
+      notEmpty: true,
+      isIn: {
+        options: [constant.WORKOUTS_TYPE],
+        errorMessage: "Type is invalid"
       },
-      1
-    );
+      errorMessage: "Exercise Type is required"
+    },
+    subType: {
+      notEmpty: true,
+      isIn: {
+        options: [constant.WORKOUTS_SUB_TYPE],
+        errorMessage: "Type is invalid"
+      },
+      errorMessage: "Exercise sub Type is required"
+    },
+    userWorkoutsId: {
+      notEmpty: true,
+      errorMessage: "userWorkoutsId is required"
+    },
+    exercises: {
+      notEmpty: true,
+      errorMessage: "exercises is required"
+    }
+  };
+  req.checkBody(schema);
+  errors = req.validationErrors();
 
-    for (let single of exercises) {
-      single.exercises = _.find(exercise_data.exercise, exerciseDb => {
-        return exerciseDb._id.toString() === single.exerciseId.toString();
+  if (!errors) {
+    var errors = [];
+  }
+
+  if (req.body.exercises && req.body.exercises.length < 0) {
+    error = {
+      param: "exercises",
+      msg: "Exercises is empty",
+      value: req.body.exercises
+    };
+    errors.push(error);
+  } else {
+    var measerment_data = await exercise_measurements_helper.get_all_measurements();
+    measerment_data = measerment_data.measurements;
+
+    switch (req.body.subType) {
+      case "exercise":
+        console.log("i am in exercise");
+
+        if (req.body.exercises.length != 1) {
+          isError = true;
+        } else {
+          req.body.exercises.forEach((ex, index) => {
+            if (typeof ex.sets == "undefined" || ex.sets <= 0) {
+              isError = true;
+            } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
+              isError = true;
+            } else if (
+              typeof ex.restTime === "undefined" &&
+              index != ex.sets - 1
+            ) {
+              isError = true;
+            }
+            var data = _.findWhere(measerment_data, {
+              category: ex.exerciseObj.cat,
+              subCategory: ex.exerciseObj.subCat
+            });
+            ex.setsDetails.forEach(setsDetail => {
+              if (data.field1.length > 0) {
+                if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field1.value || setsDetail.field1.value < 0) {
+                  isError = true;
+                }
+              }
+              if (data.field2.length > 0) {
+                if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
+                  isError = true;
+                }
+              }
+              if (data.field3.length > 0) {
+                if (data.field3.indexOf(setsDetail.field3.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field3.value || setsDetail.field3.value < 0) {
+                  isError = true;
+                }
+              }
+            });
+          });
+        }
+        break;
+      case "superset":
+        console.log("i am in superset");
+        if (req.body.exercises.length != 2) {
+          isError = true;
+          console.log("------------------------------------");
+          console.log("1. isError : ", isError);
+          console.log("------------------------------------");
+        } else {
+          req.body.exercises.forEach((ex, index) => {
+            if (typeof ex.sets == "undefined" || ex.sets <= 0) {
+              isError = true;
+              console.log("------------------------------------");
+              console.log("2. isError : ", isError);
+              console.log("------------------------------------");
+            } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
+              isError = true;
+              console.log("------------------------------------");
+              console.log("3. isError : ", isError);
+              console.log("------------------------------------");
+            }
+            var data = _.findWhere(measerment_data, {
+              category: ex.exerciseObj.cat,
+              subCategory: ex.exerciseObj.subCat
+            });
+            ex.setsDetails.forEach(setsDetail => {
+              if (data.field1.length > 0) {
+                if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
+                  isError = true;
+                  console.log("------------------------------------");
+                  console.log("4. isError : ", isError);
+                  console.log("------------------------------------");
+                }
+                if (!setsDetail.field1.value || setsDetail.field1.value < 0) {
+                  isError = true;
+                  console.log("------------------------------------");
+                  console.log("5. isError : ", isError);
+                  console.log("------------------------------------");
+                }
+              }
+              if (data.field2.length > 0) {
+                if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+                  isError = true;
+                  console.log("------------------------------------");
+                  console.log("6. isError : ", isError);
+                  console.log("------------------------------------");
+                }
+                if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
+                  isError = true;
+                  console.log("------------------------------------");
+                  console.log("7. isError : ", isError);
+                  console.log("------------------------------------");
+                }
+              }
+              if (data.field3.length > 0) {
+                if (data.field3.indexOf(setsDetail.field3.unit) < 0) {
+                  isError = true;
+                  console.log("------------------------------------");
+                  console.log("6. isError : ", isError);
+                  console.log("------------------------------------");
+                }
+                if (!setsDetail.field3.value || setsDetail.field3.value < 0) {
+                  isError = true;
+                  console.log("------------------------------------");
+                  console.log("7. isError : ", isError);
+                  console.log("------------------------------------");
+                }
+              }
+            });
+          });
+        }
+        break;
+      case "circuit":
+        console.log("i am in circuit");
+
+        if (req.body.exercises.length <= 0) {
+          isError = true;
+        } else {
+          req.body.exercises.forEach((ex, index) => {
+            if (typeof ex.sets == "undefined" || ex.sets <= 0) {
+              isError = true;
+            } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
+              isError = true;
+            } else if (
+              typeof ex.restTime != "undefined" &&
+              index != ex.sets - 1
+            ) {
+              isError = true;
+            }
+            var data = _.findWhere(measerment_data, {
+              category: ex.exerciseObj.cat,
+              subCategory: ex.exerciseObj.subCat
+            });
+            ex.setsDetails.forEach(setsDetail => {
+              if (data.field1.length > 0) {
+                if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field1.value || setsDetail.field1.value < 0) {
+                  isError = true;
+                }
+              }
+              if (data.field2.length > 0) {
+                if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
+                  isError = true;
+                }
+              }
+              if (data.field3.length > 0) {
+                if (data.field3.indexOf(setsDetail.field3.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field3.value || setsDetail.field3.value < 0) {
+                  isError = true;
+                }
+              }
+            });
+          });
+        }
+        break;
+    }
+  }
+  if (isError) {
+    error = {
+      msg: "Invalid input"
+    };
+    errors.push(error);
+  }
+
+  if (!errors || errors.length <= 0) {
+    if (req.body.type != "restday") {
+      var exercises = req.body.exercises;
+      var totalExerciseIds = _.pluck(exercises, "exerciseId");
+
+      totalExerciseIds.forEach((id, index) => {
+        totalExerciseIds[index] = mongoose.Types.ObjectId(id);
       });
-      var data = await common_helper.unit_converter(
-        single.restTime,
-        single.restTimeUnit
+      var exercise_data = await exercise_helper.get_exercise_id(
+        {
+          _id: { $in: totalExerciseIds }
+        },
+        1
       );
 
-      single.baseRestTimeUnit = data.baseUnit;
-      single.baseRestTime = data.baseValue;
-      delete single.exerciseId;
+      for (let single of exercises) {
+        single.exercises = _.find(exercise_data.exercise, exerciseDb => {
+          return exerciseDb._id.toString() === single.exerciseId.toString();
+        });
+        var data = await common_helper.unit_converter(
+          single.restTime,
+          single.restTimeUnit
+        );
 
-      for (let tmp of single.setsDetails) {
-        if (tmp.field1) {
-          var data = await common_helper.unit_converter(
-            tmp.field1.value,
-            tmp.field1.unit
-          );
-          tmp.field1.baseUnit = data.baseUnit;
-          tmp.field1.baseValue = data.baseValue;
-        }
+        single.baseRestTimeUnit = data.baseUnit;
+        single.baseRestTime = data.baseValue;
+        delete single.exerciseId;
 
-        if (tmp.field2) {
-          var data = await common_helper.unit_converter(
-            tmp.field2.value,
-            tmp.field2.unit
-          );
-          tmp.field2.baseUnit = data.baseUnit;
-          tmp.field2.baseValue = data.baseValue;
-        }
+        for (let tmp of single.setsDetails) {
+          if (tmp.field1) {
+            var data = await common_helper.unit_converter(
+              tmp.field1.value,
+              tmp.field1.unit
+            );
+            tmp.field1.baseUnit = data.baseUnit;
+            tmp.field1.baseValue = data.baseValue;
+          }
 
-        if (tmp.field3) {
-          var data = await common_helper.unit_converter(
-            tmp.field3.value,
-            tmp.field3.unit
-          );
-          tmp.field3.baseUnit = data.baseUnit;
-          tmp.field3.baseValue = data.baseValue;
+          if (tmp.field2) {
+            var data = await common_helper.unit_converter(
+              tmp.field2.value,
+              tmp.field2.unit
+            );
+            tmp.field2.baseUnit = data.baseUnit;
+            tmp.field2.baseValue = data.baseValue;
+          }
+
+          if (tmp.field3) {
+            var data = await common_helper.unit_converter(
+              tmp.field3.value,
+              tmp.field3.unit
+            );
+            tmp.field3.baseUnit = data.baseUnit;
+            tmp.field3.baseValue = data.baseValue;
+          }
         }
       }
-    }
 
-    var insertObj = {
-      userWorkoutsId: req.body.userWorkoutsId,
-      type: req.body.type,
-      subType: req.body.subType,
-      exercises: exercises,
-      date: req.body.date
-    };
+      var insertObj = {
+        userWorkoutsId: req.body.userWorkoutsId,
+        type: req.body.type,
+        subType: req.body.subType,
+        exercises: exercises,
+        date: req.body.date
+      };
 
-    var workout_day = await user_workout_helper.insert_user_workouts_exercises(
-      insertObj,
-      authUserId
-    );
-
-    if (workout_day.status == 1) {
-      workout_day = await user_workout_helper.get_all_workouts_group_by(
-        {
-          _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
-        },
-        true
+      var workout_day = await user_workout_helper.insert_user_workouts_exercises(
+        insertObj,
+        authUserId
       );
 
-      workout_day.message = "Workout Added";
-      res.status(config.OK_STATUS).json(workout_day);
-    } else {
-      res.status(config.BAD_REQUEST).json(workout_day);
+      if (workout_day.status == 1) {
+        workout_day = await user_workout_helper.get_all_workouts_group_by(
+          {
+            _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
+          },
+          true
+        );
+
+        workout_day.message = "Workout Added";
+        res.status(config.OK_STATUS).json(workout_day);
+      } else {
+        res.status(config.BAD_REQUEST).json(workout_day);
+      }
     }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
   }
 });
 
@@ -311,8 +557,10 @@ router.post("/assign_program", async (req, res) => {
       return newSingle;
     });
 
-    var resp_data = await user_workout_helper.insert_user_workouts(
-      masterCollectionObject,
+    var resp_data = await user_workout_helper.insert_user_workouts_day(
+      masterCollectionObject
+    );
+    resp_data = await user_workout_helper.insert_user_workouts_exercises(
       childCollectionObject
     );
   }
@@ -422,6 +670,306 @@ router.put("/complete", async (req, res) => {
     assign_badges(authUserId);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
+  }
+});
+
+/**
+ * @api {put} /user/user_workouts/workout Update User Workouts
+ * @apiName Update User Workouts
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} type type of workout
+ * @apiParam {String} subType subType of workout
+ * @apiParam {String} userWorkoutsId userWorkoutsId of workout
+ * @apiParam {Array} exercises exercises of workout
+ * @apiSuccess (Success 200) {JSON} workout workout details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/workout", async (req, res) => {
+  var workout_id = mongoose.Types.ObjectId(req.body._id);
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  // var error = {};
+  // var isError = false;
+  // var schema = {
+  //   type: {
+  //     notEmpty: true,
+  //     isIn: {
+  //       options: [constant.WORKOUTS_TYPE],
+  //       errorMessage: "Type is invalid"
+  //     },
+  //     errorMessage: "Exercise Type is required"
+  //   },
+  //   subType: {
+  //     notEmpty: true,
+  //     isIn: {
+  //       options: [constant.WORKOUTS_SUB_TYPE],
+  //       errorMessage: "Type is invalid"
+  //     },
+  //     errorMessage: "Exercise sub Type is required"
+  //   },
+  //   userWorkoutsId: {
+  //     notEmpty: true,
+  //     errorMessage: "userWorkoutsId is required"
+  //   },
+  //   exercises: {
+  //     notEmpty: true,
+  //     errorMessage: "exercises is required"
+  //   }
+  // };
+  // req.checkBody(schema);
+  // errors = req.validationErrors();
+
+  // if (!errors) {
+  //   var errors = [];
+  // }
+
+  // if (req.body.exercises && req.body.exercises.length < 0) {
+  //   error = {
+  //     param: "exercises",
+  //     msg: "Exercises is empty",
+  //     value: req.body.exercises
+  //   };
+  //   errors.push(error);
+  // } else {
+  //   var measerment_data = await exercise_measurements_helper.get_all_measurements();
+  //   measerment_data = measerment_data.measurements;
+
+  //   switch (req.body.subType) {
+  //     case "exercise":
+  //       if (req.body.exercises.length != 1) {
+  //         isError = true;
+  //       } else {
+  //         req.body.exercises.forEach((ex, index) => {
+  //           if (typeof ex.sets == "undefined" || ex.sets <= 0) {
+  //             isError = true;
+  //           } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
+  //             isError = true;
+  //           } else if (
+  //             typeof ex.restTime === "undefined" &&
+  //             index != ex.sets - 1
+  //           ) {
+  //             isError = true;
+  //           }
+  //           var data = _.findWhere(measerment_data, {
+  //             category: ex.exerciseObj.cat,
+  //             subCategory: ex.exerciseObj.subCat
+  //           });
+  //           ex.setsDetails.forEach(setsDetail => {
+  //             if (data.field1.length > 0) {
+  //               if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field1.value || setsDetail.field1.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //             if (data.field2.length > 0) {
+  //               if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //             if (data.field3.length > 0) {
+  //               if (data.field3.indexOf(setsDetail.field3.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field3.value || setsDetail.field3.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //           });
+  //         });
+  //       }
+  //       break;
+  //     case "superset":
+  //       if (req.body.exercises.length != 2) {
+  //         isError = true;
+  //       } else {
+  //         req.body.exercises.forEach((ex, index) => {
+  //           if (typeof ex.sets == "undefined" || ex.sets <= 0) {
+  //             isError = true;
+  //           } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
+  //             isError = true;
+  //           } else if (
+  //             typeof ex.restTime === "undefined" &&
+  //             index != ex.sets - 1
+  //           ) {
+  //             isError = true;
+  //           }
+  //           var data = _.findWhere(measerment_data, {
+  //             category: ex.exerciseObj.cat,
+  //             subCategory: ex.exerciseObj.subCat
+  //           });
+  //           ex.setsDetails.forEach(setsDetail => {
+  //             if (data.field1.length > 0) {
+  //               if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field1.value || setsDetail.field1.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //             if (data.field2.length > 0) {
+  //               if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //             if (data.field3.length > 0) {
+  //               if (data.field3.indexOf(setsDetail.field3.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field3.value || setsDetail.field3.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //           });
+  //         });
+  //       }
+  //     case "circuit":
+  //       if (req.body.exercises.length <= 0) {
+  //         isError = true;
+  //       } else {
+  //         req.body.exercises.forEach((ex, index) => {
+  //           if (typeof ex.sets == "undefined" || ex.sets <= 0) {
+  //             isError = true;
+  //           } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
+  //             isError = true;
+  //           } else if (
+  //             typeof ex.restTime != "undefined" &&
+  //             index != ex.sets - 1
+  //           ) {
+  //             isError = true;
+  //           }
+  //           var data = _.findWhere(measerment_data, {
+  //             category: ex.exerciseObj.cat,
+  //             subCategory: ex.exerciseObj.subCat
+  //           });
+  //           ex.setsDetails.forEach(setsDetail => {
+  //             if (data.field1.length > 0) {
+  //               if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field1.value || setsDetail.field1.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //             if (data.field2.length > 0) {
+  //               if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //             if (data.field3.length > 0) {
+  //               if (data.field3.indexOf(setsDetail.field3.unit) < 0) {
+  //                 isError = true;
+  //               }
+  //               if (!setsDetail.field3.value || setsDetail.field3.value < 0) {
+  //                 isError = true;
+  //               }
+  //             }
+  //           });
+  //         });
+  //       }
+  //       break;
+  //   }
+  // }
+  // if (isError) {
+  //   error = {
+  //     msg: "Invalid input"
+  //   };
+  //   errors.push(error);
+  // }
+  if (req.body.type != "restday") {
+    var exercises = req.body.exercises;
+    var totalExerciseIds = _.pluck(exercises, "exerciseId");
+
+    totalExerciseIds.forEach((id, index) => {
+      totalExerciseIds[index] = mongoose.Types.ObjectId(id);
+    });
+    var exercise_data = await exercise_helper.get_exercise_id(
+      {
+        _id: { $in: totalExerciseIds }
+      },
+      1
+    );
+
+    for (let single of exercises) {
+      single.exercises = _.find(exercise_data.exercise, exerciseDb => {
+        return exerciseDb._id.toString() === single.exerciseId.toString();
+      });
+      var data = await common_helper.unit_converter(
+        single.restTime,
+        single.restTimeUnit
+      );
+
+      single.baseRestTimeUnit = data.baseUnit;
+      single.baseRestTime = data.baseValue;
+      delete single.exerciseId;
+
+      for (let tmp of single.setsDetails) {
+        if (tmp.field1) {
+          var data = await common_helper.unit_converter(
+            tmp.field1.value,
+            tmp.field1.unit
+          );
+          tmp.field1.baseUnit = data.baseUnit;
+          tmp.field1.baseValue = data.baseValue;
+        }
+
+        if (tmp.field2) {
+          var data = await common_helper.unit_converter(
+            tmp.field2.value,
+            tmp.field2.unit
+          );
+          tmp.field2.baseUnit = data.baseUnit;
+          tmp.field2.baseValue = data.baseValue;
+
+          if (tmp.field3) {
+            var data = await common_helper.unit_converter(
+              tmp.field3.value,
+              tmp.field3.unit
+            );
+            tmp.field3.baseUnit = data.baseUnit;
+            tmp.field3.baseValue = data.baseValue;
+          }
+        }
+      }
+    }
+
+    var updateObject = {
+      userWorkoutsId: req.body.userWorkoutsId,
+      type: req.body.type,
+      subType: req.body.subType,
+      exercises: exercises
+    };
+
+    var workout_day = await user_workout_helper.update_user_workout_exercise(
+      workout_id,
+      updateObject,
+      authUserId
+    );
+
+    if (workout_day.status == 1) {
+      workout_day = await user_workout_helper.get_all_workouts_group_by(
+        {
+          _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
+        },
+        true
+      );
+      workout_day.message = "Workout Updated";
+      res.status(config.OK_STATUS).json(workout_day);
+    } else {
+      res.status(config.BAD_REQUEST).json(workout_day);
+    }
   }
 });
 

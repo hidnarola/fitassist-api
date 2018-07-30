@@ -250,6 +250,30 @@ user_program_helper.get_user_program_by_id = async id => {
 };
 
 /*
+ * add_workouts_program is used to insert into add_workouts_program collection
+ * @param   user_program_obj     JSON object consist of all property that need to insert in collection
+ * @return  status  0 - If any error occur in inserting User program, with error
+ *          status  1 - If User program inserted, with inserted User program document and appropriate message
+ * @developed by "amc"
+ */
+user_program_helper.add_workouts_program = async programObj => {
+  let user_program = new userWorkoutsProgram(programObj);
+  try {
+    var user_program_data = await user_program.save();
+    return {
+      status: 1,
+      message: "User program workout inserted",
+      program: user_program_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting User program workout",
+      error: err
+    };
+  }
+};
+/*
  * add_program is used to insert into user_program collection
  * @param   user_program_obj     JSON object consist of all property that need to insert in collection
  * @return  status  0 - If any error occur in inserting User program, with error

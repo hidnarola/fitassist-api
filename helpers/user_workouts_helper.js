@@ -699,23 +699,128 @@ user_workouts_helper.copy_exercise_by_id = async (
 user_workouts_helper.update_user_workout_exercise = async (
   id,
   childCollectionObject,
-  workoutLogsObj
+  authUserId
 ) => {
+  var insertWorkoutLogArray = [];
+  var workoutLogsObj = {};
   try {
     var user_workouts_data = await UserWorkoutExercises.findOneAndUpdate(
       { _id: id },
       childCollectionObject,
       { new: true }
     );
-    var delete_workout_log = await UserWorkoutExercises.remove({
-      exerciseId: id
+
+    var delete_workout_log = await WorkoutLogs.remove({
+      exerciseId: id,
+      isCompleted: 0
     });
-    if (delete_workout_log) {
-      workoutLogsArray.forEach((element, index) => {
-        element.exerciseId = id;
-      });
-      let workout_logs_data = await WorkoutLogs.insertMany(workoutLogsArray);
+    for (let childExercises of user_workouts_data.exercises) {
+      if (childExercises.differentSets) {
+        // _.each(childExercises.setsDetails, childDetail => {
+        for (let childDetail of childExercises.setsDetails) {
+          var time = 0;
+          var distance = 0;
+          var effort = 0;
+          var weight = 0;
+          var repTime = 0;
+          var setTime = 0;
+          var reps = 0;
+          if (childDetail.field1) {
+            if (childDetail.field1.baseUnit === "second") {
+              time += childDetail.field1.baseValue;
+            } else if (childDetail.field1.baseUnit === "reps") {
+              reps += childDetail.field1.baseValue;
+            } else {
+              distance += childDetail.field1.baseValue;
+            }
+          }
+          if (childDetail.field2) {
+            if (childDetail.field2.baseUnit === "g") {
+              weight += childDetail.field2.baseValue;
+            } else if (childDetail.field2.baseUnit === "effort") {
+              effort += childDetail.field2.baseValue;
+            }
+          }
+          if (childDetail.field3) {
+            if (childDetail.field3.baseUnit === "reps") {
+              reps += childDetail.field3.baseValue;
+            } else if (childDetail.field3.baseUnit === "rep_time") {
+              repTime += childDetail.field3.baseValue;
+            } else if (childDetail.field3.baseUnit === "set_time") {
+              setTime += childDetail.field3.baseValue;
+            }
+          }
+
+          workoutLogsObj = {
+            exerciseId: user_workouts_data._id,
+            setsDetailId: childExercises._id,
+            userId: authUserId,
+            time,
+            distance,
+            effort,
+            weight,
+            repTime,
+            setTime,
+            reps,
+            sets: 1
+          };
+          insertWorkoutLogArray.push(workoutLogsObj);
+        }
+      } else {
+        var childDetail = childExercises.setsDetails[0];
+        for (var i = 0; i < childExercises.sets; i++) {
+          var time = 0;
+          var distance = 0;
+          var effort = 0;
+          var weight = 0;
+          var repTime = 0;
+          var setTime = 0;
+          var reps = 0;
+          if (childDetail.field1) {
+            if (childDetail.field1.baseUnit === "second") {
+              time += childDetail.field1.baseValue;
+            } else if (childDetail.field1.baseUnit === "reps") {
+              reps += childDetail.field1.baseValue;
+            } else {
+              distance += childDetail.field1.baseValue;
+            }
+          }
+          if (childDetail.field2) {
+            if (childDetail.field2.baseUnit === "g") {
+              weight += childDetail.field2.baseValue;
+            } else if (childDetail.field2.baseUnit === "effort") {
+              effort += childDetail.field2.baseValue;
+            }
+          }
+          if (childDetail.field3) {
+            if (childDetail.field3.baseUnit === "reps") {
+              reps += childDetail.field3.baseValue;
+            } else if (childDetail.field3.baseUnit === "rep_time") {
+              repTime += childDetail.field3.baseValue;
+            } else if (childDetail.field3.baseUnit === "set_time") {
+              setTime += childDetail.field3.baseValue;
+            }
+          }
+
+          workoutLogsObj = {
+            exerciseId: user_workouts_data._id,
+            setsDetailId: childExercises._id,
+            userId: authUserId,
+            time,
+            distance,
+            effort,
+            weight,
+            repTime,
+            setTime,
+            reps,
+            sets: 1
+          };
+          insertWorkoutLogArray.push(workoutLogsObj);
+        }
+      }
     }
+
+    let workout_logs_data = await WorkoutLogs.insertMany(insertWorkoutLogArray);
 
     if (user_workouts_data) {
       return {

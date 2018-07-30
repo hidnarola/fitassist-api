@@ -155,6 +155,57 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/user_program/day Add User program day
+ * @apiName Add User program day
+ * @apiGroup  User Program
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} title title of workout
+ * @apiParam {String} description description of workout
+ * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
+ * @apiParam {Date} date date of workout
+ * @apiSuccess (Success 200) {JSON} day workout day details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/day", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var schema = {
+    title: {
+      notEmpty: true,
+      errorMessage: "Title is required"
+    }
+  };
+
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    var masterCollectionObject = {
+      programId: req.body.programId,
+      title: req.body.title,
+      description: req.body.description,
+      type: req.body.type,
+      userId: authUserId,
+      day: req.body.day
+    };
+
+    var workout_day = await user_program_helper.add_workouts_program(
+      masterCollectionObject
+    );
+
+    if (workout_day.status == 1) {
+      res.status(config.OK_STATUS).json(workout_day);
+    } else {
+      res.status(config.BAD_REQUEST).json(workout_day);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+  }
+});
+
+/**
  * @api {post} /user/user_program/exercises Add user's program's exercises
  * @apiName Add user's program's exercises
  * @apiGroup  User Program
@@ -164,7 +215,7 @@ router.post("/", async (req, res) => {
  * @apiParam {String} description description of workout
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
  * @apiParam {Date} date date of workout
- * @apiParam {Array} workouts list of exercises of workout
+ * @apiParam {Array} exercises list of exercises of workout
  * @apiSuccess (Success 200) {JSON} workout JSON of user_programs document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -244,21 +295,11 @@ router.post("/exercises", async (req, res) => {
       subType: req.body.subType,
       exercises: exercises
     };
-    console.log("------------------------------------");
-    console.log(
-      "masterProgramCollectionObject : ",
-      masterProgramCollectionObject
-    );
-    console.log("------------------------------------");
 
     var workout_day = await user_program_helper.insert_program_workouts(
       masterProgramCollectionObject,
       insertObj
     );
-
-    console.log("------------------------------------");
-    console.log("workout_day : ", workout_day);
-    console.log("------------------------------------");
 
     if (workout_day.status == 1) {
       res.status(config.OK_STATUS).json(workout_day);
