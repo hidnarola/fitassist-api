@@ -163,8 +163,8 @@ router.post("/", async (req, res) => {
  * @apiParam {String} title title of workout
  * @apiParam {String} description description of workout
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
- * @apiParam {Date} date date of workout
- * @apiSuccess (Success 200) {JSON} day workout day details
+ * @apiParam {Date} day day of workout
+ * @apiSuccess (Success 200) {JSON} program workout day details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/day", async (req, res) => {
@@ -214,7 +214,7 @@ router.post("/day", async (req, res) => {
  * @apiParam {String} title title of workout
  * @apiParam {String} description description of workout
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
- * @apiParam {Date} date date of workout
+ * @apiParam {Date} day day of workout
  * @apiParam {Array} exercises list of exercises of workout
  * @apiSuccess (Success 200) {JSON} workout JSON of user_programs document
  * @apiError (Error 4xx) {String} message Validation or error message.

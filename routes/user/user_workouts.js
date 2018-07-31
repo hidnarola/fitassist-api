@@ -194,8 +194,6 @@ router.post("/workout", async (req, res) => {
 
     switch (req.body.subType) {
       case "exercise":
-        console.log("i am in exercise");
-
         if (req.body.exercises.length != 1) {
           isError = true;
         } else {
@@ -205,8 +203,65 @@ router.post("/workout", async (req, res) => {
             } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
               isError = true;
             } else if (
-              typeof ex.restTime === "undefined" &&
-              index != ex.sets - 1
+              ex.differentSets == 0 &&
+              index < ex.sets - 1 &&
+              typeof ex.restTime === "undefined"
+            ) {
+              isError = true;
+            }
+            var data = _.findWhere(measerment_data, {
+              category: ex.exerciseObj.cat,
+              subCategory: ex.exerciseObj.subCat
+            });
+            ex.setsDetails.forEach(setsDetail => {
+              if (data.field1.length > 0) {
+                if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field1.value || setsDetail.field1.value < 0) {
+                  isError = true;
+                }
+              }
+              if (data.field2.length > 0) {
+                if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
+                  isError = true;
+                }
+              }
+              if (data.field3.length > 0) {
+                if (data.field3.indexOf(setsDetail.field3.unit) < 0) {
+                  isError = true;
+                }
+                if (!setsDetail.field3.value || setsDetail.field3.value < 0) {
+                  isError = true;
+                }
+              }
+              if (
+                ex.differentSets == 1 &&
+                index < ex.sets - 1 &&
+                typeof setsDetail.restTime === "undefined"
+              ) {
+                isError = true;
+              }
+            });
+          });
+        }
+        break;
+      case "superset":
+        if (req.body.exercises.length != 2) {
+          isError = true;
+        } else {
+          req.body.exercises.forEach((ex, index) => {
+            if (typeof ex.sets == "undefined" || ex.sets <= 0) {
+              isError = true;
+            } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
+              isError = true;
+            } else if (
+              typeof ex.sets != "undefined" &&
+              ex.sets > 1 &&
+              typeof ex.restTime === "undefined"
             ) {
               isError = true;
             }
@@ -243,80 +298,7 @@ router.post("/workout", async (req, res) => {
           });
         }
         break;
-      case "superset":
-        console.log("i am in superset");
-        if (req.body.exercises.length != 2) {
-          isError = true;
-          console.log("------------------------------------");
-          console.log("1. isError : ", isError);
-          console.log("------------------------------------");
-        } else {
-          req.body.exercises.forEach((ex, index) => {
-            if (typeof ex.sets == "undefined" || ex.sets <= 0) {
-              isError = true;
-              console.log("------------------------------------");
-              console.log("2. isError : ", isError);
-              console.log("------------------------------------");
-            } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
-              isError = true;
-              console.log("------------------------------------");
-              console.log("3. isError : ", isError);
-              console.log("------------------------------------");
-            }
-            var data = _.findWhere(measerment_data, {
-              category: ex.exerciseObj.cat,
-              subCategory: ex.exerciseObj.subCat
-            });
-            ex.setsDetails.forEach(setsDetail => {
-              if (data.field1.length > 0) {
-                if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
-                  isError = true;
-                  console.log("------------------------------------");
-                  console.log("4. isError : ", isError);
-                  console.log("------------------------------------");
-                }
-                if (!setsDetail.field1.value || setsDetail.field1.value < 0) {
-                  isError = true;
-                  console.log("------------------------------------");
-                  console.log("5. isError : ", isError);
-                  console.log("------------------------------------");
-                }
-              }
-              if (data.field2.length > 0) {
-                if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
-                  isError = true;
-                  console.log("------------------------------------");
-                  console.log("6. isError : ", isError);
-                  console.log("------------------------------------");
-                }
-                if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
-                  isError = true;
-                  console.log("------------------------------------");
-                  console.log("7. isError : ", isError);
-                  console.log("------------------------------------");
-                }
-              }
-              if (data.field3.length > 0) {
-                if (data.field3.indexOf(setsDetail.field3.unit) < 0) {
-                  isError = true;
-                  console.log("------------------------------------");
-                  console.log("6. isError : ", isError);
-                  console.log("------------------------------------");
-                }
-                if (!setsDetail.field3.value || setsDetail.field3.value < 0) {
-                  isError = true;
-                  console.log("------------------------------------");
-                  console.log("7. isError : ", isError);
-                  console.log("------------------------------------");
-                }
-              }
-            });
-          });
-        }
-        break;
       case "circuit":
-        console.log("i am in circuit");
-
         if (req.body.exercises.length <= 0) {
           isError = true;
         } else {
@@ -326,8 +308,9 @@ router.post("/workout", async (req, res) => {
             } else if (typeof ex.sets != "undefined" && ex.sets > 12) {
               isError = true;
             } else if (
-              typeof ex.restTime != "undefined" &&
-              index != ex.sets - 1
+              typeof ex.sets != "undefined" &&
+              ex.sets > 1 &&
+              typeof ex.restTime === "undefined"
             ) {
               isError = true;
             }
@@ -542,7 +525,6 @@ router.post("/assign_program", async (req, res) => {
     masterCollectionObject = {
       title: program.title,
       userId: authUserId,
-      isCompleted: 0,
       description: program.description,
       type: program.type,
       date: moment(date)
@@ -560,6 +542,7 @@ router.post("/assign_program", async (req, res) => {
     var resp_data = await user_workout_helper.insert_user_workouts_day(
       masterCollectionObject
     );
+    childCollectionObject.userWorkoutsId = resp_data.day._id;
     resp_data = await user_workout_helper.insert_user_workouts_exercises(
       childCollectionObject
     );
