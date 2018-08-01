@@ -633,6 +633,7 @@ router.put("/workout", async (req, res) => {
       errorMessage: "subType is required"
     }
   };
+
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
@@ -774,10 +775,12 @@ router.put("/workout", async (req, res) => {
             ) {
               isError = true;
             }
+
             var data = _.findWhere(measerment_data, {
               category: ex.exerciseObj.cat,
               subCategory: ex.exerciseObj.subCat
             });
+
             ex.setsDetails.forEach(setsDetail => {
               if (data.field1.length > 0) {
                 if (data.field1.indexOf(setsDetail.field1.unit) < 0) {
