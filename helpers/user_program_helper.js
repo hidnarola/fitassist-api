@@ -407,40 +407,17 @@ user_program_helper.add_program = async programObj => {
  *          status  1 - If User Program inserted, with inserted User Program document and appropriate message
  * @developed by "amc"
  */
-user_program_helper.insert_program_workouts = async (
-  masterCollectionObject,
-  childCollectionObject
-) => {
+user_program_helper.insert_program_workouts = async childCollectionObject => {
   try {
-    let user_program = new userWorkoutsProgram(masterCollectionObject);
-    var user_master_program_data = await user_program.save();
-    if (user_master_program_data) {
-      if (childCollectionObject) {
-        childCollectionObject.userWorkoutsProgramId =
-          user_master_program_data._id;
-
-        let user_program_exercise = new userWorkoutExercisesProgram(
-          childCollectionObject
-        );
-        var user_master_program_exercise_data = await user_program_exercise.save();
-      }
-
-      if (user_master_program_exercise_data) {
-        var _user_master_program_exercise_data = user_master_program_exercise_data;
-        if (user_master_program_exercise_data.length > 0) {
-          _user_master_program_exercise_data =
-            user_master_program_exercise_data[0];
-        }
-        return {
-          status: 1,
-          message: "Program workout inserted",
-          workout: _user_master_program_exercise_data
-        };
-      }
+    let user_program = new userWorkoutExercisesProgram(childCollectionObject);
+    var user_program_exercise = await user_program.save();
+    if (user_program_exercise) {
+      return {
+        status: 1,
+        message: "Program workout inserted",
+        workout: user_program_exercise
+      };
     } else {
-      var delete_user_program = await UserPrograms.findByIdAndRemove({
-        _id: mongoose.Types.ObjectId(user_master_program_data._id)
-      });
       return {
         status: 2,
         message: "Error occured while inserting Program workout",
@@ -468,56 +445,21 @@ user_program_helper.insert_program_workouts = async (
  */
 user_program_helper.update_program_workouts = async (
   id,
-  masterCollectionObject,
   childCollectionObject
 ) => {
   try {
-    var user_program_workout = await userWorkoutsProgram.findOneAndUpdate(
+    user_workout_exercises_program = await userWorkoutExercisesProgram.findOneAndUpdate(
       { _id: id },
-      masterCollectionObject,
+      childCollectionObject,
       { new: true }
     );
 
-    if (user_program_workout) {
-      var user_workout_exercises_program = await userWorkoutExercisesProgram.remove(
-        {
-          userWorkoutsProgramId: id
-        }
-      );
-
-      if (user_workout_exercises_program) {
-        if (childCollectionObject && childCollectionObject.length > 0) {
-          childCollectionObject.forEach(element => {
-            element.userWorkoutsProgramId = user_program_workout._id;
-          });
-          var user_workout_exercises_program = await userWorkoutExercisesProgram.insertMany(
-            childCollectionObject
-          );
-          if (user_workout_exercises_program) {
-            var _user_workout_exercises_program = user_workout_exercises_progra;
-            if (user_workout_exercises_program.length > 0) {
-              _user_workout_exercises_program =
-                user_workout_exercises_program[0];
-            }
-            return {
-              status: 1,
-              message: "User Program Exercises updated",
-              workout: _user_workout_exercises_program
-            };
-          }
-        }
-      }
-      if (user_program_workout) {
-        var _user_program_workout = user_program_workout;
-        if (user_program_workout.length > 0) {
-          _user_program_workout = user_program_workout[0];
-        }
-        return {
-          status: 1,
-          message: "User Program Exercises updated",
-          workout: _user_program_workout
-        };
-      }
+    if (user_workout_exercises_program) {
+      return {
+        status: 1,
+        message: "Program exercises updated",
+        program: user_workout_exercises_program
+      };
     } else {
       return {
         status: 2,
@@ -528,7 +470,7 @@ user_program_helper.update_program_workouts = async (
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while inserting User Program Exercises",
+      message: "Error occured while updating User Program Exercises",
       error: err
     };
   }
@@ -559,6 +501,35 @@ user_program_helper.assign_program = async programObj => {
   }
 };
 
+/*
+ * update_user_program_by_day_id is used to update user program day based on user program day id
+ * @param   id         String  _id of user_program that need to be update
+ * @param   programObj Object programObj of user_workouts_programs's programObj consist of all property that need to update
+ * @return  status  0 - If any error occur in updating user_workouts_program, with error
+ *          status  1 - If user_workouts_program updated successfully, with appropriate message
+ *          status  2 - If user_workouts_program not updated, with appropriate message
+ * @developed by "amc"
+ */
+user_program_helper.update_user_program_by_day_id = async (id, programObj) => {
+  try {
+    var user_program_data = await userWorkoutsProgram.findOneAndUpdate(
+      { _id: id },
+      programObj,
+      { new: true }
+    );
+    return {
+      status: 1,
+      message: "User program updated",
+      program: user_program_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating User program",
+      error: err
+    };
+  }
+};
 /*
  * update_user_program_by_id is used to update user program data based on user program id
  * @param   id         String  _id of user_program that need to be update

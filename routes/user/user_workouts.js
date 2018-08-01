@@ -1242,10 +1242,6 @@ async function assign_badges(authUserId) {
     userId: authUserId
   });
 
-  console.log("------------------------------------");
-  console.log("workout_detail : ", workout_detail);
-  console.log("------------------------------------");
-
   //badge assign start;
   var badges = await badge_assign_helper.badge_assign(
     authUserId,
