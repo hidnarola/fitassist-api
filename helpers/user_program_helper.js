@@ -517,11 +517,18 @@ user_program_helper.update_user_program_by_day_id = async (id, programObj) => {
       programObj,
       { new: true }
     );
-    return {
-      status: 1,
-      message: "User program updated",
-      program: user_program_data
-    };
+    if (user_program_data) {
+      return {
+        status: 1,
+        message: "User program updated",
+        program: user_program_data
+      };
+    } else {
+      return {
+        status: 2,
+        message: "User program not updated"
+      };
+    }
   } catch (err) {
     return {
       status: 0,

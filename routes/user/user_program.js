@@ -581,7 +581,7 @@ router.post("/workout", async (req, res) => {
 router.post("/copy", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var workoutId = mongoose.Types.ObjectId(req.body.workoutId);
+  var workoutId = mongoose.Types.ObjectId(req.body.exerciseId);
   var day = req.body.day;
 
   var workout_day = await user_program_helper.copy_exercise_by_id(
