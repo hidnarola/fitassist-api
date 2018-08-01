@@ -26,7 +26,8 @@ var UserWorkoutExercisesProgramSchema = new Schema(
     },
     type: { type: String, enum: constants.WORKOUTS_TYPE },
     subType: { type: String, enum: constants.WORKOUTS_SUB_TYPE },
-    exercises: [{ type: ExercisesSchema }]
+    exercises: [{ type: ExercisesSchema }],
+    sequence: { type: Number, default: 0 }
   },
   { versionKey: false }
 );

@@ -541,7 +541,8 @@ router.post("/workout", async (req, res) => {
         userWorkoutsProgramId: req.body.userWorkoutsId,
         type: req.body.type,
         subType: req.body.subType,
-        exercises: exercises
+        exercises: exercises,
+        sequence: req.body.sequence
       };
 
       var workout_day = await user_program_helper.insert_program_workouts(
