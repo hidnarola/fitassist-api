@@ -615,9 +615,9 @@ router.post("/copy", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} workouts JSON of user_programs document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/workout/:workout_day_id", async (req, res) => {
+router.put("/workout", async (req, res) => {
   var isError = false;
-  var workout_day_id = mongoose.Types.ObjectId(req.params.workout_day_id);
+  var workout_day_id = mongoose.Types.ObjectId(req.body._id);
   var schema = {
     userWorkoutsId: {
       notEmpty: true,
