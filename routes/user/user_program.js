@@ -550,7 +550,7 @@ router.post("/workout", async (req, res) => {
 
       var returnObject = await user_program_helper.get_all_program_workouts_group_by(
         {
-          _id: mongoose.Types.ObjectId(req.body.userWorkoutsProgramId)
+          _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
         }
       );
 
