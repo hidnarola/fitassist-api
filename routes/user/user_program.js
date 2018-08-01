@@ -566,6 +566,43 @@ router.post("/workout", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/user_program/copy Copy User Program
+ * @apiName Copy User Program
+ * @apiGroup  User Program
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} workoutId workoutId of workout
+ * @apiParam {String} day day of workout
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/copy", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var workoutId = mongoose.Types.ObjectId(req.body.workoutId);
+  var day = req.body.day;
+
+  var workout_day = await user_program_helper.copy_exercise_by_id(
+    workoutId,
+    day,
+    authUserId
+  );
+
+  if (workout_day.status == 1) {
+    workout_day = await user_program_helper.get_all_program_workouts_group_by(
+      {
+        _id: mongoose.Types.ObjectId(workout_day.copiedId)
+      },
+      true
+    );
+    workout_day.message = "Workout Copied";
+    delete workout_day.copiedId;
+    res.status(config.OK_STATUS).json(workout_day);
+  } else {
+    res.status(config.BAD_REQUEST).json(workout_day);
+  }
+});
+
+/**
  * @api {put} /user/user_program/workout/:workout_day_id Update user's program's exercises
  * @apiName Update user's program's exercises
  * @apiGroup  User Program

@@ -640,5 +640,74 @@ user_program_helper.delete_user_program_exercise = async exercise_ids => {
     };
   }
 };
+/*
+ * copy_exercise_by_id is used to insert into user_workouts master collection
+ * 
+ * @param   masterCollectionObject     JSON object consist of all property that need to insert in collection
+ * 
+ * @return  status  0 - If any error occur in inserting User workout, with error
+ *          status  1 - If User workout inserted, with inserted User workout document and appropriate message
+ * 
+ * @developed by "amc"
+ */
+user_program_helper.copy_exercise_by_id = async (
+  exerciseId,
+  day,
+  authUserId
+) => {
+  var workoutLogsObj = {};
+  var insertWorkoutLogArray = [];
+  try {
+    var day_data = await userWorkoutsProgram
+      .findOne(
+        { _id: exerciseId },
+        { _id: 0, type: 1, title: 1, description: 1, userId: 1 }
+      )
+      .lean();
 
+    day_data.date = day;
+
+    let user_workouts = new userWorkoutsProgram(day_data);
+    var workout_day = await user_workouts.save();
+
+    var exercise_data = await userWorkoutExercisesProgram
+      .find({
+        userWorkoutsProgramId: exerciseId
+      })
+      .lean();
+
+    exercise_data.forEach(ex => {
+      delete ex._id;
+      for (let o of ex.exercises) {
+        delete o._id;
+      }
+      ex.userWorkoutsProgramId = workout_day._id;
+    });
+
+    var inserted_exercise_data = await UserWorkoutExercises.insertMany(
+      exercise_data
+    );
+
+    if (inserted_exercise_data) {
+      return {
+        status: 1,
+        message: "Copy successfully",
+        day: inserted_exercise_data,
+        copiedId: workout_day._id
+      };
+    } else {
+      return {
+        status: 2,
+        message: "Error occured while copying User workout day",
+        error: err
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while copying User workout day",
+      error: err
+    };
+  }
+};
 module.exports = user_program_helper;
