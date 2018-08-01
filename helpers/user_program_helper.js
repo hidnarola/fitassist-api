@@ -680,20 +680,20 @@ user_program_helper.copy_exercise_by_id = async (
       .lean();
 
     exercise_data.forEach(ex => {
-      delete ex._id;
       for (let o of ex.exercises) {
         delete o._id;
       }
       ex.userWorkoutsProgramId = workout_day._id;
     });
-    let user_workout_exercise = new userWorkoutsProgram(exercise_data);
-    user_workout_exercise = await user_workout_exercise.save();
+
+    let user_workout_exercise = await userWorkoutExercisesProgram.insertMany(
+      exercise_data
+    );
 
     if (user_workout_exercise) {
       return {
         status: 1,
         message: "Copy successfully",
-        day: inserted_exercise_data,
         copiedId: workout_day._id
       };
     } else {
@@ -711,4 +711,32 @@ user_program_helper.copy_exercise_by_id = async (
     };
   }
 };
+
+/*
+ * delete_user_workouts_by_exercise_ids is used to delete user_workouts from database
+ * @param   exerciseIds String  _id of user_workouts that need to be delete
+ * @return  status  0 - If any error occur in deletion of user_workouts, with error
+ *          status  1 - If user_workouts deleted successfully, with appropriate message
+ * @developed by "amc"
+ */
+user_program_helper.delete_user_workouts_by_exercise_ids = async exerciseIds => {
+  try {
+    let user_workouts_data = await userWorkoutExercisesProgram.remove({
+      _id: { $in: exerciseIds }
+    });
+
+    if (user_workouts_data) {
+      return { status: 1, message: "User program workouts deleted" };
+    } else {
+      return { status: 2, message: "User program workouts not deleted" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while deleting User program workouts",
+      error: err
+    };
+  }
+};
+
 module.exports = user_program_helper;

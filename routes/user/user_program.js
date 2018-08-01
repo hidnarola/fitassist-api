@@ -277,6 +277,7 @@ router.post("/day", async (req, res) => {
  * @apiParam {Enum} type type of workout | Possbile value <code>Enum: ["exercise","restday"]</code>
  * @apiParam {Date} day day of workout
  * @apiParam {Array} exercises list of exercises of workout
+ * @apiParam {Array} sequence sequence of exercises of workout
  * @apiSuccess (Success 200) {JSON} workout JSON of user_programs document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -590,12 +591,10 @@ router.post("/copy", async (req, res) => {
   );
 
   if (workout_day.status == 1) {
-    workout_day = await user_program_helper.get_all_program_workouts_group_by(
-      {
-        _id: mongoose.Types.ObjectId(workout_day.copiedId)
-      },
-      true
-    );
+    workout_day = await user_program_helper.get_all_program_workouts_group_by({
+      _id: mongoose.Types.ObjectId(workout_day.copiedId)
+    });
+
     workout_day.message = "Workout Copied";
     delete workout_day.copiedId;
     res.status(config.OK_STATUS).json(workout_day);
@@ -936,6 +935,7 @@ router.put("/:program_id", async (req, res) => {
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
+
 /**
  * @api {put} /user/user_program/day/:program_day_id update user's program
  * @apiName update user's program
@@ -1026,6 +1026,48 @@ router.post("/delete/exercises", async (req, res) => {
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
+});
+
+/**
+ * @api {post} /user/user_program/delete Multiple program Workout delete
+ * @apiName Multiple Workout delete
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Array} exerciseIds ids of Days
+ * @apiParam {Array} parentId parentId of Day
+ * @apiSuccess (Success 200) {String} workouts Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/delete", async (req, res) => {
+  var exerciseIds = req.body.exerciseIds;
+  var parentId = mongoose.Types.ObjectId(req.body.parentId);
+
+  exerciseIds.forEach((id, index) => {
+    exerciseIds[index] = mongoose.Types.ObjectId(id);
+  });
+
+  logger.trace("Delete workout by - Id = ", exerciseIds);
+  let workout_data = await user_program_helper.delete_user_workouts_by_exercise_ids(
+    exerciseIds
+  );
+
+  if (workout_data.status == 1) {
+    var resp_data = await user_program_helper.get_all_program_workouts_group_by(
+      {
+        _id: parentId
+      }
+    );
+
+    resp_data.message = "Exercises Delete";
+
+    if (resp_data.status === 1) {
+      res.status(config.OK_STATUS).json(resp_data);
+    } else {
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    }
+  } else {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }
 });
 module.exports = router;
