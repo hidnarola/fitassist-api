@@ -739,4 +739,41 @@ user_program_helper.delete_user_workouts_by_exercise_ids = async exerciseIds => 
   }
 };
 
+/*
+ * delete_user_workouts_exercise is used to delete user_workouts exercise from database
+ * @param   exerciseId String  _id of user_workouts exercise that need to be delete
+ * @return  status  0 - If any error occur in deletion of user_workouts exercise, with error
+ *          status  1 - If user_workouts exercise deleted successfully, with appropriate message
+ * @developed by "amc"
+ */
+user_program_helper.delete_user_workouts_exercise = async (
+  childId,
+  subChildIds
+) => {
+  try {
+    let user_workouts_exercise = await userWorkoutExercisesProgram.update(
+      { _id: childId },
+      { $pull: { exercises: { _id: { $in: subChildIds } } } },
+      { new: true }
+    );
+
+    let exercise = await userWorkoutExercisesProgram.findOne({
+      _id: childId
+    });
+
+    if (exercise && exercise.exercises.length === 0) {
+      let data = await userWorkoutExercisesProgram.remove({
+        _id: childId
+      });
+    }
+    return { status: 1, message: "User workouts exercise deleted" };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while deleting User workouts exercise",
+      error: err
+    };
+  }
+};
+
 module.exports = user_program_helper;

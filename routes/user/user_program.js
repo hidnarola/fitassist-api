@@ -1059,13 +1059,52 @@ router.post("/delete", async (req, res) => {
       }
     );
 
-    resp_data.message = "Exercises Delete";
+    resp_data.message = "Exercises Deleted";
 
     if (resp_data.status === 1) {
       res.status(config.OK_STATUS).json(resp_data);
     } else {
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     }
+  } else {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
+  }
+});
+
+/**
+ * @api {post} /user/user_workouts/delete/exercise Delete User workout exercise
+ * @apiName Delete User workout exercise
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String}  parentId Parent Id of workout.[ collection name : user_workouts]
+ * @apiParam {String}  childId childId Id of workout's exercise.[ collection name : user_workouts_exercise ]
+ * @apiParam {Array}  subChildIds subChildIds Ids of workout's exercise'subCollection
+ * @apiSuccess (Success 200) {String} workouts workouts data of program
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/delete/exercise", async (req, res) => {
+  var parentId = mongoose.Types.ObjectId(req.body.parentId);
+  var childId = mongoose.Types.ObjectId(req.body.childId);
+  var subChildIds = req.body.subChildIds;
+
+  subChildIds.forEach((id, index) => {
+    subChildIds[index] = mongoose.Types.ObjectId(id);
+  });
+
+  logger.trace("Delete workout inner exercise API - Id = ", childId);
+  let workout_data = await user_program_helper.delete_user_workouts_exercise(
+    childId,
+    subChildIds
+  );
+  if (workout_data.status === 1) {
+    var workout_day = await user_program_helper.get_all_program_workouts_group_by(
+      {
+        _id: mongoose.Types.ObjectId(parentId)
+      },
+      true
+    );
+    workout_day.message = "Exercises Deleted";
+    res.status(config.OK_STATUS).json(workout_day);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }

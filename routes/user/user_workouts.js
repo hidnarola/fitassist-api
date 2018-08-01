@@ -1165,7 +1165,7 @@ router.post("/delete/exercise", async (req, res) => {
       },
       true
     );
-    workout_day.message = "Exercises Delete";
+    workout_day.message = "Exercises Deleted";
     res.status(config.OK_STATUS).json(workout_day);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
@@ -1227,7 +1227,7 @@ router.post("/delete", async (req, res) => {
     },
     true
   );
-  workout_day.message = "Exercises Delete";
+  workout_day.message = "Exercises Deleted";
 
   if (workout_data.status === 1) {
     res.status(config.OK_STATUS).json(workout_day);
