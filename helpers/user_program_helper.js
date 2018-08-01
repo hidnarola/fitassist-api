@@ -661,19 +661,22 @@ user_program_helper.copy_exercise_by_id = async (
     var day_data = await userWorkoutsProgram
       .findOne(
         { _id: exerciseId },
-        { _id: 0, type: 1, title: 1, description: 1, userId: 1 }
+        { _id: 0, type: 1, title: 1, description: 1, userId: 1, programId: 1 }
       )
       .lean();
 
-    day_data.date = day;
+    day_data.day = day;
 
     let user_workouts = new userWorkoutsProgram(day_data);
     var workout_day = await user_workouts.save();
 
     var exercise_data = await userWorkoutExercisesProgram
-      .find({
-        userWorkoutsProgramId: exerciseId
-      })
+      .find(
+        {
+          userWorkoutsProgramId: exerciseId
+        },
+        { _id: 0 }
+      )
       .lean();
 
     exercise_data.forEach(ex => {
@@ -683,12 +686,10 @@ user_program_helper.copy_exercise_by_id = async (
       }
       ex.userWorkoutsProgramId = workout_day._id;
     });
+    let user_workout_exercise = new userWorkoutsProgram(exercise_data);
+    user_workout_exercise = await user_workout_exercise.save();
 
-    var inserted_exercise_data = await UserWorkoutExercises.insertMany(
-      exercise_data
-    );
-
-    if (inserted_exercise_data) {
+    if (user_workout_exercise) {
       return {
         status: 1,
         message: "Copy successfully",

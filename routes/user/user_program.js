@@ -283,6 +283,7 @@ router.post("/day", async (req, res) => {
 router.post("/workout", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var isError = false;
   var schema = {
     userWorkoutsId: {
       notEmpty: true,
