@@ -13,27 +13,28 @@ var _ = require("underscore");
  */
 user_workouts_helper.get_all_workouts = async (condition, single = false) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([
-      {
-        $match: condition
-      },
-      {
-        $lookup: {
-          from: "user_workout_exercises",
-          foreignField: "userWorkoutsId",
-          localField: "_id",
-          as: "exercises"
-        }
-      }
-    ]);
+    var user_workouts = await UserWorkouts.aggregate([{ $match: condition }]);
+    // var user_workouts = await UserWorkouts.aggregate([
+    //   {
+    //     $match: condition
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "user_workout_exercises",
+    //       foreignField: "userWorkoutsId",
+    //       localField: "_id",
+    //       as: "exercises"
+    //     }
+    //   }
+    // ]);
 
-    _.each(user_workouts, user_workout => {
-      var tmp = [];
-      tmp = _.sortBy(user_workout.exercises, function(o) {
-        return o.sequence;
-      });
-      user_workout.exercises = tmp;
-    });
+    // _.each(user_workouts, user_workout => {
+    //   var tmp = [];
+    //   tmp = _.sortBy(user_workout.exercises, function(o) {
+    //     return o.sequence;
+    //   });
+    //   user_workout.exercises = tmp;
+    // });
 
     if (user_workouts) {
       var message =
@@ -103,7 +104,8 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
           title: { $first: "$title" },
           description: { $first: "$description" },
           userId: { $first: "$userId" },
-          date: { $first: "$date" }
+          date: { $first: "$date" },
+          sequence: { $first: "$sequence" }
         }
       },
       {
@@ -117,7 +119,8 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
           title: 1,
           description: 1,
           userId: 1,
-          date: 1
+          date: 1,
+          sequence: 1
         }
       }
     ]);
@@ -138,11 +141,11 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
 
       _.each(user_workouts, o => {
         if (o.type === "cooldown") {
-          returnObj.cooldown = o.exercises;
+          returnObj.cooldown = _.sortBy(o.exercises, "sequence");
         } else if (o.type === "exercise") {
-          returnObj.exercise = o.exercises;
+          returnObj.exercise = _.sortBy(o.exercises, "sequence");
         } else if (o.type === "warmup") {
-          returnObj.warmup = o.exercises;
+          returnObj.warmup = _.sortBy(o.exercises, "sequence");
         }
       });
 
@@ -221,25 +224,17 @@ user_workouts_helper.count_all_completed_workouts = async condition => {
  */
 user_workouts_helper.workout_detail_for_badges = async condition => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([
+    var user_workouts = await WorkoutLogs.aggregate([
       {
         $match: condition
       },
       {
         $group: {
-          _id: null,
-          weight_lifted_total: {
-            $sum: "$weight"
-          },
-          weight_lifted_average: {
-            $avg: "$weight"
-          },
-          weight_lifted_most: {
-            $max: "$weight"
-          },
-          weight_lifted_least: {
-            $min: "$weight"
-          },
+          _id: "$exerciseId",
+          weight_lifted_total: { $sum: "$weight" },
+          weight_lifted_average: { $avg: "$weight" },
+          weight_lifted_most: { $max: "$weight" },
+          weight_lifted_least: { $min: "$weight" },
           reps_least: { $min: "$reps" },
           reps_total: { $sum: "$reps" },
           reps_average: { $avg: "$reps" },
@@ -253,7 +248,6 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
       },
       {
         $project: {
-          _id: 0,
           weight_lifted_total: 1,
           weight_lifted_average: 1,
           weight_lifted_most: 1,
@@ -267,6 +261,24 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
           sets_average: 1,
           sets_most: 1,
           workouts_total: 1
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          weight_lifted_total: { $sum: "$weight_lifted_total" },
+          weight_lifted_average: { $avg: "$weight_lifted_average" },
+          weight_lifted_most: { $max: "$weight_lifted_most" },
+          weight_lifted_least: { $min: "$weight_lifted_least" },
+          reps_least: { $min: "$reps_least" },
+          reps_total: { $sum: "$reps_total" },
+          reps_average: { $avg: "$reps_average" },
+          reps_most: { $max: "$reps_most" },
+          sets_least: { $min: "$sets_least" },
+          sets_total: { $sum: "$sets_total" },
+          sets_average: { $avg: "$sets_average" },
+          sets_most: { $max: "$sets_most" },
+          workouts_total: { $sum: "$workouts_total" }
         }
       }
     ]);

@@ -129,6 +129,107 @@ user_program_helper.get_user_programs_in_details = async condition => {
 };
 
 /*
+ * get_all_program_workouts_group_by is used to fetch all user exercises data
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user exercises data, with error
+ *          status 1 - If user exercises data found, with user exercises object
+ *          status 2 - If user exercises not found, with appropriate message
+ */
+user_program_helper.get_all_program_workouts_group_by = async (
+  condition = {}
+) => {
+  try {
+    var user_workouts = await userWorkoutsProgram.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_workout_exercises_program",
+          foreignField: "userWorkoutsProgramId",
+          localField: "_id",
+          as: "exercises"
+        }
+      },
+      {
+        $unwind: {
+          path: "$exercises",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: "$exercises.type",
+          userWorkoutsId: { $first: "$_id" },
+          type: { $first: "$exercises.type" },
+          exercises: { $addToSet: "$exercises" },
+          dayType: { $first: "$type" },
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          userId: { $first: "$userId" },
+          day: { $first: "$day" },
+          sequence: { $first: "$sequence" }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          userWorkoutsId: 1,
+          type: 1,
+          exercises: 1,
+          isCompleted: 1,
+          dayType: 1,
+          title: 1,
+          description: 1,
+          userId: 1,
+          day: 1,
+          sequence: 1
+        }
+      }
+    ]);
+
+    if (user_workouts) {
+      var returnObj = {
+        _id: user_workouts[0].userWorkoutsId,
+        isCompleted: user_workouts[0].isCompleted,
+        type: user_workouts[0].dayType,
+        title: user_workouts[0].title,
+        description: user_workouts[0].description,
+        userId: user_workouts[0].userId,
+        day: user_workouts[0].day,
+        warmup: [],
+        exercise: [],
+        cooldown: []
+      };
+
+      _.each(user_workouts, o => {
+        if (o.type === "cooldown") {
+          returnObj.cooldown = _.sortBy(o.exercises, "sequence");
+        } else if (o.type === "exercise") {
+          returnObj.exercise = _.sortBy(o.exercises, "sequence");
+        } else if (o.type === "warmup") {
+          returnObj.warmup = _.sortBy(o.exercises, "sequence");
+        }
+      });
+
+      return {
+        status: 1,
+        message: "User workouts found",
+        workouts: returnObj
+      };
+    } else {
+      return { status: 2, message: "No user workouts available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user workouts",
+      error: err
+    };
+  }
+};
+
+/*
  * get_user_programs is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
  * @return  status 0 - If any internal error occured while fetching user program data, with error

@@ -124,6 +124,71 @@ router.get("/:program_id", async (req, res) => {
 });
 
 /**
+ * @api {get} /user/user_program/workout/:workout_id Get user's program by _id
+ * @apiName Get user's program by _id
+ * @apiGroup  User Program
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {JSON} workouts JSON of user_program document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/workout/:workout_id", async (req, res) => {
+  console.log("here");
+
+  var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
+
+  logger.trace("Get all user workout API called ID:" + workout_id);
+  var resp_data = await user_program_helper.get_all_program_workouts_group_by(
+    {
+      _id: workout_id
+    },
+    true
+  );
+
+  if (resp_data.status == 1) {
+    // var returnObject = {
+    //   status: resp_data.status,
+    //   message: resp_data.message,
+    //   program: {
+    //     programDetails: {
+    //       _id: resp_data.program[0]._id,
+    //       name: resp_data.program[0].name,
+    //       description: resp_data.program[0].description,
+    //       userId: resp_data.program[0].userId,
+    //       type: resp_data.program[0].type
+    //     },
+    //     workouts: []
+    //   }
+    // };
+    // var data = resp_data.program[0];
+    // var programDetails = data.programDetails;
+    // var workouts = data.workouts;
+
+    // programDetails = programDetails.map(async ex => {
+    //   if (workouts && workouts.length > 0) {
+    //     var filteredExercises = _.filter(workouts, w => {
+    //       return w.userWorkoutsProgramId.toString() === ex._id.toString();
+    //     });
+    //     if (filteredExercises && filteredExercises.length > 0) {
+    //       ex.exercises = filteredExercises;
+    //     }
+    //   }
+    //   return ex;
+    // });
+    // programDetails = await Promise.all(programDetails);
+    // programDetails = _.sortBy(programDetails, function(pd) {
+    //   return pd.day;
+    // });
+    // returnObject.program.workouts = programDetails;
+
+    logger.trace("user program got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching user program = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
+});
+
+/**
  * @api {post} /user/user_program Add user's program
  * @apiName Add user's program
  * @apiGroup  User Program

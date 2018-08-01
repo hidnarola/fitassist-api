@@ -27,6 +27,7 @@ var UserWorkoutExercises = new Schema(
     type: { type: String, enum: constants.WORKOUTS_TYPE },
     subType: { type: String, enum: constants.WORKOUTS_SUB_TYPE },
     isCompleted: { type: Number, default: 0 },
+    sequence: { type: Number, default: 0 },
     exercises: [{ type: ExercisesSchema }],
     date: { type: Date },
     completedDate: { type: Date }
