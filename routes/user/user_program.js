@@ -919,8 +919,7 @@ router.put("/:program_id", async (req, res) => {
   var programObj = {
     name: req.body.name,
     description: req.body.description,
-    userId: authUserId,
-    type: req.body.type
+    userId: authUserId
   };
   logger.trace("Add user programs  API called");
   var resp_data = await user_program_helper.update_user_program_by_id(
