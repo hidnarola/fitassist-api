@@ -1,4 +1,5 @@
-var User_test_exercise = require("./../models/user_test_exercise");
+var UserTestExercise = require("./../models/user_test_exercise");
+var UserTestExerciseLogs = require("./../models/user_test_exercise_logs");
 var user_test_exercise_helper = {};
 
 /*
@@ -10,7 +11,7 @@ var user_test_exercise_helper = {};
  */
 user_test_exercise_helper.get_user_test_exercies_by_user_id = async id => {
   try {
-    var user_test_exercises = await User_test_exercise.find(id);
+    var user_test_exercises = await UserTestExercise.find(id);
     if (user_test_exercises) {
       return {
         status: 1,
@@ -40,12 +41,16 @@ user_test_exercise_helper.get_user_test_exercies_by_user_id = async id => {
  * @developed by "amc"
  */
 user_test_exercise_helper.insert_user_test_exercies = async user_test_exercies_array => {
-  
   try {
-    let user_recipe_data = await User_test_exercise.insertMany(user_test_exercies_array);    
+    let user_test_data = await UserTestExercise.insertMany(
+      user_test_exercies_array
+    );
+    let user_test_log_data = await UserTestExerciseLogs.insertMany(
+      user_test_exercies_array
+    );
     return {
       status: 1,
-      message: "User's test exercise inserted",
+      message: "User's test exercise inserted"
     };
   } catch (err) {
     return {
@@ -73,7 +78,7 @@ user_test_exercise_helper.update_user_test_exercies = async (
   user_test_exercies_obj
 ) => {
   try {
-    let user_test_exercies = await User_test_exercise.findOneAndUpdate(
+    let user_test_exercies = await UserTestExercise.findOneAndUpdate(
       { userId: authUserId },
       user_test_exercies_obj,
       { new: true }
@@ -109,15 +114,14 @@ user_test_exercise_helper.update_user_test_exercies = async (
  * @developed by "amc"
  */
 user_test_exercise_helper.delete_user_test_exercies = async authUserId => {
-
   try {
-    let user_test_exercises = await User_test_exercise.remove(authUserId);
+    let user_test_exercises = await UserTestExercise.remove(authUserId);
     if (!user_test_exercises) {
       return { status: 2, message: "Record has not deleted" };
     } else {
       return {
         status: 1,
-        message: "Record has been deleted",
+        message: "Record has been deleted"
       };
     }
   } catch (err) {

@@ -72,26 +72,26 @@ router.get("/", async (req, res) => {
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParamExample {JSON} Request-Example:
- {
-	"user_test_exercises":{
-  < test exercise id >: {
-    "format": < format of test exercise >,
-    "value": < value of test exercise >
-  },
-  < test exercise id >: {
-    "format": < format of test exercise >,
-    "value": < value of test exercise >
-  },
-  < test exercise id >: {
-    "format": < format of test exercise >,
-    "value": < value of test exercise >
-  },
-  < test exercise id >: {
-    "format": < format of test exercise >,
-    "value": < value of test exercise >
-  }
-}
-}
+ * {
+ * "user_test_exercises":{
+ * < test exercise id >: {
+ *  "format": < format of test exercise >,
+ *  "value": < value of test exercise >
+ * },
+ * < test exercise id >: {
+ *  "format": < format of test exercise >,
+ * "value": < value of test exercise >
+ * },
+ * < test exercise id >: {
+ *  "format": < format of test exercise >,
+ *  "value": < value of test exercise >
+ * },
+ * test exercise id >: {
+ * "format": < format of test exercise >,
+ *  "value": < value of test exercise >
+ * }
+ * }
+ * }
  * @apiSuccess (Success 200) {JSON} user_test_exercies  user_test_exercies  details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 //Define a schema
 var Schema = mongoose.Schema;
 
-var UserTestExerciseSchema = new Schema(
+var UserTestExerciseSchemaLogs = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },
     test_exercise_id: { type: String, ref: "test_exercises", required: true },
@@ -24,10 +24,10 @@ var UserTestExerciseSchema = new Schema(
 );
 
 // Compile model from schema
-var UsersTestExercise = mongoose.model(
-  "user_test_exercise",
-  UserTestExerciseSchema,
-  "user_test_exercise"
+var UsersTestExerciseLogs = mongoose.model(
+  "user_test_exercise_logs",
+  UserTestExerciseSchemaLogs,
+  "user_test_exercise_logs"
 );
 
-module.exports = UsersTestExercise;
+module.exports = UsersTestExerciseLogs;
