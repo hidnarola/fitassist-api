@@ -424,7 +424,6 @@ router.get("/auth0_user_sync", async (req, res) => {
           res.status(config.OK_STATUS).json(user_data);
         } else {
           let data = await user_helper.get_user_by({
-            email: response.email,
             authUserId: response.sub
           });
           res.status(config.OK_STATUS).json(data);

@@ -111,7 +111,7 @@ router.get("/:program_id", async (req, res) => {
       return ex;
     });
     programDetails = await Promise.all(programDetails);
-    programDetails = _.sortBy(programDetails, function(pd) {
+    programDetails = _.sortBy(programDetails, function (pd) {
       return pd.day;
     });
     returnObject.program.workouts = programDetails;
