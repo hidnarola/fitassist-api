@@ -67,6 +67,86 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
 };
 
 /*
+ * get_all_workouts_by_date is used to fetch all user exercises data
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user exercises data, with error
+ *          status 1 - If user exercises data found, with user exercises object
+ *          status 2 - If user exercises not found, with appropriate message
+ */
+user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
+  try {
+    var user_workouts = await UserWorkouts.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_workout_exercises",
+          foreignField: "userWorkoutsId",
+          localField: "_id",
+          as: "exercises"
+        }
+      },
+      {
+        $unwind: {
+          path: "$exercises",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          exercises: { $addToSet: "$exercises" },
+          isCompleted: { $first: "$isCompleted" },
+          dayType: { $first: "$type" },
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          userId: { $first: "$userId" },
+          date: { $first: "$date" }
+        }
+      }
+    ]);
+
+    if (user_workouts && user_workouts.length > 0) {
+      _.each(user_workouts, workout => {
+        var warmup = [];
+        var exercise = [];
+        var cooldown = [];
+        _.each(workout.exercises, ex => {
+          if (ex.type == "warmup") {
+            warmup.push(ex);
+          } else if (ex.type == "cooldown") {
+            cooldown.push(ex);
+          } else if (ex.type == "exercise") {
+            exercise.push(ex);
+          }
+        });
+        workout.warmup = warmup;
+        workout.exercise = exercise;
+        workout.cooldown = cooldown;
+        delete workout.exercises;
+      });
+      console.log("------------------------------------");
+      console.log("user_workouts : ", user_workouts);
+      console.log("------------------------------------");
+
+      return {
+        status: 1,
+        message: "User workouts found",
+        workouts: user_workouts
+      };
+    } else {
+      return { status: 2, message: "No user workouts available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user workouts",
+      error: err
+    };
+  }
+};
+/*
  * get_all_workouts_group_by is used to fetch all user exercises data
  * @params condition condition of aggregate pipeline.
  * @return  status 0 - If any internal error occured while fetching user exercises data, with error
@@ -303,7 +383,6 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
 
 /*
  * get_user_workouts_by_id is used to fetch User workout by ID
- * 
  * @params id id of user_workoutss
  * @return  status 0 - If any internal error occured while fetching user workouts data, with error
  *          status 1 - If User workouts data found, with user workouts object
@@ -332,9 +411,7 @@ user_workouts_helper.get_user_workouts_by_id = async id => {
 
 /*
  * insert_exercises is used to insert into user_workouts's exercises collection
- * 
  * @param   childCollectionObject     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting User workout exercise, with error
  *          status  1 - If User workout inserted, with inserted User workout exercise document and appropriate message
  * 
@@ -344,6 +421,13 @@ user_workouts_helper.insert_user_workouts_exercises = async (
   childCollectionObject,
   authUserId
 ) => {
+  console.log("------------------------------------");
+  console.log("childCollectionObject : ", childCollectionObject);
+  console.log("------------------------------------");
+  console.log("------------------------------------");
+  console.log("authUserId : ", authUserId);
+  console.log("------------------------------------");
+
   var workoutLogsObj = {};
   var insertWorkoutLogArray = [];
   try {
@@ -476,12 +560,9 @@ user_workouts_helper.insert_user_workouts_exercises = async (
 
 /*
  * insert_user_workouts_day is used to insert into user_workouts master collection
- * 
  * @param   masterCollectionObject     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting User workout, with error
  *          status  1 - If User workout inserted, with inserted User workout document and appropriate message
- * 
  * @developed by "amc"
  */
 user_workouts_helper.insert_user_workouts_day = async masterCollectionObject => {
@@ -512,12 +593,9 @@ user_workouts_helper.insert_user_workouts_day = async masterCollectionObject => 
 
 /*
  * copy_exercise_by_id is used to insert into user_workouts master collection
- * 
  * @param   masterCollectionObject     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting User workout, with error
  *          status  1 - If User workout inserted, with inserted User workout document and appropriate message
- * 
  * @developed by "amc"
  */
 user_workouts_helper.copy_exercise_by_id = async (
@@ -698,14 +776,11 @@ user_workouts_helper.copy_exercise_by_id = async (
 
 /*
  * update_user_workout_exercise is used to update user workout exercise data based on user workouts id
- * 
  * @param   id         String  _id of user_workouts exercise that need to be update
  * @param   childCollectionObject Object  childCollectionObject of user_workouts's exercise child collection that need to be update
- * 
  * @return  status  0 - If any error occur in updating user_workout exercise, with error
  *          status  1 - If user_workout exercise updated successfully, with appropriate message
  *          status  2 - If user_workout exercise not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 user_workouts_helper.update_user_workout_exercise = async (
@@ -858,14 +933,11 @@ user_workouts_helper.update_user_workout_exercise = async (
 
 /*
  * update_user_workouts_by_id is used to update user workouts data based on user workouts id
- * 
  * @param   id         String  _id of user_workouts that need to be update
  * @param   masterCollectionObject Object  masterCollectionObject of user_workouts's master collection that need to be update
- * 
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts updated successfully, with appropriate message
  *          status  2 - If user_workouts not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 user_workouts_helper.update_user_workouts_by_id = async (
@@ -902,7 +974,6 @@ user_workouts_helper.update_user_workouts_by_id = async (
 
 /*
  * complete_master_event is used to complete user workouts data based on user workouts date
- * 
  * @param   condition         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
@@ -936,7 +1007,6 @@ user_workouts_helper.complete_master_event = async (id, updateObject) => {
 
 /*
  * complete_all_workout is used to complete user workouts data based on user workouts date
- * 
  * @param   condition         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
@@ -995,6 +1065,7 @@ user_workouts_helper.complete_all_workout = async (id, updateObject) => {
     };
   }
 };
+
 /*
  * complete_workout is used to complete user workouts data based on user workouts date
  * 
@@ -1153,7 +1224,6 @@ user_workouts_helper.delete_user_workouts_by_id = async exerciseIds => {
 
 /*
  * complete_workout_by_days is used to complete user workouts data based on user workouts date
- * 
  * @param   condition         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message

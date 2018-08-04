@@ -48,6 +48,48 @@ router.get("/:workout_id", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/workout/today Get all user's workout
+ * @apiName Get all user's workout
+ * @apiGroup  User Workout
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {JSON} user_workouts JSON of user_workout document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/by_date", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var date = req.body.date;
+
+  var start = moment(date).utcOffset(0);
+  start.toISOString();
+  start.format();
+
+  var end = moment(date)
+    .utcOffset(0)
+    .add(23, "hours")
+    .add(59, "minutes");
+  end.toISOString();
+  end.format();
+
+  logger.trace("Get all user workouts by date  API called");
+  var resp_data = await user_workout_helper.get_all_workouts_by_date({
+    userId: authUserId,
+    date: {
+      $gte: new Date(start),
+      $lte: new Date(end)
+    }
+  });
+
+  if (resp_data.status == 1) {
+    logger.trace("user workouts got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching user workouts = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
+});
+
+/**
  * @api {post} /user/user_workouts/ Get User Workouts
  * @apiName Get User Workouts
  * @apiGroup  User Workouts
@@ -71,12 +113,12 @@ router.post("/get_by_month", async (req, res) => {
     }
   });
 
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching user workouts = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
+  if (resp_data.status == 1) {
     logger.trace("user workouts got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching user workouts = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
@@ -226,6 +268,13 @@ router.post("/workout", async (req, res) => {
                 if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
                   isError = true;
                 }
+                if (
+                  (setsDetail.field2.unit === "effort" ||
+                    setsDetail.field2.unit === "one_rm") &&
+                  setsDetail.field2.value > 100
+                ) {
+                  isError = true;
+                }
                 if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
                   isError = true;
                 }
@@ -282,6 +331,13 @@ router.post("/workout", async (req, res) => {
                 if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
                   isError = true;
                 }
+                if (
+                  (setsDetail.field2.unit === "effort" ||
+                    setsDetail.field2.unit === "one_rm") &&
+                  setsDetail.field2.value > 100
+                ) {
+                  isError = true;
+                }
                 if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
                   isError = true;
                 }
@@ -329,6 +385,13 @@ router.post("/workout", async (req, res) => {
               }
               if (data.field2.length > 0) {
                 if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+                  isError = true;
+                }
+                if (
+                  (setsDetail.field2.unit === "effort" ||
+                    setsDetail.field2.unit === "one_rm") &&
+                  setsDetail.field2.value > 100
+                ) {
                   isError = true;
                 }
                 if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
@@ -513,6 +576,7 @@ router.post("/assign_program", async (req, res) => {
   var user_workouts_program = program_data.programs[0].user_workouts_program;
   var user_workout_exercises_program =
     program_data.programs[0].user_workout_exercises_program;
+
   for (let program of user_workouts_program) {
     exForProgram = _.filter(
       user_workout_exercises_program,
@@ -533,20 +597,25 @@ router.post("/assign_program", async (req, res) => {
         .add(program.day, "days")
     };
 
+    var resp_data = await user_workout_helper.insert_user_workouts_day(
+      masterCollectionObject
+    );
     childCollectionObject = exForProgram.map(single => {
       var newSingle = Object.assign({}, single);
       delete newSingle._id;
       delete newSingle.userWorkoutsProgramId;
+      newSingle.userWorkoutsId = resp_data.day._id;
       return newSingle;
     });
 
-    var resp_data = await user_workout_helper.insert_user_workouts_day(
-      masterCollectionObject
-    );
-    childCollectionObject.userWorkoutsId = resp_data.day._id;
-    resp_data = await user_workout_helper.insert_user_workouts_exercises(
-      childCollectionObject
-    );
+    if (childCollectionObject.length > 0) {
+      var _childCollectionObject = childCollectionObject[0];
+
+      resp_data = await user_workout_helper.insert_user_workouts_exercises(
+        _childCollectionObject,
+        authUserId
+      );
+    }
   }
 
   logger.trace("Assign user programs  API called");
@@ -754,6 +823,13 @@ router.put("/workout", async (req, res) => {
                 if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
                   isError = true;
                 }
+                if (
+                  (setsDetail.field2.unit === "effort" ||
+                    setsDetail.field2.unit === "one_rm") &&
+                  setsDetail.field2.value > 100
+                ) {
+                  isError = true;
+                }
                 if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
                   isError = true;
                 }
@@ -810,6 +886,13 @@ router.put("/workout", async (req, res) => {
                 if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
                   isError = true;
                 }
+                if (
+                  (setsDetail.field2.unit === "effort" ||
+                    setsDetail.field2.unit === "one_rm") &&
+                  setsDetail.field2.value > 100
+                ) {
+                  isError = true;
+                }
                 if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
                   isError = true;
                 }
@@ -857,6 +940,13 @@ router.put("/workout", async (req, res) => {
               }
               if (data.field2.length > 0) {
                 if (data.field2.indexOf(setsDetail.field2.unit) < 0) {
+                  isError = true;
+                }
+                if (
+                  (setsDetail.field2.unit === "effort" ||
+                    setsDetail.field2.unit === "one_rm") &&
+                  setsDetail.field2.value > 100
+                ) {
                   isError = true;
                 }
                 if (!setsDetail.field2.value || setsDetail.field2.value < 0) {
@@ -1250,6 +1340,7 @@ async function assign_badges(authUserId) {
   );
   //badge assign end
 }
+
 /**
  * @apiIgnore Not finished Method
  * @api {put} /user/user_workouts/complete_all Complete all User workout

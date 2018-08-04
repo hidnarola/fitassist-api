@@ -14,7 +14,7 @@ var UserTestExerciseSchemaLogs = new Schema(
       required: true
     },
     text_field: { type: String, default: null },
-    multiselect: { type: Array, default: null },
+    multiselect: { type: Number, default: null },
     max_rep: { type: Object, default: null },
     a_or_b: { type: Number, default: null },
     createdAt: { type: Date, default: Date.now },

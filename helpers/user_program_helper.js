@@ -53,62 +53,15 @@ user_program_helper.get_user_programs_in_details_for_assign = async condition =>
   }
 };
 /*
- * get_user_programs_in_details is used to fetch all user program data
+ * get_user_programs_data is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
  * @return  status 0 - If any internal error occured while fetching user program data, with error
  *          status 1 - If user program data found, with user program object
  *          status 2 - If user program not found, with appropriate message
  */
-user_program_helper.get_user_programs_in_details = async condition => {
+user_program_helper.get_user_programs_data = async condition => {
   try {
-    var user_program = await UserPrograms.aggregate([
-      {
-        $match: condition
-      },
-      {
-        $lookup: {
-          from: "user_workouts_program",
-          foreignField: "programId",
-          localField: "_id",
-          as: "user_workouts_program"
-        }
-      },
-      {
-        $unwind: {
-          path: "$user_workouts_program",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $lookup: {
-          from: "user_workout_exercises_program",
-          foreignField: "userWorkoutsProgramId",
-          localField: "user_workouts_program._id",
-          as: "user_workout_exercises_program"
-        }
-      },
-      {
-        $unwind: {
-          path: "$user_workout_exercises_program",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $group: {
-          _id: "$_id",
-          name: { $first: "$name" },
-          description: { $first: "$description" },
-          userId: { $first: "$userId" },
-          type: { $first: "$type" },
-          programDetails: {
-            $addToSet: "$user_workouts_program"
-          },
-          workouts: {
-            $addToSet: "$user_workout_exercises_program"
-          }
-        }
-      }
-    ]);
+    var user_program = await userWorkoutsProgram.find(condition);
 
     if (user_program) {
       return {

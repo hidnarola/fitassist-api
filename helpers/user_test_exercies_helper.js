@@ -1,6 +1,7 @@
 var UserTestExercise = require("./../models/user_test_exercise");
 var UserTestExerciseLogs = require("./../models/user_test_exercise_logs");
 var user_test_exercise_helper = {};
+var moment = require("moment");
 
 /*
  * get_user_test_exercies_by_user_id is used to fetch user_test_exercies by user ID
@@ -11,7 +12,7 @@ var user_test_exercise_helper = {};
  */
 user_test_exercise_helper.get_user_test_exercies_by_user_id = async id => {
   try {
-    var user_test_exercises = await UserTestExercise.find(id);
+    var user_test_exercises = await UserTestExerciseLogs.find(id);
     if (user_test_exercises) {
       return {
         status: 1,
@@ -40,11 +41,29 @@ user_test_exercise_helper.get_user_test_exercies_by_user_id = async id => {
  * 
  * @developed by "amc"
  */
-user_test_exercise_helper.insert_user_test_exercies = async user_test_exercies_array => {
+user_test_exercise_helper.insert_user_test_exercies = async (
+  user_test_exercies_array,
+  date
+) => {
   try {
-    let user_test_data = await UserTestExercise.insertMany(
-      user_test_exercies_array
-    );
+    var start = moment(date).utcOffset(0);
+    start.toISOString();
+    start.format();
+
+    var end = moment(date)
+      .utcOffset(0)
+      .add(23, "hours")
+      .add(59, "minutes");
+    end.toISOString();
+    end.format();
+
+    let remove = await UserTestExerciseLogs.remove({
+      createdAt: {
+        $gte: start,
+        $lte: end
+      }
+    });
+
     let user_test_log_data = await UserTestExerciseLogs.insertMany(
       user_test_exercies_array
     );
@@ -115,7 +134,7 @@ user_test_exercise_helper.update_user_test_exercies = async (
  */
 user_test_exercise_helper.delete_user_test_exercies = async authUserId => {
   try {
-    let user_test_exercises = await UserTestExercise.remove(authUserId);
+    let user_test_exercises = await UserTestExerciseLogs.remove(authUserId);
     if (!user_test_exercises) {
       return { status: 2, message: "Record has not deleted" };
     } else {

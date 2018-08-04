@@ -2,6 +2,7 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 var async = require("async");
+var moment = require("moment");
 var jwtDecode = require("jwt-decode");
 var router = express.Router();
 
@@ -20,9 +21,21 @@ var user_test_exercies_helper = require("../../helpers/user_test_exercies_helper
  * @apiSuccess (Success 200) {Array} test_exercises Array of test_exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/", async (req, res) => {
+router.post("/today", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var date = req.body.date;
+
+  var start = moment(date).utcOffset(0);
+  start.toISOString();
+  start.format();
+
+  var end = moment(date)
+    .utcOffset(0)
+    .add(23, "hours")
+    .add(59, "minutes");
+  end.toISOString();
+  end.format();
 
   logger.trace("Get all test_exercises API called");
   var resp_data = await test_exercise_helper.get_all_test_exercises();
@@ -31,35 +44,18 @@ router.get("/", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id(
-      { userId: authUserId }
+      {
+        userId: authUserId,
+        createdAt: {
+          $gte: start,
+          $lte: end
+        }
+      }
     );
 
     if (resp_data2.status == 1) {
       resp_data.user_test_exercises = resp_data2.user_test_exercises;
     }
-    logger.trace("test exercies got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
-});
-
-/**
- * @api {get} /user/test_exercise Get all
- * @apiName Get all
- * @apiGroup  User Test Exercises
- * @apiHeader {String}  authorization Admin's unique access-key
- * @apiSuccess (Success 200) {Array} test_exercises Array of test_exercises document
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get("/", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-
-  logger.trace("Get all test_exercises API called");
-  var resp_data = await test_exercise_helper.get_all_test_exercises();
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching  test_exercises = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
     logger.trace("test exercies got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
@@ -100,6 +96,7 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
   var test_exercise_array = [];
   var temp = req.body.user_test_exercises;
+  var createdAt = req.body.date;
 
   Object.keys(temp).forEach(function(key) {
     var val = temp[key];
@@ -107,48 +104,59 @@ router.post("/", async (req, res) => {
       userId: authUserId,
       format: val.format,
       test_exercise_id: key,
-      [val.format]: val.value
+      [val.format]: val.value,
+      createdAt,
+      modifiedAt: createdAt
     });
   });
-  // console.log('DATA',test_exercise_array);
 
-  var resp_data = await user_test_exercies_helper.delete_user_test_exercies({
-    userId: authUserId
-  });
+  let test_exercise_data = await user_test_exercies_helper.insert_user_test_exercies(
+    test_exercise_array,
+    createdAt
+  );
 
-  if (resp_data.status == 1) {
-    let test_exercise_data = await user_test_exercies_helper.insert_user_test_exercies(
-      test_exercise_array
-    );
-    if (test_exercise_data.status === 0) {
-      logger.error(
-        "Error while inserting user test exercies = ",
-        test_exercise_data
-      );
-      res.status(config.BAD_REQUEST).json({ test_exercise_data });
-    } else {
-      res.status(config.OK_STATUS).json(test_exercise_data);
-    }
+  if (test_exercise_data.status === 1) {
+    res.status(config.OK_STATUS).json(test_exercise_data);
   } else {
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    logger.error(
+      "Error while inserting user test exercies = ",
+      test_exercise_data
+    );
+    res.status(config.BAD_REQUEST).json({ test_exercise_data });
   }
 });
 
 /**
- * @api {delete} /user/test_exercise Delete Test Exercise
+ * @api {delete} /user/test_exercise/reset Delete Test Exercise
  * @apiName  Test Exercise
  * @apiGroup User Test Exercise
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {JSON} message  message of delete
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/", async (req, res) => {
+router.post("/reset", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("delete exercise preference API called : ", authUserId);
+  var date = req.body.date;
+
+  var start = moment(date).utcOffset(0);
+  start.toISOString();
+  start.format();
+
+  var end = moment(date)
+    .utcOffset(0)
+    .add(23, "hours")
+    .add(59, "minutes");
+  end.toISOString();
+  end.format();
+  logger.trace("reset user test exercies API called : ", authUserId);
   let test_exercise_data = await user_test_exercies_helper.delete_user_test_exercies(
     {
-      userId: authUserId
+      userId: authUserId,
+      createdAt: {
+        $gte: start,
+        $lte: end
+      }
     }
   );
   if (test_exercise_data.status === 1) {
@@ -165,4 +173,27 @@ router.delete("/", async (req, res) => {
   }
 });
 
+/**
+ *@apiIgnore not implemented
+ * @api {get} /user/test_exercise/all Get all
+ * @apiName Get all
+ * @apiGroup  User Test Exercises
+ * @apiHeader {String}  authorization Admin's unique access-key
+ * @apiSuccess (Success 200) {Array} test_exercises Array of test_exercises document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+/** router.get("/all", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  logger.trace("Get all test_exercises API called");
+  var resp_data = await test_exercise_helper.get_all_test_exercises();
+  if (resp_data.status == 0) {
+    logger.error("Error occured while fetching  test_exercises = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("test exercies got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});*/
 module.exports = router;

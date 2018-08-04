@@ -19,7 +19,6 @@ var like = require("./user/like");
 var recipe = require("./user/user_recipe");
 var nutrition = require("./user/nutrition");
 var test_exercises = require("./user/test_exercises");
-var user_workout = require("./user/user_workout");
 var timeline = require("./user/timeline");
 var search = require("./user/search");
 var chat = require("./user/chat");
@@ -35,7 +34,6 @@ var user_program = require("./user/user_program");
 var user_leaderboard = require("./user/user_leaderboard");
 var exercise_measurements = require("./user/exercise_measurements");
 
-// router.use("/workout", auth, user_workout);
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
 router.use("/profile", auth, profile);
