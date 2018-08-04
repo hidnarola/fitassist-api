@@ -1,6 +1,7 @@
 var UserRecipes = require("./../models/users_recipe");
 var UserWorkout = require("./../models/user_workouts");
 var user_recipe_helper = require("./user_recipe_helper");
+var user_workouts_helper = require("./user_workouts_helper");
 
 var user_calendar_helper = {};
 
@@ -19,25 +20,15 @@ user_calendar_helper.get_calendar = async condition => {
     };
 
     var meal_data = await user_recipe_helper.get_user_recipe_by_id(condition);
-    var workout_data = await UserWorkout.aggregate([
-      {
-        $match: condition
-      },
-      {
-        $lookup: {
-          from: "user_workout_exercises",
-          foreignField: "userWorkoutsId",
-          localField: "_id",
-          as: "exercises"
-        }
-      }
-    ]);
+    var workout_data = await user_workouts_helper.get_all_workouts_by_date(
+      condition
+    );
 
     if (meal_data.status == 1) {
       calendar.meals = meal_data.todays_meal;
     }
     if (workout_data) {
-      calendar.workouts = workout_data;
+      calendar.workouts = workout_data.workouts;
     }
 
     if (calendar) {

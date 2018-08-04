@@ -121,14 +121,17 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
             exercise.push(ex);
           }
         });
-        workout.warmup = warmup;
-        workout.exercise = exercise;
-        workout.cooldown = cooldown;
+        workout.warmup = _.sortBy(warmup, function(w) {
+          return w.sequence;
+        });
+        workout.exercise = _.sortBy(exercise, function(w) {
+          return w.sequence;
+        });
+        workout.cooldown = _.sortBy(cooldown, function(w) {
+          return w.sequence;
+        });
         delete workout.exercises;
       });
-      console.log("------------------------------------");
-      console.log("user_workouts : ", user_workouts);
-      console.log("------------------------------------");
 
       return {
         status: 1,
