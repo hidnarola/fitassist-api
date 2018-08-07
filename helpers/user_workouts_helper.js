@@ -259,7 +259,8 @@ user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
       {
         $project: {
           _id: 1,
-          title: 1
+          title: 1,
+          isCompleted:1
         }
       },
       {

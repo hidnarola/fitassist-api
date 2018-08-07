@@ -313,9 +313,7 @@ user_leaderboard_helper.get_nutrition = async (condition = {}) => {
     ]);
     // total calories, avg protain, total fat, total excess cals, total cabs, monthly protain
     var returnObj = user_nutrients[0];
-    console.log("------------------------------------");
-    console.log("returnObj : ", returnObj);
-    console.log("------------------------------------");
+
     returnObj.monthly_protain = monthlyProtain[0].protein_total;
     if (user_nutrients) {
       return {
