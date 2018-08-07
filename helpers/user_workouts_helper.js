@@ -5,6 +5,42 @@ var user_workouts_helper = {};
 var _ = require("underscore");
 
 /*
+ * get_workouts_for_calendar is used to fetch all user exercises data
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user exercises data, with error
+ *          status 1 - If user exercises data found, with user exercises object
+ *          status 2 - If user exercises not found, with appropriate message
+ */
+user_workouts_helper.get_workouts_for_calendar = async (
+  condition,
+  single = false
+) => {
+  try {
+    var user_workouts = await UserWorkouts.aggregate([
+      { $match: condition },
+      {
+        $project: { _id: 1, date: 1 }
+      }
+    ]);
+    if (user_workouts) {
+      return {
+        status: 1,
+        message: "user workouts found",
+        workouts: user_workouts
+      };
+    } else {
+      return { status: 2, message: "No user workouts available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user workouts",
+      error: err
+    };
+  }
+};
+
+/*
  * get_all_workouts is used to fetch all user exercises data
  * @params condition condition of aggregate pipeline.
  * @return  status 0 - If any internal error occured while fetching user exercises data, with error
@@ -161,6 +197,70 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
         delete workout.exercises;
       });
 
+      return {
+        status: 1,
+        message: "User workouts found",
+        workouts: user_workouts
+      };
+    } else {
+      return { status: 2, message: "No user workouts available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user workouts",
+      error: err
+    };
+  }
+};
+/*
+ * get_id_title_workouts_by_date is used to fetch all user exercises data
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user exercises data, with error
+ *          status 1 - If user exercises data found, with user exercises object
+ *          status 2 - If user exercises not found, with appropriate message
+ */
+user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
+  try {
+    var user_workouts = await UserWorkouts.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_workout_exercises",
+          foreignField: "userWorkoutsId",
+          localField: "_id",
+          as: "exercises"
+        }
+      },
+      {
+        $unwind: {
+          path: "$exercises",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          exercises: { $addToSet: "$exercises" },
+          isCompleted: { $first: "$isCompleted" },
+          dayType: { $first: "$type" },
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          userId: { $first: "$userId" },
+          date: { $first: "$date" }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1
+        }
+      }
+    ]);
+
+    if (user_workouts && user_workouts.length > 0) {
       return {
         status: 1,
         message: "User workouts found",

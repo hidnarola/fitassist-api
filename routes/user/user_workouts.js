@@ -30,6 +30,8 @@ var socket = require("../../socket/socketServer");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:workout_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
   var resp_data = await user_workout_helper.get_all_workouts_group_by(
     {
@@ -37,7 +39,39 @@ router.get("/:workout_id", async (req, res) => {
     },
     false
   );
-  // with same date record in response
+  var date = resp_data.workouts.date;
+
+  var start = moment(date).utcOffset(0);
+  start.toISOString();
+  start.format();
+
+  var end = moment(date)
+    .utcOffset(0)
+    .add(23, "hours")
+    .add(59, "minutes");
+  end.toISOString();
+  end.format();
+  var related_date_data = await user_workout_helper.get_id_title_workouts_by_date(
+    {
+      userId: authUserId,
+      date: {
+        $gte: new Date(start),
+        $lte: new Date(end)
+      }
+    }
+  );
+  var check = await moment(date).utc(0);
+  var startCheck = await moment(check).subtract(2, "month");
+  var endCheck = await moment(check).add(2, "month");
+  var calendar_data = await user_workout_helper.get_workouts_for_calendar({
+    userId: authUserId,
+    date: {
+      $gte: new Date(startCheck),
+      $lt: new Date(endCheck)
+    }
+  });
+  resp_data.workouts_list = related_date_data.workouts;
+  resp_data.calendar_list = calendar_data.workouts;
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user workouts = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -52,7 +86,7 @@ router.get("/:workout_id", async (req, res) => {
  * @apiName Get all user's workout
  * @apiGroup  User Workout
  * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {JSON} user_workout JSON of user_workout document
+ * @apiSuccess (Success 200) {String} workout_id Id of user_workout document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/first_workout", async (req, res) => {
@@ -79,9 +113,6 @@ router.post("/first_workout", async (req, res) => {
       $lte: new Date(end)
     }
   });
-  console.log("------------------------------------");
-  console.log("resp_data : ", resp_data);
-  console.log("------------------------------------");
 
   if (resp_data.status == 1) {
     logger.trace("user workouts got successfully = ", resp_data);
