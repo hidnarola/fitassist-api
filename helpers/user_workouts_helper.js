@@ -19,7 +19,12 @@ user_workouts_helper.get_workouts_for_calendar = async (
     var user_workouts = await UserWorkouts.aggregate([
       { $match: condition },
       {
-        $project: { _id: 1, date: 1 }
+        $group: {
+          _id: "$date"
+        }
+      },
+      {
+        $project: { date: "$_id", _id: 0 }
       }
     ]);
     if (user_workouts) {
@@ -256,6 +261,11 @@ user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
         $project: {
           _id: 1,
           title: 1
+        }
+      },
+      {
+        $sort: {
+          _id: 1
         }
       }
     ]);

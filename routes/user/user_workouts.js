@@ -70,14 +70,19 @@ router.get("/:workout_id", async (req, res) => {
       $lt: new Date(endCheck)
     }
   });
-  resp_data.workouts_list = related_date_data.workouts;
-  resp_data.calendar_list = calendar_data.workouts;
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching user workouts = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
+
+  resp_data.workouts_list = related_date_data.workouts
+    ? related_date_data.workouts
+    : [];
+  resp_data.calendar_list = calendar_data.workouts
+    ? calendar_data.workouts
+    : [];
+  if (resp_data.status === 1) {
     logger.trace("user workouts got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching user workouts = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 

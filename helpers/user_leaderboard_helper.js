@@ -2,6 +2,7 @@ var UserRecipes = require("./../models/users_recipe");
 var UserWorkout = require("./../models/user_workouts");
 var UsersRecipe = require("./../models/users_recipe");
 var WorkoutLogs = require("./../models/workout_logs");
+var moment = require("moment");
 var user_recipe_helper = require("./user_recipe_helper");
 
 var user_leaderboard_helper = {};
@@ -275,6 +276,45 @@ user_leaderboard_helper.get_nutrition = async (condition = {}) => {
         }
       }
     ]);
+
+    var month = moment()
+      .utc()
+      .format("M");
+    var year = moment()
+      .utc()
+      .format("Y");
+
+    var monthlyProtain = await UsersRecipe.aggregate([
+      {
+        $project: {
+          _id: 1,
+          isDeleted: 1,
+          userId: 1,
+          totalNutrients: 1,
+          isCompleted: 1,
+          year: { $year: "$date" },
+          month: { $month: "$date" }
+        }
+      },
+      {
+        $match: {
+          userId: condition.userId,
+          month: parseInt(month),
+          year: parseInt(year)
+        }
+      },
+      { $unwind: "$totalNutrients" },
+      {
+        $group: {
+          _id: "null",
+          protein_total: { $sum: "$totalNutrients.PROCNT.quantity" }
+        }
+      }
+    ]);
+    // total calories, avg protain, total fat, total excess cals, total cabs, monthly protain
+    console.log("------------------------------------");
+    console.log("monthlyProtain : ", monthlyProtain);
+    console.log("------------------------------------");
 
     if (user_nutrients) {
       return {
