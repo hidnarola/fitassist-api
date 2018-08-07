@@ -67,6 +67,34 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
 };
 
 /*
+ * get_first_workout_by_date is used to fetch first user exercises data
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user exercises data, with error
+ *          status 1 - If user exercises data found, with user exercises object
+ *          status 2 - If user exercises not found, with appropriate message
+ */
+user_workouts_helper.get_first_workout_by_date = async (condition = {}) => {
+  try {
+    var user_workouts = await UserWorkouts.findOne(condition, { _id: 1 });
+
+    if (user_workouts) {
+      return {
+        status: 1,
+        message: "User's First workout of date found",
+        workout_id: user_workouts._id
+      };
+    } else {
+      return { status: 2, message: "No user workout available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user's first workouts",
+      error: err
+    };
+  }
+};
+/*
  * get_all_workouts_by_date is used to fetch all user exercises data
  * @params condition condition of aggregate pipeline.
  * @return  status 0 - If any internal error occured while fetching user exercises data, with error

@@ -1,6 +1,7 @@
 var UserRecipes = require("./../models/users_recipe");
 var UserWorkout = require("./../models/user_workouts");
 var UsersRecipe = require("./../models/users_recipe");
+var WorkoutLogs = require("./../models/workout_logs");
 var user_recipe_helper = require("./user_recipe_helper");
 
 var user_leaderboard_helper = {};
@@ -14,45 +15,27 @@ var user_leaderboard_helper = {};
  */
 user_leaderboard_helper.get_strength = async (condition = {}) => {
   try {
-    var leaderboard_data = await UserWorkout.aggregate([
+    var user_workouts = await WorkoutLogs.aggregate([
       {
         $match: condition
       },
       {
-        $lookup: {
-          from: "user_workout_exercises",
-          foreignField: "userWorkoutsId",
-          localField: "_id",
-          as: "exercises"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: {
-          "exercises.isCompleted": 1
-        }
-      },
-      {
         $group: {
-          _id: null,
-          weight_lifted_total: { $sum: "$exercises.baseWeightValue" },
-          weight_lifted_average: { $avg: "$exercises.baseWeightValue" },
-          weight_lifted_most: { $max: "$exercises.baseWeightValue" },
-          weight_lifted_least: { $min: "$exercises.baseWeightValue" },
-          reps_least: { $min: "$exercises.reps" },
-          reps_total: { $sum: "$exercises.reps" },
-          reps_average: { $avg: "$exercises.reps" },
-          reps_most: { $max: "$exercises.reps" },
-          sets_least: { $min: "$exercises.sets" },
-          sets_total: { $sum: "$exercises.sets" },
-          sets_average: { $avg: "$exercises.sets" },
-          sets_most: { $max: "$exercises.sets" },
-          workouts_total: { $addToSet: "$exercises" }
+          _id: "$exerciseId",
+          weight_lifted_total: { $sum: "$weight" },
+          time_total: { $sum: "$time" },
+          weight_lifted_average: { $avg: "$weight" },
+          weight_lifted_most: { $max: "$weight" },
+          weight_lifted_least: { $min: "$weight" },
+          reps_least: { $min: "$reps" },
+          reps_total: { $sum: "$reps" },
+          reps_average: { $avg: "$reps" },
+          reps_most: { $max: "$reps" },
+          sets_least: { $min: "$sets" },
+          sets_total: { $sum: "$sets" },
+          sets_average: { $avg: "$sets" },
+          sets_most: { $max: "$sets" },
+          workouts_total: { $sum: 1 }
         }
       },
       {
@@ -60,6 +43,7 @@ user_leaderboard_helper.get_strength = async (condition = {}) => {
           weight_lifted_total: 1,
           weight_lifted_average: 1,
           weight_lifted_most: 1,
+          time_total: 1,
           weight_lifted_least: 1,
           reps_least: 1,
           reps_total: 1,
@@ -69,16 +53,36 @@ user_leaderboard_helper.get_strength = async (condition = {}) => {
           sets_total: 1,
           sets_average: 1,
           sets_most: 1,
-          workouts_total: { $size: "$workouts_total" }
+          workouts_total: 1
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          weight_lifted_total: { $sum: "$weight_lifted_total" },
+          weight_lifted_average: { $avg: "$weight_lifted_average" },
+          workouts_total: { $sum: "$workouts_total" },
+          reps_total: { $sum: "$reps_total" },
+          sets_total: { $sum: "$sets_total" },
+          workout_time: { $sum: "$time_total" }
+          // weight_lifted_most: { $max: "$weight_lifted_most" },
+          // weight_lifted_least: { $min: "$weight_lifted_least" },
+          // reps_least: { $min: "$reps_least" },
+          // reps_average: { $avg: "$reps_average" },
+          // reps_most: { $max: "$reps_most" },
+          // sets_least: { $min: "$sets_least" },
+          // sets_average: { $avg: "$sets_average" },
+          // sets_most: { $max: "$sets_most" }
         }
       }
     ]);
+    // weight_lifted_total,weight_lifted_average,workouts_total,reps_total,sets_total, workout_time
 
-    if (leaderboard_data) {
+    if (user_workouts) {
       return {
         status: 1,
         message: "User Strength data found",
-        leaderboard: leaderboard_data
+        leaderboard: user_workouts[0]
       };
     } else {
       return { status: 2, message: "No User Strength data available" };
@@ -101,45 +105,27 @@ user_leaderboard_helper.get_strength = async (condition = {}) => {
  */
 user_leaderboard_helper.get_cardio = async (condition = {}) => {
   try {
-    var leaderboard_data = await UserWorkout.aggregate([
+    var user_workouts = await WorkoutLogs.aggregate([
       {
         $match: condition
       },
       {
-        $lookup: {
-          from: "user_workout_exercises",
-          foreignField: "userWorkoutsId",
-          localField: "_id",
-          as: "exercises"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: {
-          "exercises.isCompleted": 1
-        }
-      },
-      {
         $group: {
-          _id: null,
-          weight_lifted_total: { $sum: "$exercises.baseWeightValue" },
-          weight_lifted_average: { $avg: "$exercises.baseWeightValue" },
-          weight_lifted_most: { $max: "$exercises.baseWeightValue" },
-          weight_lifted_least: { $min: "$exercises.baseWeightValue" },
-          reps_least: { $min: "$exercises.reps" },
-          reps_total: { $sum: "$exercises.reps" },
-          reps_average: { $avg: "$exercises.reps" },
-          reps_most: { $max: "$exercises.reps" },
-          sets_least: { $min: "$exercises.sets" },
-          sets_total: { $sum: "$exercises.sets" },
-          sets_average: { $avg: "$exercises.sets" },
-          sets_most: { $max: "$exercises.sets" },
-          workouts_total: { $addToSet: "$exercises" }
+          _id: "$exerciseId",
+          distance_total: { $sum: "$distance" },
+          time_total: { $sum: "$time" },
+          weight_lifted_average: { $avg: "$weight" },
+          weight_lifted_most: { $max: "$weight" },
+          weight_lifted_least: { $min: "$weight" },
+          reps_least: { $min: "$reps" },
+          reps_total: { $sum: "$reps" },
+          reps_average: { $avg: "$reps" },
+          reps_most: { $max: "$reps" },
+          sets_least: { $min: "$sets" },
+          sets_total: { $sum: "$sets" },
+          sets_average: { $avg: "$sets" },
+          sets_most: { $max: "$sets" },
+          workouts_total: { $sum: 1 }
         }
       },
       {
@@ -147,6 +133,7 @@ user_leaderboard_helper.get_cardio = async (condition = {}) => {
           weight_lifted_total: 1,
           weight_lifted_average: 1,
           weight_lifted_most: 1,
+          time_total: 1,
           weight_lifted_least: 1,
           reps_least: 1,
           reps_total: 1,
@@ -156,16 +143,36 @@ user_leaderboard_helper.get_cardio = async (condition = {}) => {
           sets_total: 1,
           sets_average: 1,
           sets_most: 1,
-          workouts_total: { $size: "$workouts_total" }
+          workouts_total: 1
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          weight_lifted_total: { $sum: "$weight_lifted_total" },
+          weight_lifted_average: { $avg: "$weight_lifted_average" },
+          workouts_total: { $sum: "$workouts_total" },
+          reps_total: { $sum: "$reps_total" },
+          sets_total: { $sum: "$sets_total" },
+          workout_time: { $sum: "$time_total" }
+          // weight_lifted_most: { $max: "$weight_lifted_most" },
+          // weight_lifted_least: { $min: "$weight_lifted_least" },
+          // reps_least: { $min: "$reps_least" },
+          // reps_average: { $avg: "$reps_average" },
+          // reps_most: { $max: "$reps_most" },
+          // sets_least: { $min: "$sets_least" },
+          // sets_average: { $avg: "$sets_average" },
+          // sets_most: { $max: "$sets_most" }
         }
       }
     ]);
+    // total_distance run, total time running,total elevation, distance cycled, total steps
 
-    if (leaderboard_data) {
+    if (user_workouts) {
       return {
         status: 1,
         message: "User Cardio data found",
-        leaderboard: leaderboard_data
+        leaderboard: user_workouts[0]
       };
     } else {
       return { status: 2, message: "No User Cardio data available" };

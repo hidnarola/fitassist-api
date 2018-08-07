@@ -7232,7 +7232,7 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "goals",
+            "field": "badges",
             "description": "<p>JSON of badges_assign's document</p>"
           }
         ]
@@ -10318,7 +10318,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/user_program/exercises",
+    "url": "/user/user_program/workout",
     "title": "Add user's program's exercises",
     "name": "Add_user_s_program_s_exercises",
     "group": "User_Program",
@@ -10379,6 +10379,13 @@ define({ "api": [
             "optional": false,
             "field": "exercises",
             "description": "<p>list of exercises of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "sequence",
+            "description": "<p>sequence of exercises of workout</p>"
           }
         ]
       }
@@ -10392,6 +10399,69 @@ define({ "api": [
             "optional": false,
             "field": "workout",
             "description": "<p>JSON of user_programs document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_program.js",
+    "groupTitle": "User_Program"
+  },
+  {
+    "type": "post",
+    "url": "/user/user_program/copy",
+    "title": "Copy User Program",
+    "name": "Copy_User_Program",
+    "group": "User_Program",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "workoutId",
+            "description": "<p>workoutId of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "day",
+            "description": "<p>day of workout</p>"
           }
         ]
       }
@@ -10526,6 +10596,55 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/user/user_program/workout/:workout_id",
+    "title": "Get user's program by workout_id",
+    "name": "Get_Group_by_workout",
+    "group": "User_Program",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "workouts",
+            "description": "<p>JSON of user_program document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_program.js",
+    "groupTitle": "User_Program"
+  },
+  {
+    "type": "get",
     "url": "/user/user_program/",
     "title": "Get user's program",
     "name": "Get_user_s_program",
@@ -10624,55 +10743,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/user_program/workout/:workout_id",
-    "title": "Get user's program by _id",
-    "name": "Get_user_s_program_by__id",
-    "group": "User_Program",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "workouts",
-            "description": "<p>JSON of user_program document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_program.js",
-    "groupTitle": "User_Program"
-  },
-  {
-    "type": "get",
     "url": "/user/user_program/:program_id",
     "title": "Get user's program by _id",
     "name": "Get_user_s_program_by__id",
@@ -10722,7 +10792,7 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/user/user_program/exercises/:program_day_id",
+    "url": "/user/user_program/workout/:workout_day_id",
     "title": "Update user's program's exercises",
     "name": "Update_user_s_program_s_exercises",
     "group": "User_Program",
@@ -10746,36 +10816,22 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "programId",
-            "description": "<p>Id of program</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "title",
-            "description": "<p>title of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "description",
-            "description": "<p>description of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Enum",
-            "optional": false,
             "field": "type",
-            "description": "<p>type of workout | Possbile value <code>Enum: [&quot;exercise&quot;,&quot;restday&quot;]</code></p>"
+            "description": "<p>type of program</p>"
           },
           {
             "group": "Parameter",
-            "type": "Date",
+            "type": "String",
             "optional": false,
-            "field": "date",
-            "description": "<p>date of workout</p>"
+            "field": "subType",
+            "description": "<p>subType of program</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userWorkoutsId",
+            "description": "<p>userWorkoutsId of program</p>"
           },
           {
             "group": "Parameter",
@@ -10783,6 +10839,13 @@ define({ "api": [
             "optional": false,
             "field": "exercises",
             "description": "<p>list of exercises of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "sequence",
+            "description": "<p>sequence of exercises of workout</p>"
           }
         ]
       }
@@ -10794,7 +10857,56 @@ define({ "api": [
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "workout",
+            "field": "workouts",
+            "description": "<p>JSON of user_programs document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_program.js",
+    "groupTitle": "User_Program"
+  },
+  {
+    "type": "put",
+    "url": "/user/user_program/day/:program_day_id",
+    "title": "update user's program",
+    "name": "update_user_s_program",
+    "group": "User_Program",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "program",
             "description": "<p>JSON of user_programs document</p>"
           }
         ]
@@ -11892,7 +12004,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Request-Example:",
-          "content": " {\n\t\"user_test_exercises\":{\n  < test exercise id >: {\n    \"format\": < format of test exercise >,\n    \"value\": < value of test exercise >\n  },\n  < test exercise id >: {\n    \"format\": < format of test exercise >,\n    \"value\": < value of test exercise >\n  },\n  < test exercise id >: {\n    \"format\": < format of test exercise >,\n    \"value\": < value of test exercise >\n  },\n  < test exercise id >: {\n    \"format\": < format of test exercise >,\n    \"value\": < value of test exercise >\n  }\n}\n}",
+          "content": "{\n\"user_test_exercises\":{\n< test exercise id >: {\n \"format\": < format of test exercise >,\n \"value\": < value of test exercise >\n},\n< test exercise id >: {\n \"format\": < format of test exercise >,\n\"value\": < value of test exercise >\n},\n< test exercise id >: {\n \"format\": < format of test exercise >,\n \"value\": < value of test exercise >\n},\ntest exercise id >: {\n\"format\": < format of test exercise >,\n \"value\": < value of test exercise >\n}\n}\n}",
           "type": "JSON"
         }
       ]
@@ -11929,7 +12041,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/user/test_exercise",
+    "url": "/user/test_exercise/reset",
     "title": "Delete Test Exercise",
     "name": "Test_Exercise",
     "group": "User_Test_Exercise",
@@ -11975,55 +12087,6 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/test_exercises.js",
     "groupTitle": "User_Test_Exercise"
-  },
-  {
-    "type": "get",
-    "url": "/user/test_exercise",
-    "title": "Get all",
-    "name": "Get_all",
-    "group": "User_Test_Exercises",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "test_exercises",
-            "description": "<p>Array of test_exercises document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/test_exercises.js",
-    "groupTitle": "User_Test_Exercises"
   },
   {
     "type": "get",
@@ -12458,57 +12521,8 @@ define({ "api": [
     "groupTitle": "User_Timeline"
   },
   {
-    "type": "delete",
-    "url": "/user/workout/:workout_id",
-    "title": "Delete user's workout by _id",
-    "name": "Delete_user_s_workout_by__id",
-    "group": "User_Workout",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_workout",
-            "description": "<p>JSON of user_workout document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_workout.js",
-    "groupTitle": "User_Workout"
-  },
-  {
     "type": "post",
-    "url": "/user/workout",
+    "url": "/user/workout/today",
     "title": "Get all user's workout",
     "name": "Get_all_user_s_workout",
     "group": "User_Workout",
@@ -12552,61 +12566,12 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_workout.js",
-    "groupTitle": "User_Workout"
-  },
-  {
-    "type": "get",
-    "url": "/user/workout/:workout_id",
-    "title": "Get user's workout by _id",
-    "name": "Get_user_s_workout_by__id",
-    "group": "User_Workout",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_workout",
-            "description": "<p>JSON of user_workout document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_workout.js",
+    "filename": "routes/user/user_workouts.js",
     "groupTitle": "User_Workout"
   },
   {
     "type": "post",
-    "url": "/user/user_workouts/exercises",
+    "url": "/user/user_workouts/workout",
     "title": "Add User Workouts",
     "name": "Add_User_Workouts",
     "group": "User_Workouts",
@@ -12696,7 +12661,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/user_workouts/workout",
+    "url": "/user/user_workouts/exercises",
     "title": "Add User Workouts",
     "name": "Add_User_Workouts",
     "group": "User_Workouts",
@@ -13184,8 +13149,133 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "workouts",
+            "description": "<p>workouts data of program</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_program.js",
+    "groupTitle": "User_Workouts"
+  },
+  {
+    "type": "post",
+    "url": "/user/user_workouts/delete/exercise",
+    "title": "Delete User workout exercise",
+    "name": "Delete_User_workout_exercise",
+    "group": "User_Workouts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "parentId",
+            "description": "<p>Parent Id of workout.[ collection name : user_workouts]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "childId",
+            "description": "<p>childId Id of workout's exercise.[ collection name : user_workouts_exercise ]</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "subChildIds",
+            "description": "<p>subChildIds Ids of workout's exercise'subCollection</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "message",
             "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workouts.js",
+    "groupTitle": "User_Workouts"
+  },
+  {
+    "type": "get",
+    "url": "/user/user_workouts/:workout_id",
+    "title": "Get User Workouts",
+    "name": "Get_User_Workouts",
+    "group": "User_Workouts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "workouts",
+            "description": "<p>JSON of user_workouts</p>"
           }
         ]
       }
@@ -13235,55 +13325,6 @@ define({ "api": [
             "optional": false,
             "field": "date",
             "description": "<p>Date of user's workout program</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "workouts",
-            "description": "<p>JSON of user_workouts</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_workouts.js",
-    "groupTitle": "User_Workouts"
-  },
-  {
-    "type": "get",
-    "url": "/user/user_workouts/:workout_id",
-    "title": "Get User Workouts",
-    "name": "Get_User_Workouts",
-    "group": "User_Workouts",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
           }
         ]
       }
@@ -13389,6 +13430,75 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/user/user_program/delete",
+    "title": "Multiple program Workout delete",
+    "name": "Multiple_Workout_delete",
+    "group": "User_Workouts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "exerciseIds",
+            "description": "<p>ids of Days</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "parentId",
+            "description": "<p>parentId of Day</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "workouts",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_program.js",
+    "groupTitle": "User_Workouts"
+  },
+  {
+    "type": "post",
     "url": "/user/user_workouts/delete",
     "title": "Multiple Workout delete by Days",
     "name": "Multiple_Workout_delete_by_Days",
@@ -13435,96 +13545,6 @@ define({ "api": [
             "optional": false,
             "field": "message",
             "description": "<p>Success message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_workouts.js",
-    "groupTitle": "User_Workouts"
-  },
-  {
-    "type": "put",
-    "url": "/user/user_workouts/:workout_id",
-    "title": "Update User Workouts",
-    "name": "Update_User_Workouts",
-    "group": "User_Workouts",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "title",
-            "description": "<p>title of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "description",
-            "description": "<p>description of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Enum",
-            "optional": true,
-            "field": "type",
-            "description": "<p>type of workout | Possbile value <code>Enum: [&quot;exercise&quot;,&quot;restday&quot;]</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Date",
-            "optional": true,
-            "field": "date",
-            "description": "<p>date of workout</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "friend",
-            "description": "<p>approved friend detail</p>"
           }
         ]
       }
@@ -13615,6 +13635,96 @@ define({ "api": [
             "optional": false,
             "field": "workout",
             "description": "<p>workout details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workouts.js",
+    "groupTitle": "User_Workouts"
+  },
+  {
+    "type": "put",
+    "url": "/user/user_workouts/:workout_id",
+    "title": "Update User Workouts",
+    "name": "Update_User_Workouts",
+    "group": "User_Workouts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "title",
+            "description": "<p>title of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "description",
+            "description": "<p>description of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "type",
+            "description": "<p>type of workout | Possbile value <code>Enum: [&quot;exercise&quot;,&quot;restday&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": true,
+            "field": "date",
+            "description": "<p>date of workout</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "friend",
+            "description": "<p>approved friend detail</p>"
           }
         ]
       }

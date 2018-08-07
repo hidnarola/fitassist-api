@@ -37,13 +37,58 @@ router.get("/:workout_id", async (req, res) => {
     },
     false
   );
-
+  // with same date record in response
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user workouts = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     logger.trace("user workouts got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
+ * @api {post} /user/workout/first_workout Get all user's workout
+ * @apiName Get all user's workout
+ * @apiGroup  User Workout
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {JSON} user_workout JSON of user_workout document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/first_workout", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var date = req.body.date;
+
+  var start = moment(date).utcOffset(0);
+  start.toISOString();
+  start.format();
+
+  var end = moment(date)
+    .utcOffset(0)
+    .add(23, "hours")
+    .add(59, "minutes");
+  end.toISOString();
+  end.format();
+
+  logger.trace("Get all user workouts by date  API called");
+  var resp_data = await user_workout_helper.get_first_workout_by_date({
+    userId: authUserId,
+    date: {
+      $gte: new Date(start),
+      $lte: new Date(end)
+    }
+  });
+  console.log("------------------------------------");
+  console.log("resp_data : ", resp_data);
+  console.log("------------------------------------");
+
+  if (resp_data.status == 1) {
+    logger.trace("user workouts got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching user workouts = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 

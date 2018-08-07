@@ -40,35 +40,35 @@ test_exercise_helper.get_test_exercises = async () => {
  *          status 2 - If test_exercises not found, with appropriate message
  */
 test_exercise_helper.get_all_test_exercises = async () => {
-  // try {
-  var test_exercises = await TestExercies.find({});
-  if (test_exercises) {
-    test_exercises = _.groupBy(test_exercises, category => {
-      return category.category;
-    });
-
-    test_exercises = _.mapObject(test_exercises, (exercise, category) => {
-      exercise = _.groupBy(exercise, subCatgory => {
-        return subCatgory.subCategory;
+  try {
+    var test_exercises = await TestExercies.find({});
+    if (test_exercises) {
+      test_exercises = _.groupBy(test_exercises, category => {
+        return category.category;
       });
-      return exercise;
-    });
 
+      test_exercises = _.mapObject(test_exercises, (exercise, category) => {
+        exercise = _.groupBy(exercise, subCatgory => {
+          return subCatgory.subCategory;
+        });
+        return exercise;
+      });
+
+      return {
+        status: 1,
+        message: "test exercises found",
+        test_exercises: test_exercises
+      };
+    } else {
+      return { status: 2, message: "No test exercises available" };
+    }
+  } catch (err) {
     return {
-      status: 1,
-      message: "test exercises found",
-      test_exercises: test_exercises
+      status: 0,
+      message: "Error occured while finding test exercises",
+      error: err
     };
-  } else {
-    return { status: 2, message: "No test exercises available" };
   }
-  // } catch (err) {
-  //   return {
-  //     status: 0,
-  //     message: "Error occured while finding test exercises",
-  //     error: err
-  //   };
-  // }
 };
 
 /*

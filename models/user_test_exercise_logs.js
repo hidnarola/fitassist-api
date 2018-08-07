@@ -7,7 +7,11 @@ var Schema = mongoose.Schema;
 var UserTestExerciseSchemaLogs = new Schema(
   {
     userId: { type: String, ref: "users", field: "authUserId", required: true },
-    test_exercise_id: { type: String, ref: "test_exercises", required: true },
+    test_exercise_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "test_exercises",
+      required: true
+    },
     format: {
       type: String,
       enum: ["max_rep", "multiselect", "a_or_b", "text_field"],

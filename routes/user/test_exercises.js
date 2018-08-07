@@ -53,11 +53,16 @@ router.post("/today", async (req, res) => {
       }
     );
 
-    if (resp_data2.status == 1) {
+    if (resp_data2.status === 1) {
       resp_data.user_test_exercises = resp_data2.user_test_exercises;
     }
-    logger.trace("test exercies got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
+    if (resp_data.status === 1) {
+      logger.trace("test exercies got successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    } else {
+      logger.trace("test exercies failed to find = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    }
   }
 });
 
