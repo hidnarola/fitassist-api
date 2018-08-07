@@ -118,15 +118,11 @@ user_workouts_helper.get_first_workout_by_date = async (condition = {}) => {
   try {
     var user_workouts = await UserWorkouts.findOne(condition, { _id: 1 });
 
-    if (user_workouts) {
-      return {
-        status: 1,
-        message: "User's First workout of date found",
-        workout_id: user_workouts._id
-      };
-    } else {
-      return { status: 2, message: "No user workout available" };
-    }
+    return {
+      status: 1,
+      message: "User's First workout of date found",
+      workout_id: user_workouts._id ? user_workouts._id : null
+    };
   } catch (err) {
     return {
       status: 0,

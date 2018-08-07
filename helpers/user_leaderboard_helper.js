@@ -312,15 +312,16 @@ user_leaderboard_helper.get_nutrition = async (condition = {}) => {
       }
     ]);
     // total calories, avg protain, total fat, total excess cals, total cabs, monthly protain
+    var returnObj = user_nutrients[0];
     console.log("------------------------------------");
-    console.log("monthlyProtain : ", monthlyProtain);
+    console.log("returnObj : ", returnObj);
     console.log("------------------------------------");
-
+    returnObj.monthly_protain = monthlyProtain[0].protein_total;
     if (user_nutrients) {
       return {
         status: 1,
         message: "User nutrition data found",
-        leaderboard: user_nutrients
+        leaderboard: returnObj
       };
     } else {
       return { status: 2, message: "No User nutrition data available" };

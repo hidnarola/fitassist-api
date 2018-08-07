@@ -39,9 +39,6 @@ router.get("/:type", async (req, res) => {
       resp_data = await user_leaderboard_helper.get_nutrition({
         userId: authUserId
       });
-      console.log("------------------------------------");
-      console.log("resp_data : ", resp_data);
-      console.log("------------------------------------");
     } else if (type == "body") {
       // body fat change, shoulder waist ration, current weight, resting heart rate, bicep growth, weight change
       resp_data = await user_leaderboard_helper.get_body({
