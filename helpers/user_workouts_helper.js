@@ -120,8 +120,11 @@ user_workouts_helper.get_first_workout_by_date = async (condition = {}) => {
 
     return {
       status: 1,
-      message: "User's First workout of date found",
-      workout_id: user_workouts._id ? user_workouts._id : null
+      message:
+        user_workouts && user_workouts._id
+          ? "User's First workout of date found"
+          : "User's First workout of date not found",
+      workout_id: user_workouts && user_workouts._id ? user_workouts._id : null
     };
   } catch (err) {
     return {
