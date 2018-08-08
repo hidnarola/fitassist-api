@@ -12,8 +12,7 @@ var workout_progress_helper = {};
  */
 workout_progress_helper.get_progress_detail = async (condition = {}) => {
   try {
-    var progress = await UserTestExerciseLogs.aggregate([
-      {
+    var progress = await UserTestExerciseLogs.aggregate([{
         $match: condition.createdAt
       },
       {
@@ -46,23 +45,76 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
             }
           }
         }
+      },
+      {
+        $unwind: "$exercises"
+      },
+      {
+        $group: {
+          _id: "$_id",
+          format: {
+            $first: "$exercises.format"
+          },
+          first: {
+            $first: "$exercises"
+          },
+          last: {
+            $last: "$exercises"
+          }
+        }
       }
     ]);
-    console.log("------------------------------------");
-    console.log("progress.length : ", progress.length);
-    console.log("------------------------------------");
 
     if (progress && progress.length > 0) {
+      var returnArray = [];
       _.each(progress, p => {
+        var tmp = {};
         var fieldCheckName = p.format;
+        var subCategory = p._id;
+        tmp.format = fieldCheckName;
+        tmp.subCategory = subCategory;
+        tmp.first = p.first[fieldCheckName];
+        tmp.last = p.last[fieldCheckName];
+        switch (fieldCheckName) {
+          case "text_field":
+            tmp.change = tmp.first - tmp.last;
+            break;
+          case "max_rep":
+            var firstKeys = Object.keys(tmp.first); // key of first record
+            var lastKeys = Object.keys(tmp.last); // key of last record
+            var keys = _.union(firstKeys, lastKeys); // union of both record
+            var differenceData = {};
+            _.each(keys, key => {
+              if (tmp.first[key] && tmp.last[key]) {
+                differenceData[key] = tmp.first[key] - tmp.last[key];
+              } else {
+                differenceData[key] = tmp.first[key] ? tmp.first[key] : tmp.last[key];
+              }
+            });
+            tmp.change = differenceData;
+            break;
+          case "multiselect":
+            tmp.change = tmp.first - tmp.last;
+            break;
+          case "a_or_b":
+            tmp.change = tmp.first - tmp.last;
+            break;
+
+          default:
+            break;
+        }
+        returnArray.push(tmp);
       });
       return {
         status: 1,
         message: "progress found",
-        progress: progress
+        progress: returnArray
       };
     } else {
-      return { status: 2, message: "No progress available" };
+      return {
+        status: 2,
+        message: "No progress available"
+      };
     }
   } catch (err) {
     return {

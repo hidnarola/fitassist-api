@@ -401,6 +401,7 @@ user_leaderboard_helper.get_body = async (condition = {}) => {
         }
       }
     ]);
+    // body fat change, shoulder waist ration, current weight, resting heart rate, bicep growth, weight change
 
     if (leaderboard_data) {
       return {

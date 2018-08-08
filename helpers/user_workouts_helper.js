@@ -16,15 +16,19 @@ user_workouts_helper.get_workouts_for_calendar = async (
   single = false
 ) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([
-      { $match: condition },
+    var user_workouts = await UserWorkouts.aggregate([{
+        $match: condition
+      },
       {
         $group: {
           _id: "$date"
         }
       },
       {
-        $project: { date: "$_id", _id: 0 }
+        $project: {
+          date: "$_id",
+          _id: 0
+        }
       }
     ]);
     if (user_workouts) {
@@ -34,7 +38,10 @@ user_workouts_helper.get_workouts_for_calendar = async (
         workouts: user_workouts
       };
     } else {
-      return { status: 2, message: "No user workouts available" };
+      return {
+        status: 2,
+        message: "No user workouts available"
+      };
     }
   } catch (err) {
     return {
@@ -54,7 +61,9 @@ user_workouts_helper.get_workouts_for_calendar = async (
  */
 user_workouts_helper.get_all_workouts = async (condition, single = false) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([{ $match: condition }]);
+    var user_workouts = await UserWorkouts.aggregate([{
+      $match: condition
+    }]);
     // var user_workouts = await UserWorkouts.aggregate([
     //   {
     //     $match: condition
@@ -79,9 +88,9 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
 
     if (user_workouts) {
       var message =
-        user_workouts.length > 0
-          ? "user workouts found"
-          : "user workouts not found";
+        user_workouts.length > 0 ?
+        "user workouts found" :
+        "user workouts not found";
       user_workouts = user_workouts;
       if (single) {
         if (user_workouts.length > 0) {
@@ -96,7 +105,10 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
         workouts: user_workouts
       };
     } else {
-      return { status: 2, message: "No user workouts available" };
+      return {
+        status: 2,
+        message: "No user workouts available"
+      };
     }
   } catch (err) {
     return {
@@ -116,14 +128,15 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
  */
 user_workouts_helper.get_first_workout_by_date = async (condition = {}) => {
   try {
-    var user_workouts = await UserWorkouts.findOne(condition, { _id: 1 });
+    var user_workouts = await UserWorkouts.findOne(condition, {
+      _id: 1
+    });
 
     return {
       status: 1,
-      message:
-        user_workouts && user_workouts._id
-          ? "User's First workout of date found"
-          : "User's First workout of date not found",
+      message: user_workouts && user_workouts._id ?
+        "User's First workout of date found" :
+        "User's First workout of date not found",
       workout_id: user_workouts && user_workouts._id ? user_workouts._id : null
     };
   } catch (err) {
@@ -143,8 +156,7 @@ user_workouts_helper.get_first_workout_by_date = async (condition = {}) => {
  */
 user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([
-      {
+    var user_workouts = await UserWorkouts.aggregate([{
         $match: condition
       },
       {
@@ -164,13 +176,27 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
       {
         $group: {
           _id: "$_id",
-          exercises: { $addToSet: "$exercises" },
-          isCompleted: { $first: "$isCompleted" },
-          dayType: { $first: "$type" },
-          title: { $first: "$title" },
-          description: { $first: "$description" },
-          userId: { $first: "$userId" },
-          date: { $first: "$date" }
+          exercises: {
+            $addToSet: "$exercises"
+          },
+          isCompleted: {
+            $first: "$isCompleted"
+          },
+          dayType: {
+            $first: "$type"
+          },
+          title: {
+            $first: "$title"
+          },
+          description: {
+            $first: "$description"
+          },
+          userId: {
+            $first: "$userId"
+          },
+          date: {
+            $first: "$date"
+          }
         }
       }
     ]);
@@ -189,13 +215,13 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
             exercise.push(ex);
           }
         });
-        workout.warmup = _.sortBy(warmup, function(w) {
+        workout.warmup = _.sortBy(warmup, function (w) {
           return w.sequence;
         });
-        workout.exercise = _.sortBy(exercise, function(w) {
+        workout.exercise = _.sortBy(exercise, function (w) {
           return w.sequence;
         });
-        workout.cooldown = _.sortBy(cooldown, function(w) {
+        workout.cooldown = _.sortBy(cooldown, function (w) {
           return w.sequence;
         });
         delete workout.exercises;
@@ -207,7 +233,10 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
         workouts: user_workouts
       };
     } else {
-      return { status: 2, message: "No user workouts available" };
+      return {
+        status: 2,
+        message: "No user workouts available"
+      };
     }
   } catch (err) {
     return {
@@ -226,8 +255,7 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
  */
 user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([
-      {
+    var user_workouts = await UserWorkouts.aggregate([{
         $match: condition
       },
       {
@@ -247,20 +275,36 @@ user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
       {
         $group: {
           _id: "$_id",
-          exercises: { $addToSet: "$exercises" },
-          isCompleted: { $first: "$isCompleted" },
-          dayType: { $first: "$type" },
-          title: { $first: "$title" },
-          description: { $first: "$description" },
-          userId: { $first: "$userId" },
-          date: { $first: "$date" }
+          exercises: {
+            $addToSet: "$exercises"
+          },
+          isCompleted: {
+            $first: "$isCompleted"
+          },
+          dayType: {
+            $first: "$type"
+          },
+          title: {
+            $first: "$title"
+          },
+          description: {
+            $first: "$description"
+          },
+          userId: {
+            $first: "$userId"
+          },
+          date: {
+            $first: "$date"
+          }
         }
       },
       {
         $project: {
           _id: 1,
           title: 1,
-          isCompleted:1
+          isCompleted: 1,
+          date: 1,
+
         }
       },
       {
@@ -277,7 +321,10 @@ user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
         workouts: user_workouts
       };
     } else {
-      return { status: 2, message: "No user workouts available" };
+      return {
+        status: 2,
+        message: "No user workouts available"
+      };
     }
   } catch (err) {
     return {
@@ -296,8 +343,7 @@ user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
  */
 user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([
-      {
+    var user_workouts = await UserWorkouts.aggregate([{
         $match: condition
       },
       {
@@ -317,16 +363,36 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
       {
         $group: {
           _id: "$exercises.type",
-          userWorkoutsId: { $first: "$_id" },
-          type: { $first: "$exercises.type" },
-          exercises: { $addToSet: "$exercises" },
-          isCompleted: { $first: "$isCompleted" },
-          dayType: { $first: "$type" },
-          title: { $first: "$title" },
-          description: { $first: "$description" },
-          userId: { $first: "$userId" },
-          date: { $first: "$date" },
-          sequence: { $first: "$sequence" }
+          userWorkoutsId: {
+            $first: "$_id"
+          },
+          type: {
+            $first: "$exercises.type"
+          },
+          exercises: {
+            $addToSet: "$exercises"
+          },
+          isCompleted: {
+            $first: "$isCompleted"
+          },
+          dayType: {
+            $first: "$type"
+          },
+          title: {
+            $first: "$title"
+          },
+          description: {
+            $first: "$description"
+          },
+          userId: {
+            $first: "$userId"
+          },
+          date: {
+            $first: "$date"
+          },
+          sequence: {
+            $first: "$sequence"
+          }
         }
       },
       {
@@ -376,7 +442,10 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
         workouts: returnObj
       };
     } else {
-      return { status: 2, message: "No user workouts available" };
+      return {
+        status: 2,
+        message: "No user workouts available"
+      };
     }
   } catch (err) {
     return {
@@ -396,8 +465,7 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
  */
 user_workouts_helper.count_all_completed_workouts = async condition => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([
-      {
+    var user_workouts = await UserWorkouts.aggregate([{
         $match: condition
       },
       {
@@ -425,7 +493,10 @@ user_workouts_helper.count_all_completed_workouts = async condition => {
         count: user_workouts.length
       };
     } else {
-      return { status: 2, message: "No user workouts available" };
+      return {
+        status: 2,
+        message: "No user workouts available"
+      };
     }
   } catch (err) {
     return {
@@ -445,26 +516,51 @@ user_workouts_helper.count_all_completed_workouts = async condition => {
  */
 user_workouts_helper.workout_detail_for_badges = async condition => {
   try {
-    var user_workouts = await WorkoutLogs.aggregate([
-      {
+    var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },
       {
         $group: {
           _id: "$exerciseId",
-          weight_lifted_total: { $sum: "$weight" },
-          weight_lifted_average: { $avg: "$weight" },
-          weight_lifted_most: { $max: "$weight" },
-          weight_lifted_least: { $min: "$weight" },
-          reps_least: { $min: "$reps" },
-          reps_total: { $sum: "$reps" },
-          reps_average: { $avg: "$reps" },
-          reps_most: { $max: "$reps" },
-          sets_least: { $min: "$sets" },
-          sets_total: { $sum: "$sets" },
-          sets_average: { $avg: "$sets" },
-          sets_most: { $max: "$sets" },
-          workouts_total: { $sum: 1 }
+          weight_lifted_total: {
+            $sum: "$weight"
+          },
+          weight_lifted_average: {
+            $avg: "$weight"
+          },
+          weight_lifted_most: {
+            $max: "$weight"
+          },
+          weight_lifted_least: {
+            $min: "$weight"
+          },
+          reps_least: {
+            $min: "$reps"
+          },
+          reps_total: {
+            $sum: "$reps"
+          },
+          reps_average: {
+            $avg: "$reps"
+          },
+          reps_most: {
+            $max: "$reps"
+          },
+          sets_least: {
+            $min: "$sets"
+          },
+          sets_total: {
+            $sum: "$sets"
+          },
+          sets_average: {
+            $avg: "$sets"
+          },
+          sets_most: {
+            $max: "$sets"
+          },
+          workouts_total: {
+            $sum: 1
+          }
         }
       },
       {
@@ -487,19 +583,45 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
       {
         $group: {
           _id: null,
-          weight_lifted_total: { $sum: "$weight_lifted_total" },
-          weight_lifted_average: { $avg: "$weight_lifted_average" },
-          weight_lifted_most: { $max: "$weight_lifted_most" },
-          weight_lifted_least: { $min: "$weight_lifted_least" },
-          reps_least: { $min: "$reps_least" },
-          reps_total: { $sum: "$reps_total" },
-          reps_average: { $avg: "$reps_average" },
-          reps_most: { $max: "$reps_most" },
-          sets_least: { $min: "$sets_least" },
-          sets_total: { $sum: "$sets_total" },
-          sets_average: { $avg: "$sets_average" },
-          sets_most: { $max: "$sets_most" },
-          workouts_total: { $sum: "$workouts_total" }
+          weight_lifted_total: {
+            $sum: "$weight_lifted_total"
+          },
+          weight_lifted_average: {
+            $avg: "$weight_lifted_average"
+          },
+          weight_lifted_most: {
+            $max: "$weight_lifted_most"
+          },
+          weight_lifted_least: {
+            $min: "$weight_lifted_least"
+          },
+          reps_least: {
+            $min: "$reps_least"
+          },
+          reps_total: {
+            $sum: "$reps_total"
+          },
+          reps_average: {
+            $avg: "$reps_average"
+          },
+          reps_most: {
+            $max: "$reps_most"
+          },
+          sets_least: {
+            $min: "$sets_least"
+          },
+          sets_total: {
+            $sum: "$sets_total"
+          },
+          sets_average: {
+            $avg: "$sets_average"
+          },
+          sets_most: {
+            $max: "$sets_most"
+          },
+          workouts_total: {
+            $sum: "$workouts_total"
+          }
         }
       }
     ]);
@@ -511,7 +633,10 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
         workouts: user_workouts[0]
       };
     } else {
-      return { status: 2, message: "No user workouts available" };
+      return {
+        status: 2,
+        message: "No user workouts available"
+      };
     }
   } catch (err) {
     return {
@@ -531,7 +656,9 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
  */
 user_workouts_helper.get_user_workouts_by_id = async id => {
   try {
-    var user_workout = await UserWorkouts.findOne({ _id: id });
+    var user_workout = await UserWorkouts.findOne({
+      _id: id
+    });
     if (user_workout) {
       return {
         status: 1,
@@ -539,7 +666,10 @@ user_workouts_helper.get_user_workouts_by_id = async id => {
         workout: user_workout
       };
     } else {
-      return { status: 2, message: "No User workout available" };
+      return {
+        status: 2,
+        message: "No User workout available"
+      };
     }
   } catch (err) {
     return {
@@ -747,22 +877,27 @@ user_workouts_helper.copy_exercise_by_id = async (
   var workoutLogsObj = {};
   var insertWorkoutLogArray = [];
   try {
-    var day_data = await UserWorkouts.findOne(
-      { _id: exerciseId },
-      { _id: 0, type: 1, title: 1, description: 1, userId: 1 }
-    ).lean();
+    var day_data = await UserWorkouts.findOne({
+      _id: exerciseId
+    }, {
+      _id: 0,
+      type: 1,
+      title: 1,
+      description: 1,
+      userId: 1
+    }).lean();
 
     day_data.date = date;
 
     let user_workouts = new UserWorkouts(day_data);
     var workout_day = await user_workouts.save();
 
-    var exercise_data = await UserWorkoutExercises.find(
-      {
-        userWorkoutsId: exerciseId
-      },
-      { isCompleted: 0, userWorkoutsId: 0 }
-    ).lean();
+    var exercise_data = await UserWorkoutExercises.find({
+      userWorkoutsId: exerciseId
+    }, {
+      isCompleted: 0,
+      userWorkoutsId: 0
+    }).lean();
 
     exercise_data.forEach(ex => {
       delete ex._id;
@@ -932,10 +1067,12 @@ user_workouts_helper.update_user_workout_exercise = async (
   var insertWorkoutLogArray = [];
   var workoutLogsObj = {};
   try {
-    var user_workouts_data = await UserWorkoutExercises.findOneAndUpdate(
-      { _id: id },
-      childCollectionObject,
-      { new: true }
+    var user_workouts_data = await UserWorkoutExercises.findOneAndUpdate({
+        _id: id
+      },
+      childCollectionObject, {
+        new: true
+      }
     );
 
     var delete_workout_log = await WorkoutLogs.remove({
@@ -1086,10 +1223,12 @@ user_workouts_helper.update_user_workouts_by_id = async (
   masterCollectionObject
 ) => {
   try {
-    var user_workouts_data = await UserWorkouts.findOneAndUpdate(
-      { _id: id },
-      masterCollectionObject,
-      { new: true }
+    var user_workouts_data = await UserWorkouts.findOneAndUpdate({
+        _id: id
+      },
+      masterCollectionObject, {
+        new: true
+      }
     );
     if (user_workouts_data) {
       return {
@@ -1123,12 +1262,10 @@ user_workouts_helper.update_user_workouts_by_id = async (
  */
 user_workouts_helper.complete_master_event = async (id, updateObject) => {
   try {
-    let user_workouts_data = await UserWorkouts.findByIdAndUpdate(
-      {
+    let user_workouts_data = await UserWorkouts.findByIdAndUpdate({
         _id: id
       },
-      updateObject,
-      {
+      updateObject, {
         new: true
       }
     );
@@ -1156,40 +1293,35 @@ user_workouts_helper.complete_master_event = async (id, updateObject) => {
  */
 user_workouts_helper.complete_all_workout = async (id, updateObject) => {
   try {
-    let user_workouts_data1 = await UserWorkouts.update(
-      {
+    let user_workouts_data1 = await UserWorkouts.update({
         _id: id
       },
-      updateObject,
-      {
+      updateObject, {
         new: true
       }
     );
 
-    let user_workouts_data2 = await UserWorkoutExercises.updateMany(
-      {
+    let user_workouts_data2 = await UserWorkoutExercises.updateMany({
         userWorkoutsId: id
       },
-      updateObject,
-      {
+      updateObject, {
         new: true
       }
     );
 
-    let user_workoutsids = await UserWorkoutExercises.find(
-      {
-        userWorkoutsId: id
-      },
-      { _id: 1 }
-    );
+    let user_workoutsids = await UserWorkoutExercises.find({
+      userWorkoutsId: id
+    }, {
+      _id: 1
+    });
     user_workoutsids = _.pluck(user_workoutsids, "_id");
 
-    let user_workouts_data3 = await WorkoutLogs.updateMany(
-      {
-        workoutId: { $in: user_workoutsids }
+    let user_workouts_data3 = await WorkoutLogs.updateMany({
+        workoutId: {
+          $in: user_workoutsids
+        }
       },
-      updateObject,
-      {
+      updateObject, {
         new: true
       }
     );
@@ -1218,18 +1350,22 @@ user_workouts_helper.complete_all_workout = async (id, updateObject) => {
  */
 user_workouts_helper.complete_workout = async (id, updateObject) => {
   try {
-    let user_workout_exercises = await UserWorkoutExercises.updateMany(
-      { _id: { $in: id } },
-      updateObject,
-      {
+    let user_workout_exercises = await UserWorkoutExercises.updateMany({
+        _id: {
+          $in: id
+        }
+      },
+      updateObject, {
         new: true
       }
     );
 
-    let user_workouts_data3 = await WorkoutLogs.updateMany(
-      { exerciseId: { $in: id } },
-      updateObject,
-      {
+    let user_workouts_data3 = await WorkoutLogs.updateMany({
+        exerciseId: {
+          $in: id
+        }
+      },
+      updateObject, {
         new: true
       }
     );
@@ -1259,13 +1395,23 @@ user_workouts_helper.delete_user_workouts_exercise = async (
   subChildIds
 ) => {
   try {
-    let user_workouts_exercise = await UserWorkoutExercises.update(
-      { _id: childId },
-      { $pull: { exercises: { _id: { $in: subChildIds } } } },
-      { new: true }
-    );
+    let user_workouts_exercise = await UserWorkoutExercises.update({
+      _id: childId
+    }, {
+      $pull: {
+        exercises: {
+          _id: {
+            $in: subChildIds
+          }
+        }
+      }
+    }, {
+      new: true
+    });
     let user_workouts_exercise2 = await WorkoutLogs.remove({
-      setsDetailId: { $in: subChildIds },
+      setsDetailId: {
+        $in: subChildIds
+      },
       isCompleted: 0
     });
     let exercise = await UserWorkoutExercises.findOne({
@@ -1277,7 +1423,10 @@ user_workouts_helper.delete_user_workouts_exercise = async (
         _id: childId
       });
     }
-    return { status: 1, message: "User workouts exercise deleted" };
+    return {
+      status: 1,
+      message: "User workouts exercise deleted"
+    };
   } catch (err) {
     return {
       status: 0,
@@ -1296,26 +1445,37 @@ user_workouts_helper.delete_user_workouts_exercise = async (
  */
 user_workouts_helper.delete_user_workouts_by_exercise_ids = async exerciseIds => {
   try {
-    let ids = await UserWorkoutExercises.find(
-      {
-        _id: { $in: exerciseIds }
-      },
-      { _id: 1 }
-    );
+    let ids = await UserWorkoutExercises.find({
+      _id: {
+        $in: exerciseIds
+      }
+    }, {
+      _id: 1
+    });
     ids = _.pluck(ids, "_id");
 
     let user_workouts_data = await UserWorkoutExercises.remove({
-      _id: { $in: exerciseIds }
+      _id: {
+        $in: exerciseIds
+      }
     });
 
     let workout_logs_data = await WorkoutLogs.remove({
-      exerciseId: { $in: ids },
+      exerciseId: {
+        $in: ids
+      },
       isCompleted: 0
     });
     if (user_workouts_data) {
-      return { status: 1, message: "User workouts deleted" };
+      return {
+        status: 1,
+        message: "User workouts deleted"
+      };
     } else {
-      return { status: 2, message: "User workouts not deleted" };
+      return {
+        status: 2,
+        message: "User workouts not deleted"
+      };
     }
   } catch (err) {
     return {
@@ -1336,24 +1496,34 @@ user_workouts_helper.delete_user_workouts_by_exercise_ids = async exerciseIds =>
 user_workouts_helper.delete_user_workouts_by_id = async exerciseIds => {
   try {
     let user_workouts_data1 = await UserWorkouts.remove({
-      _id: { $in: exerciseIds }
+      _id: {
+        $in: exerciseIds
+      }
     });
 
-    let ids = await UserWorkoutExercises.find(
-      {
-        userWorkoutsId: { $in: exerciseIds }
-      },
-      { _id: 1 }
-    );
+    let ids = await UserWorkoutExercises.find({
+      userWorkoutsId: {
+        $in: exerciseIds
+      }
+    }, {
+      _id: 1
+    });
     ids = _.pluck(ids, "_id");
     let user_workouts_data2 = await UserWorkoutExercises.remove({
-      userWorkoutsId: { $in: exerciseIds }
+      userWorkoutsId: {
+        $in: exerciseIds
+      }
     });
     let workout_logs_data = await WorkoutLogs.remove({
-      exerciseId: { $in: ids },
+      exerciseId: {
+        $in: ids
+      },
       isCompleted: 0
     });
-    return { status: 1, message: "User workouts deleted" };
+    return {
+      status: 1,
+      message: "User workouts deleted"
+    };
   } catch (err) {
     return {
       status: 0,
@@ -1373,32 +1543,39 @@ user_workouts_helper.delete_user_workouts_by_id = async exerciseIds => {
  */
 user_workouts_helper.complete_workout_by_days = async (id, updateObject) => {
   try {
-    let user_workouts_data1 = await UserWorkouts.updateMany(
-      { _id: { $in: id } },
-      updateObject,
-      {
+    let user_workouts_data1 = await UserWorkouts.updateMany({
+        _id: {
+          $in: id
+        }
+      },
+      updateObject, {
         new: true
       }
     );
 
-    let idsForWorkoutLog = await UserWorkoutExercises.find(
-      {
-        userWorkoutsId: { $in: id }
-      },
-      { _id: 1 }
-    );
+    let idsForWorkoutLog = await UserWorkoutExercises.find({
+      userWorkoutsId: {
+        $in: id
+      }
+    }, {
+      _id: 1
+    });
     idsForWorkoutLog = _.pluck(idsForWorkoutLog, "_id");
-    let user_workouts_data2 = await UserWorkoutExercises.updateMany(
-      { userWorkoutsId: { $in: id } },
-      updateObject,
-      {
+    let user_workouts_data2 = await UserWorkoutExercises.updateMany({
+        userWorkoutsId: {
+          $in: id
+        }
+      },
+      updateObject, {
         new: true
       }
     );
-    let user_workouts_data3 = await WorkoutLogs.updateMany(
-      { exerciseId: { $in: idsForWorkoutLog } },
-      updateObject,
-      {
+    let user_workouts_data3 = await WorkoutLogs.updateMany({
+        exerciseId: {
+          $in: idsForWorkoutLog
+        }
+      },
+      updateObject, {
         new: true
       }
     );
