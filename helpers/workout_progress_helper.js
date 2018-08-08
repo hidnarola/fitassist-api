@@ -46,24 +46,8 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
           }
         }
       },
-      {
-        $unwind: "$exercises"
-      },
-      {
-        $group: {
-          _id: "$_id",
-          format: {
-            $first: "$exercises.format"
-          },
-          first: {
-            $first: "$exercises"
-          },
-          last: {
-            $last: "$exercises"
-          }
-        }
-      }
     ]);
+
 
     if (progress && progress.length > 0) {
       var returnArray = [];
@@ -71,6 +55,17 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
         var tmp = {};
         var fieldCheckName = p.format;
         var subCategory = p._id;
+        var first = _.first(p.exercises);
+        var last = _.last(p.exercises);
+        console.log('------------------------------------');
+        console.log('first : ', first);
+        console.log('------------------------------------');
+
+        console.log('------------------------------------');
+        console.log('last : ', last);
+        console.log('------------------------------------');
+
+
         tmp.format = fieldCheckName;
         tmp.subCategory = subCategory;
         tmp.first = p.first[fieldCheckName];

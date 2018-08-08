@@ -33,51 +33,47 @@ router.get("/:workout_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
-  var resp_data = await user_workout_helper.get_all_workouts_group_by(
-    {
+  var resp_data = await user_workout_helper.get_all_workouts_group_by({
       _id: workout_id
     },
     false
   );
-  var date = resp_data.workouts.date;
 
-  var start = moment(date).utcOffset(0);
-  start.toISOString();
-  start.format();
+  if (resp_data.status === 1) {
+    var date = resp_data.workouts.date;
+    var start = moment(date).utcOffset(0);
+    start.toISOString();
+    start.format();
 
-  var end = moment(date)
-    .utcOffset(0)
-    .add(23, "hours")
-    .add(59, "minutes");
-  end.toISOString();
-  end.format();
-  var related_date_data = await user_workout_helper.get_id_title_workouts_by_date(
-    {
+    var end = moment(date)
+      .utcOffset(0)
+      .add(23, "hours")
+      .add(59, "minutes");
+    end.toISOString();
+    end.format();
+    var related_date_data = await user_workout_helper.get_id_title_workouts_by_date({
       userId: authUserId,
       date: {
         $gte: new Date(start),
         $lte: new Date(end)
       }
-    }
-  );
-  var check = await moment(date).utc(0);
-  var startCheck = await moment(check).subtract(2, "month");
-  var endCheck = await moment(check).add(2, "month");
-  var calendar_data = await user_workout_helper.get_workouts_for_calendar({
-    userId: authUserId,
-    date: {
-      $gte: new Date(startCheck),
-      $lt: new Date(endCheck)
-    }
-  });
+    });
+    var check = await moment(date).utc(0);
+    var startCheck = await moment(check).subtract(2, "month");
+    var endCheck = await moment(check).add(2, "month");
+    var calendar_data = await user_workout_helper.get_workouts_for_calendar({
+      userId: authUserId,
+      date: {
+        $gte: new Date(startCheck),
+        $lt: new Date(endCheck)
+      }
+    });
 
-  resp_data.workouts_list = related_date_data.workouts
-    ? related_date_data.workouts
-    : [];
-  resp_data.calendar_list = calendar_data.workouts
-    ? calendar_data.workouts
-    : [];
-  if (resp_data.status === 1) {
+    resp_data.workouts_list = related_date_data.workouts ?
+      related_date_data.workouts : [];
+    resp_data.calendar_list = calendar_data.workouts ?
+      calendar_data.workouts : [];
+
     logger.trace("user workouts got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
@@ -249,7 +245,9 @@ router.post("/day", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -508,9 +506,10 @@ router.post("/workout", async (req, res) => {
       totalExerciseIds.forEach((id, index) => {
         totalExerciseIds[index] = mongoose.Types.ObjectId(id);
       });
-      var exercise_data = await exercise_helper.get_exercise_id(
-        {
-          _id: { $in: totalExerciseIds }
+      var exercise_data = await exercise_helper.get_exercise_id({
+          _id: {
+            $in: totalExerciseIds
+          }
         },
         1
       );
@@ -573,8 +572,7 @@ router.post("/workout", async (req, res) => {
       );
 
       if (workout_day.status == 1) {
-        workout_day = await user_workout_helper.get_all_workouts_group_by(
-          {
+        workout_day = await user_workout_helper.get_all_workouts_group_by({
             _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
           },
           true
@@ -588,7 +586,9 @@ router.post("/workout", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -615,8 +615,7 @@ router.post("/copy", async (req, res) => {
   );
 
   if (workout_day.status == 1) {
-    workout_day = await user_workout_helper.get_all_workouts_group_by(
-      {
+    workout_day = await user_workout_helper.get_all_workouts_group_by({
         _id: mongoose.Types.ObjectId(workout_day.copiedId)
       },
       true
@@ -648,11 +647,9 @@ router.post("/assign_program", async (req, res) => {
   var exForProgram;
 
   var program_id = mongoose.Types.ObjectId(req.body.programId);
-  var program_data = await user_program_helper.get_user_programs_in_details_for_assign(
-    {
-      _id: program_id
-    }
-  );
+  var program_data = await user_program_helper.get_user_programs_in_details_for_assign({
+    _id: program_id
+  });
 
   var user_workouts_program = program_data.programs[0].user_workouts_program;
   var user_workout_exercises_program =
@@ -730,8 +727,7 @@ router.post("/bulk_complete", async (req, res) => {
   });
   logger.trace("Complete workout by id = ", exerciseIds);
   let workout_data = await user_workout_helper.complete_workout_by_days(
-    exerciseIds,
-    {
+    exerciseIds, {
       isCompleted: isCompleted
     }
   );
@@ -782,9 +778,13 @@ router.put("/complete", async (req, res) => {
     });
 
     if (count.status == 1) {
-      var isCompleted = { isCompleted: 0 };
+      var isCompleted = {
+        isCompleted: 0
+      };
       if (count.count === 0) {
-        isCompleted = { isCompleted: 1 };
+        isCompleted = {
+          isCompleted: 1
+        };
       }
       let updateMasterCollectionCompleted = await user_workout_helper.complete_master_event(
         parentId,
@@ -792,8 +792,7 @@ router.put("/complete", async (req, res) => {
       );
     }
 
-    let workout = await user_workout_helper.get_all_workouts(
-      {
+    let workout = await user_workout_helper.get_all_workouts({
         _id: mongoose.Types.ObjectId(parentId)
       },
       true
@@ -1063,9 +1062,10 @@ router.put("/workout", async (req, res) => {
       totalExerciseIds.forEach((id, index) => {
         totalExerciseIds[index] = mongoose.Types.ObjectId(id);
       });
-      var exercise_data = await exercise_helper.get_exercise_id(
-        {
-          _id: { $in: totalExerciseIds }
+      var exercise_data = await exercise_helper.get_exercise_id({
+          _id: {
+            $in: totalExerciseIds
+          }
         },
         1
       );
@@ -1127,8 +1127,7 @@ router.put("/workout", async (req, res) => {
       );
 
       if (workout_day.status == 1) {
-        workout_day = await user_workout_helper.get_all_workouts_group_by(
-          {
+        workout_day = await user_workout_helper.get_all_workouts_group_by({
             _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
           },
           true
@@ -1141,7 +1140,9 @@ router.put("/workout", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -1196,7 +1197,9 @@ router.put("/:workout_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -1225,9 +1228,10 @@ router.post("/workout/:workout_id", async (req, res) => {
     totalExerciseIds.forEach((id, index) => {
       totalExerciseIds[index] = mongoose.Types.ObjectId(id);
     });
-    var exercise_data = await exercise_helper.get_exercise_id(
-      {
-        _id: { $in: totalExerciseIds }
+    var exercise_data = await exercise_helper.get_exercise_id({
+        _id: {
+          $in: totalExerciseIds
+        }
       },
       1
     );
@@ -1290,8 +1294,7 @@ router.post("/workout/:workout_id", async (req, res) => {
     );
 
     if (workout_day.status == 1) {
-      workout_day = await user_workout_helper.get_all_workouts_group_by(
-        {
+      workout_day = await user_workout_helper.get_all_workouts_group_by({
           _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
         },
         true
@@ -1330,8 +1333,7 @@ router.post("/delete/exercise", async (req, res) => {
     subChildIds
   );
   if (workout_data.status === 1) {
-    var workout_day = await user_workout_helper.get_all_workouts_group_by(
-      {
+    var workout_day = await user_workout_helper.get_all_workouts_group_by({
         _id: mongoose.Types.ObjectId(parentId)
       },
       true
@@ -1392,8 +1394,7 @@ router.post("/delete", async (req, res) => {
   let workout_data = await user_workout_helper.delete_user_workouts_by_exercise_ids(
     exerciseIds
   );
-  var workout_day = await user_workout_helper.get_all_workouts_group_by(
-    {
+  var workout_day = await user_workout_helper.get_all_workouts_group_by({
       _id: mongoose.Types.ObjectId(parentId)
     },
     true
