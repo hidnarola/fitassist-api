@@ -7564,55 +7564,6 @@
   },
   {
     "type": "get",
-    "url": "/user/chat/messages/:start?/:limit?",
-    "title": "Get recently messages",
-    "name": "Get_recently_messages",
-    "group": "User_Chat",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "messages",
-            "description": "<p>Array of conversations_replies document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/chat.js",
-    "groupTitle": "User_Chat"
-  },
-  {
-    "type": "get",
     "url": "/user/chat/channel_id/:start?/:limit?",
     "title": "Get recently messages",
     "name": "Get_recently_messages",
@@ -7638,6 +7589,55 @@
             "type": "Array",
             "optional": false,
             "field": "channels",
+            "description": "<p>Array of conversations_replies document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/chat.js",
+    "groupTitle": "User_Chat"
+  },
+  {
+    "type": "get",
+    "url": "/user/chat/messages/:start?/:limit?",
+    "title": "Get recently messages",
+    "name": "Get_recently_messages",
+    "group": "User_Chat",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "messages",
             "description": "<p>Array of conversations_replies document</p>"
           }
         ]
@@ -9197,55 +9197,6 @@
   },
   {
     "type": "put",
-    "url": "/user/users_nutritions/:notification_id",
-    "title": "Make Notification as Read",
-    "name": "Make_Notification_as_Read",
-    "group": "User_Notification",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/users_nutritions.js",
-    "groupTitle": "User_Notification"
-  },
-  {
-    "type": "put",
     "url": "/user/notification/:notification_id",
     "title": "Make Notification as Read",
     "name": "Make_Notification_as_Read",
@@ -9295,9 +9246,9 @@
   },
   {
     "type": "put",
-    "url": "/user/notification",
-    "title": "Mark as read",
-    "name": "Mark_as_read",
+    "url": "/user/users_nutritions/:notification_id",
+    "title": "Make Notification as Read",
+    "name": "Make_Notification_as_Read",
     "group": "User_Notification",
     "header": {
       "fields": {
@@ -9389,6 +9340,55 @@
     },
     "version": "0.0.0",
     "filename": "routes/user/notifications.js",
+    "groupTitle": "User_Notification"
+  },
+  {
+    "type": "put",
+    "url": "/user/notification",
+    "title": "Mark as read",
+    "name": "Mark_as_read",
+    "group": "User_Notification",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/users_nutritions.js",
     "groupTitle": "User_Notification"
   },
   {
@@ -12327,55 +12327,6 @@
   },
   {
     "type": "get",
-    "url": "/user/timeline/:post_id",
-    "title": "Get by ID",
-    "name": "Get_by_ID",
-    "group": "User_Timeline",
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "timeline",
-            "description": "<p>JSON of user_posts 's document</p>"
-          }
-        ]
-      }
-    },
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/timeline.js",
-    "groupTitle": "User_Timeline"
-  },
-  {
-    "type": "get",
     "url": "/user/timeline/:user_post_id",
     "title": "Get by ID",
     "name": "Get_by_ID",
@@ -12402,6 +12353,55 @@
             "optional": false,
             "field": "user_post_photo",
             "description": "<p>user_post_photo's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/timeline.js",
+    "groupTitle": "User_Timeline"
+  },
+  {
+    "type": "get",
+    "url": "/user/timeline/:post_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "User_Timeline",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "timeline",
+            "description": "<p>JSON of user_posts 's document</p>"
+          }
+        ]
+      }
+    },
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
           }
         ]
       }
@@ -12522,6 +12522,55 @@
   },
   {
     "type": "post",
+    "url": "/user/workout/first_workout",
+    "title": "Get all user's workout",
+    "name": "Get_all_user_s_workout",
+    "group": "User_Workout",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "workout_id",
+            "description": "<p>Id of user_workout document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workouts.js",
+    "groupTitle": "User_Workout"
+  },
+  {
+    "type": "post",
     "url": "/user/workout/today",
     "title": "Get all user's workout",
     "name": "Get_all_user_s_workout",
@@ -12568,6 +12617,104 @@
     "version": "0.0.0",
     "filename": "routes/user/user_workouts.js",
     "groupTitle": "User_Workout"
+  },
+  {
+    "type": "post",
+    "url": "/user/workout/calendar_list",
+    "title": "Get all user's workout for calendar",
+    "name": "Get_all_user_s_workout_for_calendar",
+    "group": "User_Workout",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "calendar_list",
+            "description": "<p>list of user_workout document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workouts.js",
+    "groupTitle": "User_Workout"
+  },
+  {
+    "type": "post",
+    "url": "/user/workout_progress",
+    "title": "Get Progress Detail by Date",
+    "name": "Get_Progress_Detail_by_Date",
+    "group": "User_Workout_Progress",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "progress",
+            "description": "<p>JSON of user_test_exercises 's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/workout_progress.js",
+    "groupTitle": "User_Workout_Progress"
   },
   {
     "type": "post",
@@ -13149,8 +13296,8 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "workouts",
-            "description": "<p>workouts data of program</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -13169,7 +13316,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_program.js",
+    "filename": "routes/user/user_workouts.js",
     "groupTitle": "User_Workouts"
   },
   {
@@ -13225,8 +13372,8 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "message",
-            "description": "<p>Success message</p>"
+            "field": "workouts",
+            "description": "<p>workouts data of program</p>"
           }
         ]
       }
@@ -13245,7 +13392,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_workouts.js",
+    "filename": "routes/user/user_program.js",
     "groupTitle": "User_Workouts"
   },
   {

@@ -11,50 +11,54 @@ var workout_progress_helper = {};
 workout_progress_helper.get_progress_detail = async (condition = {}) => {
 	try {
 		var progress = await UserTestExerciseLogs.aggregate([{
-				$match: condition.createdAt
-			},
-			{
-				$lookup: {
-					from: "test_exercises",
-					localField: "test_exercise_id",
-					foreignField: "_id",
-					as: "exercise"
+			$match: condition.createdAt
+		}, {
+			$lookup: {
+				from: "test_exercises",
+				localField: "test_exercise_id",
+				foreignField: "_id",
+				as: "exercise"
+			}
+		}, {
+			$unwind: "$exercise"
+		}, {
+			$match: {
+				"exercise.category": {
+					$in: condition.category
 				}
-			},
-			{
-				$unwind: "$exercise"
-			},
-			{
-				$match: condition.category
-			},
-			{
-				$group: {
-					_id: "$exercise.subCategory",
-					name: {
-						$first: "$exercise.name"
-					},
-					category: {
-						$first: "$exercise.category"
-					},
-					subCategory: {
-						$first: "$exercise.subCategory"
-					},
-					exercises: {
-						$addToSet: {
-							_id: "$_id",
-							text_field: "$text_field",
-							multiselect: "$multiselect",
-							max_rep: "$max_rep",
-							a_or_b: "$a_or_b",
-							userId: "$userId",
-							format: "$format",
-							createdAt: "$createdAt",
-							exercises: "$exercise"
-						}
+			}
+		}, {
+			$group: {
+				_id: {
+					category: "$exercise.category",
+					subCategory: "$exercise.subCategory",
+				},
+				name: {
+					$first: "$exercise.name"
+				},
+				category: {
+					$first: "$exercise.category"
+				},
+				subCategory: {
+					$first: "$exercise.subCategory"
+				},
+				exercises: {
+					$addToSet: {
+						_id: "$_id",
+						text_field: "$text_field",
+						multiselect: "$multiselect",
+						max_rep: "$max_rep",
+						a_or_b: "$a_or_b",
+						userId: "$userId",
+						format: "$format",
+						createdAt: "$createdAt",
+						exercises: "$exercise"
 					}
 				}
-			},
-		]);
+			}
+		}]);
+
+
 		if (progress && progress.length > 0) {
 			var returnArray = [];
 			_.each(progress, p => {
@@ -67,16 +71,18 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				var fieldCheckName = first.format;
 				tmp.subCategory = subCategory;
 				tmp.category = category;
-				tmp.name = "";
+				// tmp.name = "";
+				tmp.name = name;
 				if (category === "strength") {
 					tmp.name = name;
 				}
 
 				if (category === "cardio") {
 
-				} else if (category === "strength") {
+				} else if (condition.category.length === 1 && condition.category[0] === "strength") {
 					var first = first[fieldCheckName]; // first strength test data of user
 					var last = last[fieldCheckName]; // last strength test data of user
+
 					switch (fieldCheckName) {
 						case "text_field":
 							break;
@@ -95,12 +101,11 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 										percentageChange: Math.round(diff / first[key] * 100),
 									}
 								} else {
-									var diff = last[key] ? last[key] : 0 - first[key] ? first[key] : 0;
 									differenceData[key] = {
 										start: first[key] ? first[key] : 0,
 										current: last[key] ? last[key] : 0,
-										difference: diff,
-										percentageChange: Math.round(diff / first[key] * 100),
+										difference: first[key] ? first[key] : last[key],
+										percentageChange: first[key] ? 100 : -100,
 									}
 								}
 							});
@@ -116,7 +121,7 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 							break;
 					}
 					returnArray.push(tmp);
-				} else if (category === "flexibility" || category === "posture") {
+				} else if (condition.category.length > 1) {
 					var lastDateOfTest = first.createdAt;
 					var totalExercises = 0;
 					var totalPassedExercises = 0;

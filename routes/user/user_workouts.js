@@ -83,6 +83,40 @@ router.get("/:workout_id", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/workout/calendar_list Get all user's workout for calendar
+ * @apiName Get all user's workout for calendar
+ * @apiGroup  User Workout
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {String} calendar_list list of user_workout document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/calendar_list", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var date = req.body.date;
+
+  var check = await moment(date).utc(0);
+  var startCheck = await moment(check).subtract(2, "month");
+  var endCheck = await moment(check).add(2, "month");
+  var resp_data = await user_workout_helper.get_workouts_for_calendar({
+    userId: authUserId,
+    date: {
+      $gte: new Date(startCheck),
+      $lt: new Date(endCheck)
+    }
+  });
+  resp_data.calendar_list = resp_data.workouts;
+  delete resp_data.workouts;
+  if (resp_data.status == 1) {
+    logger.trace("user workouts detail for calendar got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching user workouts details for calendar = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
+});
+
+/**
  * @api {post} /user/workout/first_workout Get all user's workout
  * @apiName Get all user's workout
  * @apiGroup  User Workout
