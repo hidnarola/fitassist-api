@@ -31,7 +31,9 @@ router.post("/filter", async (req, res) => {
   let filtered_data = await user_helper.get_filtered_records(filter_object);
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.BAD_REQUEST).json({
+      filtered_data
+    });
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
@@ -92,7 +94,7 @@ router.get("/:authUserId", async (req, res) => {
  * @apiParam {Object} [goal] goal  of user><br><pre>example. {
         "name" : "gain_muscle",
         "start" : 0
-    }</pre><code>Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</code>
+    }</pre><code>Possible Values ('gain_muscle', 'improve_mobility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</code>
  * @apiParam {File} [user_img] avatar
  * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {Boolean} status status
@@ -114,7 +116,9 @@ router.put("/:authUserId", async (req, res) => {
     email: {
       notEmpty: true,
       errorMessage: "Email address is required",
-      isEmail: { errorMessage: "Please enter valid email address" }
+      isEmail: {
+        errorMessage: "Please enter valid email address"
+      }
     }
   };
 
@@ -167,7 +171,7 @@ router.put("/:authUserId", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "user_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -194,20 +198,24 @@ router.put("/:authUserId", async (req, res) => {
       user_obj.avatar = "uploads/user/" + filename;
       resp_data = await user_helper.get_user_by_id(authUserId);
       try {
-        fs.unlink(resp_data.user.avatar, function() {});
+        fs.unlink(resp_data.user.avatar, function () {});
       } catch (err) {}
     }
 
     let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
     if (user_data.status === 0) {
       logger.error("Error while updating user data = ", user_data);
-      return res.status(config.BAD_REQUEST).json({ user_data });
+      return res.status(config.BAD_REQUEST).json({
+        user_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(user_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -249,7 +257,9 @@ router.delete("/:authUserId", async (req, res) => {
  */
 router.post("/checkemail", async (req, res) => {
   logger.trace("Get check email API called");
-  var resp_data = await user_helper.checkvalue({ email: req.body.email });
+  var resp_data = await user_helper.checkvalue({
+    email: req.body.email
+  });
   if (resp_data.status == 1) {
     logger.trace("check email Api is called = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);

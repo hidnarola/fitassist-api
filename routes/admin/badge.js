@@ -168,7 +168,9 @@ router.post("/", async (req, res) => {
     timeType: {
       notEmpty: true,
       isIn: {
-        options: [["standard", "time_window"]],
+        options: [
+          ["standard", "time_window"]
+        ],
         errorMessage: "Time Type is invalid"
       },
       errorMessage: "Time Type is required"
@@ -183,10 +185,17 @@ router.post("/", async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
 
+
   if (!errors) {
+    var category = await find_badges_category(req.body.task);
+    console.log('------------------------------------');
+    console.log('category : ', category);
+    console.log('------------------------------------');
+
     var badge_obj = {
       name: req.body.name,
       task: req.body.task,
+      category: category,
       descriptionCompleted: req.body.descriptionCompleted,
       descriptionInCompleted: req.body.descriptionInCompleted,
       unit: req.body.unit,
@@ -229,13 +238,17 @@ router.post("/", async (req, res) => {
     let badge_data = await badge_helper.insert_badge(badge_obj);
     if (badge_data.status === 0) {
       logger.error("Error while inserting badge data = ", badge_data);
-      return res.status(config.BAD_REQUEST).json({ badge_data });
+      return res.status(config.BAD_REQUEST).json({
+        badge_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(badge_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -309,7 +322,9 @@ router.put("/:badge_id", async (req, res) => {
     timeType: {
       notEmpty: true,
       isIn: {
-        options: [["standard", "time_window"]],
+        options: [
+          ["standard", "time_window"]
+        ],
         errorMessage: "Time Type is invalid"
       },
       errorMessage: "Time Type is required"
@@ -325,9 +340,14 @@ router.put("/:badge_id", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
+    var category = await find_badges_category(req.body.task);
+    console.log('------------------------------------');
+    console.log('category : ', category);
+    console.log('------------------------------------');
     var badge_obj = {
       name: req.body.name,
       task: req.body.task,
+      category: category,
       descriptionCompleted: req.body.descriptionCompleted,
       descriptionInCompleted: req.body.descriptionInCompleted,
       unit: req.body.unit,
@@ -373,13 +393,17 @@ router.put("/:badge_id", async (req, res) => {
     let badge_data = await badge_helper.update_badge_by_id(badge_id, badge_obj);
     if (badge_data.status === 0) {
       logger.error("Error while updating badge data = ", badge_data);
-      return res.status(config.BAD_REQUEST).json({ badge_data });
+      return res.status(config.BAD_REQUEST).json({
+        badge_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(badge_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -420,5 +444,17 @@ router.get("/undo/:badge_id", async (req, res) => {
     res.status(config.OK_STATUS).json(badge_data);
   }
 });
+
+async function find_badges_category(badgestask) {
+  var categoryName = "";
+  var badges_keys = Object.keys(constant.BADGES_TYPE);
+  _.each(badges_keys, function (key) {
+    var arr = constant.BADGES_TYPE[key];
+    if (arr.indexOf(badgestask) >= 0) {
+      categoryName = key;
+    }
+  });
+  return categoryName;
+}
 
 module.exports = router;

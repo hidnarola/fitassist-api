@@ -96,9 +96,20 @@ router.get("/:username", async (req, res) => {
       friendshipStatus = "self";
     } else {
       friend_data = await friend_helper.checkFriend({
-        $or: [
-          { $and: [{ userId: authUserId }, { friendId: userAuthId }] },
-          { $and: [{ userId: userAuthId }, { friendId: authUserId }] }
+        $or: [{
+            $and: [{
+              userId: authUserId
+            }, {
+              friendId: userAuthId
+            }]
+          },
+          {
+            $and: [{
+              userId: userAuthId
+            }, {
+              friendId: authUserId
+            }]
+          }
         ]
       });
 
@@ -160,7 +171,7 @@ router.get("/:username", async (req, res) => {
  * @apiParam {Number} [weight] weight
  * @apiParam {Enum} [gender] gender | Possible Values ('male', 'female', 'transgender')
  * @apiParam {Date} [dateOfBirth] Date of Birth
- * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat',
+ * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'improve_mobility', 'lose_fat',
  * 'gain_strength', 'gain_power', 'increase_endurance')
  * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {String} [workoutLocation] workoutLocation
@@ -214,7 +225,9 @@ router.put("/", async (req, res) => {
 
   if (user_data.status === 0) {
     logger.error("Error while updating user data = ", user_data);
-    return res.status(config.INTERNAL_SERVER_ERROR).json({ user_data });
+    return res.status(config.INTERNAL_SERVER_ERROR).json({
+      user_data
+    });
   } else {
     var data = user_data.user;
     var percentage = 0;
@@ -247,8 +260,9 @@ router.put("/", async (req, res) => {
     //badge assign
     var badgeAssign = await badge_assign_helper.badge_assign(
       authUserId,
-      constant.BADGES_TYPE.PROFILE,
-      { percentage: percentage }
+      constant.BADGES_TYPE.PROFILE, {
+        percentage: percentage
+      }
     );
     //badge assign
 
@@ -275,12 +289,16 @@ router.put("/update_aboutme", async (req, res) => {
     height: {
       notEmpty: true,
       errorMessage: "height is required",
-      isDecimal: { errorMessage: "Please enter numeric value" }
+      isDecimal: {
+        errorMessage: "Please enter numeric value"
+      }
     },
     weight: {
       notEmpty: true,
       errorMessage: "weight is required",
-      isDecimal: { errorMessage: "Please enter numeric value" }
+      isDecimal: {
+        errorMessage: "Please enter numeric value"
+      }
     }
   };
   req.checkBody(schema);
@@ -304,13 +322,17 @@ router.put("/update_aboutme", async (req, res) => {
     );
     if (user_data.status === 0) {
       logger.error("Error while updating user data = ", user_data);
-      return res.status(config.BAD_REQUEST).json({ user_data });
+      return res.status(config.BAD_REQUEST).json({
+        user_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(user_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -341,19 +363,24 @@ router.put("/photo", async (req, res) => {
 
     resp_data = await user_helper.get_user_by_id(authUserId);
     try {
-      fs.unlink(resp_data.user.avatar, function() {});
+      fs.unlink(resp_data.user.avatar, function () {});
     } catch (err) {}
     let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
     if (user_data.status === 0) {
       logger.error("Error while updating user avatar = ", user_data);
-      return res.status(config.BAD_REQUEST).json({ user_data });
+      return res.status(config.BAD_REQUEST).json({
+        user_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(user_data);
     }
   } else {
     return res
       .status(config.BAD_REQUEST)
-      .json({ status: 2, message: "no image selected" });
+      .json({
+        status: 2,
+        message: "no image selected"
+      });
   }
 });
 
@@ -383,7 +410,9 @@ router.put("/preferences", async (req, res) => {
     schema.distance = {
       notEmpty: false,
       isIn: {
-        options: [["km", "mile"]],
+        options: [
+          ["km", "mile"]
+        ],
         errorMessage: "distance is invalid"
       },
       errorMessage: "distance unit required"
@@ -394,7 +423,9 @@ router.put("/preferences", async (req, res) => {
     schema.weight = {
       notEmpty: false,
       isIn: {
-        options: [["kg", "lb"]],
+        options: [
+          ["kg", "lb"]
+        ],
         errorMessage: "weight is invalid"
       },
       errorMessage: "weight unit required"
@@ -405,7 +436,9 @@ router.put("/preferences", async (req, res) => {
     schema.bodyMeasurement = {
       notEmpty: false,
       isIn: {
-        options: [["cm", "inch"]],
+        options: [
+          ["cm", "inch"]
+        ],
         errorMessage: "body is invalid"
       },
       errorMessage: "body measurement unit required"
@@ -489,19 +522,24 @@ router.put("/preferences", async (req, res) => {
 
     setting_obj.modifiedAt = new Date();
 
-    let settings_data = await user_settings_helper.save_settings(
-      { userId: authUserId },
+    let settings_data = await user_settings_helper.save_settings({
+        userId: authUserId
+      },
       setting_obj
     );
     if (settings_data.status === 0) {
       logger.error("Error while saving setting  = ", settings_data);
-      return res.status(config.BAD_REQUEST).json({ settings_data });
+      return res.status(config.BAD_REQUEST).json({
+        settings_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(settings_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

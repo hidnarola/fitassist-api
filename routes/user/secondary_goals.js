@@ -79,7 +79,7 @@ router.get("/:goal_id", async (req, res) => {
  * @apiHeader {String}  authorization user's unique access-key
  * @apiParam {String} task task of goal | Possible values<code>
             gain_muscle,
-            gain_flexibility,
+            improve_mobility,
             lose_fat,
             gain_strength,
             gain_power,
@@ -100,7 +100,7 @@ router.post("/", async (req, res) => {
         options: [
           [
             "gain_muscle",
-            "gain_flexibility",
+            "improve_mobility",
             "lose_fat",
             "gain_strength",
             "gain_power",
@@ -122,12 +122,10 @@ router.post("/", async (req, res) => {
       goal: req.body.task
     };
 
-    let get_secondary_goal_data = await user_secondary_goals_helper.get_secondary_goal_by_id(
-      {
-        goal: req.body.task,
-        userId: authUserId
-      }
-    );
+    let get_secondary_goal_data = await user_secondary_goals_helper.get_secondary_goal_by_id({
+      goal: req.body.task,
+      userId: authUserId
+    });
     if (get_secondary_goal_data.status != 1) {
       let secondary_goal_data = await user_secondary_goals_helper.insert_secondary_goal(
         secondary_goal_obj
@@ -138,18 +136,25 @@ router.post("/", async (req, res) => {
           "Error while inserting secondary goal data = ",
           secondary_goal_data
         );
-        return res.status(config.BAD_REQUEST).json({ secondary_goal_data });
+        return res.status(config.BAD_REQUEST).json({
+          secondary_goal_data
+        });
       } else {
         return res.status(config.OK_STATUS).json(secondary_goal_data);
       }
     } else {
       return res
         .status(config.OK_STATUS)
-        .json({ status: 2, message: "goal is already exists" });
+        .json({
+          status: 2,
+          message: "goal is already exists"
+        });
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

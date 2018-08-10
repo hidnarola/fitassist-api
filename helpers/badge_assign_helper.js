@@ -13,12 +13,12 @@ var constant = require("../constant");
 var badges_assign_helper = {};
 
 /*
-   * get_all_badges is used to fetch all badges data
-   *
-   * @return  status 0 - If any internal error occured while fetching badges data, with error
-   *          status 1 - If badges data found, with badges object
-   *          status 2 - If badges not found, with appropriate message
-   */
+ * get_all_badges is used to fetch all badges data
+ *
+ * @return  status 0 - If any internal error occured while fetching badges data, with error
+ *          status 1 - If badges data found, with badges object
+ *          status 2 - If badges not found, with appropriate message
+ */
 badges_assign_helper.get_all_badges = async (
   condition = {},
   skip = {},
@@ -26,8 +26,7 @@ badges_assign_helper.get_all_badges = async (
   sort = {}
 ) => {
   try {
-    var badges = await BadgesAssign.aggregate([
-      {
+    var badges = await BadgesAssign.aggregate([{
         $match: condition
       },
       {
@@ -46,16 +45,36 @@ badges_assign_helper.get_all_badges = async (
       {
         $group: {
           _id: "$_id",
-          descriptionCompleted: { $first: "$badges.descriptionCompleted" },
-          descriptionInCompleted: { $first: "$badges.descriptionInCompleted" },
-          unit: { $first: "$badges.unit" },
-          value: { $first: "$badges.value" },
-          timeType: { $first: "$badges.timeType" },
-          duration: { $first: "$badges.duration" },
-          point: { $first: "$badges.point" },
-          name: { $first: "$badges.name" },
-          task: { $first: "$badges.task" },
-          createdAt: { $first: "$badges.createdAt" }
+          descriptionCompleted: {
+            $first: "$badges.descriptionCompleted"
+          },
+          descriptionInCompleted: {
+            $first: "$badges.descriptionInCompleted"
+          },
+          unit: {
+            $first: "$badges.unit"
+          },
+          value: {
+            $first: "$badges.value"
+          },
+          timeType: {
+            $first: "$badges.timeType"
+          },
+          duration: {
+            $first: "$badges.duration"
+          },
+          point: {
+            $first: "$badges.point"
+          },
+          name: {
+            $first: "$badges.name"
+          },
+          task: {
+            $first: "$badges.task"
+          },
+          createdAt: {
+            $first: "$badges.createdAt"
+          }
         }
       },
       sort
@@ -67,7 +86,10 @@ badges_assign_helper.get_all_badges = async (
         badges: badges
       };
     } else {
-      return { status: 2, message: "No badges available" };
+      return {
+        status: 2,
+        message: "No badges available"
+      };
     }
   } catch (err) {
     return {
@@ -96,17 +118,15 @@ async function badge_assign_for_workout(
     if (!badge_assigned) {
       if (single_badge.timeType != "standard") {
         var duration = parseInt(single_badge.baseDuration);
-        let user_workout = await user_workouts_helper.workout_detail_for_badges(
-          {
-            date: {
-              $gte: new Date(
-                new Date().getTime() - duration * 24 * 60 * 60 * 1000
-              )
-            },
-            userId: authUserId,
-            isCompleted: 1
-          }
-        );
+        let user_workout = await user_workouts_helper.workout_detail_for_badges({
+          date: {
+            $gte: new Date(
+              new Date().getTime() - duration * 24 * 60 * 60 * 1000
+            )
+          },
+          userId: authUserId,
+          isCompleted: 1
+        });
 
         first = user_workout.workouts[workout];
       }
@@ -115,7 +135,9 @@ async function badge_assign_for_workout(
         var badge_assign_obj = {
           userId: authUserId,
           badgeId: single_badge._id,
-          task: single_badge.task
+          task: single_badge.task,
+          category: "workouts"
+
         };
         insert_batch_data.push(badge_assign_obj);
         notification_badges_data.push(single_badge);
@@ -159,7 +181,9 @@ async function badge_assign_for_nutrition(
         var badge_assign_obj = {
           userId: authUserId,
           badgeId: single_badge._id,
-          task: single_badge.task
+          task: single_badge.task,
+          category: "nutritions"
+
         };
         insert_batch_data.push(badge_assign_obj);
         notification_badges_data.push(single_badge);
@@ -170,11 +194,11 @@ async function badge_assign_for_nutrition(
 }
 
 /*
-   * badge_assign is used to assign badge
-   * @return  status 0 - If any internal error occured while assigning badge data, with error
-   *          status 1 - If badge assign, with badge object
-   *          status 2 - If badge data not assign, with appropriate message
-   */
+ * badge_assign is used to assign badge
+ * @return  status 0 - If any internal error occured while assigning badge data, with error
+ *          status 1 - If badge assign, with badge object
+ *          status 2 - If badge data not assign, with appropriate message
+ */
 badges_assign_helper.badge_assign = async (
   authUserId,
   badgesType,
@@ -210,7 +234,8 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "profile"
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -223,7 +248,8 @@ badges_assign_helper.badge_assign = async (
               var badge_assign_obj = {
                 userId: authUserId,
                 badgeId: single_badge._id,
-                task: single_badge.task
+                task: single_badge.task,
+                category: "profile"
               };
               insert_batch_data.push(badge_assign_obj);
               notification_badges_data.push(single_badge);
@@ -242,7 +268,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "profile"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -255,7 +283,9 @@ badges_assign_helper.badge_assign = async (
               var badge_assign_obj = {
                 userId: authUserId,
                 badgeId: single_badge._id,
-                task: single_badge.task
+                task: single_badge.task,
+                category: "profile"
+
               };
               insert_batch_data.push(badge_assign_obj);
               notification_badges_data.push(single_badge);
@@ -274,7 +304,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "profile"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -287,7 +319,9 @@ badges_assign_helper.badge_assign = async (
               var badge_assign_obj = {
                 userId: authUserId,
                 badgeId: single_badge._id,
-                task: single_badge.task
+                task: single_badge.task,
+                category: "profile"
+
               };
               insert_batch_data.push(badge_assign_obj);
               notification_badges_data.push(single_badge);
@@ -305,24 +339,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -335,7 +369,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_mass"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -354,25 +390,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -384,7 +420,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_mass"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -393,12 +431,7 @@ badges_assign_helper.badge_assign = async (
             }
           }
         }
-      } else if (element == "body_fat_gain") {
-      } else if (element == "body_fat_loss") {
-      } else if (element == "body_fat_average") {
-      } else if (element == "body_fat_most") {
-      } else if (element == "body_fat_least") {
-      } else if (element == "neck_measurement_gain") {
+      } else if (element == "body_fat_gain") {} else if (element == "body_fat_loss") {} else if (element == "body_fat_average") {} else if (element == "body_fat_most") {} else if (element == "body_fat_least") {} else if (element == "neck_measurement_gain") {
         for (let single_badge of all_possible_badges) {
           var duration = parseInt(single_badge.baseDuration);
           var id = single_badge._id;
@@ -409,24 +442,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -437,7 +470,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -456,25 +491,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -486,7 +521,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -506,24 +543,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -534,7 +571,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -553,25 +592,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -583,7 +622,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -603,24 +644,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -631,7 +672,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -650,25 +693,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -680,7 +723,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -700,24 +745,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -728,7 +773,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -747,25 +794,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -777,7 +824,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -797,24 +846,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -825,7 +874,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -844,25 +895,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -874,7 +925,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -894,24 +947,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -922,7 +975,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -941,25 +996,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -971,7 +1026,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -991,24 +1048,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -1019,7 +1076,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -1038,25 +1097,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -1068,7 +1127,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -1088,24 +1149,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -1116,7 +1177,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -1135,25 +1198,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -1165,7 +1228,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -1185,24 +1250,24 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -1213,7 +1278,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -1232,25 +1299,25 @@ badges_assign_helper.badge_assign = async (
 
           if (!badge_assigned) {
             if (single_badge.timeType == "standard") {
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   userId: authUserId
+                }, {
+                  logDate: -1
                 },
-                { logDate: -1 },
                 1
               );
             } else {
               var duration = parseInt(single_badge.baseDuration);
-              var resp_data = await measurement_helper.get_body_measurement_id(
-                {
+              var resp_data = await measurement_helper.get_body_measurement_id({
                   logDate: {
                     $gte: new Date(
                       new Date().getTime() - duration * 24 * 60 * 60 * 1000
                     )
                   },
                   userId: authUserId
+                }, {
+                  logDate: 1
                 },
-                { logDate: 1 },
                 1
               );
             }
@@ -1262,7 +1329,9 @@ badges_assign_helper.badge_assign = async (
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
-                  task: single_badge.task
+                  task: single_badge.task,
+                  category: "body_measurement"
+
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
@@ -1285,46 +1354,7 @@ badges_assign_helper.badge_assign = async (
           insert_batch_data,
           notification_badges_data
         );
-      } else if (element == "weight_lifted_total") {
-      } else if (element == "weight_lifted_average") {
-      } else if (element == "weight_lifted_most") {
-      } else if (element == "weight_lifted_least") {
-      } else if (element == "workouts_total") {
-      } else if (element == "workouts_average") {
-      } else if (element == "reps_least") {
-      } else if (element == "reps_total") {
-      } else if (element == "reps_average") {
-      } else if (element == "reps_most") {
-      } else if (element == "sets_least") {
-      } else if (element == "running_distance_total") {
-      } else if (element == "running_distance_average") {
-      } else if (element == "running_distance_most") {
-      } else if (element == "running_distance_least") {
-      } else if (element == "running_time_average") {
-      } else if (element == "running_time_total") {
-      } else if (element == "running_elevation_total") {
-      } else if (element == "running_elevation_average") {
-      } else if (element == "heart_rate_total") {
-      } else if (element == "heart_rate_average") {
-      } else if (element == "heart_rate_most") {
-      } else if (element == "heart_rate_least_") {
-      } else if (element == "heart_rate_resting_total") {
-      } else if (element == "heart_rate_resting_average") {
-      } else if (element == "heart_rate_resting_most") {
-      } else if (element == "heart_rate_resting_least") {
-      } else if (element == "cycle_distance_total") {
-      } else if (element == "cycle_distance_average") {
-      } else if (element == "cycle_distance_most") {
-      } else if (element == "cycle_distance_least") {
-      } else if (element == "cycle_time_total") {
-      } else if (element == "cycle_time_average") {
-      } else if (element == "cycle_elevation_total") {
-      } else if (element == "cycle_elevation_average") {
-      } else if (element == "steps_total") {
-      } else if (element == "steps_average") {
-      } else if (element == "steps_most") {
-      } else if (element == "steps_least") {
-      } else if (
+      } else if (element == "weight_lifted_total") {} else if (element == "weight_lifted_average") {} else if (element == "weight_lifted_most") {} else if (element == "weight_lifted_least") {} else if (element == "workouts_total") {} else if (element == "workouts_average") {} else if (element == "reps_least") {} else if (element == "reps_total") {} else if (element == "reps_average") {} else if (element == "reps_most") {} else if (element == "sets_least") {} else if (element == "running_distance_total") {} else if (element == "running_distance_average") {} else if (element == "running_distance_most") {} else if (element == "running_distance_least") {} else if (element == "running_time_average") {} else if (element == "running_time_total") {} else if (element == "running_elevation_total") {} else if (element == "running_elevation_average") {} else if (element == "heart_rate_total") {} else if (element == "heart_rate_average") {} else if (element == "heart_rate_most") {} else if (element == "heart_rate_least_") {} else if (element == "heart_rate_resting_total") {} else if (element == "heart_rate_resting_average") {} else if (element == "heart_rate_resting_most") {} else if (element == "heart_rate_resting_least") {} else if (element == "cycle_distance_total") {} else if (element == "cycle_distance_average") {} else if (element == "cycle_distance_most") {} else if (element == "cycle_distance_least") {} else if (element == "cycle_time_total") {} else if (element == "cycle_time_average") {} else if (element == "cycle_elevation_total") {} else if (element == "cycle_elevation_average") {} else if (element == "steps_total") {} else if (element == "steps_average") {} else if (element == "steps_most") {} else if (element == "steps_least") {} else if (
         constant.BADGES_TYPE.NUTRITIONS.concat(
           constant.BADGES_TYPE.CALORIES
         ).indexOf(element) > 0
@@ -1422,7 +1452,7 @@ badges_assign_helper.badge_assign = async (
 
       if (insert_badge && insert_badge.length > 0) {
         var notification_data_array = [];
-        _.each(notification_badges_data, function(notification_badge) {
+        _.each(notification_badges_data, function (notification_badge) {
           var tmp = {
             sender: {
               firstName: "system"
@@ -1479,12 +1509,12 @@ badges_assign_helper.badge_assign = async (
 };
 
 /*
-   * insert_badge is used to insert into badge collection
-   * @param   badge_obj     JSON object consist of all property that need to insert in collection
-   * @return  status  0 - If any error occur in inserting badge, with error
-   *          status  1 - If badge inserted, with inserted badge document and appropriate message
-   * @developed by "amc"
-   */
+ * insert_badge is used to insert into badge collection
+ * @param   badge_obj     JSON object consist of all property that need to insert in collection
+ * @return  status  0 - If any error occur in inserting badge, with error
+ *          status  1 - If badge inserted, with inserted badge document and appropriate message
+ * @developed by "amc"
+ */
 badges_assign_helper.insert_badge = async badge_obj => {
   let badge = new BadgesAssign(badge_obj);
   try {

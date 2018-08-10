@@ -34,107 +34,9 @@ router.get("/:workout_id", async (req, res) => {
 	var decoded = jwtDecode(req.headers["authorization"]);
 	var authUserId = decoded.sub;
 	var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
-	var resp_data = await user_workout_helper.get_all_workouts_group_by({
-			_id: workout_id
-		},
-		false
-	);
+	var resp_data = await get_respose_data_for_workout(workout_id, authUserId);
 
 	if (resp_data.status === 1) {
-		var date = resp_data.workouts.date;
-		var start = moment(date).utcOffset(0);
-		start.toISOString();
-		start.format();
-
-		var end = moment(date)
-			.utcOffset(0)
-			.add(23, "hours")
-			.add(59, "minutes");
-		end.toISOString();
-		end.format();
-		var related_date_data = await user_workout_helper.get_id_title_workouts_by_date({
-			userId: authUserId,
-			date: {
-				$gte: new Date(start),
-				$lte: new Date(end)
-			}
-		});
-		var check = await moment(date).utc(0);
-		var startCheck = await moment(check).subtract(2, "month");
-		var endCheck = await moment(check).add(2, "month");
-		var calendar_data = await user_workout_helper.get_workouts_for_calendar({
-			userId: authUserId,
-			date: {
-				$gte: new Date(startCheck),
-				$lt: new Date(endCheck)
-			}
-		});
-
-		var exerciseIds = _.union(_.pluck(resp_data.workouts.warmup, '_id'), _.pluck(resp_data.workouts.cooldown, '_id'), _.pluck(resp_data.workouts.exercise, '_id'))
-
-		_.each(exerciseIds, id => {
-			return mongoose.Types.ObjectId(id);
-		});
-
-		resp_data.workouts_list = related_date_data.workouts ?
-			related_date_data.workouts : [];
-		resp_data.calendar_list = calendar_data.workouts ?
-			calendar_data.workouts : [];
-
-		let workout_detail = await user_workout_helper.workout_detail_for_badges({
-			userId: authUserId,
-			exerciseId: {
-				$in: exerciseIds
-			}
-		});
-		var tmp = [];
-		var warmupExercises = resp_data.workouts.warmup;
-		warmupExercises.forEach(warmup => {
-			warmup.exercises.forEach(w => {
-				if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
-					tmp.push(w.exercises.mainMuscleGroup);
-				}
-			});
-		});
-		warmupExercises = resp_data.workouts.exercise;
-		warmupExercises.forEach(warmup => {
-			warmup.exercises.forEach(w => {
-				if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
-					tmp.push(w.exercises.mainMuscleGroup);
-				}
-			});
-		});
-		warmupExercises = resp_data.workouts.cooldown;
-		warmupExercises.forEach(warmup => {
-			warmup.exercises.forEach(w => {
-				if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
-					tmp.push(w.exercises.mainMuscleGroup);
-				}
-			});
-		});
-
-		var bodypartsNames = await body_parts_helper.get_all_body_parts({
-			_id: {
-				$in: tmp
-			}
-		});
-
-		if (bodypartsNames.status == 1) {
-			bodypartsNames = _.pluck(bodypartsNames.bodyparts, 'bodypart');
-		}
-
-		if (workout_detail.status === 1 && workout_detail.workouts) {
-			var workouts_stat = {
-				total_workout: workout_detail.workouts.workouts_total,
-				muscle_work: bodypartsNames && bodypartsNames.length > 0 ? bodypartsNames : [],
-				total_reps: workout_detail.workouts.reps_total,
-				total_sets: workout_detail.workouts.sets_total,
-				total_weight_lifted: workout_detail.workouts.weight_lifted_total
-
-			}
-			resp_data.workouts_stat = workouts_stat ? workouts_stat : null;
-
-		}
 		logger.trace("user workouts got successfully = ", resp_data);
 		res.status(config.OK_STATUS).json(resp_data);
 	} else {
@@ -667,14 +569,18 @@ router.post("/workout", async (req, res) => {
 			);
 
 			if (workout_day.status == 1) {
-				workout_day = await user_workout_helper.get_all_workouts_group_by({
-						_id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
-					},
-					true
-				);
 
-				workout_day.message = "Workout Added";
-				res.status(config.OK_STATUS).json(workout_day);
+				var workout_id = mongoose.Types.ObjectId(req.body.userWorkoutsId);
+				var resp_data = await get_respose_data_for_workout(workout_id, authUserId);
+				if (resp_data.status === 1) {
+					logger.trace("user workouts got successfully = ", resp_data);
+					res.status(config.OK_STATUS).json(resp_data);
+				} else {
+					resp_data.message = "No workout found";
+					resp_data.status = 0;
+					logger.error("Error occured while fetching user workouts = ", resp_data);
+					res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+				}
 			} else {
 				res.status(config.BAD_REQUEST).json(workout_day);
 			}
@@ -1428,13 +1334,14 @@ router.post("/delete/exercise", async (req, res) => {
 		subChildIds
 	);
 	if (workout_data.status === 1) {
-		var workout_day = await user_workout_helper.get_all_workouts_group_by({
-				_id: mongoose.Types.ObjectId(parentId)
-			},
-			true
-		);
-		workout_day.message = "Exercises Deleted";
-		res.status(config.OK_STATUS).json(workout_day);
+		var resp_data = await get_respose_data_for_workout(parentId, authUserId);
+		if (resp_data.status === 1) {
+			llogger.trace("user workouts got successfully = ", resp_data);
+			res.status(config.OK_STATUS).json(resp_data);
+		} else {
+			llogger.error("Error occured while fetching user workouts = ", resp_data);
+			res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+		}
 	} else {
 		res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
 	}
@@ -1456,7 +1363,7 @@ router.post("/workout_delete", async (req, res) => {
 	exerciseIds.forEach((id, index) => {
 		exerciseIds[index] = mongoose.Types.ObjectId(id);
 	});
-	logger.trace("Delete workout API - Ids = ", exerciseIds);
+	llogger.trace("Delete workout API - Ids = ", exerciseIds);
 	let workout_data = await user_workout_helper.delete_user_workouts_by_id(
 		exerciseIds
 	);
@@ -1479,24 +1386,28 @@ router.post("/workout_delete", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/delete", async (req, res) => {
+	var decoded = jwtDecode(req.headers["authorization"]);
+	var authUserId = decoded.sub;
 	var exerciseIds = req.body.exerciseIds;
-	var parentId = req.body.parentId;
+	var parentId = mongoose.Types.ObjectId(req.body.parentId);
 	exerciseIds.forEach((id, index) => {
 		exerciseIds[index] = mongoose.Types.ObjectId(id);
 	});
 
-	logger.trace("Delete workout by - Id = ", exerciseIds);
+	llogger.trace("Delete workout by - Id = ", exerciseIds);
 	let workout_data = await user_workout_helper.delete_user_workouts_by_exercise_ids(
 		exerciseIds
 	);
-	var workout_day = await user_workout_helper.get_all_workouts_group_by({
-			_id: mongoose.Types.ObjectId(parentId)
-		},
-		true
-	);
-	workout_day.message = "Exercises Deleted";
 
 	if (workout_data.status === 1) {
+		var resp_data = await get_respose_data_for_workout(parentId, authUserId);
+		if (resp_data.status === 1) {
+			logger.trace("user workouts got successfully = ", resp_data);
+			res.status(config.OK_STATUS).json(resp_data);
+		} else {
+			logger.error("Error occured while fetching user workouts = ", resp_data);
+			res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+		}
 		res.status(config.OK_STATUS).json(workout_day);
 	} else {
 		res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
@@ -1517,7 +1428,110 @@ async function assign_badges(authUserId) {
 	);
 	//badge assign end
 }
+async function get_respose_data_for_workout(workoutId, authUserId) {
+	var workout_id = workoutId;
+	var resp_data = await user_workout_helper.get_all_workouts_group_by({
+			_id: workout_id
+		},
+		false
+	);
 
+	if (resp_data.status === 1) {
+		var date = resp_data.workouts.date;
+		var start = moment(date).utcOffset(0);
+		start.toISOString();
+		start.format();
+
+		var end = moment(date)
+			.utcOffset(0)
+			.add(23, "hours")
+			.add(59, "minutes");
+		end.toISOString();
+		end.format();
+		var related_date_data = await user_workout_helper.get_id_title_workouts_by_date({
+			userId: authUserId,
+			date: {
+				$gte: new Date(start),
+				$lte: new Date(end)
+			}
+		});
+		var check = await moment(date).utc(0);
+		var startCheck = await moment(check).subtract(2, "month");
+		var endCheck = await moment(check).add(2, "month");
+		var calendar_data = await user_workout_helper.get_workouts_for_calendar({
+			userId: authUserId,
+			date: {
+				$gte: new Date(startCheck),
+				$lt: new Date(endCheck)
+			}
+		});
+
+		var exerciseIds = _.union(_.pluck(resp_data.workouts.warmup, '_id'), _.pluck(resp_data.workouts.cooldown, '_id'), _.pluck(resp_data.workouts.exercise, '_id'))
+
+		_.each(exerciseIds, id => {
+			return mongoose.Types.ObjectId(id);
+		});
+
+		resp_data.workouts_list = related_date_data.workouts ?
+			related_date_data.workouts : [];
+		resp_data.calendar_list = calendar_data.workouts ?
+			calendar_data.workouts : [];
+
+		let workout_detail = await user_workout_helper.workout_detail_for_badges({
+			userId: authUserId,
+			exerciseId: {
+				$in: exerciseIds
+			}
+		});
+		var tmp = [];
+		var warmupExercises = resp_data.workouts.warmup;
+		warmupExercises.forEach(warmup => {
+			warmup.exercises.forEach(w => {
+				if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+					tmp.push(w.exercises.mainMuscleGroup);
+				}
+			});
+		});
+		warmupExercises = resp_data.workouts.exercise;
+		warmupExercises.forEach(warmup => {
+			warmup.exercises.forEach(w => {
+				if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+					tmp.push(w.exercises.mainMuscleGroup);
+				}
+			});
+		});
+		warmupExercises = resp_data.workouts.cooldown;
+		warmupExercises.forEach(warmup => {
+			warmup.exercises.forEach(w => {
+				if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+					tmp.push(w.exercises.mainMuscleGroup);
+				}
+			});
+		});
+
+		var bodypartsNames = await body_parts_helper.get_all_body_parts({
+			_id: {
+				$in: tmp
+			}
+		});
+
+		if (bodypartsNames.status == 1) {
+			bodypartsNames = _.pluck(bodypartsNames.bodyparts, 'bodypart');
+		}
+
+		if (workout_detail.status === 1) {
+			var workouts_stat = {
+				total_workout: workout_detail.workouts && workout_detail.workouts.workouts_total ? workout_detail.workouts.workouts_total : 0,
+				muscle_work: bodypartsNames && bodypartsNames.length > 0 ? bodypartsNames : [],
+				total_reps: workout_detail.workouts && workout_detail.workouts.reps_total ? workout_detail.workouts.reps_total : 0,
+				total_sets: workout_detail.workouts && workout_detail.workouts.sets_total ? workout_detail.workouts.sets_total : 0,
+				total_weight_lifted: workout_detail.workouts && workout_detail.workouts.weight_lifted_total ? workout_detail.workouts.weight_lifted_total : 0
+			}
+			resp_data.workouts_stat = workouts_stat ? workouts_stat : null;
+		}
+	}
+	return resp_data;
+}
 /**
  * @apiIgnore Not finished Method
  * @api {put} /user/user_workouts/complete_all Complete all User workout
