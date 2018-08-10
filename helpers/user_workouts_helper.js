@@ -522,7 +522,7 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
       },
       {
         $group: {
-          _id: "$exerciseId",
+          _id: "$setsDetailId",
           weight_lifted_total: {
             $sum: "$weight"
           },
@@ -560,7 +560,7 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
             $max: "$sets"
           },
           workouts_total: {
-            $sum: 1
+            $first: 1
           }
         }
       },
@@ -623,9 +623,13 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
           workouts_total: {
             $sum: "$workouts_total"
           }
+
         }
       }
     ]);
+    console.log('------------------------------------');
+    console.log('user_workouts : ', user_workouts);
+    console.log('------------------------------------');
 
     if (user_workouts) {
       return {

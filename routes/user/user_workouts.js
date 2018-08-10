@@ -69,11 +69,45 @@ router.get("/:workout_id", async (req, res) => {
       }
     });
 
+    var exerciseIds = _.union(_.pluck(resp_data.workouts.warmup, '_id'), _.pluck(resp_data.workouts.cooldown, '_id'), _.pluck(resp_data.workouts.exercise, '_id'))
+    console.log('------------------------------------');
+    console.log('exerciseIds : ', exerciseIds);
+    console.log('------------------------------------');
+
+    _.each(exerciseIds, id => {
+      return mongoose.Types.ObjectId(id);
+    });
+
+
+
+
+
     resp_data.workouts_list = related_date_data.workouts ?
       related_date_data.workouts : [];
     resp_data.calendar_list = calendar_data.workouts ?
       calendar_data.workouts : [];
 
+    let workout_detail = await user_workout_helper.workout_detail_for_badges({
+      userId: authUserId,
+      exerciseId: {
+        $in: exerciseIds
+      }
+    });
+
+    if (workout_detail.status === 1 && workout_detail.workouts) {
+
+      var workouts_stat = {
+
+        total_workout: workout_detail.workouts.workouts_total,
+        muscle_work: [],
+        total_reps: workout_detail.workouts.reps_total,
+        total_sets: workout_detail.workouts.sets_total,
+        total_weight_lifted: workout_detail.workouts.weight_lifted_total
+
+      }
+      resp_data.workouts_stat = workouts_stat ? workouts_stat : null;
+
+    }
     logger.trace("user workouts got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
