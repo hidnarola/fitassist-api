@@ -627,9 +627,6 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
         }
       }
     ]);
-    console.log('------------------------------------');
-    console.log('user_workouts : ', user_workouts);
-    console.log('------------------------------------');
 
     if (user_workouts) {
       return {

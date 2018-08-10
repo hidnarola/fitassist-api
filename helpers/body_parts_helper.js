@@ -8,16 +8,27 @@ var body_part_helper = {};
  *          status 1 - If body_parts data found, with body_parts object
  *          status 2 - If body_parts not found, with appropriate message
  */
-body_part_helper.get_all_body_parts = async () => {
+body_part_helper.get_all_body_parts = async (condition = {}) => {
     try {
-        var bodyparts = await BodyPart.find();
+        var bodyparts = await BodyPart.find(condition);
         if (bodyparts) {
-            return { "status": 1, "message": "bodyparts found", "bodyparts": bodyparts };
+            return {
+                "status": 1,
+                "message": "bodyparts found",
+                "bodyparts": bodyparts
+            };
         } else {
-            return { "status": 2, "message": "No bodyparts available" };
+            return {
+                "status": 2,
+                "message": "No bodyparts available"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding bodyparts", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while finding bodyparts",
+            "error": err
+        }
     }
 }
 
@@ -31,14 +42,27 @@ body_part_helper.get_all_body_parts = async () => {
  */
 body_part_helper.get_body_part_id = async (id) => {
     try {
-        var bodypart = await BodyPart.findOne({_id:id});
+        var bodypart = await BodyPart.findOne({
+            _id: id
+        });
         if (bodypart) {
-            return { "status": 1, "message": "Body part found", "bodypart": bodypart };
+            return {
+                "status": 1,
+                "message": "Body part found",
+                "bodypart": bodypart
+            };
         } else {
-            return { "status": 2, "message": "No Body part available" };
+            return {
+                "status": 2,
+                "message": "No Body part available"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding Body part", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while finding Body part",
+            "error": err
+        }
     }
 }
 
@@ -56,9 +80,17 @@ body_part_helper.insert_body_part = async (body_part_obj) => {
     let bodypart = new BodyPart(body_part_obj);
     try {
         let bodypart_data = await bodypart.save();
-        return { "status": 1, "message": "Bodypart inserted", "bodypart": bodypart_data };
+        return {
+            "status": 1,
+            "message": "Bodypart inserted",
+            "bodypart": bodypart_data
+        };
     } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting Bodypart", "error": err };
+        return {
+            "status": 0,
+            "message": "Error occured while inserting Bodypart",
+            "error": err
+        };
     }
 };
 
@@ -76,14 +108,29 @@ body_part_helper.insert_body_part = async (body_part_obj) => {
  */
 body_part_helper.update_bodypart_by_id = async (body_part_id, body_part_obj) => {
     try {
-        let bodypart = await BodyPart.findOneAndUpdate({ _id: body_part_id }, body_part_obj, { new: true });
+        let bodypart = await BodyPart.findOneAndUpdate({
+            _id: body_part_id
+        }, body_part_obj, {
+            new: true
+        });
         if (!bodypart) {
-            return { "status": 2, "message": "Record has not updated" };
+            return {
+                "status": 2,
+                "message": "Record has not updated"
+            };
         } else {
-            return { "status": 1, "message": "Record has been updated", "bodypart": bodypart };
+            return {
+                "status": 1,
+                "message": "Record has been updated",
+                "bodypart": bodypart
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while updating bodypart", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while updating bodypart",
+            "error": err
+        }
     }
 };
 
@@ -99,14 +146,26 @@ body_part_helper.update_bodypart_by_id = async (body_part_id, body_part_obj) => 
  */
 body_part_helper.delete_bodypart_by_id = async (bodypart_id) => {
     try {
-        let resp = await BodyPart.findOneAndRemove({ _id: bodypart_id });
+        let resp = await BodyPart.findOneAndRemove({
+            _id: bodypart_id
+        });
         if (!resp) {
-            return { "status": 2, "message": "Bodypart not found" };
+            return {
+                "status": 2,
+                "message": "Bodypart not found"
+            };
         } else {
-            return { "status": 1, "message": "Bodypart deleted" };
+            return {
+                "status": 1,
+                "message": "Bodypart deleted"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting Bodypart", "error": err };
+        return {
+            "status": 0,
+            "message": "Error occured while deleting Bodypart",
+            "error": err
+        };
     }
 }
 
