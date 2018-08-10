@@ -18,7 +18,10 @@ badge_helper.get_badges = async () => {
         badges: badge
       };
     } else {
-      return { status: 2, message: "No badge available" };
+      return {
+        status: 2,
+        message: "No badge available"
+      };
     }
   } catch (err) {
     return {
@@ -38,11 +41,20 @@ badge_helper.get_badges = async () => {
  */
 badge_helper.get_badge_id = async id => {
   try {
-    var badge = await Badges.findOne({ _id: id });
+    var badge = await Badges.findOne({
+      _id: id
+    });
     if (badge) {
-      return { status: 1, message: "badge found", badge: badge };
+      return {
+        status: 1,
+        message: "badge found",
+        badge: badge
+      };
     } else {
-      return { status: 2, message: "No badge available" };
+      return {
+        status: 2,
+        message: "No badge available"
+      };
     }
   } catch (err) {
     return {
@@ -95,11 +107,16 @@ badge_helper.insert_badge = async badge_obj => {
  */
 badge_helper.update_badge_by_id = async (badge_id, badge_obj) => {
   try {
-    let badge = await Badges.findOneAndUpdate({ _id: badge_id }, badge_obj, {
+    let badge = await Badges.findOneAndUpdate({
+      _id: badge_id
+    }, badge_obj, {
       new: true
     });
     if (!badge) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -128,14 +145,21 @@ badge_helper.update_badge_by_id = async (badge_id, badge_obj) => {
  */
 badge_helper.delete_badge_by_id = async badge_id => {
   try {
-    let resp = await Badges.findOneAndUpdate(
-      { _id: badge_id },
-      { isDeleted: 1 }
-    );
+    let resp = await Badges.findOneAndUpdate({
+      _id: badge_id
+    }, {
+      isDeleted: 1
+    });
     if (!resp) {
-      return { status: 2, message: "badge not found" };
+      return {
+        status: 2,
+        message: "badge not found"
+      };
     } else {
-      return { status: 1, message: "badge deleted" };
+      return {
+        status: 1,
+        message: "badge deleted"
+      };
     }
   } catch (err) {
     return {
@@ -158,14 +182,21 @@ badge_helper.delete_badge_by_id = async badge_id => {
  */
 badge_helper.undo_badge_by_id = async badge_id => {
   try {
-    let resp = await Badges.findOneAndUpdate(
-      { _id: badge_id },
-      { isDeleted: 0 }
-    );
+    let resp = await Badges.findOneAndUpdate({
+      _id: badge_id
+    }, {
+      isDeleted: 0
+    });
     if (!resp) {
-      return { status: 2, message: "badge not found" };
+      return {
+        status: 2,
+        message: "badge not found"
+      };
     } else {
-      return { status: 1, message: "badge recovered" };
+      return {
+        status: 1,
+        message: "badge recovered"
+      };
     }
   } catch (err) {
     return {
@@ -185,18 +216,21 @@ badge_helper.undo_badge_by_id = async badge_id => {
 badge_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await Badges.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
-    var filtered_data = await Badges.aggregate([
-      {
+    var searched_record_count = await Badges.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
+    var filtered_data = await Badges.aggregate([{
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
+      {
+        $sort: filter_obj.columnSort
+      }
     ]);
 
     if (filtered_data) {
@@ -210,7 +244,10 @@ badge_helper.get_filtered_records = async filter_obj => {
         filtered_badges: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {

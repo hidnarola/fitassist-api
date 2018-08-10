@@ -21,8 +21,6 @@ var badges_assign_helper = {};
  */
 badges_assign_helper.get_all_badges = async (
   condition = {},
-  skip = {},
-  limit = {},
   sort = {}
 ) => {
   try {
@@ -40,8 +38,6 @@ badges_assign_helper.get_all_badges = async (
       {
         $unwind: "$badges"
       },
-      skip,
-      limit,
       {
         $group: {
           _id: "$_id",
