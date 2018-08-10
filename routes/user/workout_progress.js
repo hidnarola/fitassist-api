@@ -38,7 +38,12 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var start = req.body.start;
     var end = req.body.end;
-    var category = req.body.category;
+    var category;
+    if (req.body.category === "mobility") {
+      category = ["posture", "flexibility"]
+    } else {
+      category = [req.body.category]
+    }
     var start = moment(start).utcOffset(0);
     start.toISOString();
     start.format();
@@ -54,9 +59,7 @@ router.post("/", async (req, res) => {
           $lt: new Date(end)
         }
       },
-      category: {
-        "exercise.category": category
-      }
+      category: category
     });
 
     if (resp_data.status === 1) {

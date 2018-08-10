@@ -25,11 +25,18 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				$unwind: "$exercise"
 			},
 			{
-				$match: condition.category
+				$match: {
+					"exercise.category": {
+						$in: condition.category
+					}
+				}
 			},
 			{
 				$group: {
-					_id: "$exercise.subCategory",
+					_id: {
+						category: "$exercise.category",
+						subCategory: "$exercise.subCategory"
+					},
 					name: {
 						$first: "$exercise.name"
 					},
@@ -55,12 +62,26 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				}
 			},
 		]);
+
+		return {
+			status: 1,
+			data: progress
+		}
+
 		if (progress && progress.length > 0) {
 			var returnArray = [];
+			var totalPostureExercises = 0;
+			var totalPosturePassedExercises = 0;
+			var totalFlexiblityExercises = 0;
+			var totalFlexiblityPassedExercises = 0;
+			var subCategory;
+			var category;
 			_.each(progress, p => {
 				var tmp = {};
-				var subCategory = p.subCategory;
-				var category = p.category;
+				subCategory = p.subCategory;
+				category = p.category;
+
+
 				var name = p.name;
 				var first = _.first(p.exercises);
 				var last = _.last(p.exercises);
@@ -116,40 +137,48 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 							break;
 					}
 					returnArray.push(tmp);
-				} else if (category === "flexibility" || category === "posture") {
+				} else if (category === "flexibility") {
+					console.log('------------------------------------');
+					console.log('i am here : ', );
+					console.log('------------------------------------');
+
 					var lastDateOfTest = first.createdAt;
-					var totalExercises = 0;
-					var totalPassedExercises = 0;
 					for (let x of p.exercises) {
 						if (x.createdAt.toString() == lastDateOfTest.toString()) {
-							totalExercises++;
+							totalFlexiblityExercises++;
 							if (x[fieldCheckName] == 1) {
-								totalPassedExercises++;
+								totalFlexiblityPassedExercises++;
 							}
 						}
 					}
-					tmp.current = {
-						totalExercises: totalExercises,
-						totalPassedExercises: totalPassedExercises
-					};
-					var firstDateOfTest = last.createdAt;
-					totalExercises = 0;
-					totalPassedExercises = 0;
+				} else if (category === "posture") {
+					var lastDateOfTest = first.createdAt;
 					for (let x of p.exercises) {
-						if (x.createdAt.toString() == firstDateOfTest.toString()) {
-							totalExercises++;
+						if (x.createdAt.toString() == lastDateOfTest.toString()) {
+							totalPostureExercises++;
 							if (x[fieldCheckName] == 1) {
-								totalPassedExercises++;
+								totalPosturePassedExercises++;
 							}
 						}
 					}
-					tmp.start = {
-						totalExercises: totalExercises,
-						totalPassedExercises: totalPassedExercises
-					};
 				}
-				returnArray.push(tmp);
 			});
+
+
+			if (category === "flexibility" || category === "posture") {
+				returnArray = {
+					"posture": {
+						total: totalPostureExercises,
+						passed: totalPosturePassedExercises
+					},
+					"flexibility": {
+						total: totalFlexiblityExercises,
+						passed: totalFlexiblityPassedExercises
+					}
+				};
+			}
+
+
 			return {
 				status: 1,
 				message: "progress found",

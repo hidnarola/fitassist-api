@@ -94,7 +94,6 @@ router.post("/calendar_list", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var date = req.body.date;
-
   var check = await moment(date).utc(0);
   var startCheck = await moment(check).subtract(2, "month");
   var endCheck = await moment(check).add(2, "month");
@@ -107,6 +106,7 @@ router.post("/calendar_list", async (req, res) => {
   });
   resp_data.calendar_list = resp_data.workouts;
   delete resp_data.workouts;
+
   if (resp_data.status == 1) {
     logger.trace("user workouts detail for calendar got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
