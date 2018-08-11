@@ -19,10 +19,11 @@ var badges_assign_helper = {};
  *          status 1 - If badges data found, with badges object
  *          status 2 - If badges not found, with appropriate message
  */
-badges_assign_helper.get_all_badges = async (
-  condition = {},
-  sort = {}
-) => {
+badges_assign_helper.get_all_badges = async (condition = {}, sort = {
+  createdAt: -1
+}) => {
+
+
   try {
     var badges = await BadgesAssign.aggregate([{
         $match: condition
@@ -50,6 +51,9 @@ badges_assign_helper.get_all_badges = async (
           unit: {
             $first: "$badges.unit"
           },
+          badgeId: {
+            $first: "$badgeId"
+          },
           value: {
             $first: "$badges.value"
           },
@@ -73,7 +77,9 @@ badges_assign_helper.get_all_badges = async (
           }
         }
       },
-      sort
+      {
+        $sort: sort
+      }
     ]);
     if (badges) {
       return {

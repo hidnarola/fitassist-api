@@ -8,9 +8,9 @@ var badge_helper = {};
  *          status 1 - If badges data found, with badges object
  *          status 2 - If badges not found, with appropriate message
  */
-badge_helper.get_badges = async () => {
+badge_helper.get_badges = async (condition = {}) => {
   try {
-    var badge = await Badges.find();
+    var badge = await Badges.find(condition);
     if (badge) {
       return {
         status: 1,

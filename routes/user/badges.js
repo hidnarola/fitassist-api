@@ -1,7 +1,9 @@
 var express = require("express");
+var _ = require("underscore");
 var router = express.Router();
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
+var mongoose = require("mongoose")
 
 var logger = config.logger;
 
@@ -9,7 +11,7 @@ var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var badge_helper = require("../../helpers/badge_helper");
 
 /**
- * @api {get} /user/badge/:start/:limit Get all
+ * @api {get} /user/badge/:type Get all
  * @apiName Get all
  * @apiGroup User Badges
  * @apiHeader {String}  authorization user's unique access-key
@@ -30,16 +32,37 @@ router.get("/:type", async (req, res) => {
     var resp_data = await badge_assign_helper.get_all_badges({
       userId: authUserId
     }, {
-      $sort: {
-        createdAt: -1
-      }
+      createdAt: -1
     });
   } else if (type === "incompleted") {
-    var resp_data = await badge_helper.get_badges();
-    console.log('------------------------------------');
-    console.log('resp_data: ', resp_data);
-    console.log('------------------------------------');
 
+    var resp_data = await badge_assign_helper.get_all_badges({
+      userId: authUserId
+    });
+    if (resp_data.status === 1) {
+      var completedBadgesIds = [];
+      console.log('------------------------------------');
+      console.log('resp_data.badges : ', resp_data.badges);
+      console.log('------------------------------------');
+
+
+
+      console.log('------------------------------------');
+      console.log('completedBadgesIds : ', completedBadgesIds);
+      console.log('------------------------------------');
+
+      resp_data = await badge_helper.get_badges({
+        _id: {
+          $nin: completedBadgesIds
+        }
+      });
+      if (resp_data.status === 1) {
+
+        console.log('------------------------------------');
+        console.log('resp_data : ', resp_data.badges.length);
+        console.log('------------------------------------');
+      }
+    }
   }
 
   if (resp_data.status == 0) {
