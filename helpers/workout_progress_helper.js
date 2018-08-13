@@ -33,10 +33,14 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 			},
 			{
 				$group: {
-					_id: {
+					_id: condition.category.length <= 1 ? "$exercise.name" : {
 						category: "$exercise.category",
 						subCategory: "$exercise.subCategory"
 					},
+					// _id: {
+					// 	category: "$exercise.category",
+					// 	subCategory: "$exercise.subCategory"
+					// },
 					name: {
 						$first: "$exercise.name"
 					},

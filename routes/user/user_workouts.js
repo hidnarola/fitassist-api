@@ -1336,10 +1336,10 @@ router.post("/delete/exercise", async (req, res) => {
 	if (workout_data.status === 1) {
 		var resp_data = await get_respose_data_for_workout(parentId, authUserId);
 		if (resp_data.status === 1) {
-			llogger.trace("user workouts got successfully = ", resp_data);
+			logger.trace("user workouts got successfully = ", resp_data);
 			res.status(config.OK_STATUS).json(resp_data);
 		} else {
-			llogger.error("Error occured while fetching user workouts = ", resp_data);
+			logger.error("Error occured while fetching user workouts = ", resp_data);
 			res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
 		}
 	} else {
@@ -1363,7 +1363,7 @@ router.post("/workout_delete", async (req, res) => {
 	exerciseIds.forEach((id, index) => {
 		exerciseIds[index] = mongoose.Types.ObjectId(id);
 	});
-	llogger.trace("Delete workout API - Ids = ", exerciseIds);
+	logger.trace("Delete workout API - Ids = ", exerciseIds);
 	let workout_data = await user_workout_helper.delete_user_workouts_by_id(
 		exerciseIds
 	);
@@ -1394,7 +1394,7 @@ router.post("/delete", async (req, res) => {
 		exerciseIds[index] = mongoose.Types.ObjectId(id);
 	});
 
-	llogger.trace("Delete workout by - Id = ", exerciseIds);
+	logger.trace("Delete workout by - Id = ", exerciseIds);
 	let workout_data = await user_workout_helper.delete_user_workouts_by_exercise_ids(
 		exerciseIds
 	);

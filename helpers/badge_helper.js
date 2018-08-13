@@ -12,10 +12,31 @@ var badge_helper = {};
 badge_helper.get_badges_group_by = async (condition = {}) => {
   try {
 
-    var badges = await Badges.find().lean();
-    badges = _.groupBy(badges, category => {
-      return category.category;
-    });
+    // var badges = await Badges.find().lean();
+    var badges = await Badges.aggregate([{
+        $group: {
+          _id: "$category",
+          category: {
+            $first: "$category"
+          },
+          badges: {
+            $addToSet: "$$ROOT"
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          category: 1,
+          badges: 1
+        }
+      }
+    ]);
+
+
+    // badges = _.groupBy(badges, category => {
+    //   return category.category;
+    // });
 
     if (badges) {
       return {
