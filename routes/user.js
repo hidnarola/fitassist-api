@@ -66,6 +66,6 @@ router.use("/user_calendar", auth, user_calendar);
 router.use("/user_program", auth, user_program);
 router.use("/user_leaderboard", auth, user_leaderboard);
 router.use("/exercise_measurements", auth, exercise_measurements);
-router.use("/workout_progress", auth, workout_progress);
+router.use("/progress", auth, workout_progress);
 
 module.exports = router;

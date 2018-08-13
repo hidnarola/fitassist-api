@@ -8,10 +8,13 @@ var logger = config.logger;
 var workout_progress_helper = require("../../helpers/workout_progress_helper");
 
 /**
- * @api {post} /user/workout_progress Get Progress Detail by Date
- * @apiName Get Progress Detail by Date
+ * @api {post} /user/workout_progress Get Progress Detail by Date and type
+ * @apiName Get Progress Detail by Date and type
  * @apiGroup User Workout Progress
  * @apiHeader {String}  authorization user's unique access-key
+ * @apiHeader {String}  start start date of progress
+ * @apiHeader {String}  end end date of progress
+ * @apiHeader {String}  category category of progress |<code> possible values ['mobility','strength',cardio] </code>
  * @apiSuccess (Success 200) {JSON} progress JSON of user_test_exercises 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

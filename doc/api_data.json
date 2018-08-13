@@ -235,7 +235,7 @@
             "type": "Object",
             "optional": true,
             "field": "goal",
-            "description": "<p>goal  of user&gt;<br><pre>example. { &quot;name&quot; : &quot;gain_muscle&quot;, &quot;start&quot; : 0 }</pre><code>Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</code></p>"
+            "description": "<p>goal  of user&gt;<br><pre>example. { &quot;name&quot; : &quot;gain_muscle&quot;, &quot;start&quot; : 0 }</pre><code>Possible Values ('gain_muscle', 'improve_mobility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</code></p>"
           },
           {
             "group": "Parameter",
@@ -7039,7 +7039,7 @@
             "type": "Enum-Array",
             "optional": true,
             "field": "goals",
-            "description": "<p>goals | Possible Values ('gain_muscle', 'gain_flexibility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
+            "description": "<p>goals | Possible Values ('gain_muscle', 'improve_mobility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
           },
           {
             "group": "Parameter",
@@ -7208,7 +7208,7 @@
   },
   {
     "type": "get",
-    "url": "/user/badge/:start/:limit",
+    "url": "/user/badge/:type",
     "title": "Get all",
     "name": "Get_all",
     "group": "User_Badges",
@@ -11681,7 +11681,7 @@
             "type": "String",
             "optional": false,
             "field": "task",
-            "description": "<p>task of goal | Possible values<code> gain_muscle, gain_flexibility, lose_fat, gain_strength, gain_power, increase_endurance </code></p>"
+            "description": "<p>task of goal | Possible values<code> gain_muscle, improve_mobility, lose_fat, gain_strength, gain_power, increase_endurance </code></p>"
           }
         ]
       }
@@ -12670,8 +12670,8 @@
   {
     "type": "post",
     "url": "/user/workout_progress",
-    "title": "Get Progress Detail by Date",
-    "name": "Get_Progress_Detail_by_Date",
+    "title": "Get Progress Detail by Date and type",
+    "name": "Get_Progress_Detail_by_Date_and_type",
     "group": "User_Workout_Progress",
     "header": {
       "fields": {
@@ -12682,6 +12682,27 @@
             "optional": false,
             "field": "authorization",
             "description": "<p>user's unique access-key</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start date of progress</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "end",
+            "description": "<p>end date of progress</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "category",
+            "description": "<p>category of progress |<code> possible values ['mobility','strength',cardio] </code></p>"
           }
         ]
       }

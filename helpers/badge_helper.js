@@ -37,6 +37,7 @@ badge_helper.get_badges_group_by = async (condition = {}) => {
         as: "badgeDetail"
       }
     },
+
   ]);
 
   var retunArray = [];
