@@ -23,20 +23,20 @@ router.get("/:type", async (req, res) => {
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
+  var resp_data = null;
 
   var type = req.params.type;
   if (type === "tracking") {
-    var resp_data = await badge_helper.get_badges_group_by();
-    
-  } else if (type === "completed") {
-    var resp_data = await badge_assign_helper.get_all_badges({
+    resp_data = await badge_helper.get_badges_group_by();
+
+  } else if (type === "complete") {
+    resp_data = await badge_assign_helper.get_all_badges({
       userId: authUserId
     }, {
       createdAt: -1
     });
-  } else if (type === "incompleted") {
-    var resp_data = await badge_assign_helper.get_all_badges({
+  } else if (type === "incomplete") {
+    resp_data = await badge_assign_helper.get_all_badges({
       userId: authUserId
     });
     if (resp_data.status === 1) {
@@ -53,7 +53,7 @@ router.get("/:type", async (req, res) => {
     }
   }
 
-  if (resp_data.status === 1) {
+  if (resp_data && resp_data.status === 1) {
     logger.trace("user badges found   = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {

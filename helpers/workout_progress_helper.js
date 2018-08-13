@@ -63,10 +63,10 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 			},
 		]);
 
-		return {
-			status: 1,
-			data: progress
-		}
+		// return {
+		// 	status: 1,
+		// 	data: progress
+		// }
 
 		if (progress && progress.length > 0) {
 			var returnArray = [];
