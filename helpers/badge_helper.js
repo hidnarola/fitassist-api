@@ -14,6 +14,11 @@ badge_helper.get_badges_group_by = async (condition = {}) => {
 
   // var badges = await Badges.find().lean();
   var badges = await Badges.aggregate([{
+      $match: {
+        isDeleted: 0
+      }
+    },
+    {
       $group: {
         _id: "$category",
         category: {

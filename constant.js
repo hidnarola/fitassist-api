@@ -211,8 +211,7 @@ module.exports = {
     dietRestrictionLabels: [],
     excludeIngredients: [],
     nutritionTargets: [],
-    maxRecipeTime: [
-      {
+    maxRecipeTime: [{
         time: 0,
         dayDrive: "breakfast"
       },
