@@ -71,9 +71,7 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 		// 	status: 1,
 		// 	data: progress
 		// }
-		console.log('------------------------------------');
-		console.log('progress : ', progress);
-		console.log('------------------------------------');
+
 
 		if (progress && progress.length > 0) {
 			var returnArray = [];
@@ -180,8 +178,6 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 					}
 				};
 			}
-
-
 			return {
 				status: 1,
 				message: "progress found",

@@ -41,12 +41,6 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var start = req.body.start;
     var end = req.body.end;
-    var category;
-    if (req.body.category === "mobility") {
-      category = ["posture", "flexibility"]
-    } else {
-      category = [req.body.category]
-    }
     var start = moment(start).utcOffset(0);
     start.toISOString();
     start.format();
@@ -54,6 +48,14 @@ router.post("/", async (req, res) => {
     var end = moment(end).utcOffset(0);
     end.toISOString();
     end.format();
+
+    var category;
+    if (req.body.category === "mobility") {
+      category = ["posture", "flexibility"]
+    } else {
+      category = [req.body.category]
+    }
+
 
     var resp_data = await workout_progress_helper.get_progress_detail({
       createdAt: {
@@ -68,12 +70,12 @@ router.post("/", async (req, res) => {
     if (resp_data.status === 1) {
       logger.trace("user progress  got successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
-    } else {
+    } else if (resp_data.status === 2) {
       logger.error(
-        "Error occured while fetching get all user progress detail = ",
+        "no record found = ",
         resp_data
       );
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
