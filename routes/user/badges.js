@@ -27,7 +27,8 @@ router.get("/:type", async (req, res) => {
 
   var type = req.params.type;
   if (type === "tracking") {
-    var resp_data = await badge_helper.get_badges();
+    var resp_data = await badge_helper.get_badges_group_by();
+    
   } else if (type === "completed") {
     var resp_data = await badge_assign_helper.get_all_badges({
       userId: authUserId
@@ -35,45 +36,32 @@ router.get("/:type", async (req, res) => {
       createdAt: -1
     });
   } else if (type === "incompleted") {
-
     var resp_data = await badge_assign_helper.get_all_badges({
       userId: authUserId
     });
     if (resp_data.status === 1) {
       var completedBadgesIds = [];
-      console.log('------------------------------------');
-      console.log('resp_data.badges : ', resp_data.badges);
-      console.log('------------------------------------');
-
-
-
-      console.log('------------------------------------');
-      console.log('completedBadgesIds : ', completedBadgesIds);
-      console.log('------------------------------------');
+      for (let x of resp_data.badges) {
+        completedBadgesIds.push(x.badgeId);
+      }
 
       resp_data = await badge_helper.get_badges({
         _id: {
           $nin: completedBadgesIds
         }
       });
-      if (resp_data.status === 1) {
-
-        console.log('------------------------------------');
-        console.log('resp_data : ', resp_data.badges.length);
-        console.log('------------------------------------');
-      }
     }
   }
 
-  if (resp_data.status == 0) {
+  if (resp_data.status === 1) {
+    logger.trace("user badges found   = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
     logger.error(
-      "Error occured while fetching get all user personal goals = ",
+      "Error occured while fetching user badges = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user personal goals got   = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

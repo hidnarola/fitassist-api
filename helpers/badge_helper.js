@@ -1,6 +1,42 @@
 var Badges = require("./../models/badges");
+var _ = require("underscore");
 var badge_helper = {};
 
+/*
+ * get_badges is used to fetch all badges data
+ * 
+ * @return  status 0 - If any internal error occured while fetching badges data, with error
+ *          status 1 - If badges data found, with badges object
+ *          status 2 - If badges not found, with appropriate message
+ */
+badge_helper.get_badges_group_by = async (condition = {}) => {
+  try {
+
+    var badges = await Badges.find().lean();
+    badges = _.groupBy(badges, category => {
+      return category.category;
+    });
+
+    if (badges) {
+      return {
+        status: 1,
+        message: "badges found",
+        badges: badges
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No badge available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding badge",
+      error: err
+    };
+  }
+};
 /*
  * get_badges is used to fetch all badges data
  * 
