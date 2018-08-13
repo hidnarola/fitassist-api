@@ -138,7 +138,7 @@ async function badge_assign_for_workout(
           userId: authUserId,
           badgeId: single_badge._id,
           task: single_badge.task,
-          category: "workouts"
+          category: constant.BADGES_TYPE.WEIGHT_LIFTED.indexOf(single_badge.task) > 0 ? "weight_lifted" : "workouts"
 
         };
         insert_batch_data.push(badge_assign_obj);
@@ -1356,7 +1356,21 @@ badges_assign_helper.badge_assign = async (
           insert_batch_data,
           notification_badges_data
         );
-      } else if (element == "weight_lifted_total") {} else if (element == "weight_lifted_average") {} else if (element == "weight_lifted_most") {} else if (element == "weight_lifted_least") {} else if (element == "workouts_total") {} else if (element == "workouts_average") {} else if (element == "reps_least") {} else if (element == "reps_total") {} else if (element == "reps_average") {} else if (element == "reps_most") {} else if (element == "sets_least") {} else if (element == "running_distance_total") {} else if (element == "running_distance_average") {} else if (element == "running_distance_most") {} else if (element == "running_distance_least") {} else if (element == "running_time_average") {} else if (element == "running_time_total") {} else if (element == "running_elevation_total") {} else if (element == "running_elevation_average") {} else if (element == "heart_rate_total") {} else if (element == "heart_rate_average") {} else if (element == "heart_rate_most") {} else if (element == "heart_rate_least_") {} else if (element == "heart_rate_resting_total") {} else if (element == "heart_rate_resting_average") {} else if (element == "heart_rate_resting_most") {} else if (element == "heart_rate_resting_least") {} else if (element == "cycle_distance_total") {} else if (element == "cycle_distance_average") {} else if (element == "cycle_distance_most") {} else if (element == "cycle_distance_least") {} else if (element == "cycle_time_total") {} else if (element == "cycle_time_average") {} else if (element == "cycle_elevation_total") {} else if (element == "cycle_elevation_average") {} else if (element == "steps_total") {} else if (element == "steps_average") {} else if (element == "steps_most") {} else if (element == "steps_least") {} else if (
+      } else if (element == "weight_lifted_total") {
+
+      } else if (element == "weight_lifted_average") {
+
+      } else if (element == "weight_lifted_most") {
+
+      } else if (element == "weight_lifted_least") {
+
+      } else if (element == "workouts_total") {
+
+      } else if (element == "workouts_average") {
+
+      } else if (element == "reps_least") {
+
+      } else if (element == "reps_total") {} else if (element == "reps_average") {} else if (element == "reps_most") {} else if (element == "sets_least") {} else if (element == "running_distance_total") {} else if (element == "running_distance_average") {} else if (element == "running_distance_most") {} else if (element == "running_distance_least") {} else if (element == "running_time_average") {} else if (element == "running_time_total") {} else if (element == "running_elevation_total") {} else if (element == "running_elevation_average") {} else if (element == "heart_rate_total") {} else if (element == "heart_rate_average") {} else if (element == "heart_rate_most") {} else if (element == "heart_rate_least_") {} else if (element == "heart_rate_resting_total") {} else if (element == "heart_rate_resting_average") {} else if (element == "heart_rate_resting_most") {} else if (element == "heart_rate_resting_least") {} else if (element == "cycle_distance_total") {} else if (element == "cycle_distance_average") {} else if (element == "cycle_distance_most") {} else if (element == "cycle_distance_least") {} else if (element == "cycle_time_total") {} else if (element == "cycle_time_average") {} else if (element == "cycle_elevation_total") {} else if (element == "cycle_elevation_average") {} else if (element == "steps_total") {} else if (element == "steps_average") {} else if (element == "steps_most") {} else if (element == "steps_least") {} else if (
         constant.BADGES_TYPE.NUTRITIONS.concat(
           constant.BADGES_TYPE.CALORIES
         ).indexOf(element) > 0

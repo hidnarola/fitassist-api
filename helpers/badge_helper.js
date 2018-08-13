@@ -10,53 +10,71 @@ var badge_helper = {};
  *          status 2 - If badges not found, with appropriate message
  */
 badge_helper.get_badges_group_by = async (condition = {}) => {
-  try {
+  //try {
 
-    // var badges = await Badges.find().lean();
-    var badges = await Badges.aggregate([{
-        $group: {
-          _id: "$category",
-          category: {
-            $first: "$category"
-          },
-          badges: {
-            $addToSet: "$$ROOT"
-          }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          category: 1,
-          badges: 1
+  // var badges = await Badges.find().lean();
+  var badges = await Badges.aggregate([{
+      $group: {
+        _id: "$category",
+        category: {
+          $first: "$category"
+        },
+        badges: {
+          $addToSet: "$$ROOT"
         }
       }
-    ]);
+    },
+    {
+      $lookup: {
+        from: "badges_assign",
+        localField: "badges._id",
+        foreignField: "badgeId",
+        as: "badgeDetail"
+      }
+    },
+  ]);
 
+  var retunArray = [];
+  _.each(badges, badge => {
+    var subArray = [];
+    _.each(badge.badges, b => {
+      var obj = Object.assign({}, b);
+      var result = _.find(badge.badgeDetail, function (o) {
+        return o.badgeId.toString() === obj._id.toString();
+      });
+      if (result) {
+        obj.isCompleted = 1;
+        obj.completedDate = result.createdAt;
+      } else {
+        obj.isCompleted = 0;
+        obj.completedDate = null;
+      }
+      subArray.push(obj);
+    });
+    badge.badges = subArray;
+    retunArray.push(badge);
+  });
 
-    // badges = _.groupBy(badges, category => {
-    //   return category.category;
-    // });
-
-    if (badges) {
-      return {
-        status: 1,
-        message: "badges found",
-        badges: badges
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No badge available"
-      };
-    }
-  } catch (err) {
+  if (badges) {
     return {
-      status: 0,
-      message: "Error occured while finding badge",
-      error: err
+      status: 1,
+      message: "badges found",
+      badges: retunArray
+    };
+  } else {
+    return {
+      status: 2,
+      message: "No badge available"
     };
   }
+  //} 
+  // catch (err) {
+  //   return {
+  //     status: 0,
+  //     message: "Error occured while finding badge",
+  //     error: err
+  //   };
+  // }
 };
 /*
  * get_badges is used to fetch all badges data
