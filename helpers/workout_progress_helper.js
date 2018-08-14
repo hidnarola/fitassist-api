@@ -41,6 +41,11 @@ workout_progress_helper.graph_data = async (condition = {}, type = "flexibility"
 					date: "$_id",
 					count: 1
 				}
+			},
+			{
+				$sort: {
+					date: 1
+				}
 			}
 		]);
 
@@ -159,16 +164,7 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				var name = p.name;
 				var first = _.first(p.exercises);
 				var last = _.last(p.exercises);
-				console.log('------------------------------------');
-				console.log('p : ', p);
-				console.log('------------------------------------');
 
-				console.log('------------------------------------');
-				console.log('first : ', first);
-				console.log('------------------------------------');
-				console.log('------------------------------------');
-				console.log('last : ', last);
-				console.log('------------------------------------');
 
 				var fieldCheckName = first.format;
 				tmp.subCategory = subCategory;
@@ -342,6 +338,11 @@ workout_progress_helper.user_body_progress = async id => {
 				}
 			},
 		]);
+
+		console.log('------------------------------------');
+		console.log('logdata : ', logdata);
+		console.log('------------------------------------');
+
 
 		if (logdata) {
 			return {

@@ -83,7 +83,7 @@ router.post("/", async (req, res) => {
         },
         category: category
       });
-      
+
       var flexibility = await workout_progress_helper.graph_data({
         createdAt: {
           createdAt: {

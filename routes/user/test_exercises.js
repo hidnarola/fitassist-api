@@ -37,6 +37,7 @@ router.post("/today", async (req, res) => {
   end.toISOString();
   end.format();
 
+
   logger.trace("Get all test_exercises API called");
   var resp_data = await test_exercise_helper.get_all_test_exercises();
   if (resp_data.status == 0) {
