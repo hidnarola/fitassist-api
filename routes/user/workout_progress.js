@@ -41,6 +41,7 @@ router.post("/", async (req, res) => {
       errorMessage: "category is required"
     }
   };
+
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
@@ -64,8 +65,6 @@ router.post("/", async (req, res) => {
     }
 
     if (category === "muscle") {
-      console.log('here');
-
       resp_data = await workout_progress_helper.user_body_progress({
         userId: authUserId,
         logDate: {
@@ -84,18 +83,49 @@ router.post("/", async (req, res) => {
         },
         category: category
       });
-    }
+      
+      var flexibility = await workout_progress_helper.graph_data({
+        createdAt: {
+          createdAt: {
+            $gte: new Date(start),
+            $lte: new Date(end)
+          }
+        },
+        userId: authUserId,
+      }, "flexibility");
+      if (flexibility.status === 1) {
+        try {
+          resp_data.progress.data.flexibility.graph_data = flexibility.progress
+        } catch (error) {}
+      }
 
-    if (resp_data.status === 1) {
-      logger.trace("user progress  got successfully   = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    } else if (resp_data.status === 2) {
-      logger.error(
-        "no record found = ",
-        resp_data
-      );
-      res.status(config.OK_STATUS).json(resp_data);
+      var posture = await workout_progress_helper.graph_data({
+        createdAt: {
+          createdAt: {
+            $gte: new Date(start),
+            $lte: new Date(end)
+          }
+        },
+        userId: authUserId,
+      }, "posture");
+      if (posture.status === 1) {
+        try {
+          resp_data.progress.data.posture.graph_data = posture.progress
+        } catch (error) {}
+      }
     }
+  }
+
+
+  if (resp_data.status === 1) {
+    logger.trace("user progress  got successfully   = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else if (resp_data.status === 2) {
+    logger.error(
+      "no record found = ",
+      resp_data
+    );
+    res.status(config.OK_STATUS).json(resp_data);
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.VALIDATION_FAILURE_STATUS).json({

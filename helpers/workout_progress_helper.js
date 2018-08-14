@@ -3,6 +3,67 @@ var Measurement = require("./../models/body_measurements");
 var _ = require("underscore");
 var workout_progress_helper = {};
 
+/** graph_data is used to fetch all user progress detail 
+ * @return  status 0 - If any internal error occured while fetching progress data, with error
+ * status 1 - If progress data found, with progress object
+ * status 2 - If progress not found, with appropriate message
+ * */
+workout_progress_helper.graph_data = async (condition = {}, type = "flexibility") => {
+	try {
+		var progress = await UserTestExerciseLogs.aggregate([{
+				$match: condition.createdAt
+			},
+			{
+				$lookup: {
+					from: "test_exercises",
+					localField: "test_exercise_id",
+					foreignField: "_id",
+					as: "test_exercises"
+				}
+			},
+			{
+				$match: {
+					"test_exercises.category": type
+				}
+			},
+			{
+				$group: {
+					_id: "$createdAt",
+					count: {
+						$sum: "$$ROOT.a_or_b"
+					}
+				}
+			},
+			{
+				$project: {
+					_id: 0,
+					date: "$_id",
+					count: 1
+				}
+			}
+		]);
+
+		if (progress && progress.length > 0) {
+			return {
+				status: 1,
+				message: "progress found",
+				progress: progress
+			};
+		} else {
+			return {
+				status: 2,
+				message: "No progress available",
+				progress: null
+			};
+		}
+	} catch (err) {
+		return {
+			status: 0,
+			message: "Error occured while finding progress",
+			error: err
+		};
+	}
+};
 /** get_progress_detail is used to fetch all user progress detail 
  * @return  status 0 - If any internal error occured while fetching progress data, with error
  * status 1 - If progress data found, with progress object
