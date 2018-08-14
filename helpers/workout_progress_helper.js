@@ -95,6 +95,10 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				var first = _.first(p.exercises);
 				var last = _.last(p.exercises);
 				console.log('------------------------------------');
+				console.log('p : ', p);
+				console.log('------------------------------------');
+
+				console.log('------------------------------------');
 				console.log('first : ', first);
 				console.log('------------------------------------');
 				console.log('------------------------------------');

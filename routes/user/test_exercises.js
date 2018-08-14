@@ -43,15 +43,13 @@ router.post("/today", async (req, res) => {
     logger.error("Error occured while fetching  test_exercises = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id(
-      {
-        userId: authUserId,
-        createdAt: {
-          $gte: start,
-          $lte: end
-        }
+    var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id({
+      userId: authUserId,
+      createdAt: {
+        $gte: start,
+        $lte: end
       }
-    );
+    });
 
     if (resp_data2.status === 1) {
       resp_data.user_test_exercises = resp_data2.user_test_exercises;
@@ -103,7 +101,7 @@ router.post("/", async (req, res) => {
   var temp = req.body.user_test_exercises;
   var createdAt = req.body.date;
 
-  Object.keys(temp).forEach(function(key) {
+  Object.keys(temp).forEach(function (key) {
     var val = temp[key];
     test_exercise_array.push({
       userId: authUserId,
@@ -117,7 +115,8 @@ router.post("/", async (req, res) => {
 
   let test_exercise_data = await user_test_exercies_helper.insert_user_test_exercies(
     test_exercise_array,
-    createdAt
+    createdAt,
+    authUserId
   );
 
   if (test_exercise_data.status === 1) {
@@ -127,7 +126,9 @@ router.post("/", async (req, res) => {
       "Error while inserting user test exercies = ",
       test_exercise_data
     );
-    res.status(config.BAD_REQUEST).json({ test_exercise_data });
+    res.status(config.BAD_REQUEST).json({
+      test_exercise_data
+    });
   }
 });
 
@@ -155,15 +156,13 @@ router.post("/reset", async (req, res) => {
   end.toISOString();
   end.format();
   logger.trace("reset user test exercies API called : ", authUserId);
-  let test_exercise_data = await user_test_exercies_helper.delete_user_test_exercies(
-    {
-      userId: authUserId,
-      createdAt: {
-        $gte: start,
-        $lte: end
-      }
+  let test_exercise_data = await user_test_exercies_helper.delete_user_test_exercies({
+    userId: authUserId,
+    createdAt: {
+      $gte: start,
+      $lte: end
     }
-  );
+  });
   if (test_exercise_data.status === 1) {
     test_exercise_data.message = "delete Exercise preference";
     res.status(config.OK_STATUS).json(test_exercise_data);
@@ -174,7 +173,9 @@ router.post("/reset", async (req, res) => {
     );
     // test_exercise_data.message="could not reset exercise preference";
 
-    res.status(config.BAD_REQUEST).json({ test_exercise_data });
+    res.status(config.BAD_REQUEST).json({
+      test_exercise_data
+    });
   }
 });
 

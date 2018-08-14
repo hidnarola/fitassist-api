@@ -20,7 +20,10 @@ user_test_exercise_helper.get_user_test_exercies_by_user_id = async id => {
         user_test_exercises: user_test_exercises
       };
     } else {
-      return { status: 2, message: "user_test_exercies not available" };
+      return {
+        status: 2,
+        message: "user_test_exercies not available"
+      };
     }
   } catch (err) {
     return {
@@ -43,7 +46,8 @@ user_test_exercise_helper.get_user_test_exercies_by_user_id = async id => {
  */
 user_test_exercise_helper.insert_user_test_exercies = async (
   user_test_exercies_array,
-  date
+  date,
+  authUserId
 ) => {
   try {
     var start = moment(date).utcOffset(0);
@@ -61,7 +65,8 @@ user_test_exercise_helper.insert_user_test_exercies = async (
       createdAt: {
         $gte: start,
         $lte: end
-      }
+      },
+      userId: authUserId
     });
 
     let user_test_log_data = await UserTestExerciseLogs.insertMany(
@@ -82,14 +87,11 @@ user_test_exercise_helper.insert_user_test_exercies = async (
 
 /*
  * update_user_test_exercies is used to delete user_test_exercies data based on user_test_exercise_id
- * 
  * @param   user_test_exercise_id         String  _id of user's test exercise that need to be delete
  * @param   nutrition_preferences_object     JSON    object consist of all property that need to delete
- * 
  * @return  status  0 - If any error occur in updating user's test exercise preference, with error
  *          status  1 - If user's test exercise preference pr updated successfully, with appropriate message
  *          status  2 - If user's test exercise preference not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 user_test_exercise_helper.update_user_test_exercies = async (
@@ -97,13 +99,18 @@ user_test_exercise_helper.update_user_test_exercies = async (
   user_test_exercies_obj
 ) => {
   try {
-    let user_test_exercies = await UserTestExercise.findOneAndUpdate(
-      { userId: authUserId },
-      user_test_exercies_obj,
-      { new: true }
+    let user_test_exercies = await UserTestExercise.findOneAndUpdate({
+        userId: authUserId
+      },
+      user_test_exercies_obj, {
+        new: true
+      }
     );
     if (!user_test_exercies) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -136,7 +143,10 @@ user_test_exercise_helper.delete_user_test_exercies = async authUserId => {
   try {
     let user_test_exercises = await UserTestExerciseLogs.remove(authUserId);
     if (!user_test_exercises) {
-      return { status: 2, message: "Record has not deleted" };
+      return {
+        status: 2,
+        message: "Record has not deleted"
+      };
     } else {
       return {
         status: 1,

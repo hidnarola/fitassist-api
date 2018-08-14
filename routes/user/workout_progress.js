@@ -78,15 +78,13 @@ router.post("/", async (req, res) => {
         createdAt: {
           createdAt: {
             $gte: new Date(start),
-            $lt: new Date(end)
+            $lte: new Date(end)
           },
           userId: authUserId,
         },
         category: category
       });
     }
-
-
 
     if (resp_data.status === 1) {
       logger.trace("user progress  got successfully   = ", resp_data);
