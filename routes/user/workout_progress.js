@@ -6,6 +6,7 @@ var moment = require("moment");
 var logger = config.logger;
 
 var workout_progress_helper = require("../../helpers/workout_progress_helper");
+var measurement_helper = require("../../helpers/measurement_helper");
 
 /**
  * @api {post} /user/workout_progress Get Progress Detail by Date and type
@@ -22,6 +23,10 @@ router.post("/", async (req, res) => {
   logger.trace("Get all user's progress detail");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var resp_data = {
+    status: 0,
+    message: "no record found"
+  }
   var schema = {
     start: {
       notEmpty: true,
@@ -49,23 +54,39 @@ router.post("/", async (req, res) => {
     end.toISOString();
     end.format();
 
-    var category;
+    var category = null;
     if (req.body.category === "mobility") {
       category = ["posture", "flexibility"]
-    } else {
+    } else if (req.body.category === "strength") {
       category = [req.body.category]
+    } else if (req.body.category === "muscle") {
+      category = "muscle"
+    }
+
+    if (category === "muscle") {
+      console.log('here');
+
+      resp_data = await workout_progress_helper.user_body_progress({
+        userId: authUserId,
+        logDate: {
+          $gte: new Date(start),
+          $lte: new Date(end)
+        }
+      });
+    } else {
+      resp_data = await workout_progress_helper.get_progress_detail({
+        createdAt: {
+          createdAt: {
+            $gte: new Date(start),
+            $lt: new Date(end)
+          },
+          userId: authUserId,
+        },
+        category: category
+      });
     }
 
 
-    var resp_data = await workout_progress_helper.get_progress_detail({
-      createdAt: {
-        createdAt: {
-          $gte: new Date(start),
-          $lt: new Date(end)
-        }
-      },
-      category: category
-    });
 
     if (resp_data.status === 1) {
       logger.trace("user progress  got successfully   = ", resp_data);

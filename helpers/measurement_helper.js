@@ -18,7 +18,10 @@ measurement_helper.get_all_measurement = async () => {
         measurements: measurement
       };
     } else {
-      return { status: 2, message: "No measurement available" };
+      return {
+        status: 2,
+        message: "No measurement available"
+      };
     }
   } catch (err) {
     return {
@@ -52,7 +55,10 @@ measurement_helper.get_body_measurement_id = async (
         measurement: measurement
       };
     } else {
-      return { status: 2, message: "No measurement available" };
+      return {
+        status: 2,
+        message: "No measurement available"
+      };
     }
   } catch (err) {
     return {
@@ -80,7 +86,10 @@ measurement_helper.get_body_measurement_by_userid = async id => {
         measurements: measurement
       };
     } else {
-      return { status: 2, message: "No measurement available" };
+      return {
+        status: 2,
+        message: "No measurement available"
+      };
     }
   } catch (err) {
     return {
@@ -90,6 +99,7 @@ measurement_helper.get_body_measurement_by_userid = async id => {
     };
   }
 };
+
 /*
  * get_logdata_by_userid is used to fetch logdata by userID
  * 
@@ -102,9 +112,16 @@ measurement_helper.get_logdata_by_userid = async id => {
     var logdata = await Measurement.find(id);
     //        var logdata = await Measurement.aggregate(id);
     if (logdata) {
-      return { status: 1, message: "logdata found", logdates: logdata };
+      return {
+        status: 1,
+        message: "logdata found",
+        logdates: logdata
+      };
     } else {
-      return { status: 2, message: "No logdata available" };
+      return {
+        status: 2,
+        message: "No logdata available"
+      };
     }
   } catch (err) {
     return {
@@ -160,13 +177,18 @@ measurement_helper.update_body_measurement = async (
   measurement_obj
 ) => {
   try {
-    let measurement = await Measurement.findOneAndUpdate(
-      { _id: body_measurement_id },
-      measurement_obj,
-      { new: true }
+    let measurement = await Measurement.findOneAndUpdate({
+        _id: body_measurement_id
+      },
+      measurement_obj, {
+        new: true
+      }
     );
     if (!measurement) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -196,11 +218,19 @@ measurement_helper.update_body_measurement = async (
  */
 measurement_helper.delete_measurement_by_id = async body_measurement_id => {
   try {
-    let resp = await Measurement.findOneAndRemove({ _id: body_measurement_id });
+    let resp = await Measurement.findOneAndRemove({
+      _id: body_measurement_id
+    });
     if (!resp) {
-      return { status: 2, message: "Measurement not found" };
+      return {
+        status: 2,
+        message: "Measurement not found"
+      };
     } else {
-      return { status: 1, message: "Measurement deleted" };
+      return {
+        status: 1,
+        message: "Measurement deleted"
+      };
     }
   } catch (err) {
     return {
@@ -221,19 +251,22 @@ measurement_helper.delete_measurement_by_id = async body_measurement_id => {
 measurement_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await Measurement.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
+    var searched_record_count = await Measurement.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
 
-    var filtered_data = await Measurement.aggregate([
-      {
+    var filtered_data = await Measurement.aggregate([{
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
+      {
+        $sort: filter_obj.columnSort
+      }
     ]);
 
     if (filtered_data) {
@@ -247,7 +280,10 @@ measurement_helper.get_filtered_records = async filter_obj => {
         filtered_measurements: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {

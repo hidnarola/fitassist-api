@@ -1,5 +1,5 @@
-var TestExercises = require("./../models/test_exercises");
 var UserTestExerciseLogs = require("./../models/user_test_exercise_logs");
+var Measurement = require("./../models/body_measurements");
 var _ = require("underscore");
 var workout_progress_helper = {};
 
@@ -75,10 +75,14 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 
 		if (progress && progress.length > 0) {
 			var returnArray = [];
-			var totalPostureExercises = 0;
-			var totalPosturePassedExercises = 0;
-			var totalFlexiblityExercises = 0;
-			var totalFlexiblityPassedExercises = 0;
+			var start_totalPostureExercises = 0;
+			var start_totalPosturePassedExercises = 0;
+			var start_totalFlexiblityExercises = 0;
+			var start_totalFlexiblityPassedExercises = 0;
+			var end_totalPostureExercises = 0;
+			var end_totalPosturePassedExercises = 0;
+			var end_totalFlexiblityExercises = 0;
+			var end_totalFlexiblityPassedExercises = 0;
 			var subCategory;
 			var category;
 			_.each(progress, p => {
@@ -90,6 +94,13 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				var name = p.name;
 				var first = _.first(p.exercises);
 				var last = _.last(p.exercises);
+				console.log('------------------------------------');
+				console.log('first : ', first);
+				console.log('------------------------------------');
+				console.log('------------------------------------');
+				console.log('last : ', last);
+				console.log('------------------------------------');
+
 				var fieldCheckName = first.format;
 				tmp.subCategory = subCategory;
 				tmp.category = category;
@@ -146,9 +157,18 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 					var lastDateOfTest = first.createdAt;
 					for (let x of p.exercises) {
 						if (x.createdAt.toString() == lastDateOfTest.toString()) {
-							totalFlexiblityExercises++;
+							start_totalFlexiblityExercises++;
 							if (x[fieldCheckName] == 1) {
-								totalFlexiblityPassedExercises++;
+								start_totalFlexiblityPassedExercises++;
+							}
+						}
+					}
+					var firstDateOfTest = last.createdAt;
+					for (let x of p.exercises) {
+						if (x.createdAt.toString() == firstDateOfTest.toString()) {
+							end_totalFlexiblityExercises++;
+							if (x[fieldCheckName] == 1) {
+								end_totalFlexiblityPassedExercises++;
 							}
 						}
 					}
@@ -156,9 +176,18 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 					var lastDateOfTest = first.createdAt;
 					for (let x of p.exercises) {
 						if (x.createdAt.toString() == lastDateOfTest.toString()) {
-							totalPostureExercises++;
+							start_totalPostureExercises++;
 							if (x[fieldCheckName] == 1) {
-								totalPosturePassedExercises++;
+								start_totalPosturePassedExercises++;
+							}
+						}
+					}
+					var firstDateOfTest = last.createdAt;
+					for (let x of p.exercises) {
+						if (x.createdAt.toString() == firstDateOfTest.toString()) {
+							end_totalPostureExercises++;
+							if (x[fieldCheckName] == 1) {
+								end_totalPosturePassedExercises++;
 							}
 						}
 					}
@@ -169,12 +198,25 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 			if (category === "flexibility" || category === "posture") {
 				returnArray = {
 					"posture": {
-						total: totalPostureExercises,
-						passed: totalPosturePassedExercises
+						start: {
+							total: start_totalPostureExercises,
+							passed: start_totalPosturePassedExercises
+						},
+						current: {
+							total: end_totalPostureExercises,
+							passed: end_totalPosturePassedExercises
+						},
+
 					},
 					"flexibility": {
-						total: totalFlexiblityExercises,
-						passed: totalFlexiblityPassedExercises
+						start: {
+							total: start_totalFlexiblityExercises,
+							passed: start_totalFlexiblityPassedExercises
+						},
+						current: {
+							total: end_totalFlexiblityExercises,
+							passed: end_totalFlexiblityPassedExercises
+						},
 					}
 				};
 			}
@@ -188,13 +230,66 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 		} else {
 			return {
 				status: 2,
-				message: "No progress available"
+				message: "No progress available",
+				progress: null
 			};
 		}
 	} catch (err) {
 		return {
 			status: 0,
 			message: "Error occured while finding progress",
+			error: err
+		};
+	}
+};
+
+
+/*
+ * user_body_progress is used to fetch logdata by userID
+ * 
+ * @return  status 0 - If any internal error occured while fetching logdata data, with error
+ *          status 1 - If logdata data found, with logdata object
+ *          status 2 - If logdata not found, with appropriate message
+ */
+workout_progress_helper.user_body_progress = async id => {
+	try {
+		var logdata = await Measurement.aggregate([{
+				$match: id
+			},
+			{
+				$sort: {
+					logDate: 1
+				}
+			},
+			{
+				$group: {
+					_id: null,
+					first: {
+						$first: "$$ROOT"
+					},
+					last: {
+						$last: "$$ROOT"
+					}
+				}
+			},
+		]);
+
+		if (logdata) {
+			return {
+				status: 1,
+				message: "body measurements found",
+				body_progress: logdata
+			};
+		} else {
+			return {
+				status: 2,
+				message: "No body measurements found"
+			};
+		}
+	} catch (err) {
+		return {
+			status: 0,
+			message: "Error occured while finding logdata",
 			error: err
 		};
 	}
