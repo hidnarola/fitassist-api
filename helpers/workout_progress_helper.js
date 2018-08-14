@@ -1,6 +1,7 @@
 var UserTestExerciseLogs = require("./../models/user_test_exercise_logs");
 var Measurement = require("./../models/body_measurements");
 var _ = require("underscore");
+var moment = require("moment");
 var workout_progress_helper = {};
 
 /** graph_data is used to fetch all user progress detail 
@@ -44,6 +45,9 @@ workout_progress_helper.graph_data = async (condition = {}, type = "flexibility"
 		]);
 
 		if (progress && progress.length > 0) {
+			_.each(progress, function (o) {
+				o.date = moment(o.date).format("DD/MM/YYYY");
+			})
 			return {
 				status: 1,
 				message: "progress found",
