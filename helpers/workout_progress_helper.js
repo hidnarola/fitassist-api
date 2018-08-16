@@ -4,6 +4,62 @@ var _ = require("underscore");
 var moment = require("moment");
 var workout_progress_helper = {};
 
+/** graph_data_body_data is used to fetch all user progress detail 
+ * @return  status 0 - If any internal error occured while fetching progress data, with error
+ * status 1 - If progress data found, with progress object
+ * status 2 - If progress not found, with appropriate message
+ * */
+workout_progress_helper.graph_data_body_data = async (condition = {}, type = "flexibility") => {
+	try {
+		var progress = await Measurement.aggregate([{
+				$match: condition.createdAt
+			},
+			{
+				$group: {
+					_id: "$logDate",
+					data: {
+						$addToSet: "$$ROOT"
+					}
+				}
+			},
+			{
+				$project: {
+					_id: 0,
+					date: "$_id",
+					data: 1
+				}
+			},
+			{
+				$sort: {
+					date: 1
+				}
+			}
+		]);
+
+		if (progress && progress.length > 0) {
+			_.each(progress, function (o) {
+				o.date = moment(o.date).format("DD/MM/YYYY");
+			})
+			return {
+				status: 1,
+				message: "progress found",
+				progress: progress
+			};
+		} else {
+			return {
+				status: 2,
+				message: "No progress available",
+				progress: null
+			};
+		}
+	} catch (err) {
+		return {
+			status: 0,
+			message: "Error occured while finding progress",
+			error: err
+		};
+	}
+};
 /** graph_data is used to fetch all user progress detail 
  * @return  status 0 - If any internal error occured while fetching progress data, with error
  * status 1 - If progress data found, with progress object
@@ -165,7 +221,6 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				var first = _.first(p.exercises);
 				var last = _.last(p.exercises);
 
-
 				var fieldCheckName = first.format;
 				tmp.subCategory = subCategory;
 				tmp.category = category;
@@ -173,46 +228,37 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				if (category === "strength") {
 					tmp.name = name;
 				}
-
 				if (category === "cardio") {
 
 				} else if (category === "strength") {
-					var first = first[fieldCheckName]; // first strength test data of user
-					var last = last[fieldCheckName]; // last strength test data of user
+					var _last = first[fieldCheckName]; // first strength test data of user
+					var _first = last[fieldCheckName]; // last strength test data of user
 					switch (fieldCheckName) {
-						case "text_field":
-							break;
 						case "max_rep":
-							var firstKeys = Object.keys(first); // key of first record 
-							var lastKeys = Object.keys(last); // key of last record 
+							var firstKeys = Object.keys(_first); // key of _first record 
+							var lastKeys = Object.keys(_last); // key of _last record 
 							var keys = _.union(firstKeys, lastKeys); // union of both record 
 							var differenceData = {};
 							_.each(keys, key => {
-								if (first[key] && last[key]) {
-									var diff = last[key] - first[key]; // difference between start and current reps data
+								if (_first[key] && _last[key]) {
+									var diff = _last[key] - _first[key]; // difference between start and current reps data
 									differenceData[key] = {
-										start: first[key],
-										current: last[key],
+										start: _first[key],
+										current: _last[key],
 										difference: diff,
-										percentageChange: Math.round(diff / first[key] * 100),
+										percentageChange: Math.round(diff / _first[key] * 100),
 									}
 								} else {
-									var diff = last[key] ? last[key] : 0 - first[key] ? first[key] : 0;
+									var diff = _last[key] ? _last[key] : 0 - _first[key] ? _first[key] : 0;
 									differenceData[key] = {
-										start: first[key] ? first[key] : 0,
-										current: last[key] ? last[key] : 0,
+										start: _first[key] ? _first[key] : 0,
+										current: _last[key] ? _last[key] : 0,
 										difference: diff,
-										percentageChange: Math.round(diff / first[key] * 100),
+										percentageChange: Math.round(diff / _first[key] * 100),
 									}
 								}
 							});
 							tmp.difference = differenceData;
-							break;
-						case "multiselect":
-							tmp.difference = first - last;
-							break;
-						case "a_or_b":
-							tmp.difference = first - last;
 							break;
 						default:
 							break;
@@ -434,7 +480,9 @@ workout_progress_helper.user_body_progress = async id => {
 			return {
 				status: 1,
 				message: "body measurements found",
-				body_progress: bodyProgress
+				progress: {
+					data: bodyProgress
+				}
 			};
 		} else {
 			return {
