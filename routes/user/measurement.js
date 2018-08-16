@@ -219,7 +219,7 @@ router.post("/", async (req, res) => {
       try {
         weight = measurement_unit_data.user_settings.weight;
       } catch (error) {
-        weight = "kg";
+        weight = "gram";
       }
       var neck = await common_helper.unit_converter(
         req.body.neck,

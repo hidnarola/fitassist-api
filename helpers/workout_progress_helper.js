@@ -233,8 +233,8 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				if (category === "cardio") {
 
 				} else if (category === "strength") {
-					var _last = first[fieldCheckName]; // first strength test data of user
-					var _first = last[fieldCheckName]; // last strength test data of user
+					var _first = first[fieldCheckName]; // first strength test data of user
+					var _last = last[fieldCheckName]; // last strength test data of user
 					switch (fieldCheckName) {
 						case "max_rep":
 							var firstKeys = Object.keys(_first); // key of _first record 
@@ -387,16 +387,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 			var calf = [];
 			var weight = [];
 			var height = [];
-			// var bodyMeasurementUnits = await user_settings_helper.get_setting({
-			// 	userId: id.userId
-			// });
-
-
-
-			// var weightUnit = bodyMeasurementUnits.user_settings.weight;
-			// var bodyMeasurementUnit = bodyMeasurementUnits.user_settings.bodyMeasurement;
-
-
 			_.each(body_progress, async function (bodypart) {
 
 				var date = moment(bodypart.logDate).format("DD/MM/YYYY");

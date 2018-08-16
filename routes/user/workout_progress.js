@@ -73,9 +73,7 @@ router.post("/", async (req, res) => {
           $lte: new Date(end)
         }
       });
-      console.log('------------------------------------');
-      console.log('resp_data : ', resp_data);
-      console.log('------------------------------------');
+
 
       var body = await workout_progress_helper.graph_data_body_data({
         createdAt: {
