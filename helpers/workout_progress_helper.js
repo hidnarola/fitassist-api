@@ -1,5 +1,7 @@
 var UserTestExerciseLogs = require("./../models/user_test_exercise_logs");
 var Measurement = require("./../models/body_measurements");
+var user_settings_helper = require("./../helpers/user_settings_helper")
+var common_helper = require("./../helpers/common_helper")
 var _ = require("underscore");
 var moment = require("moment");
 var workout_progress_helper = {};
@@ -357,12 +359,11 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 
 /*
  * user_body_progress is used to fetch logdata by userID
- * 
  * @return  status 0 - If any internal error occured while fetching logdata data, with error
  *          status 1 - If logdata data found, with logdata object
  *          status 2 - If logdata not found, with appropriate message
  */
-workout_progress_helper.user_body_progress = async id => {
+workout_progress_helper.user_body_progress = async (id) => {
 	try {
 		var body_progress = await Measurement.aggregate([{
 				$match: id
@@ -374,7 +375,7 @@ workout_progress_helper.user_body_progress = async id => {
 			},
 		]);
 
-		if (body_progress) {
+		if (body_progress && body_progress.length > 0) {
 			var neck = [];
 			var shoulders = [];
 			var chest = [];
@@ -386,8 +387,18 @@ workout_progress_helper.user_body_progress = async id => {
 			var calf = [];
 			var weight = [];
 			var height = [];
+			// var bodyMeasurementUnits = await user_settings_helper.get_setting({
+			// 	userId: id.userId
+			// });
 
-			body_progress.forEach(bodypart => {
+
+
+			// var weightUnit = bodyMeasurementUnits.user_settings.weight;
+			// var bodyMeasurementUnit = bodyMeasurementUnits.user_settings.bodyMeasurement;
+
+
+			_.each(body_progress, async function (bodypart) {
+
 				var date = moment(bodypart.logDate).format("DD/MM/YYYY");
 				neck.push({
 					date,
@@ -437,6 +448,20 @@ workout_progress_helper.user_body_progress = async id => {
 
 			var first = _.first(body_progress);
 			var last = _.last(body_progress);
+
+			// var bodypartKeys = ["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "height"];
+			// console.log('------------------------------------');
+			// console.log('before first : ', first);
+			// console.log('------------------------------------');
+
+			// _.each(bodypartKeys, async function (key) {
+			// 	first[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, first[key]);
+			// 	last[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, last[key]);
+			// });
+
+
+			// first.weight = await common_helper.convertUnits("kg", weightUnit, first.weight);
+			// last.weight = await common_helper.convertUnits("kg", weightUnit, last.weight);
 
 			var bodyProgress = {
 				"neck": {

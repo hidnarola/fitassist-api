@@ -75,7 +75,9 @@ router.post("/get_by_id_logdate", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -184,8 +186,6 @@ router.post("/", async (req, res) => {
     let measurement_unit_data = await user_settings_helper.get_setting({
       userId: authUserId
     });
-    var bodyMeasurement = measurement_unit_data.user_settings.bodyMeasurement;
-    var weight = measurement_unit_data.user_settings.weight;
     if (measurement_unit_data.status === 0) {
       logger.error(
         "Error while inserting measurement data = ",
@@ -207,6 +207,20 @@ router.post("/", async (req, res) => {
         height: req.body.height
       };
     } else {
+      var bodyMeasurement;
+      var weight;
+
+      try {
+        bodyMeasurement = measurement_unit_data.user_settings.bodyMeasurement;
+      } catch (error) {
+        bodyMeasurement = "cm";
+      }
+
+      try {
+        weight = measurement_unit_data.user_settings.weight;
+      } catch (error) {
+        weight = "kg";
+      }
       var neck = await common_helper.unit_converter(
         req.body.neck,
         bodyMeasurement
@@ -243,7 +257,7 @@ router.post("/", async (req, res) => {
         req.body.calf,
         bodyMeasurement
       );
-      var weight = await common_helper.unit_converter(req.body.weight, weight);
+      weight = await common_helper.unit_converter(req.body.weight, weight);
       var height = await common_helper.unit_converter(
         req.body.height,
         bodyMeasurement
@@ -285,7 +299,9 @@ router.post("/", async (req, res) => {
           "Error while inserting measurement data = ",
           measurement_data
         );
-        return res.status(config.BAD_REQUEST).json({ measurement_data });
+        return res.status(config.BAD_REQUEST).json({
+          measurement_data
+        });
       } else {
         badgesAssign(authUserId);
         return res.status(config.OK_STATUS).json(measurement_data);
@@ -301,7 +317,9 @@ router.post("/", async (req, res) => {
           "Error while inserting measurement data = ",
           measurement_data
         );
-        return res.status(config.BAD_REQUEST).json({ measurement_data });
+        return res.status(config.BAD_REQUEST).json({
+          measurement_data
+        });
       } else {
         badgesAssign(authUserId);
         return res.status(config.OK_STATUS).json(measurement_data);
@@ -309,7 +327,9 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -354,21 +374,25 @@ router.post("/get_log_dates_by_date", async (req, res) => {
     if (log_data.status != 0) {
       res.status(config.OK_STATUS).json(log_data);
     } else {
-      return res.status(config.BAD_REQUEST).json({ log_data });
+      return res.status(config.BAD_REQUEST).json({
+        log_data
+      });
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
 async function badgesAssign(authUserId) {
   // badge_assign start;
-  var resp_data = await measurement_helper.get_body_measurement_id(
-    {
+  var resp_data = await measurement_helper.get_body_measurement_id({
       userId: authUserId
+    }, {
+      logDate: -1
     },
-    { logDate: -1 },
     1
   );
   var body_measurement_data = {

@@ -8,35 +8,43 @@ var user_helper = require("./../helpers/user_helper");
 var notification_helper = require("./../helpers/notification_helper");
 var socket = require("../socket/socketServer");
 
-common_helper.hashPassword = function(callback) {
-  bcrypt.compare(this.password, this.hash, function(err, res) {
+common_helper.hashPassword = function (callback) {
+  bcrypt.compare(this.password, this.hash, function (err, res) {
     if (err) {
-      callback({ status: 0, error: err });
+      callback({
+        status: 0,
+        error: err
+      });
     } else {
-      callback({ status: 1, res: res });
+      callback({
+        status: 1,
+        res: res
+      });
     }
   });
 };
 
-common_helper.changeObject = function(data, callback) {
+common_helper.changeObject = function (data, callback) {
   columnFilter = {};
   columnSort = {};
   filter = [];
   //   columnFilterEqual = {};
 
-  async.forEach(data.columnFilter, function(val, next) {
+  async.forEach(data.columnFilter, function (val, next) {
     var key = val.id;
     var value = val.value;
     if (val.isDigitFlag) {
       value = parseInt(val.value);
     } else if (!val.isEqualFlag) {
       re = new RegExp(val.value, "i");
-      value = { $regex: re };
+      value = {
+        $regex: re
+      };
     }
     columnFilter[key] = value;
   });
   if (data.columnSort && data.columnSort.length > 0) {
-    async.forEach(data.columnSort, function(val, next) {
+    async.forEach(data.columnSort, function (val, next) {
       var key = val.id;
       var value = 1;
       if (val.desc) {
@@ -75,7 +83,10 @@ common_helper.get_nutritional_labels = async type => {
         labels: nutritional_labels_data
       };
     } else {
-      return { status: 2, message: "No nutritional labels available" };
+      return {
+        status: 2,
+        message: "No nutritional labels available"
+      };
     }
   } catch (err) {
     return {
@@ -103,7 +114,10 @@ common_helper.get_nutritions = async () => {
         nutritions: nutrition
       };
     } else {
-      return { status: 2, message: "No nutrition available" };
+      return {
+        status: 2,
+        message: "No nutrition available"
+      };
     }
   } catch (err) {
     return {
@@ -125,52 +139,91 @@ common_helper.unit_converter = async (data, unit) => {
 
   switch (unit) {
     case "cm":
-      return { baseValue: data, baseUnit: "cm" };
+      return {
+        baseValue: data,
+        baseUnit: "cm"
+      };
       break;
     case "feet":
       calculatedData = data * 30.48;
-      return { baseValue: calculatedData, baseUnit: "cm" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "cm"
+      };
       break;
     case "kg":
       calculatedData = data * 1000;
-      return { baseValue: calculatedData, baseUnit: "g" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "g"
+      };
       break;
     case "lb":
       calculatedData = data / 0.0022046;
-      return { baseValue: calculatedData, baseUnit: "g" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "g"
+      };
       break;
     case "in":
       calculatedData = data * 2.54;
-      return { baseValue: calculatedData, baseUnit: "cm" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "cm"
+      };
       break;
     case "hour":
       calculatedData = data * 60 * 60;
-      return { baseValue: calculatedData, baseUnit: "second" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "second"
+      };
       break;
     case "minute":
       calculatedData = data * 60;
-      return { baseValue: calculatedData, baseUnit: "second" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "second"
+      };
       break;
     case "km":
       calculatedData = data * 1000;
-      return { baseValue: calculatedData, baseUnit: "meter" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "meter"
+      };
       break;
     case "meter":
-      return { baseValue: data, baseUnit: "meter" };
+      return {
+        baseValue: data,
+        baseUnit: "meter"
+      };
       break;
     case "mile":
       calculatedData = data * 1609.344;
-      return { baseValue: calculatedData, baseUnit: "meter" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "meter"
+      };
       break;
     case "g":
-      return { baseValue: data, baseUnit: "g" };
+      return {
+        baseValue: data,
+        baseUnit: "g"
+      };
       break;
     case "mg":
       calculatedData = data / 1000;
-      return { baseValue: calculatedData, baseUnit: "g" };
+      return {
+        baseValue: calculatedData,
+        baseUnit: "g"
+      };
       break;
     default:
-      return { baseValue: data, baseUnit: unit };
+      return {
+        baseValue: data,
+        baseUnit: unit
+      };
       break;
   }
 };
@@ -248,4 +301,107 @@ common_helper.send_notification = async (notificationData, socket) => {
   }
 };
 
+common_helper.convertUnits = async (from, to, value) => {
+  var result = value;
+  switch (from) {
+    case "inch":
+      switch (to) {
+        case "cm":
+          result = value * 2.54;
+          break;
+        case "meter":
+          result = value * 0.0254;
+          break;
+        case "feet":
+          result = value * 0.0833333;
+          break;
+      }
+      break;
+    case "cm":
+      switch (to) {
+        case "inch":
+          result = value * 0.393701;
+          break;
+        case "meter":
+          result = value * 0.01;
+          break;
+        case "feet":
+          result = value * 0.0328084;
+          break;
+      }
+      break;
+    case "meter":
+      switch (to) {
+        case "inch":
+          result = value * 39.3701;
+          break;
+        case "cm":
+          result = value * 100;
+          break;
+        case "feet":
+          result = value * 3.28084;
+          break;
+      }
+      break;
+    case "feet":
+      switch (to) {
+        case "inch":
+          result = value * 12;
+          break;
+        case "cm":
+          result = value * 30.48;
+          break;
+        case "meter":
+          result = value * 0.3048;
+          break;
+      }
+      break;
+    case "gram":
+      switch (to) {
+        case "mg":
+          result = value * 1000;
+          break;
+        case "kg":
+        case "kgs":
+          result = value * 0.001;
+          break;
+        case "lb":
+        case "lbs":
+          result = value * 0.00220462;
+          break;
+      }
+      break;
+    case "mg":
+      switch (to) {
+        case "gram":
+          result = value * 0.001;
+          break;
+      }
+      break;
+    case "kg":
+    case "kgs":
+      switch (to) {
+        case "lb":
+        case "lbs":
+          result = value * 2.20462;
+          break;
+        case "gram":
+          result = value * 1000;
+          break;
+      }
+      break;
+    case "lb":
+    case "lbs":
+      switch (to) {
+        case "kg":
+          result = value * 0.453592;
+          break;
+        case "gram":
+          result = value * 453.592;
+          break;
+      }
+      break;
+  }
+  return result;
+}
 module.exports = common_helper;

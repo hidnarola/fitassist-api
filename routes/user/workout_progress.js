@@ -65,6 +65,7 @@ router.post("/", async (req, res) => {
     }
 
     if (category === "muscle") {
+
       resp_data = await workout_progress_helper.user_body_progress({
         userId: authUserId,
         logDate: {
@@ -72,6 +73,10 @@ router.post("/", async (req, res) => {
           $lte: new Date(end)
         }
       });
+      console.log('------------------------------------');
+      console.log('resp_data : ', resp_data);
+      console.log('------------------------------------');
+
       var body = await workout_progress_helper.graph_data_body_data({
         createdAt: {
           logDate: {
@@ -79,18 +84,17 @@ router.post("/", async (req, res) => {
             $lte: new Date(end)
           }
         },
-        userId: authUserId,
       });
 
-      console.log('------------------------------------');
-      console.log('body : ', body);
-      console.log('------------------------------------');
+
 
       if (body.status === 1) {
         try {
           resp_data.progress.data.body.graph_data = body
         } catch (error) {}
       }
+
+
     } else if (req.body.category === "strength") {
       resp_data = await workout_progress_helper.get_progress_detail({
         createdAt: {
@@ -144,24 +148,25 @@ router.post("/", async (req, res) => {
         } catch (error) {}
       }
     }
-  }
 
-
-  if (resp_data.status === 1) {
-    logger.trace("user progress  got successfully   = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  } else if (resp_data.status === 2) {
-    logger.error(
-      "no record found = ",
-      resp_data
-    );
-    res.status(config.OK_STATUS).json(resp_data);
+    if (resp_data.status === 1) {
+      logger.trace("user progress  got successfully   = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    } else if (resp_data.status === 2) {
+      logger.error(
+        "no record found = ",
+        resp_data
+      );
+      res.status(config.OK_STATUS).json(resp_data);
+    }
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.VALIDATION_FAILURE_STATUS).json({
       message: errors
     });
   }
+
+
 });
 
 module.exports = router;
