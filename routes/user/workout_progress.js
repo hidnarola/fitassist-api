@@ -72,7 +72,19 @@ router.post("/", async (req, res) => {
           $lte: new Date(end)
         }
       });
-    } else {
+
+    } else if (req.body.category === "strength") {
+      resp_data = await workout_progress_helper.get_progress_detail({
+        createdAt: {
+          createdAt: {
+            $gte: new Date(start),
+            $lte: new Date(end)
+          },
+          userId: authUserId,
+        },
+        category: category
+      });
+    } else if (req.body.category === "mobility") {
       resp_data = await workout_progress_helper.get_progress_detail({
         createdAt: {
           createdAt: {

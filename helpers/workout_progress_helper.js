@@ -318,12 +318,21 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
  */
 workout_progress_helper.user_body_progress = async id => {
 	try {
-		var logdata = await Measurement.aggregate([{
+		var body_progress = await Measurement.aggregate([{
 				$match: id
 			},
 			{
 				$sort: {
 					logDate: 1
+				}
+			},
+			{
+				$project: {
+					"_id": 0,
+					"userId": 0,
+					"logDate": 0,
+					"modifiedAt": 0,
+					"createdAt": 0,
 				}
 			},
 			{
@@ -339,16 +348,93 @@ workout_progress_helper.user_body_progress = async id => {
 			},
 		]);
 
-		console.log('------------------------------------');
-		console.log('logdata : ', logdata);
-		console.log('------------------------------------');
+		if (body_progress) {
+			var first = body_progress[0].first
+			var last = body_progress[0].last
 
+			var bodyProgress = {
+				"neck": {
+					start: first.neck,
+					current: last.neck,
+					difference: last.neck - first.neck,
+					percentageChange: Math.round((last.neck - first.neck) / first.neck * 100),
+				},
+				"shoulders": {
+					start: first.shoulders,
+					current: last.shoulders,
+					difference: last.shoulders - first.shoulders,
+					percentageChange: Math.round((last.shoulders - first.shoulders) / first.shoulders * 100),
 
-		if (logdata) {
+				},
+				"chest": {
+					start: first.chest,
+					current: last.chest,
+					difference: last.chest - first.chest,
+					percentageChange: Math.round((last.chest - first.chest) / first.chest * 100),
+
+				},
+				"upperArm": {
+					start: first.upperArm,
+					current: last.upperArm,
+					difference: last.upperArm - first.upperArm,
+					percentageChange: Math.round((last.upperArm - first.upperArm) / first.upperArm * 100),
+
+				},
+				"waist": {
+					start: first.waist,
+					current: last.waist,
+					difference: last.waist - first.waist,
+					percentageChange: Math.round((last.waist - first.waist) / first.waist * 100),
+
+				},
+				"forearm": {
+					start: first.forearm,
+					current: last.forearm,
+					difference: last.forearm - first.forearm,
+					percentageChange: Math.round((last.forearm - first.forearm) / first.forearm * 100),
+
+				},
+				"hips": {
+					start: first.hips,
+					current: last.hips,
+					difference: last.hips - first.hips,
+					percentageChange: Math.round((last.hips - first.hips) / first.hips * 100),
+
+				},
+				"thigh": {
+					start: first.thigh,
+					current: last.thigh,
+					difference: last.thigh - first.thigh,
+					percentageChange: Math.round((last.thigh - first.thigh) / first.thigh * 100),
+
+				},
+				"calf": {
+					start: first.calf,
+					current: last.calf,
+					difference: last.calf - first.calf,
+					percentageChange: Math.round((last.calf - first.calf) / first.calf * 100),
+
+				},
+				"weight": {
+					start: first.weight,
+					current: last.weight,
+					difference: last.weight - first.weight,
+					percentageChange: Math.round((last.weight - first.weight) / first.weight * 100),
+
+				},
+				"height": {
+					start: first.height,
+					current: last.height,
+					difference: last.height - first.height,
+					percentageChange: Math.round((last.height - first.height) / first.height * 100),
+
+				}
+
+			}
 			return {
 				status: 1,
 				message: "body measurements found",
-				body_progress: logdata
+				body_progress: bodyProgress
 			};
 		} else {
 			return {
