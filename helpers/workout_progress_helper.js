@@ -388,48 +388,49 @@ workout_progress_helper.user_body_progress = async id => {
 			var height = [];
 
 			body_progress.forEach(bodypart => {
+				var date = moment(bodypart.logDate).format("DD/MM/YYYY");
 				neck.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.neck
 				})
 				shoulders.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.shoulders
 				})
 				chest.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.chest
 				})
 				upperArm.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.upperArm
 				})
 				waist.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.waist
 				})
 				forearm.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.forearm
 				})
 				hips.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.hips
 				})
 				thigh.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.thigh
 				})
 				calf.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.calf
 				})
 				weight.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.weight
 				})
 				height.push({
-					date: bodypart.logDate,
+					date,
 					count: bodypart.height
 				})
 			});
