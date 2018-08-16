@@ -82,6 +82,9 @@ router.post("/", async (req, res) => {
         userId: authUserId,
       });
 
+      console.log('------------------------------------');
+      console.log('body : ', body);
+      console.log('------------------------------------');
 
       if (body.status === 1) {
         try {
