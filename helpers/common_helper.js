@@ -166,6 +166,7 @@ common_helper.unit_converter = async (data, unit) => {
       };
       break;
     case "in":
+    case "inch":
       calculatedData = data * 2.54;
       return {
         baseValue: calculatedData,

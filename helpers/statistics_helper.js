@@ -2,6 +2,7 @@ var UserRecipes = require("./../models/users_recipe");
 var UserWorkout = require("./../models/user_workouts");
 var UsersRecipe = require("./../models/users_recipe");
 var WorkoutLogs = require("./../models/workout_logs");
+var BodyMeasurements = require("./../models/body_measurements");
 var moment = require("moment");
 var user_recipe_helper = require("./user_recipe_helper");
 
@@ -16,27 +17,54 @@ var user_leaderboard_helper = {};
  */
 user_leaderboard_helper.get_strength = async (condition = {}) => {
   try {
-    var user_workouts = await WorkoutLogs.aggregate([
-      {
+    var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },
       {
         $group: {
           _id: "$exerciseId",
-          weight_lifted_total: { $sum: "$weight" },
-          time_total: { $sum: "$time" },
-          weight_lifted_average: { $avg: "$weight" },
-          weight_lifted_most: { $max: "$weight" },
-          weight_lifted_least: { $min: "$weight" },
-          reps_least: { $min: "$reps" },
-          reps_total: { $sum: "$reps" },
-          reps_average: { $avg: "$reps" },
-          reps_most: { $max: "$reps" },
-          sets_least: { $min: "$sets" },
-          sets_total: { $sum: "$sets" },
-          sets_average: { $avg: "$sets" },
-          sets_most: { $max: "$sets" },
-          workouts_total: { $sum: 1 }
+          weight_lifted_total: {
+            $sum: "$weight"
+          },
+          time_total: {
+            $sum: "$time"
+          },
+          weight_lifted_average: {
+            $avg: "$weight"
+          },
+          weight_lifted_most: {
+            $max: "$weight"
+          },
+          weight_lifted_least: {
+            $min: "$weight"
+          },
+          reps_least: {
+            $min: "$reps"
+          },
+          reps_total: {
+            $sum: "$reps"
+          },
+          reps_average: {
+            $avg: "$reps"
+          },
+          reps_most: {
+            $max: "$reps"
+          },
+          sets_least: {
+            $min: "$sets"
+          },
+          sets_total: {
+            $sum: "$sets"
+          },
+          sets_average: {
+            $avg: "$sets"
+          },
+          sets_most: {
+            $max: "$sets"
+          },
+          workouts_total: {
+            $sum: 1
+          }
         }
       },
       {
@@ -60,12 +88,24 @@ user_leaderboard_helper.get_strength = async (condition = {}) => {
       {
         $group: {
           _id: null,
-          weight_lifted_total: { $sum: "$weight_lifted_total" },
-          weight_lifted_average: { $avg: "$weight_lifted_average" },
-          workouts_total: { $sum: "$workouts_total" },
-          reps_total: { $sum: "$reps_total" },
-          sets_total: { $sum: "$sets_total" },
-          workout_time: { $sum: "$time_total" }
+          weight_lifted_total: {
+            $sum: "$weight_lifted_total"
+          },
+          weight_lifted_average: {
+            $avg: "$weight_lifted_average"
+          },
+          workouts_total: {
+            $sum: "$workouts_total"
+          },
+          reps_total: {
+            $sum: "$reps_total"
+          },
+          sets_total: {
+            $sum: "$sets_total"
+          },
+          workout_time: {
+            $sum: "$time_total"
+          }
           // weight_lifted_most: { $max: "$weight_lifted_most" },
           // weight_lifted_least: { $min: "$weight_lifted_least" },
           // reps_least: { $min: "$reps_least" },
@@ -83,10 +123,14 @@ user_leaderboard_helper.get_strength = async (condition = {}) => {
       return {
         status: 1,
         message: "User Strength data found",
-        leaderboard: user_workouts[0]
+        statistics: user_workouts[0]
       };
     } else {
-      return { status: 2, message: "No User Strength data available" };
+      return {
+        status: 2,
+        message: "No User Strength data available",
+        statistics: null
+      };
     }
   } catch (err) {
     return {
@@ -106,27 +150,57 @@ user_leaderboard_helper.get_strength = async (condition = {}) => {
  */
 user_leaderboard_helper.get_cardio = async (condition = {}) => {
   try {
-    var user_workouts = await WorkoutLogs.aggregate([
-      {
+    var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },
       {
         $group: {
           _id: "$exerciseId",
-          distance_total: { $sum: "$distance" },
-          time_total: { $sum: "$time" },
-          weight_lifted_average: { $avg: "$weight" },
-          weight_lifted_most: { $max: "$weight" },
-          weight_lifted_least: { $min: "$weight" },
-          reps_least: { $min: "$reps" },
-          reps_total: { $sum: "$reps" },
-          reps_average: { $avg: "$reps" },
-          reps_most: { $max: "$reps" },
-          sets_least: { $min: "$sets" },
-          sets_total: { $sum: "$sets" },
-          sets_average: { $avg: "$sets" },
-          sets_most: { $max: "$sets" },
-          workouts_total: { $sum: 1 }
+          distance_total: {
+            $sum: "$distance"
+          },
+          time_total: {
+            $sum: "$time"
+          },
+          weight_lifted_total: {
+            $sum: "$weight"
+          },
+          weight_lifted_average: {
+            $avg: "$weight"
+          },
+          weight_lifted_most: {
+            $max: "$weight"
+          },
+          weight_lifted_least: {
+            $min: "$weight"
+          },
+          reps_least: {
+            $min: "$reps"
+          },
+          reps_total: {
+            $sum: "$reps"
+          },
+          reps_average: {
+            $avg: "$reps"
+          },
+          reps_most: {
+            $max: "$reps"
+          },
+          sets_least: {
+            $min: "$sets"
+          },
+          sets_total: {
+            $sum: "$sets"
+          },
+          sets_average: {
+            $avg: "$sets"
+          },
+          sets_most: {
+            $max: "$sets"
+          },
+          workouts_total: {
+            $sum: 1
+          }
         }
       },
       {
@@ -150,12 +224,24 @@ user_leaderboard_helper.get_cardio = async (condition = {}) => {
       {
         $group: {
           _id: null,
-          weight_lifted_total: { $sum: "$weight_lifted_total" },
-          weight_lifted_average: { $avg: "$weight_lifted_average" },
-          workouts_total: { $sum: "$workouts_total" },
-          reps_total: { $sum: "$reps_total" },
-          sets_total: { $sum: "$sets_total" },
-          workout_time: { $sum: "$time_total" }
+          weight_lifted_total: {
+            $sum: "$weight_lifted_total"
+          },
+          weight_lifted_average: {
+            $avg: "$weight_lifted_average"
+          },
+          workouts_total: {
+            $sum: "$workouts_total"
+          },
+          reps_total: {
+            $sum: "$reps_total"
+          },
+          sets_total: {
+            $sum: "$sets_total"
+          },
+          workout_time: {
+            $sum: "$time_total"
+          }
           // weight_lifted_most: { $max: "$weight_lifted_most" },
           // weight_lifted_least: { $min: "$weight_lifted_least" },
           // reps_least: { $min: "$reps_least" },
@@ -173,10 +259,14 @@ user_leaderboard_helper.get_cardio = async (condition = {}) => {
       return {
         status: 1,
         message: "User Cardio data found",
-        leaderboard: user_workouts[0]
+        statistics: user_workouts[0]
       };
     } else {
-      return { status: 2, message: "No User Cardio data available" };
+      return {
+        status: 2,
+        message: "No Use Cardio data available",
+        statistics: null
+      };
     }
   } catch (err) {
     return {
@@ -196,8 +286,7 @@ user_leaderboard_helper.get_cardio = async (condition = {}) => {
  */
 user_leaderboard_helper.get_nutrition = async (condition = {}) => {
   try {
-    var user_nutrients = await UsersRecipe.aggregate([
-      {
+    var user_nutrients = await UsersRecipe.aggregate([{
         $project: {
           _id: 1,
           isDeleted: 1,
@@ -209,14 +298,27 @@ user_leaderboard_helper.get_nutrition = async (condition = {}) => {
       {
         $match: condition
       },
-      { $unwind: "$totalNutrients" },
+      {
+        $unwind: "$totalNutrients"
+      },
       {
         $group: {
           _id: "null",
-          calories_total: { $sum: "$totalNutrients.ENERC_KCAL.quantity" },
-          protein_average: { $avg: "$totalNutrients.PROCNT.quantity" },
-          carbs_total: { $sum: "$totalNutrients.CHOCDF.quantity" },
-          protein_total: { $sum: "$totalNutrients.PROCNT.quantity" }
+          calories_total: {
+            $sum: "$totalNutrients.ENERC_KCAL.quantity"
+          },
+          protein_average: {
+            $avg: "$totalNutrients.PROCNT.quantity"
+          },
+          carbs_total: {
+            $sum: "$totalNutrients.CHOCDF.quantity"
+          },
+          protein_total: {
+            $sum: "$totalNutrients.PROCNT.quantity"
+          },
+          carbs_total: {
+            $sum: "$totalNutrients.CHOCDF.quantity"
+          },
           // calories_average: { $avg: "$totalNutrients.ENERC_KCAL.quantity" },
           // calories_most: { $max: "$totalNutrients.ENERC_KCAL.quantity" },
           // calories_least: { $min: "$totalNutrients.ENERC_KCAL.quantity" },
@@ -284,16 +386,19 @@ user_leaderboard_helper.get_nutrition = async (condition = {}) => {
       .utc()
       .format("Y");
 
-    var monthlyProtain = await UsersRecipe.aggregate([
-      {
+    var monthlyProtain = await UsersRecipe.aggregate([{
         $project: {
           _id: 1,
           isDeleted: 1,
           userId: 1,
           totalNutrients: 1,
           isCompleted: 1,
-          year: { $year: "$date" },
-          month: { $month: "$date" }
+          year: {
+            $year: "$date"
+          },
+          month: {
+            $month: "$date"
+          }
         }
       },
       {
@@ -303,11 +408,15 @@ user_leaderboard_helper.get_nutrition = async (condition = {}) => {
           year: parseInt(year)
         }
       },
-      { $unwind: "$totalNutrients" },
+      {
+        $unwind: "$totalNutrients"
+      },
       {
         $group: {
           _id: "null",
-          protein_total: { $sum: "$totalNutrients.PROCNT.quantity" }
+          protein_total: {
+            $sum: "$totalNutrients.PROCNT.quantity"
+          }
         }
       }
     ]);
@@ -319,10 +428,14 @@ user_leaderboard_helper.get_nutrition = async (condition = {}) => {
       return {
         status: 1,
         message: "User nutrition data found",
-        leaderboard: returnObj
+        statistics: returnObj
       };
     } else {
-      return { status: 2, message: "No User nutrition data available" };
+      return {
+        status: 2,
+        message: "No User nutrition data available",
+        statistics: null
+      };
     }
   } catch (err) {
     return {
@@ -342,75 +455,23 @@ user_leaderboard_helper.get_nutrition = async (condition = {}) => {
  */
 user_leaderboard_helper.get_body = async (condition = {}) => {
   try {
-    var leaderboard_data = await UserWorkout.aggregate([
-      {
-        $match: condition
-      },
-      {
-        $lookup: {
-          from: "user_workout_exercises",
-          foreignField: "userWorkoutsId",
-          localField: "_id",
-          as: "exercises"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: {
-          "exercises.isCompleted": 1
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          weight_lifted_total: { $sum: "$exercises.baseWeightValue" },
-          weight_lifted_average: { $avg: "$exercises.baseWeightValue" },
-          weight_lifted_most: { $max: "$exercises.baseWeightValue" },
-          weight_lifted_least: { $min: "$exercises.baseWeightValue" },
-          reps_least: { $min: "$exercises.reps" },
-          reps_total: { $sum: "$exercises.reps" },
-          reps_average: { $avg: "$exercises.reps" },
-          reps_most: { $max: "$exercises.reps" },
-          sets_least: { $min: "$exercises.sets" },
-          sets_total: { $sum: "$exercises.sets" },
-          sets_average: { $avg: "$exercises.sets" },
-          sets_most: { $max: "$exercises.sets" },
-          workouts_total: { $addToSet: "$exercises" }
-        }
-      },
-      {
-        $project: {
-          weight_lifted_total: 1,
-          weight_lifted_average: 1,
-          weight_lifted_most: 1,
-          weight_lifted_least: 1,
-          reps_least: 1,
-          reps_total: 1,
-          reps_average: 1,
-          reps_most: 1,
-          sets_least: 1,
-          sets_total: 1,
-          sets_average: 1,
-          sets_most: 1,
-          workouts_total: { $size: "$workouts_total" }
-        }
-      }
-    ]);
+    var resp_data = await BodyMeasurements.aggregate([{
+      $match: condition
+    }]);
     // body fat change, shoulder waist ration, current weight, resting heart rate, bicep growth, weight change
 
-    if (leaderboard_data) {
+    if (resp_data) {
       return {
         status: 1,
         message: "User body data found",
-        leaderboard: leaderboard_data
+        statistics: resp_data
       };
     } else {
-      return { status: 2, message: "No User body data available" };
+      return {
+        status: 2,
+        message: "No User body data available",
+        statistics: null
+      };
     }
   } catch (err) {
     return {

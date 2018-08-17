@@ -8,7 +8,7 @@ module.exports = {
     "kg",
     "lb",
     "percentage",
-    "in",
+    "inch",
     "number",
     "hour",
     "minute",

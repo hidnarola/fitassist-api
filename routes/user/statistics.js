@@ -5,7 +5,7 @@ var jwtDecode = require("jwt-decode");
 
 var logger = config.logger;
 
-var user_leaderboard_helper = require("../../helpers/user_leaderboard_helper");
+var user_leaderboard_helper = require("../../helpers/statistics_helper");
 
 /**
  * @api {get} /user/user_leaderboard/:type Get
@@ -27,12 +27,14 @@ router.get("/:type", async (req, res) => {
     if (type == "strength") {
       // weight_lifted_total,weight_lifted_average,workouts_total,reps_total,sets_total, workout_time
       resp_data = await user_leaderboard_helper.get_strength({
-        userId: authUserId
+        userId: authUserId,
+        isCompleted: 1
       });
     } else if (type == "cardio") {
       // total_distance run, total time running,total elevation, peak heartrate, distance cycled, total steps
       resp_data = await user_leaderboard_helper.get_cardio({
-        userId: authUserId
+        userId: authUserId,
+        isCompleted: 1
       });
     } else if (type == "nutrition") {
       // total calories, avg protain, total fat, total excess cals, total cabs, monthly protain
