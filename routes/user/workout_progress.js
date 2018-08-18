@@ -62,10 +62,11 @@ router.post("/", async (req, res) => {
       category = [req.body.category]
     } else if (req.body.category === "muscle") {
       category = "muscle"
+    } else if (req.body.category === "endurance") {
+      category = "endurance"
     }
 
     if (category === "muscle") {
-
       resp_data = await workout_progress_helper.user_body_progress({
         userId: authUserId,
         logDate: {
@@ -73,8 +74,6 @@ router.post("/", async (req, res) => {
           $lte: new Date(end)
         }
       });
-
-
       var body = await workout_progress_helper.graph_data_body_data({
         createdAt: {
           logDate: {
@@ -83,16 +82,11 @@ router.post("/", async (req, res) => {
           }
         },
       });
-
-
-
       if (body.status === 1) {
         try {
           resp_data.progress.data.body.graph_data = body
         } catch (error) {}
       }
-
-
     } else if (req.body.category === "strength") {
       resp_data = await workout_progress_helper.get_progress_detail({
         createdAt: {
@@ -115,7 +109,6 @@ router.post("/", async (req, res) => {
         },
         category: category
       });
-
       var flexibility = await workout_progress_helper.graph_data({
         createdAt: {
           createdAt: {
@@ -145,12 +138,24 @@ router.post("/", async (req, res) => {
           resp_data.progress.data.posture.graph_data = posture.progress
         } catch (error) {}
       }
+    } else if (req.body.category === "endurance") {
+      resp_data = await workout_progress_helper.user_endurance_test({
+        createdAt: {
+          createdAt: {
+            $gte: new Date(start),
+            $lte: new Date(end)
+          }
+        },
+        userId: authUserId,
+      }, "cardio");
+
+
     }
 
     if (resp_data.status === 1) {
       logger.trace("user progress  got successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
-    } else if (resp_data.status === 2) {
+    } else {
       logger.error(
         "no record found = ",
         resp_data
@@ -163,8 +168,6 @@ router.post("/", async (req, res) => {
       message: errors
     });
   }
-
-
 });
 
 module.exports = router;

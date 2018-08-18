@@ -358,6 +358,91 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 
 
 /*
+ * user_endurance_test is used to fetch logdata by userID
+ * @return  status 0 - If any internal error occured while fetching logdata data, with error
+ *          status 1 - If logdata data found, with logdata object
+ *          status 2 - If logdata not found, with appropriate message
+ */
+workout_progress_helper.user_endurance_test = async (condition, type) => {
+	try {
+		var enduranceData = await UserTestExerciseLogs.aggregate([{
+				$match: condition.createdAt
+			},
+			{
+				$lookup: {
+					from: "test_exercises",
+					localField: "test_exercise_id",
+					foreignField: "_id",
+					as: "test_exercises"
+				}
+			},
+			{
+				$unwind: "$test_exercises"
+			},
+			{
+				$match: {
+					"test_exercises.category": type
+				}
+			},
+			{
+				$group: {
+					_id: "$test_exercises._id",
+					data: {
+						$addToSet: "$$ROOT"
+					}
+				}
+			},
+
+		]);
+
+
+		if (enduranceData && enduranceData.length > 0) {
+			var returnArray = [];
+			_.each(enduranceData, function (e) {
+				tmp = _.sortBy(e.data, function (o) {
+					return o.createdAt;
+				});
+				var returnObj = {
+					name: "",
+					start: "",
+					current: "",
+					difference: "",
+					percentageChange: "",
+					// graphData: "",
+				}
+
+				var first = _.first(tmp);
+				var last = _.last(tmp);
+				var checkField = first.format;
+				returnObj.name = first.test_exercises.name;
+				returnObj.start = first[checkField];
+				returnObj.current = last[checkField];
+				returnObj.difference = last[checkField] - first[checkField];
+				returnObj.percentageChange = Math.round((last[checkField] - first[checkField]) / first[checkField] * 100);
+				returnArray.push(returnObj);
+			})
+			return {
+				status: 1,
+				message: "Endurance progress found",
+				progress: {
+					data: returnArray
+				}
+			};
+		} else {
+			return {
+				status: 2,
+				message: "No Endurance progress found"
+			};
+		}
+	} catch (err) {
+		return {
+			status: 0,
+			message: "Error occured while finding Endurance progress",
+			error: err
+		};
+	}
+};
+/*
  * user_body_progress is used to fetch logdata by userID
  * @return  status 0 - If any internal error occured while fetching logdata data, with error
  *          status 1 - If logdata data found, with logdata object
@@ -435,6 +520,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 					date,
 					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf)
 				})
+
 				weight.push({
 					date,
 					count: await common_helper.convertUnits("gram", weightUnit, bodypart.weight)
@@ -532,10 +618,10 @@ workout_progress_helper.user_body_progress = async (id) => {
 
 				},
 				"weight": {
-					start: first.weight,
-					current: last.weight,
-					difference: last.weight - first.weight,
-					percentageChange: Math.round((last.weight - first.weight) / first.weight * 100),
+					start: first.weight.toFixed(2),
+					current: last.weight.toFixed(2),
+					difference: (last.weight - first.weight).toFixed(2),
+					percentageChange: Math.round((last.weight - first.weight) / first.weight * 100).toFixed(2),
 					graphData: weight
 
 				},
