@@ -485,48 +485,48 @@ workout_progress_helper.user_body_progress = async (id) => {
 				var date = moment(bodypart.logDate).format("DD/MM/YYYY");
 				neck.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck) + " " + bodyMeasurementUnit
 				})
 				shoulders.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.shoulders)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.shoulders) + " " + bodyMeasurementUnit
 				})
 				chest.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.chest)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.chest) + " " + bodyMeasurementUnit
 				})
 				upperArm.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.upperArm)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.upperArm) + " " + bodyMeasurementUnit
 				})
 				waist.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist) + " " + bodyMeasurementUnit
 				})
 				forearm.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.forearm)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.forearm) + " " + bodyMeasurementUnit
 				})
 				hips.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.hips)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.hips) + " " + bodyMeasurementUnit
 				})
 				thigh.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.thigh)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.thigh) + " " + bodyMeasurementUnit
 				})
 				calf.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf) + " " + bodyMeasurementUnit
 				})
 
 				weight.push({
 					date,
-					count: await common_helper.convertUnits("gram", weightUnit, bodypart.weight)
+					count: await common_helper.convertUnits("gram", weightUnit, bodypart.weight) + " " + weightUnit
 				})
 				height.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.height)
+					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.height) + " " + bodyMeasurementUnit
 				})
 			});
 
