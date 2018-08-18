@@ -111,25 +111,8 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
   var logDate = req.body.logDate;
 
-  var startdate = moment(logDate).utcOffset(0);
-  startdate.toISOString();
-  startdate.format();
-
-  var enddate = moment(logDate)
-    .utcOffset(0)
-    .add(23, "hours")
-    .add(59, "minutes");
-  enddate.toISOString();
-  enddate.format();
-
   logger.trace("Get measurement by authUserId and logDate API called");
-  var resp_data = await measurement_helper.get_body_measurement_id({
-    userId: authUserId,
-    logDate: {
-      $gte: startdate,
-      $lte: enddate
-    }
-  });
+
   var schema = {
     logDate: {
       notEmpty: true,
@@ -178,6 +161,10 @@ router.post("/", async (req, res) => {
     height: {
       notEmpty: true,
       errorMessage: "height is required"
+    },
+    heartRate: {
+      notEmpty: true,
+      errorMessage: "Heart rate is required"
     }
   };
   req.checkBody(schema);
@@ -204,12 +191,12 @@ router.post("/", async (req, res) => {
         thigh: req.body.thigh,
         calf: req.body.calf,
         weight: req.body.weight,
-        height: req.body.height
+        height: req.body.height,
+        heartRate: req.body.heartRate
       };
     } else {
       var bodyMeasurement;
       var weight;
-
       try {
         bodyMeasurement = measurement_unit_data.user_settings.bodyMeasurement;
       } catch (error) {
@@ -277,6 +264,7 @@ router.post("/", async (req, res) => {
         calf: calf.baseValue,
         weight: weight.baseValue,
         height: height.baseValue,
+        heartRate: req.body.heartRate,
         modifiedAt: new Date()
       };
     }
@@ -290,6 +278,25 @@ router.post("/", async (req, res) => {
       user_height_and_weight_object
     );
 
+    var startdate = moment(logDate).utcOffset(0);
+    startdate.toISOString();
+    startdate.format();
+
+    var enddate = moment(logDate)
+      .utcOffset(0)
+      .add(23, "hours")
+      .add(59, "minutes");
+    enddate.toISOString();
+    enddate.format();
+
+    var resp_data = await measurement_helper.get_body_measurement_id({
+      userId: authUserId,
+      logDate: {
+        $gte: startdate,
+        $lte: enddate
+      }
+    });
+    
     if (resp_data.status == 2) {
       let measurement_data = await measurement_helper.insert_body_measurement(
         measurement_obj
