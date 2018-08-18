@@ -408,7 +408,6 @@ workout_progress_helper.user_endurance_test = async (condition, type) => {
 					current: "",
 					difference: "",
 					percentageChange: "",
-					// graphData: "",
 				}
 
 				var first = _.first(tmp);
