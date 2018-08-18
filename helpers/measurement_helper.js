@@ -139,7 +139,6 @@ measurement_helper.get_logdata_by_userid = async id => {
  * 
  * @return  status  0 - If any error occur in inserting body measurement, with error
  *          status  1 - If Body measurement inserted, with inserted body_measurement's document and appropriate message
- * 
  * @developed by "amc"
  */
 measurement_helper.insert_body_measurement = async measurement_object => {
@@ -243,7 +242,6 @@ measurement_helper.delete_measurement_by_id = async body_measurement_id => {
 
 /*
  * get_filtered_records is used to fetch all filtered data
- * 
  * @return  status 0 - If any internal error occured while fetching filtered data, with error
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message

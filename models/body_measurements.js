@@ -75,7 +75,11 @@ var MeasurementSchema = new Schema({
         required: false,
         default: 0
     },
-
+    bodyFat: {
+        type: Object,
+        required: false,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now

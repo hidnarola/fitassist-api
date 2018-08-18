@@ -192,7 +192,8 @@ router.post("/", async (req, res) => {
         calf: req.body.calf,
         weight: req.body.weight,
         height: req.body.height,
-        heartRate: req.body.heartRate
+        heartRate: req.body.heartRate,
+        bodyFat: req.body.bodyFat
       };
     } else {
       var bodyMeasurement;
@@ -265,9 +266,11 @@ router.post("/", async (req, res) => {
         weight: weight.baseValue,
         height: height.baseValue,
         heartRate: req.body.heartRate,
+        bodyFat: req.body.bodyFat,
         modifiedAt: new Date()
       };
     }
+    
     var user_height_and_weight_object = {
       weight: weight.baseValue,
       height: height.baseValue
@@ -296,7 +299,7 @@ router.post("/", async (req, res) => {
         $lte: enddate
       }
     });
-    
+
     if (resp_data.status == 2) {
       let measurement_data = await measurement_helper.insert_body_measurement(
         measurement_obj
@@ -402,6 +405,10 @@ async function badgesAssign(authUserId) {
     },
     1
   );
+  console.log('------------------------------------');
+  console.log('resp_data : ', resp_data);
+  console.log('------------------------------------');
+
   var body_measurement_data = {
     neck_measurement_gain: resp_data.measurement.neck,
     neck_measurement_loss: resp_data.measurement.neck,
@@ -421,14 +428,28 @@ async function badgesAssign(authUserId) {
     thigh_measurement_loss: resp_data.measurement.thigh,
     calf_measurement_gain: resp_data.measurement.calf,
     calf_measurement_loss: resp_data.measurement.calf,
-    weight: resp_data.measurement.weight
+    weight: resp_data.measurement.weight,
+    body_fat_gain: resp_data.measurement.bodyFat.fat,
+    body_fat_loss: resp_data.measurement.bodyFat.fat,
+    body_fat_average: resp_data.measurement.bodyFat.fat,
+    body_fat_most: resp_data.measurement.bodyFat.fat,
+    body_fat_least: resp_data.measurement.bodyFat.fat,
+    heart_rate_total: resp_data.measurement.heartRate,
+    heart_rate_average: resp_data.measurement.heartRate,
+    heart_rate_most: resp_data.measurement.heartRate,
+    heart_rate_least: resp_data.measurement.heartRate,
+    heart_rate_resting_total: resp_data.measurement.heartRate,
+    heart_rate_resting_average: resp_data.measurement.heartRate,
+    heart_rate_resting_most: resp_data.measurement.heartRate,
+    heart_rate_resting_least: resp_data.measurement.heartRate,
   };
+
 
   var badges = await badge_assign_helper.badge_assign(
     authUserId,
     constant.BADGES_TYPE.BODY_MEASUREMENT.concat(
       constant.BADGES_TYPE.BODY_MASS
-    ),
+    ).concat(constant.BADGES_TYPE.BODY_FAT),
     body_measurement_data
   );
   //badge assign end
