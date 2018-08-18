@@ -481,53 +481,95 @@ workout_progress_helper.user_body_progress = async (id) => {
 			var weight = [];
 			var height = [];
 			_.each(body_progress, async function (bodypart) {
-
 				var date = moment(bodypart.logDate).format("DD/MM/YYYY");
-
 				neck.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Neck"
+					}
 				})
 				shoulders.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.shoulders)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.shoulders)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Shoulders"
+					}
 				})
 				chest.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.chest)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.chest)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Chest"
+					}
 				})
 				upperArm.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.upperArm)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.upperArm)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "UpperArm"
+					}
 				})
 				waist.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Waist"
+					}
 				})
 				forearm.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.forearm)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.forearm)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Forearm"
+					}
 				})
 				hips.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.hips)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.hips)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Hips"
+					}
 				})
 				thigh.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.thigh)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.thigh)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Thigh"
+					}
 				})
 				calf.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Calf"
+					}
 				})
 
 				weight.push({
 					date,
-					count: (await common_helper.convertUnits("gram", weightUnit, bodypart.weight)).toFixed(2) + " " + weightUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", weightUnit, bodypart.weight)).toFixed(2),
+						unit: weightUnit,
+						name: "Weight"
+					}
 				})
 				height.push({
 					date,
-					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.height)).toFixed(2) + " " + bodyMeasurementUnit
+					count: {
+						value: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.height)).toFixed(2),
+						unit: bodyMeasurementUnit,
+						name: "Height"
+					}
 				})
 			});
 
