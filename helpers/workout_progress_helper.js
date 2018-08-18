@@ -483,50 +483,51 @@ workout_progress_helper.user_body_progress = async (id) => {
 			_.each(body_progress, async function (bodypart) {
 
 				var date = moment(bodypart.logDate).format("DD/MM/YYYY");
+
 				neck.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 				shoulders.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.shoulders).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.shoulders)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 				chest.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.chest).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.chest)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 				upperArm.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.upperArm).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.upperArm)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 				waist.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 				forearm.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.forearm).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.forearm)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 				hips.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.hips).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.hips)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 				thigh.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.thigh).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.thigh)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 				calf.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 
 				weight.push({
 					date,
-					count: await common_helper.convertUnits("gram", weightUnit, bodypart.weight).toFixed(2) + " " + weightUnit
+					count: (await common_helper.convertUnits("gram", weightUnit, bodypart.weight)).toFixed(2) + " " + weightUnit
 				})
 				height.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.height).toFixed(2) + " " + bodyMeasurementUnit
+					count: (await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.height)).toFixed(2) + " " + bodyMeasurementUnit
 				})
 			});
 
@@ -536,13 +537,17 @@ workout_progress_helper.user_body_progress = async (id) => {
 			var bodypartKeys = ["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "height"];
 
 			_.each(bodypartKeys, async function (key) {
-				first[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, first[key]).toFixed(2);
-				last[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, last[key]).toFixed(2);
+				first[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, first[key]);
+				first[key] = first[key].toFixed(2);
+				last[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, last[key]);
+				last[key] = last[key].toFixed(2);
 			});
 
 
-			first.weight = await common_helper.convertUnits("gram", weightUnit, first.weight).toFixed(2);
-			last.weight = await common_helper.convertUnits("gram", weightUnit, last.weight).toFixed(2);
+			first.weight = await common_helper.convertUnits("gram", weightUnit, first.weight);
+			first.weight = first.weight.toFixed(2);
+			last.weight = await common_helper.convertUnits("gram", weightUnit, last.weight);
+			last.weight = last.weight.toFixed(2);
 
 			var bodyProgress = {
 				"neck": {
@@ -626,11 +631,11 @@ workout_progress_helper.user_body_progress = async (id) => {
 
 				},
 				"weight": {
-					start: first.weight.toFixed(2),
-					current: last.weight.toFixed(2),
+					start: first.weight,
+					current: last.weight,
 					unit: weightUnit,
 					difference: (last.weight - first.weight).toFixed(2),
-					percentageChange: Math.round((last.weight - first.weight) / first.weight * 100).toFixed(2),
+					percentageChange: Math.round((last.weight - first.weight) / first.weight * 100),
 					graphData: weight
 
 				},
