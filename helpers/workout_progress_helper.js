@@ -775,7 +775,8 @@ workout_progress_helper.user_body_fat = async (id) => {
 		} else {
 			return {
 				status: 2,
-				message: "No body measurements found"
+				message: "No body fat found",
+				progress: {}
 			};
 		}
 	} catch (err) {
@@ -800,7 +801,7 @@ workout_progress_helper.graph_data_body_fat = async (condition = {}) => {
 			{
 				$group: {
 					_id: "$logDate",
-					bodyFatPer: {
+					count: {
 						$first: "$$ROOT.bodyFatPer"
 					}
 				}
@@ -809,7 +810,7 @@ workout_progress_helper.graph_data_body_fat = async (condition = {}) => {
 				$project: {
 					_id: 0,
 					date: "$_id",
-					bodyFatPer: 1
+					count: 1
 				}
 			},
 			{
