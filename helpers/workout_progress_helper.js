@@ -413,10 +413,10 @@ workout_progress_helper.user_endurance_test = async (condition, type) => {
 				var checkField = first.format;
 				returnObj.name = first.test_exercises.name;
 				returnObj.unit = "min";
-				returnObj.start = (first[checkField]).toFixed(2);
-				returnObj.current = (last[checkField]).toFixed(2);
-				returnObj.difference = (last[checkField] - first[checkField]).toFixed(2);
-				returnObj.percentageChange = ((last[checkField] - first[checkField]) / first[checkField] * 100).toFixed(2);
+				returnObj.start = first[checkField];
+				returnObj.current = last[checkField];
+				returnObj.difference = last[checkField] - first[checkField];
+				returnObj.percentageChange = parseFloat(((last[checkField] - first[checkField]) / first[checkField] * 100).toFixed(2));
 				returnArray.push(returnObj);
 			})
 			return {
