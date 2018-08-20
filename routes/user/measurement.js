@@ -43,7 +43,8 @@ router.post("/get_by_id_logdate", async (req, res) => {
   var measurement_obj = {
     status: 1,
     message: "",
-    measurement: {}
+    measurement: {},
+    body_fat_log: {}
   };
   if (!errors) {
     var startdate = moment(logDate).utcOffset(0);
@@ -72,14 +73,14 @@ router.post("/get_by_id_logdate", async (req, res) => {
         $lte: enddate
       }
     });
-    if (resp_data.status == 1 || resp_data.status == 2) {
-      measurement_obj.status = resp_data.status;
-      measurement_obj.message = resp_data.message;
+
+    if (resp_data.status != 0 || body_fat.status != 0) {
+      measurement_obj.status = 1;
+      measurement_obj.message = "Success";
       if (resp_data.measurement) {
         measurement_obj.measurement = resp_data.measurement;
       }
-      measurement_obj.body_fat_log = {};
-      if (body_fat.status === 1 && body_fat.status) {
+      if (body_fat.body_fat_log) {
         measurement_obj.body_fat_log = body_fat.body_fat_log;
       }
       res.status(config.OK_STATUS).json(measurement_obj);
