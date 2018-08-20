@@ -13,9 +13,16 @@ user_helper.get_all_users = async () => {
   try {
     var users = await User.find();
     if (users) {
-      return { status: 1, message: "users found", users: users };
+      return {
+        status: 1,
+        message: "users found",
+        users: users
+      };
     } else {
-      return { status: 2, message: "No users available" };
+      return {
+        status: 2,
+        message: "No users available"
+      };
     }
   } catch (err) {
     return {
@@ -91,9 +98,16 @@ user_helper.search_users = async (
     });
 
     if (users) {
-      return { status: 1, message: "users found", users: users };
+      return {
+        status: 1,
+        message: "users found",
+        users: users
+      };
     } else {
-      return { status: 2, message: "No users available" };
+      return {
+        status: 2,
+        message: "No users available"
+      };
     }
   } catch (err) {
     return {
@@ -114,11 +128,22 @@ user_helper.search_users = async (
  */
 user_helper.get_user_by_id = async user_id => {
   try {
-    var user = await User.findOne({ authUserId: { $eq: user_id } });
+    var user = await User.findOne({
+      authUserId: {
+        $eq: user_id
+      }
+    });
     if (user) {
-      return { status: 1, message: "User details found", user: user };
+      return {
+        status: 1,
+        message: "User details found",
+        user: user
+      };
     } else {
-      return { status: 2, message: "User not found" };
+      return {
+        status: 2,
+        message: "User not found"
+      };
     }
   } catch (err) {
     return {
@@ -131,22 +156,26 @@ user_helper.get_user_by_id = async user_id => {
 
 /*
  * get_user_by is used to fetch single user by condition
- * 
  * @param   searchObject   Specify search object of user
- * 
  * @return  status  0 - If any error occur in finding user, with error
  *          status  1 - If User found, with found user document
  *          status  2 - If User not found, with appropriate error message
- * 
  * @developed by "amc"
  */
 user_helper.get_user_by = async searchObject => {
   try {
     var user = await User.findOne(searchObject).lean();
     if (user) {
-      return { status: 1, message: "User details found", user: user };
+      return {
+        status: 1,
+        message: "User details found",
+        user: user
+      };
     } else {
-      return { status: 2, message: "User not found" };
+      return {
+        status: 2,
+        message: "User not found"
+      };
     }
   } catch (err) {
     return {
@@ -159,19 +188,20 @@ user_helper.get_user_by = async searchObject => {
 
 /*
  * insert_user is used to insert into user collection
- * 
  * @param   user_object     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting faculty, with error
  *          status  1 - If faculty inserted, with inserted faculty's document and appropriate message
- * 
  * @developed by "amc"
  */
 user_helper.insert_user = async user_object => {
   let user = new User(user_object);
   try {
     let user_data = await user.save();
-    return { status: 1, message: "User inserted", user: user_data };
+    return {
+      status: 1,
+      message: "User inserted",
+      user: user_data
+    };
   } catch (err) {
     return {
       status: 0,
@@ -195,13 +225,22 @@ user_helper.insert_user = async user_object => {
  */
 user_helper.update_user_by_id = async (user_id, user_obj) => {
   try {
-    let user = await User.findOneAndUpdate({ authUserId: user_id }, user_obj, {
+    let user = await User.findOneAndUpdate({
+      authUserId: user_id
+    }, user_obj, {
       new: true
     }).lean();
     if (!user) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
-      return { status: 1, message: "Record has been updated", user: user };
+      return {
+        status: 1,
+        message: "Record has been updated",
+        user: user
+      };
     }
   } catch (err) {
     return {
@@ -226,11 +265,19 @@ user_helper.update_user_by_id = async (user_id, user_obj) => {
  */
 user_helper.delete_user_by_id = async (user_id, user_obj) => {
   try {
-    let user = await User.findOneAndUpdate({ authUserId: user_id }, user_obj);
+    let user = await User.findOneAndUpdate({
+      authUserId: user_id
+    }, user_obj);
     if (!user) {
-      return { status: 2, message: "Record has not Deleted" };
+      return {
+        status: 2,
+        message: "Record has not Deleted"
+      };
     } else {
-      return { status: 1, message: "Record has been Deleted" };
+      return {
+        status: 1,
+        message: "Record has been Deleted"
+      };
     }
   } catch (err) {
     return {
@@ -251,19 +298,22 @@ user_helper.delete_user_by_id = async (user_id, user_obj) => {
 user_helper.get_filtered_records = async filter_obj => {
   var skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await User.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
+    var searched_record_count = await User.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
 
-    var filtered_data = await User.aggregate([
-      {
+    var filtered_data = await User.aggregate([{
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
+      {
+        $sort: filter_obj.columnSort
+      }
     ]);
 
     if (filtered_data) {
@@ -277,7 +327,10 @@ user_helper.get_filtered_records = async filter_obj => {
         filtered_users: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {
@@ -301,11 +354,23 @@ user_helper.checkvalue = async value => {
   try {
     var count = await User.find(value).count();
     if (count == 0) {
-      return { status: 1, message: "Value is not exists", count: count };
+      return {
+        status: 1,
+        message: "Value is not exists",
+        count: count
+      };
     } else if (count == 1) {
-      return { status: 1, message: "Value is exists", count: count };
+      return {
+        status: 1,
+        message: "Value is exists",
+        count: count
+      };
     } else {
-      return { status: 2, message: "Value is not Unique", count: count };
+      return {
+        status: 2,
+        message: "Value is not Unique",
+        count: count
+      };
     }
   } catch (err) {
     return {

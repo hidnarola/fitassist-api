@@ -193,7 +193,6 @@ router.post("/", async (req, res) => {
         weight: req.body.weight,
         height: req.body.height,
         heartRate: req.body.heartRate,
-        bodyFat: req.body.bodyFat
       };
     } else {
       var bodyMeasurement;
@@ -266,11 +265,10 @@ router.post("/", async (req, res) => {
         weight: weight.baseValue,
         height: height.baseValue,
         heartRate: req.body.heartRate,
-        bodyFat: req.body.bodyFat,
         modifiedAt: new Date()
       };
     }
-    
+
     var user_height_and_weight_object = {
       weight: weight.baseValue,
       height: height.baseValue
@@ -429,11 +427,6 @@ async function badgesAssign(authUserId) {
     calf_measurement_gain: resp_data.measurement.calf,
     calf_measurement_loss: resp_data.measurement.calf,
     weight: resp_data.measurement.weight,
-    body_fat_gain: resp_data.measurement.bodyFat.fat,
-    body_fat_loss: resp_data.measurement.bodyFat.fat,
-    body_fat_average: resp_data.measurement.bodyFat.fat,
-    body_fat_most: resp_data.measurement.bodyFat.fat,
-    body_fat_least: resp_data.measurement.bodyFat.fat,
     heart_rate_total: resp_data.measurement.heartRate,
     heart_rate_average: resp_data.measurement.heartRate,
     heart_rate_most: resp_data.measurement.heartRate,
