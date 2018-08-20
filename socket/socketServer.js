@@ -12,15 +12,15 @@ var logger = config.logger;
 var myIo = {};
 var users = new Map();
 var socketToUsers = new Map();
-myIo.init = function(server) {
+myIo.init = function (server) {
   io.attach(server);
-  io.on("connection", function(socket) {
+  io.on("connection", function (socket) {
     /**
      * @api {socket on} join  Join user to socket
      * @apiName Join user to socket
      * @apiGroup  Sokets
      */
-    socket.on("join", async function(token) {
+    socket.on("join", async function (token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
@@ -35,8 +35,7 @@ myIo.init = function(server) {
         users.set(authUserId, obj);
       }
       socketToUsers.set(socket.id, authUserId);
-      var user_friends = await friend_helper.get_friend_by_username(
-        {
+      var user_friends = await friend_helper.get_friend_by_username({
           username: "amc"
         },
         2
@@ -76,14 +75,13 @@ myIo.init = function(server) {
      * @apiParam {String} token Token of user
      * @apiSuccess (Success 200) {Number} count count of friends
      */
-    socket.on("user_friends_count", async function(token) {
+    socket.on("user_friends_count", async function (token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
       var socketIds =
-        user && user.socketIds && user.socketIds.length > 0
-          ? user.socketIds
-          : [];
+        user && user.socketIds && user.socketIds.length > 0 ?
+        user.socketIds : [];
 
       var user_friends_count = await friend_helper.count_friends(authUserId);
       socketIds.forEach(socketId => {
@@ -100,7 +98,7 @@ myIo.init = function(server) {
      * @apiParam {String} token Token of user
      * @apiSuccess (Success 200) {Number} count count of messages
      */
-    socket.on("user_messages_count", async function(token) {
+    socket.on("user_messages_count", async function (token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
@@ -109,9 +107,8 @@ myIo.init = function(server) {
       );
 
       var socketIds =
-        user && user.socketIds && user.socketIds.length > 0
-          ? user.socketIds
-          : [];
+        user && user.socketIds && user.socketIds.length > 0 ?
+        user.socketIds : [];
       socketIds.forEach(socketId => {
         io.to(socketId).emit("receive_user_messages_count", {
           count: user_messages_count.count
@@ -126,16 +123,14 @@ myIo.init = function(server) {
      * @apiParam {String} token Token of user
      * @apiSuccess (Success 200) {Number} count count of notifications
      */
-    socket.on("user_notifications_count", async function(token) {
+    socket.on("user_notifications_count", async function (token) {
       var decoded = jwtDecode(token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
-      var user_notifications_count = await user_notification_helper.get_notifications_count(
-        {
-          "receiver.authUserId": authUserId,
-          isSeen: 0
-        }
-      );
+      var user_notifications_count = await user_notification_helper.get_notifications_count({
+        "receiver.authUserId": authUserId,
+        isSeen: 0
+      });
 
       var socketIds = user ? user.socketIds : [];
       socketIds.forEach(socketId => {
@@ -152,7 +147,7 @@ myIo.init = function(server) {
      * @apiParam {JSON} data Data of user
      * @apiSuccess (Success 200) {JSON} channel channel of channel
      */
-    socket.on("get_channel_id", async function(data) {
+    socket.on("get_channel_id", async function (data) {
       var resp_data = {};
       var user = users.get(data.userId);
       var socketIds =
@@ -187,21 +182,22 @@ myIo.init = function(server) {
      * @apiParam {JSON} data Data of user
      * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
      */
-    socket.on("request_users_conversation_channels", async function(data) {
+    socket.on("request_users_conversation_channels", async function (data) {
       var resp_data = {};
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
-      var socketIds =
-        user && user.socketIds && user.socketIds.length ? user.socketIds : [];
+      var socketIds = user && user.socketIds && user.socketIds.length ? user.socketIds : [];
       var start = parseInt(data.start ? data.start : 0);
       var limit = parseInt(data.limit ? data.limit : 10);
 
       try {
         resp_data = await chat_helper.get_messages(
-          authUserId,
-          { $skip: start },
-          { $limit: limit }
+          authUserId, {
+            $skip: start
+          }, {
+            $limit: limit
+          }
         );
 
         if (resp_data.status == 0) {
@@ -229,28 +225,33 @@ myIo.init = function(server) {
      * @apiParam {JSON} data Data of user(token,channel_id,start,end)
      * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
      */
-    socket.on("get_user_conversation_by_channel", async function(data) {
+    socket.on("get_user_conversation_by_channel", async function (data) {
       var resp_data = {};
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
       var socketIds =
-        user && user.socketIds && user.socketIds.length > 0
-          ? user.socketIds
-          : [];
+        user && user.socketIds && user.socketIds.length > 0 ?
+        user.socketIds : [];
       var start = parseInt(data.start ? data.start : 0);
       var limit = parseInt(data.limit ? data.limit : 10);
       var condition = {
         _id: mongoose.Types.ObjectId(data.channel_id),
-        $or: [{ userId: authUserId }, { friendId: authUserId }]
+        $or: [{
+          userId: authUserId
+        }, {
+          friendId: authUserId
+        }]
       };
 
       try {
         resp_data = await chat_helper.get_conversation(
           authUserId,
-          condition,
-          { $skip: start },
-          { $limit: limit }
+          condition, {
+            $skip: start
+          }, {
+            $limit: limit
+          }
         );
 
         if (resp_data.status == 0) {
@@ -285,21 +286,19 @@ myIo.init = function(server) {
      * @apiParam {JSON} data Data of user(token,channel_id,start,end)
      * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
      */
-    socket.on("send_new_message", async function(data) {
+    socket.on("send_new_message", async function (data) {
       var respObj = {};
 
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
       var sender = users.get(authUserId);
       var socketIdsForSender =
-        sender && sender.socketIds && sender.socketIds.length > 0
-          ? sender.socketIds
-          : [];
+        sender && sender.socketIds && sender.socketIds.length > 0 ?
+        sender.socketIds : [];
       var reciever = users.get(data.friendId);
       var socketIdsForReceiver =
-        reciever && reciever.socketIds && reciever.socketIds.length > 0
-          ? reciever.socketIds
-          : [];
+        reciever && reciever.socketIds && reciever.socketIds.length > 0 ?
+        reciever.socketIds : [];
       var chat_data;
 
       try {
@@ -364,16 +363,15 @@ myIo.init = function(server) {
      * @apiParam {JSON} data {friendId:"",channelId:""} of friend
      * @apiSuccess (Success 200) {String} flag flag
      */
-    socket.on("request_typing_start", async function(data) {
+    socket.on("request_typing_start", async function (data) {
       var respObj = {
         status: 1,
         message: "typing"
       };
       var friendId = users.get(data.friendId);
       var socketIds =
-        friendId && friendId.socketIds && friendId.socketIds.length > 0
-          ? friendId.socketIds
-          : [];
+        friendId && friendId.socketIds && friendId.socketIds.length > 0 ?
+        friendId.socketIds : [];
       respObj.channel = {
         _id: data.channelId,
         isTyping: true
@@ -390,16 +388,15 @@ myIo.init = function(server) {
      * @apiParam {JSON} data {friendId:"",channelId:""} of friend
      * @apiSuccess (Success 200) {JSON} channel channel data
      */
-    socket.on("request_typing_stop", async function(data) {
+    socket.on("request_typing_stop", async function (data) {
       var respObj = {
         status: 1,
         message: "no typing"
       };
       var friendId = users.get(data.friendId);
       var socketIds =
-        friendId && friendId.socketIds && friendId.socketIds.length > 0
-          ? friendId.socketIds
-          : [];
+        friendId && friendId.socketIds && friendId.socketIds.length > 0 ?
+        friendId.socketIds : [];
       respObj.channel = {
         _id: data.channelId,
         isTyping: false
@@ -416,22 +413,18 @@ myIo.init = function(server) {
      * @apiParam {JSON} data {userId:"",channelId:""} of user
      * @apiSuccess (Success 200) {String} flag flag
      */
-    socket.on("mark_message_as_read", async function(data) {
+    socket.on("mark_message_as_read", async function (data) {
       var friendId = users.get(data.friendId);
       var socketIds =
-        friendId && friendId.socketIds && friendId.socketIds.length > 0
-          ? friendId.socketIds
-          : [];
-      let chat_data = await chat_helper.mark_message_as_read(
-        {
-          userId: data.friendId,
-          conversationId: data.channelId,
-          isSeen: 0
-        },
-        {
-          isSeen: 1
-        }
-      );
+        friendId && friendId.socketIds && friendId.socketIds.length > 0 ?
+        friendId.socketIds : [];
+      let chat_data = await chat_helper.mark_message_as_read({
+        userId: data.friendId,
+        conversationId: data.channelId,
+        isSeen: 0
+      }, {
+        isSeen: 1
+      });
     });
 
     /**
@@ -440,7 +433,7 @@ myIo.init = function(server) {
      * @apiGroup  Sokets
      * @apiSuccess (Success 200) {String} flag flag
      */
-    socket.on("disconnect", function() {
+    socket.on("disconnect", function () {
       var socketId = this.id;
       var socketToUser = socketToUsers.get(socketId);
       if (socketToUser) {

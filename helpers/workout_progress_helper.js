@@ -484,7 +484,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				var date = moment(bodypart.logDate).format("DD/MM/YYYY");
 				neck.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Neck"
@@ -492,7 +492,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				shoulders.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.shoulders),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.shoulders)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Shoulders"
@@ -500,7 +500,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				chest.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.chest),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.chest)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Chest"
@@ -508,7 +508,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				upperArm.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.upperArm),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.upperArm)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "UpperArm"
@@ -516,7 +516,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				waist.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Waist"
@@ -524,7 +524,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				forearm.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.forearm),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.forearm)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Forearm"
@@ -532,7 +532,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				hips.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.hips),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.hips)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Hips"
@@ -540,7 +540,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				thigh.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.thigh),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.thigh)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Thigh"
@@ -548,7 +548,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				calf.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.calf)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Calf"
@@ -556,7 +556,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				weight.push({
 					date,
-					count: await common_helper.convertUnits("cm", weightUnit, bodypart.weight),
+					count: parseFloat((await common_helper.convertUnits("cm", weightUnit, bodypart.weight)).toFixed(2)),
 					metaData: {
 						unit: weightUnit,
 						name: "Weight"
@@ -564,7 +564,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				height.push({
 					date,
-					count: await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.height),
+					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.height)).toFixed(2)),
 					metaData: {
 						unit: bodyMeasurementUnit,
 						name: "Height"

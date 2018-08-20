@@ -236,15 +236,13 @@ router.put("/", async (req, res) => {
         if (key == "gender") {
           percentage += 10;
         } else if (key == "dateOfBirth") {
-          percentage += 10;
+          percentage += 15;
         } else if (key == "height") {
           percentage += 10;
         } else if (key == "weight") {
           percentage += 10;
-        } else if (key == "weight") {
-          percentage += 10;
         } else if (key == "avatar") {
-          percentage += 10;
+          percentage += 15;
         } else if (key == "aboutMe") {
           percentage += 10;
         } else if (key == "lastName") {
@@ -257,6 +255,7 @@ router.put("/", async (req, res) => {
       }
     }
 
+
     //badge assign
     var badgeAssign = await badge_assign_helper.badge_assign(
       authUserId,
@@ -265,7 +264,6 @@ router.put("/", async (req, res) => {
       }
     );
     //badge assign
-
     return res.status(config.OK_STATUS).json(user_data);
   }
 });
@@ -490,7 +488,6 @@ router.put("/preferences", async (req, res) => {
 
   if (!errors) {
     var setting_obj = {};
-
     if (req.body.distance) {
       setting_obj.distance = req.body.distance;
     }

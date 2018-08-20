@@ -143,7 +143,6 @@ user_leaderboard_helper.get_strength = async (condition = {}) => {
 
 /*
  * get_cardio is used to fetch all user  cardio data
- * 
  * @return  status 0 - If any internal error occured while fetching cardio data, with error
  *          status 1 - If cardio data found, with cardio object
  *          status 2 - If cardio not found, with appropriate message
