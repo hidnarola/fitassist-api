@@ -1,5 +1,6 @@
 var UserTestExerciseLogs = require("./../models/user_test_exercise_logs");
 var Measurement = require("./../models/body_measurements");
+var BodyFatLogs = require("./../models/body_fat_logs");
 var user_settings_helper = require("./../helpers/user_settings_helper")
 var common_helper = require("./../helpers/common_helper")
 var _ = require("underscore");
@@ -355,8 +356,6 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 		};
 	}
 };
-
-
 /*
  * user_endurance_test is used to fetch logdata by userID
  * @return  status 0 - If any internal error occured while fetching logdata data, with error
@@ -725,6 +724,121 @@ workout_progress_helper.user_body_progress = async (id) => {
 		return {
 			status: 0,
 			message: "Error occured while finding logdata",
+			error: err
+		};
+	}
+};
+/*
+ * user_body_fat is used to fetch logdata by userID
+ * @return  status 0 - If any internal error occured while fetching logdata data, with error
+ *          status 1 - If logdata data found, with logdata object
+ *          status 2 - If logdata not found, with appropriate message
+ */
+workout_progress_helper.user_body_fat = async (id) => {
+	try {
+		var body_progress = await BodyFatLogs.aggregate([{
+				$match: id
+			},
+			{
+				$sort: {
+					logDate: 1
+				}
+			},
+		]);
+
+
+
+
+		if (body_progress && body_progress.length > 0) {
+
+
+			var first = _.first(body_progress);
+			var last = _.last(body_progress);
+
+
+			var bodyProgress = {
+				"body_fat": {
+					start: first.bodyFatPer,
+					current: last.bodyFatPer,
+					difference: (last.bodyFatPer - first.bodyFatPer).toFixed(2),
+					percentageChange: Math.round((last.bodyFatPer - first.bodyFatPer) / first.bodyFatPer * 100).toFixed(2),
+				},
+
+			}
+			return {
+				status: 1,
+				message: "Body fat found",
+				progress: {
+					data: bodyProgress
+				}
+			};
+		} else {
+			return {
+				status: 2,
+				message: "No body measurements found"
+			};
+		}
+	} catch (err) {
+		return {
+			status: 0,
+			message: "Error occured while finding logdata",
+			error: err
+		};
+	}
+};
+
+/** graph_data_body_fat is used to fetch all user fat progress detail 
+ * @return  status 0 - If any internal error occured while fetching progress data, with error
+ * status 1 - If progress data found, with progress object
+ * status 2 - If progress not found, with appropriate message
+ * */
+workout_progress_helper.graph_data_body_fat = async (condition = {}) => {
+	try {
+		var progress = await BodyFatLogs.aggregate([{
+				$match: condition.createdAt
+			},
+			{
+				$group: {
+					_id: "$logDate",
+					bodyFatPer: {
+						$first: "$$ROOT.bodyFatPer"
+					}
+				}
+			},
+			{
+				$project: {
+					_id: 0,
+					date: "$_id",
+					bodyFatPer: 1
+				}
+			},
+			{
+				$sort: {
+					date: 1
+				}
+			}
+		]);
+
+		if (progress && progress.length > 0) {
+			_.each(progress, function (o) {
+				o.date = moment(o.date).format("DD/MM/YYYY");
+			})
+			return {
+				status: 1,
+				message: "progress found",
+				progress: progress
+			};
+		} else {
+			return {
+				status: 2,
+				message: "No progress available",
+				progress: null
+			};
+		}
+	} catch (err) {
+		return {
+			status: 0,
+			message: "Error occured while finding progress",
 			error: err
 		};
 	}

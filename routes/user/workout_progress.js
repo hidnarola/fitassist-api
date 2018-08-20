@@ -64,6 +64,8 @@ router.post("/", async (req, res) => {
       category = "muscle"
     } else if (req.body.category === "endurance") {
       category = "endurance"
+    } else if (req.body.category === "bodyfat") {
+      category = "bodyfat"
     }
 
     if (category === "muscle") {
@@ -79,7 +81,8 @@ router.post("/", async (req, res) => {
           logDate: {
             $gte: new Date(start),
             $lte: new Date(end)
-          }
+          },
+          userId: authUserId
         },
       });
       if (body.status === 1) {
@@ -114,9 +117,9 @@ router.post("/", async (req, res) => {
           createdAt: {
             $gte: new Date(start),
             $lte: new Date(end)
-          }
+          },
+          userId: authUserId,
         },
-        userId: authUserId,
       }, "flexibility");
       if (flexibility.status === 1) {
         try {
@@ -129,9 +132,9 @@ router.post("/", async (req, res) => {
           createdAt: {
             $gte: new Date(start),
             $lte: new Date(end)
-          }
+          },
+          userId: authUserId,
         },
-        userId: authUserId,
       }, "posture");
       if (posture.status === 1) {
         try {
@@ -144,11 +147,36 @@ router.post("/", async (req, res) => {
           createdAt: {
             $gte: new Date(start),
             $lte: new Date(end)
-          }
+          },
+          userId: authUserId,
         },
-        userId: authUserId,
       }, "cardio");
+    } else if (req.body.category === "bodyfat") {
+      resp_data = await workout_progress_helper.user_body_fat({
+        userId: authUserId,
+        logDate: {
+          $gte: new Date(start),
+          $lte: new Date(end)
+        }
+      });
+      var body = await workout_progress_helper.graph_data_body_fat({
+        createdAt: {
+          logDate: {
+            $gte: new Date(start),
+            $lte: new Date(end)
+          },
+          userId: authUserId,
+        },
+      });
 
+
+      if (resp_data.status === 1) {
+        try {
+          if (body.status === 1) {
+            resp_data.progress.data.body_fat.graph_data = body.progress
+          }
+        } catch (error) {}
+      }
 
     }
 
