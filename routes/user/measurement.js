@@ -16,6 +16,7 @@ var common_helper = require("../../helpers/common_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
 var user_helper = require("../../helpers/user_helper");
+var body_fat_helper = require("../../helpers/body_fat_helper");
 
 /**
  * @api {post} /user/measurement/get_by_id_logdate Get User Measurement
@@ -64,13 +65,23 @@ router.post("/get_by_id_logdate", async (req, res) => {
         $lte: enddate
       }
     });
+    var body_fat = await body_fat_helper.get_body_fat_logs({
+      userId: authUserId,
+      logDate: {
+        $gte: startdate,
+        $lte: enddate
+      }
+    });
     if (resp_data.status == 1 || resp_data.status == 2) {
       measurement_obj.status = resp_data.status;
       measurement_obj.message = resp_data.message;
       if (resp_data.measurement) {
         measurement_obj.measurement = resp_data.measurement;
       }
-
+      measurement_obj.body_fat_log = {};
+      if (body_fat.status === 1 && body_fat.status) {
+        measurement_obj.body_fat_log = body_fat.body_fat_log;
+      }
       res.status(config.OK_STATUS).json(measurement_obj);
     }
   } else {
@@ -403,9 +414,7 @@ async function badgesAssign(authUserId) {
     },
     1
   );
-  console.log('------------------------------------');
-  console.log('resp_data : ', resp_data);
-  console.log('------------------------------------');
+
 
   var body_measurement_data = {
     neck_measurement_gain: resp_data.measurement.neck,

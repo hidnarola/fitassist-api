@@ -57,7 +57,8 @@ measurement_helper.get_body_measurement_id = async (
     } else {
       return {
         status: 2,
-        message: "No measurement available"
+        message: "No measurement available",
+        measurement: null
       };
     }
   } catch (err) {

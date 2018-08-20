@@ -79,7 +79,7 @@ router.post("/", async (req, res) => {
       }
     });
     if (resp_data.status === 2) {
-      var resp_data = await body_fat_helper.save_body_fat_logs(bodyFatObject);
+      var resp_data = await body_fat_helper.save_body_fat_log(bodyFatObject);
       if (resp_data.status == 1) {
         logger.trace("body_fat_log got saved = ", resp_data);
         res.status(config.OK_STATUS).json(resp_data);
@@ -88,9 +88,9 @@ router.post("/", async (req, res) => {
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
       }
     } else {
-      var resp_data = await body_fat_helper.save_body_fat_logs(
+      var resp_data = await body_fat_helper.save_body_fat_log(
         bodyFatObject, {
-          _id: resp_data.body_fat_logs._id
+          _id: resp_data.body_fat_log._id
         });
       if (resp_data.status == 1) {
         logger.trace("body_fat_log got saved = ", resp_data);
