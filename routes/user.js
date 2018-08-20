@@ -68,6 +68,6 @@ router.use("/user_program", auth, user_program);
 router.use("/statistics", auth, statistics);
 router.use("/exercise_measurements", auth, exercise_measurements);
 router.use("/progress", auth, workout_progress);
-router.use("/body_fat_logs", auth, body_fat_logs);
+router.use("/body_fat_log", auth, body_fat_logs);
 
 module.exports = router;

@@ -57,6 +57,7 @@ router.post("/", async (req, res) => {
       site3: req.body.site3,
       bodyFatPer: req.body.bodyFatPer,
       age: req.body.age,
+      modifiedAt: new Date()
     }
 
     var startdate = moment(logDate).utcOffset(0);
