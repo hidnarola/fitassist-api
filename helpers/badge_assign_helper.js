@@ -3,6 +3,7 @@ var UserNotifications = require("./../models/user_notifications");
 var Badges = require("./../models/badges");
 var _ = require("underscore");
 var measurement_helper = require("./measurement_helper");
+var body_fat_helper = require("./body_fat_helper");
 var notification_helper = require("./notification_helper");
 var user_helper = require("./user_helper");
 var user_recipe_helper = require("./user_recipe_helper");
@@ -10,7 +11,9 @@ var user_workouts_helper = require("./user_workouts_helper");
 var socket = require("../socket/socketServer");
 var constant = require("../constant");
 
-var badges_assign_helper = {};
+var badges_assign_helper = {
+
+};
 
 /*
  * get_all_badges is used to fetch all badges data
@@ -21,9 +24,7 @@ var badges_assign_helper = {};
  */
 badges_assign_helper.get_all_badges = async (condition = {}, sort = {
   createdAt: -1
-}) => {
-
-
+}, limit = {}) => {
   try {
     var badges = await BadgesAssign.aggregate([{
         $match: condition
@@ -79,7 +80,8 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {
       },
       {
         $sort: sort
-      }
+      },
+      limit
     ]);
     if (badges) {
       return {
@@ -433,7 +435,107 @@ badges_assign_helper.badge_assign = async (
             }
           }
         }
-      } else if (element == "body_fat_gain") {} else if (element == "body_fat_loss") {} else if (element == "body_fat_average") {} else if (element == "body_fat_most") {} else if (element == "body_fat_least") {} else if (element == "neck_measurement_gain") {
+      } else if (element == "body_fat_gain" || element == "body_fat_average" || element == "body_fat_most" || element == "body_fat_least") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await body_fat_helper.get_body_fat_logs({
+                  userId: authUserId
+                }, {
+                  logDate: -1
+                },
+                1
+              );
+            } else {
+              var resp_data = await body_fat_helper.get_body_fat_logs({
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                }, {
+                  logDate: 1
+                },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var first = resp_data.body_fat_log.bodyFatPer;
+              var last = valueToBeCompare[element];
+              if (last - first >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task,
+                  category: "body_fat"
+                };
+                insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
+                console.log(element + "  badge assigned");
+              }
+            }
+          }
+        }
+      } else if (element == "body_fat_loss") {
+        for (let single_badge of all_possible_badges) {
+          var id = single_badge._id;
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await body_fat_helper.get_body_fat_logs({
+                  userId: authUserId
+                }, {
+                  logDate: -1
+                },
+                1
+              );
+            } else {
+              var duration = parseInt(single_badge.baseDuration);
+              var resp_data = await body_fat_helper.get_body_fat_logs({
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                }, {
+                  logDate: 1
+                },
+                1
+              );
+            }
+
+            if (resp_data.status == 1) {
+              var first = resp_data.body_fat_log.bodyFatPer;
+              var last = valueToBeCompare.body_fat_loss;
+              if (last - first <= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task,
+                  category: "body_fat"
+
+                };
+                insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
+                console.log("body fat log badge assigned");
+              }
+            }
+          }
+        }
+
+      } else if (element == "neck_measurement_gain") {
         for (let single_badge of all_possible_badges) {
           var duration = parseInt(single_badge.baseDuration);
           var id = single_badge._id;
@@ -1356,21 +1458,92 @@ badges_assign_helper.badge_assign = async (
           insert_batch_data,
           notification_badges_data
         );
-      } else if (element == "weight_lifted_total") {
+      } else if (element == "running_distance_total") {
 
-      } else if (element == "weight_lifted_average") {
+      } else if (element == "running_distance_average") {
 
-      } else if (element == "weight_lifted_most") {
+      } else if (element == "running_distance_most") {
 
-      } else if (element == "weight_lifted_least") {
+      } else if (element == "running_distance_least") {
 
-      } else if (element == "workouts_total") {
+      } else if (element == "running_time_average") {
 
-      } else if (element == "workouts_average") {
+      } else if (element == "running_time_total") {
 
-      } else if (element == "reps_least") {
+      } else if (element == "running_elevation_total") {
 
-      } else if (element == "reps_total") {} else if (element == "reps_average") {} else if (element == "reps_most") {} else if (element == "sets_least") {} else if (element == "running_distance_total") {} else if (element == "running_distance_average") {} else if (element == "running_distance_most") {} else if (element == "running_distance_least") {} else if (element == "running_time_average") {} else if (element == "running_time_total") {} else if (element == "running_elevation_total") {} else if (element == "running_elevation_average") {} else if (element == "heart_rate_total") {} else if (element == "heart_rate_average") {} else if (element == "heart_rate_most") {} else if (element == "heart_rate_least_") {} else if (element == "heart_rate_resting_total") {} else if (element == "heart_rate_resting_average") {} else if (element == "heart_rate_resting_most") {} else if (element == "heart_rate_resting_least") {} else if (element == "cycle_distance_total") {} else if (element == "cycle_distance_average") {} else if (element == "cycle_distance_most") {} else if (element == "cycle_distance_least") {} else if (element == "cycle_time_total") {} else if (element == "cycle_time_average") {} else if (element == "cycle_elevation_total") {} else if (element == "cycle_elevation_average") {} else if (element == "steps_total") {} else if (element == "steps_average") {} else if (element == "steps_most") {} else if (element == "steps_least") {} else if (
+      } else if (element == "running_elevation_average") {
+
+      } else if (element == "heart_rate_total" ||
+        element == "heart_rate_average" ||
+        element == "heart_rate_most" ||
+        element == "heart_rate_least") {
+        for (let single_badge of all_possible_badges) {
+          var duration = parseInt(single_badge.baseDuration);
+          var id = single_badge._id;
+
+          var badge_assigned = _.find(user_gained_badges, user_badge => {
+            return user_badge.badgeId.toString() === id.toString();
+          });
+
+          if (!badge_assigned) {
+            if (single_badge.timeType == "standard") {
+              var resp_data = await measurement_helper.get_body_measurement_id({
+                  userId: authUserId
+                }, {
+                  logDate: -1
+                },
+                1
+              );
+            } else {
+              var resp_data = await measurement_helper.get_body_measurement_id({
+                  logDate: {
+                    $gte: new Date(
+                      new Date().getTime() - duration * 24 * 60 * 60 * 1000
+                    )
+                  },
+                  userId: authUserId
+                }, {
+                  logDate: 1
+                },
+                1
+              );
+            }
+            if (resp_data.status == 1) {
+              var first = resp_data.measurement.heartRate;
+              var last = valueToBeCompare[element];
+              if (last - first >= single_badge.baseValue) {
+                var badge_assign_obj = {
+                  userId: authUserId,
+                  badgeId: single_badge._id,
+                  task: single_badge.task,
+                  category: "heart_rate"
+                };
+                insert_batch_data.push(badge_assign_obj);
+                notification_badges_data.push(single_badge);
+                console.log(element + " badge assigned");
+              }
+            }
+          }
+        }
+
+      } else if (element == "cycle_distance_total") {
+
+      } else if (element == "cycle_distance_average") {
+
+      } else if (element == "cycle_distance_most") {
+
+      } else if (element == "cycle_distance_least") {
+
+      } else if (element == "cycle_time_total") {
+
+      } else if (element == "cycle_time_average") {
+
+      } else if (element == "cycle_elevation_total") {
+
+      } else if (element == "cycle_elevation_average") {
+
+      } else if (
         constant.BADGES_TYPE.NUTRITIONS.concat(
           constant.BADGES_TYPE.CALORIES
         ).indexOf(element) > 0

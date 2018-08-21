@@ -74,8 +74,7 @@ router.get("/:username?/:type?", async (req, res) => {
       }
     }
   }
-  var resp_data = await friend_helper.get_friend_by_username(
-    {
+  var resp_data = await friend_helper.get_friend_by_username({
       username: username
     },
     friendStatus
@@ -119,13 +118,26 @@ router.post("/", async (req, res) => {
     if (authUserId === req.body.friendId) {
       return res
         .status(config.BAD_REQUEST)
-        .json({ message: "Can not send friend request yourself" });
+        .json({
+          message: "Can not send friend request yourself"
+        });
     }
 
     check_friend_data = await friend_helper.checkFriend({
-      $or: [
-        { $and: [{ userId: authUserId }, { friendId: req.body.friendId }] },
-        { $and: [{ userId: req.body.friendId }, { friendId: authUserId }] }
+      $or: [{
+          $and: [{
+            userId: authUserId
+          }, {
+            friendId: req.body.friendId
+          }]
+        },
+        {
+          $and: [{
+            userId: req.body.friendId
+          }, {
+            friendId: authUserId
+          }]
+        }
       ]
     });
     var msg = "is already friend";
@@ -134,7 +146,9 @@ router.post("/", async (req, res) => {
         if (check_friend_data.friends[0].status == 1) {
           msg = "request is already in pending";
         }
-        return res.status(config.BAD_REQUEST).json({ message: msg });
+        return res.status(config.BAD_REQUEST).json({
+          message: msg
+        });
       }
     }
 
@@ -146,7 +160,9 @@ router.post("/", async (req, res) => {
     let friend_data = await friend_helper.send_friend_request(friend_obj);
     if (friend_data.status === 0) {
       logger.error("Error while inserting friend request = ", friend_data);
-      return res.status(config.BAD_REQUEST).json({ friend_data });
+      return res.status(config.BAD_REQUEST).json({
+        friend_data
+      });
     } else {
       var user = socket.users.get(req.body.friendId);
       var socketIds = user ? user.socketIds : [];
@@ -154,16 +170,17 @@ router.post("/", async (req, res) => {
         req.body.friendId
       );
       socketIds.forEach(socketId => {
-        io.to(socketId).emit("receive_user_friends_count", {
+        socket.io.to(socketId).emit("receive_user_friends_count", {
           count: user_friends_count.count
         });
       });
-
       return res.status(config.OK_STATUS).json(friend_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -194,13 +211,16 @@ router.put("/:request_id", async (req, res) => {
   //     .status(config.OK_STATUS)
   //     .json({ status: 0, message: "already friend" });
   // }
-  let friend_data = await friend_helper.approve_friend(
-    { _id: req.params.request_id },
+  let friend_data = await friend_helper.approve_friend({
+      _id: req.params.request_id
+    },
     friend_obj
   );
   if (friend_data.status === 0) {
     logger.error("Error while approving friend request = ", friend_data);
-    return res.status(config.BAD_REQUEST).json({ friend_data });
+    return res.status(config.BAD_REQUEST).json({
+      friend_data
+    });
   } else {
     var friend = await friend_helper.checkFriend({
       _id: mongoose.Types.ObjectId(req.params.request_id)
@@ -226,14 +246,12 @@ router.put("/:request_id", async (req, res) => {
       authUserId: friend.friends[0].friendId
     });
 
-    var receiver_data_friends = await friend_helper.get_friend_by_username(
-      {
+    var receiver_data_friends = await friend_helper.get_friend_by_username({
         username: receiver_data.user.username
       },
       2
     );
-    var sender_data_friends = await friend_helper.get_friend_by_username(
-      {
+    var sender_data_friends = await friend_helper.get_friend_by_username({
         username: sender_data.user.username
       },
       2
@@ -241,8 +259,7 @@ router.put("/:request_id", async (req, res) => {
     // badge_assign start;
     var badges = await badge_assign_helper.badge_assign(
       authUserId,
-      constant.BADGES_TYPE.PROFILE,
-      {
+      constant.BADGES_TYPE.PROFILE, {
         friends: sender_data_friends.friends.length
       }
     );
@@ -250,8 +267,7 @@ router.put("/:request_id", async (req, res) => {
 
     var receiverBadges = await badge_assign_helper.badge_assign(
       receiver_data.user.authUserId,
-      constant.BADGES_TYPE.PROFILE,
-      {
+      constant.BADGES_TYPE.PROFILE, {
         friends: receiver_data_friends.friends.length
       }
     );
@@ -276,7 +292,11 @@ router.delete("/:request_id", async (req, res) => {
   logger.trace("Delete friend API - Id = ", req.params.request_id);
   let friend_data = await friend_helper.reject_friend({
     _id: req.params.request_id,
-    $or: [{ userId: authUserId }, { friendId: authUserId }]
+    $or: [{
+      userId: authUserId
+    }, {
+      friendId: authUserId
+    }]
   });
 
   if (friend_data.status === 0) {

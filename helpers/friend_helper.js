@@ -12,8 +12,7 @@ var friend_helper = {};
  */
 friend_helper.get_friends = async id => {
   try {
-    var friends = await Friends.aggregate([
-      {
+    var friends = await Friends.aggregate([{
         $match: id
       },
       {
@@ -28,7 +27,9 @@ friend_helper.get_friends = async id => {
         }
       },
       {
-        $unwind: { path: "$friends" }
+        $unwind: {
+          path: "$friends"
+        }
       },
       {
         $group: {
@@ -52,7 +53,11 @@ friend_helper.get_friends = async id => {
         friends: friends[0].friendListDetails
       };
     } else {
-      return { status: 2, message: "No friends available", friends: [] };
+      return {
+        status: 2,
+        message: "No friends available",
+        friends: []
+      };
     }
   } catch (err) {
     return {
@@ -73,8 +78,7 @@ friend_helper.get_friends = async id => {
 friend_helper.get_friend_by_username = async (username, statusType) => {
   try {
     if (statusType == 2) {
-      var friends = await Users.aggregate([
-        {
+      var friends = await Users.aggregate([{
           $match: username
         },
         {
@@ -99,7 +103,9 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
             friendList: {
               $mergeObjects: [
                 "$friendList",
-                { fetch_id: "$friendList.friendId" }
+                {
+                  fetch_id: "$friendList.friendId"
+                }
               ]
             }
           }
@@ -126,7 +132,9 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
             friendList2: {
               $mergeObjects: [
                 "$friendList2",
-                { fetch_id: "$friendList2.userId" }
+                {
+                  fetch_id: "$friendList2.userId"
+                }
               ]
             }
           }
@@ -134,14 +142,22 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
         {
           $group: {
             _id: "$_id",
-            authUserId: { $first: "$authUserId" },
-            friendList: { $addToSet: "$friendList" },
-            friendList2: { $addToSet: "$friendList2" }
+            authUserId: {
+              $first: "$authUserId"
+            },
+            friendList: {
+              $addToSet: "$friendList"
+            },
+            friendList2: {
+              $addToSet: "$friendList2"
+            }
           }
         },
         {
           $addFields: {
-            friendIds: { $concatArrays: ["$friendList", "$friendList2"] }
+            friendIds: {
+              $concatArrays: ["$friendList", "$friendList2"]
+            }
           }
         },
         {
@@ -166,7 +182,9 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
         {
           $project: {
             users: {
-              $mergeObjects: ["$user", { friendshipId: "$friendIds._id" }]
+              $mergeObjects: ["$user", {
+                friendshipId: "$friendIds._id"
+              }]
             }
           }
         },
@@ -204,13 +222,24 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
         {
           $group: {
             _id: "authUserId",
-            user: { $push: "$users" }
+            user: {
+              $push: "$users"
+            }
+          }
+        },
+        {
+          $project: {
+            "user._id": 1,
+            "user.authUserId": 1,
+            "user.firstName": 1,
+            "user.avatar": 1,
+            "user.username": 1,
+            "user.lastName": 1,
           }
         }
       ]);
     } else {
-      var friends = await Users.aggregate([
-        {
+      var friends = await Users.aggregate([{
           $match: username
         },
         {
@@ -243,7 +272,9 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
         {
           $project: {
             users: {
-              $mergeObjects: ["$user", { friendshipId: "$friendList._id" }]
+              $mergeObjects: ["$user", {
+                friendshipId: "$friendList._id"
+              }]
             }
           }
         },
@@ -280,7 +311,19 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
         {
           $group: {
             _id: "authUserId",
-            user: { $push: "$users" }
+            user: {
+              $push: "$users"
+            }
+          }
+        },
+        {
+          $project: {
+            "user._id": 1,
+            "user.authUserId": 1,
+            "user.firstName": 1,
+            "user.avatar": 1,
+            "user.username": 1,
+            "user.lastName": 1,
           }
         }
       ]);
@@ -306,7 +349,11 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
         friends: friends[0].user ? friends[0].user : []
       };
     } else {
-      return { status: 2, message: "No friend available", friends: [] };
+      return {
+        status: 2,
+        message: "No friend available",
+        friends: []
+      };
     }
   } catch (err) {
     return {
@@ -356,9 +403,14 @@ friend_helper.send_friend_request = async friend_obj => {
  */
 friend_helper.approve_friend = async (id, friend_obj) => {
   try {
-    let friend = await Friends.findOneAndUpdate(id, friend_obj, { new: true });
+    let friend = await Friends.findOneAndUpdate(id, friend_obj, {
+      new: true
+    });
     if (!friend) {
-      return { status: 2, message: "Friend request not found" };
+      return {
+        status: 2,
+        message: "Friend request not found"
+      };
     } else {
       return {
         status: 1,
@@ -392,7 +444,10 @@ friend_helper.reject_friend = async id => {
     let friend = await Friends.remove(id);
 
     if (friend && friend.n === 0) {
-      return { status: 2, message: "Friend request not found" };
+      return {
+        status: 2,
+        message: "Friend request not found"
+      };
     } else {
       return {
         status: 1,
@@ -418,18 +473,21 @@ friend_helper.reject_friend = async id => {
 friend_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await Friends.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
-    var filtered_data = await Friends.aggregate([
-      {
+    var searched_record_count = await Friends.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
+    var filtered_data = await Friends.aggregate([{
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
+      {
+        $sort: filter_obj.columnSort
+      }
     ]);
 
     if (filtered_data) {
@@ -443,7 +501,10 @@ friend_helper.get_filtered_records = async filter_obj => {
         filtered_badge_tasks: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {
@@ -463,7 +524,10 @@ friend_helper.get_filtered_records = async filter_obj => {
  */
 friend_helper.count_friends = async id => {
   try {
-    var count = await Friends.find({ friendId: id, status: 1 }).count();
+    var count = await Friends.find({
+      friendId: id,
+      status: 1
+    }).count();
     return {
       status: 1,
       message: `Total ${count} pending request `,
@@ -495,7 +559,11 @@ friend_helper.find = async id => {
         friends: friends
       };
     } else {
-      return { status: 2, message: "No friends available", friends: [] };
+      return {
+        status: 2,
+        message: "No friends available",
+        friends: []
+      };
     }
   } catch (err) {
     return {
@@ -523,7 +591,11 @@ friend_helper.checkFriend = async id => {
         friends: friends
       };
     } else {
-      return { status: 2, message: "No friends available", friends: [] };
+      return {
+        status: 2,
+        message: "No friends available",
+        friends: []
+      };
     }
   } catch (err) {
     return {

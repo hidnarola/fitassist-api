@@ -415,6 +415,13 @@ async function badgesAssign(authUserId) {
     },
     1
   );
+  var heartRate = await measurement_helper.heart_rate_data({
+    userId: authUserId
+  });
+
+  var body_fat = await body_fat_helper.body_fat_data({
+    userId: authUserId
+  });
 
 
   var body_measurement_data = {
@@ -437,16 +444,16 @@ async function badgesAssign(authUserId) {
     calf_measurement_gain: resp_data.measurement.calf,
     calf_measurement_loss: resp_data.measurement.calf,
     weight: resp_data.measurement.weight,
-    heart_rate_total: resp_data.measurement.heartRate,
-    heart_rate_average: resp_data.measurement.heartRate,
-    heart_rate_most: resp_data.measurement.heartRate,
-    heart_rate_least: resp_data.measurement.heartRate,
-    heart_rate_resting_total: resp_data.measurement.heartRate,
-    heart_rate_resting_average: resp_data.measurement.heartRate,
-    heart_rate_resting_most: resp_data.measurement.heartRate,
-    heart_rate_resting_least: resp_data.measurement.heartRate,
+    heart_rate_total: heartRate.heart_rate.heart_rate_total,
+    heart_rate_average: heartRate.heart_rate.heart_rate_average,
+    heart_rate_most: heartRate.heart_rate.heart_rate_most,
+    heart_rate_least: heartRate.heart_rate.heart_rate_least,
+    body_fat_gain: body_fat.body_fat_log.body_fat_gain,
+    body_fat_loss: body_fat.body_fat_log.body_fat_loss,
+    body_fat_average: body_fat.body_fat_log.body_fat_average,
+    body_fat_most: body_fat.body_fat_log.body_fat_most,
+    body_fat_least: body_fat.body_fat_log.body_fat_least,
   };
-
 
   var badges = await badge_assign_helper.badge_assign(
     authUserId,

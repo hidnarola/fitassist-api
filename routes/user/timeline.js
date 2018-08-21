@@ -4,6 +4,7 @@ var fs = require("fs");
 var path = require("path");
 var async = require("async");
 var mongoose = require("mongoose");
+var moment = require("moment");
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
 var constant = require("../../constant");
@@ -13,7 +14,9 @@ var logger = config.logger;
 var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
 var user_helper = require("../../helpers/user_helper");
+var workout_progress_helper = require("../../helpers/workout_progress_helper");
 var friend_helper = require("../../helpers/friend_helper");
+var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 
@@ -59,22 +62,30 @@ router.get("/:post_id", async (req, res) => {
  */
 router.get("/:username/:start?/:offset?", async (req, res) => {
   logger.trace("Get all user's timeline API called");
-
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var skip = req.params.start ? req.params.start : 0;
   var limit = req.params.offset ? req.params.offset : 10;
   var privacyArray = [3];
-  var user = await user_helper.get_user_by({ username: req.params.username });
+  var user = await user_helper.get_user_by({
+    username: req.params.username
+  });
   var friendId = user.user.authUserId;
 
   var searchObject = {
-    $or: [
-      {
-        $and: [{ userId: authUserId }, { friendId: friendId }]
+    $or: [{
+        $and: [{
+          userId: authUserId
+        }, {
+          friendId: friendId
+        }]
       },
       {
-        $and: [{ userId: friendId }, { friendId: authUserId }]
+        $and: [{
+          userId: friendId
+        }, {
+          friendId: authUserId
+        }]
       }
     ]
   };
@@ -89,32 +100,63 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
     privacyArray = [3];
   }
 
-  var resp_data = await user_posts_helper.get_user_timeline(
-    {
-      // $or: [{ privacy: 1 }, { privacy: 2 }, { privacy: 3 }],
-      userId: friendId,
-      isDeleted: 0
+  var resp_data = await user_posts_helper.get_user_timeline({
+    // $or: [{ privacy: 1 }, { privacy: 2 }, { privacy: 3 }],
+    userId: friendId,
+    isDeleted: 0
+  }, {
+    $skip: parseInt(skip)
+  }, {
+    $limit: parseInt(limit)
+  });
+  var progress_photos_data = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
+    userId: user.user.authUserId,
+    isDeleted: 0
+  });
+  var end = moment().utcOffset(0);
+  end.toISOString();
+  end.format();
+
+  var start = moment(end).utcOffset(0);
+  start.toISOString();
+  start.subtract(1, 'years');
+  start.format();
+
+  var body = await workout_progress_helper.graph_data_body_fat({
+    createdAt: {
+      logDate: {
+        $gte: new Date(start),
+        $lte: new Date(end)
+      },
+      userId: authUserId,
     },
-    {
-      $skip: parseInt(skip)
-    },
-    {
-      $limit: parseInt(limit)
-    }
-  );
-  var progress_photos_data = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
-    {
-      userId: user.user.authUserId,
-      isDeleted: 0
-    }
-  );
+  });
+  var badges = await badge_assign_helper.get_all_badges({
+    userId: authUserId
+  }, {
+    createdAt: -1
+  }, {
+    $limit: 10
+  });
+
+  resp_data.progress_photos = {};
+  resp_data.body_fat = {};
+  resp_data.badges = {};
 
   if (progress_photos_data.status == 1) {
     resp_data.progress_photos = progress_photos_data.user_progress_photos;
-  } else {
-    resp_data.progress_photos = {};
   }
+  if (badges.status == 1) {
+    resp_data.badges = badges.badges;
+  }
+  if (body.status == 1) {
+    resp_data.body_fat.graph_data = body.progress;
+    resp_data.body_fat.date = {
+      start,
+      end
+    };
 
+  }
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching get all user timeline = ",
@@ -171,7 +213,10 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
 
   var schema = {
-    privacy: { notEmpty: true, errorMessage: "privacy is required" }
+    privacy: {
+      notEmpty: true,
+      errorMessage: "privacy is required"
+    }
   };
 
   req.checkBody(schema);
@@ -190,7 +235,7 @@ router.post("/", async (req, res) => {
 
     async.waterfall(
       [
-        function(callback) {
+        function (callback) {
           //image upload
           if (req.files && req.files["images"]) {
             var file_path_array = [];
@@ -200,7 +245,7 @@ router.post("/", async (req, res) => {
 
             async.eachSeries(
               files,
-              function(file, loop_callback) {
+              function (file, loop_callback) {
                 var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
@@ -208,7 +253,7 @@ router.post("/", async (req, res) => {
                   }
                   extention = path.extname(file.name);
                   filename = "user_post_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function(err) {
+                  file.mv(dir + "/" + filename, function (err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -234,7 +279,7 @@ router.post("/", async (req, res) => {
                   });
                 }
               },
-              function(err) {
+              function (err) {
                 if (err) {
                   res.status(err.status).json(err);
                 } else {
@@ -269,7 +314,7 @@ router.post("/", async (req, res) => {
           };
           async.each(
             file_path_array,
-            async function(file, callback) {
+            async function (file, callback) {
               post_image_obj.image = file;
               let user_post_data = await user_posts_helper.insert_user_post_image(
                 post_image_obj
@@ -284,7 +329,7 @@ router.post("/", async (req, res) => {
                 success++;
               }
             },
-            async function(err) {
+            async function (err) {
               if (err) {
                 console.log("Failed to upload image");
               } else {
@@ -308,14 +353,12 @@ router.post("/", async (req, res) => {
                     user_timeline_data
                   );
                 } else {
-                  resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id(
-                    {
-                      _id: mongoose.Types.ObjectId(
-                        user_timeline_data.user_timeline._id
-                      ),
-                      isDeleted: 0
-                    }
-                  );
+                  resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id({
+                    _id: mongoose.Types.ObjectId(
+                      user_timeline_data.user_timeline._id
+                    ),
+                    isDeleted: 0
+                  });
 
                   logger.error(
                     "successfully added timeline data = ",
@@ -331,8 +374,7 @@ router.post("/", async (req, res) => {
 
                 var post_data = await badge_assign_helper.badge_assign(
                   authUserId,
-                  constant.BADGES_TYPE.PROFILE,
-                  {
+                  constant.BADGES_TYPE.PROFILE, {
                     post: total_post.count
                   }
                 );
@@ -340,8 +382,7 @@ router.post("/", async (req, res) => {
 
                 return res.status(config.OK_STATUS).json({
                   status: 1,
-                  message:
-                    "post successfully added, " +
+                  message: "post successfully added, " +
                     success +
                     " successfully uploaded image(s), " +
                     unsuccess +
@@ -356,7 +397,9 @@ router.post("/", async (req, res) => {
     );
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -392,13 +435,17 @@ router.put("/:photo_id", async (req, res) => {
     user_post_obj.status = req.body.status;
   }
 
-  resp_data = await user_posts_helper.update_user_post_photo(
-    { _id: req.params.photo_id, userId: authUserId },
+  resp_data = await user_posts_helper.update_user_post_photo({
+      _id: req.params.photo_id,
+      userId: authUserId
+    },
     user_post_obj
   );
   if (resp_data.status === 0) {
     logger.error("Error while updating user post image = ", resp_data);
-    res.status(config.BAD_REQUEST).json({ resp_data });
+    res.status(config.BAD_REQUEST).json({
+      resp_data
+    });
   } else {
     res.status(config.OK_STATUS).json(resp_data);
   }
@@ -416,10 +463,12 @@ router.delete("/:photo_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete user's post photo API - Id = ", req.params.photo_id);
-  let user_post_data = await user_posts_helper.delete_user_post_photo(
-    { userId: authUserId, _id: req.params.photo_id },
-    { isDeleted: 1 }
-  );
+  let user_post_data = await user_posts_helper.delete_user_post_photo({
+    userId: authUserId,
+    _id: req.params.photo_id
+  }, {
+    isDeleted: 1
+  });
 
   if (user_post_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(user_post_data);

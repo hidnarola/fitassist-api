@@ -33,6 +33,57 @@ measurement_helper.get_all_measurement = async () => {
 };
 
 /*
+ * heart_rate_data is used to fetch heart_rate_data by ID
+ * 
+ * @return  status 0 - If any internal error occured while fetching bodymeasurement data, with error
+ *          status 1 - If bodymeasurement data found, with bodymeasurement object
+ *          status 2 - If bodymeasurement not found, with appropriate message
+ */
+measurement_helper.heart_rate_data = async (
+  id,
+) => {
+  try {
+    var heart_rate = await Measurement.aggregate([{
+      $match: id
+    }, {
+      $group: {
+        _id: null,
+        heart_rate_total: {
+          $sum: "$heartRate"
+        },
+        heart_rate_average: {
+          $avg: "$heartRate"
+        },
+        heart_rate_most: {
+          $max: "$heartRate"
+        },
+        heart_rate_least: {
+          $min: "$heartRate"
+        },
+      }
+    }])
+    if (heart_rate && heart_rate.length > 0) {
+      return {
+        status: 1,
+        message: "heart_rate found",
+        heart_rate: heart_rate[0]
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No measurement available",
+        measurement: null
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding measurement",
+      error: err
+    };
+  }
+};
+/*
  * get_body_measurement_id is used to fetch bodymeasurement by ID
  * 
  * @return  status 0 - If any internal error occured while fetching bodymeasurement data, with error
