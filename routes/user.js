@@ -35,6 +35,7 @@ var statistics = require("./user/statistics");
 var exercise_measurements = require("./user/exercise_measurements");
 var workout_progress = require("./user/workout_progress");
 var body_fat_logs = require("./user/body_fat_logs");
+var widgets_settings = require("./user/widgets_settings");
 
 router.use("/measurement", auth, body_measurement);
 router.use("/nutrition_preference", auth, nutrition_preference);
@@ -69,5 +70,6 @@ router.use("/statistics", auth, statistics);
 router.use("/exercise_measurements", auth, exercise_measurements);
 router.use("/progress", auth, workout_progress);
 router.use("/body_fat_log", auth, body_fat_logs);
+router.use("/widgets_settings", auth, widgets_settings);
 
 module.exports = router;

@@ -193,7 +193,7 @@ router.put("/", async (req, res) => {
   user_obj.weight = req.body.weight;
   user_obj.aboutMe = req.body.aboutMe;
   user_obj.workoutLocation = req.body.workoutLocation;
-  modifiedAt: new Date();
+  user_obj.modifiedAt = new Date();
 
   let user = await user_helper.get_user_by_id(authUserId);
 
@@ -223,48 +223,19 @@ router.put("/", async (req, res) => {
 
   let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
 
-  if (user_data.status === 0) {
+  if (user_data.status === 1) {
+    res.status(config.OK_STATUS).json(user_data);
+    var badges = await badgeAssign(authUserId);
+  } else if (user_data.status === 2) {
     logger.error("Error while updating user data = ", user_data);
-    return res.status(config.INTERNAL_SERVER_ERROR).json({
+    res.status(config.INTERNAL_SERVER_ERROR).json({
       user_data
     });
   } else {
-    var data = user_data.user;
-    var percentage = 0;
-    for (const key of Object.keys(data)) {
-      if (data[key] != null) {
-        if (key == "gender") {
-          percentage += 10;
-        } else if (key == "dateOfBirth") {
-          percentage += 15;
-        } else if (key == "height") {
-          percentage += 10;
-        } else if (key == "weight") {
-          percentage += 10;
-        } else if (key == "avatar") {
-          percentage += 15;
-        } else if (key == "aboutMe") {
-          percentage += 10;
-        } else if (key == "lastName") {
-          percentage += 10;
-        } else if (key == "mobileNumber") {
-          percentage += 10;
-        } else if (key == "goal") {
-          percentage += 10;
-        }
-      }
-    }
-
-
-    //badge assign
-    var badgeAssign = await badge_assign_helper.badge_assign(
-      authUserId,
-      constant.BADGES_TYPE.PROFILE, {
-        percentage: percentage
-      }
-    );
-    //badge assign
-    return res.status(config.OK_STATUS).json(user_data);
+    logger.error("Error while updating user data = ", user_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json({
+      user_data
+    });
   }
 });
 
@@ -318,13 +289,14 @@ router.put("/update_aboutme", async (req, res) => {
       authUserId,
       user_profile_obj
     );
-    if (user_data.status === 0) {
+    if (user_data.status === 1) {
+      res.status(config.OK_STATUS).json(user_data);
+      var badges = await badgeAssign(authUserId);
+    } else {
       logger.error("Error while updating user data = ", user_data);
       return res.status(config.BAD_REQUEST).json({
         user_data
       });
-    } else {
-      return res.status(config.OK_STATUS).json(user_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -364,13 +336,16 @@ router.put("/photo", async (req, res) => {
       fs.unlink(resp_data.user.avatar, function () {});
     } catch (err) {}
     let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
-    if (user_data.status === 0) {
+
+    if (user_data.status === 1) {
+      logger.info("Updated user profile", user_data);
+      res.status(config.OK_STATUS).json(user_data);
+      var badges = await badgeAssign(authUserId);
+    } else {
       logger.error("Error while updating user avatar = ", user_data);
-      return res.status(config.BAD_REQUEST).json({
+      res.status(config.INTERNAL_SERVER_ERROR).json({
         user_data
       });
-    } else {
-      return res.status(config.OK_STATUS).json(user_data);
     }
   } else {
     return res
@@ -540,4 +515,51 @@ router.put("/preferences", async (req, res) => {
   }
 });
 
+
+async function badgeAssign(authUserId) {
+
+  var user_data = await user_helper.get_user_by_id(authUserId);
+
+
+  if (user_data.status === 1) {
+    var data = user_data.user;
+
+    var percentage = 0;
+    for (const key of Object.keys(data)) {
+      if (data[key] != null) {
+        if (key == "gender") {
+          percentage += 10;
+        } else if (key == "dateOfBirth") {
+          percentage += 15;
+        } else if (key == "height") {
+          percentage += 10;
+        } else if (key == "weight") {
+          percentage += 10;
+        } else if (key == "avatar") {
+          percentage += 15;
+        } else if (key == "aboutMe") {
+          percentage += 10;
+        } else if (key == "lastName") {
+          percentage += 10;
+        } else if (key == "mobileNumber") {
+          percentage += 10;
+        } else if (key == "goal") {
+          percentage += 10;
+        }
+      }
+    }
+
+    //badge assign
+    var badgeAssign = await badge_assign_helper.badge_assign(
+      authUserId,
+      constant.BADGES_TYPE.PROFILE, {
+        percentage: percentage
+      }
+    );
+    return badgeAssign;
+  }
+  return {
+    status: 0
+  }
+}
 module.exports = router;

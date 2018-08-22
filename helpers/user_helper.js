@@ -126,13 +126,13 @@ user_helper.search_users = async (
  *          status 1 - If user data found, with user object
  *          status 2 - If user not found, with appropriate message
  */
-user_helper.get_user_by_id = async user_id => {
+user_helper.get_user_by_id = async userId => {
   try {
     var user = await User.findOne({
       authUserId: {
-        $eq: user_id
+        $eq: userId
       }
-    });
+    }).lean();
     if (user) {
       return {
         status: 1,

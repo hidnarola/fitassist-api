@@ -9,15 +9,36 @@ var WidgetsSettingsSchema = new Schema({
         type: String,
         ref: "users",
         field: "authUserId",
-        required: true
+        required: true,
     },
-    status: {
-        type: Number,
-        default: 1
+    widgetFor: {
+        type: String,
+        enum: ["dashboard", "timeline"],
+        default: null
     },
-    isDeleted: {
+    graph: [{
+        type: String,
+        default: null
+    }],
+    badges: [{
+        type: String,
+        default: null
+    }],
+    progress: [{
+        type: String,
+        default: null
+    }],
+    workout: {
         type: Number,
-        default: 0
+        default: null
+    },
+    meal: {
+        type: Number,
+        default: null
+    },
+    activityFeed: {
+        type: Number,
+        default: null
     },
     createdAt: {
         type: Date,

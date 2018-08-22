@@ -128,11 +128,11 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
         $gte: new Date(start),
         $lte: new Date(end)
       },
-      userId: authUserId,
+      userId: friendId,
     },
   });
   var badges = await badge_assign_helper.get_all_badges({
-    userId: authUserId
+    userId: friendId
   }, {
     createdAt: -1
   }, {

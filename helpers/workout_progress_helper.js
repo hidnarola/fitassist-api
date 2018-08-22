@@ -480,7 +480,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 			var weight = [];
 			var height = [];
 			var heartRate = [];
-			_.each(body_progress, async function (bodypart) {
+			for (let bodypart of body_progress) {
 				var date = moment(bodypart.logDate).format("DD/MM/YYYY");
 				neck.push({
 					date,
@@ -514,6 +514,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 						name: "UpperArm"
 					}
 				})
+
 				waist.push({
 					date,
 					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.waist)).toFixed(2)),
@@ -578,11 +579,10 @@ workout_progress_helper.user_body_progress = async (id) => {
 						name: "Heart rate"
 					}
 				})
-			});
+			}
 
 			var first = _.first(body_progress);
 			var last = _.last(body_progress);
-
 			var bodypartKeys = ["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "height"];
 
 			_.each(bodypartKeys, async function (key) {
@@ -592,12 +592,10 @@ workout_progress_helper.user_body_progress = async (id) => {
 				last[key] = last[key].toFixed(2);
 			});
 
-
 			first.weight = await common_helper.convertUnits("gram", weightUnit, first.weight);
 			first.weight = first.weight.toFixed(2);
 			last.weight = await common_helper.convertUnits("gram", weightUnit, last.weight);
 			last.weight = last.weight.toFixed(2);
-
 			var bodyProgress = {
 				"neck": {
 					start: first.neck,
@@ -614,7 +612,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.shoulders - first.shoulders).toFixed(2),
 					percentageChange: ((last.shoulders - first.shoulders) / first.shoulders * 100).toFixed(2),
 					graphData: shoulders
-
 				},
 				"chest": {
 					start: first.chest,
@@ -623,7 +620,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.chest - first.chest).toFixed(2),
 					percentageChange: ((last.chest - first.chest) / first.chest * 100).toFixed(2),
 					graphData: chest
-
 				},
 				"upperArm": {
 					start: first.upperArm,
@@ -632,7 +628,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.upperArm - first.upperArm).toFixed(2),
 					percentageChange: ((last.upperArm - first.upperArm) / first.upperArm * 100).toFixed(2),
 					graphData: upperArm
-
 				},
 				"waist": {
 					start: first.waist,
@@ -641,7 +636,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.waist - first.waist).toFixed(2),
 					percentageChange: ((last.waist - first.waist) / first.waist * 100).toFixed(2),
 					graphData: waist
-
 				},
 				"forearm": {
 					start: first.forearm,
@@ -659,7 +653,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.hips - first.hips).toFixed(2),
 					percentageChange: ((last.hips - first.hips) / first.hips * 100).toFixed(2),
 					graphData: hips
-
 				},
 				"thigh": {
 					start: first.thigh,
@@ -668,7 +661,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.thigh - first.thigh).toFixed(2),
 					percentageChange: ((last.thigh - first.thigh) / first.thigh * 100).toFixed(2),
 					graphData: thigh
-
 				},
 				"calf": {
 					start: first.calf,
@@ -677,7 +669,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.calf - first.calf).toFixed(2),
 					percentageChange: ((last.calf - first.calf) / first.calf * 100).toFixed(2),
 					graphData: calf
-
 				},
 				"weight": {
 					start: first.weight,
@@ -686,7 +677,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.weight - first.weight).toFixed(2),
 					percentageChange: ((last.weight - first.weight) / first.weight * 100).toFixed(2),
 					graphData: weight
-
 				},
 				"height": {
 					start: first.height,
@@ -695,7 +685,6 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.height - first.height).toFixed(2),
 					percentageChange: ((last.height - first.height) / first.height * 100).toFixed(2),
 					graphData: height
-
 				},
 				"heartRate": {
 					start: first.heartRate,
@@ -704,9 +693,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 					difference: (last.heartRate - first.heartRate).toFixed(2),
 					percentageChange: ((last.heartRate - first.heartRate) / first.heartRate * 100).toFixed(2),
 					graphData: heartRate
-
 				}
-
 			}
 			return {
 				status: 1,
@@ -746,17 +733,9 @@ workout_progress_helper.user_body_fat = async (id) => {
 				}
 			},
 		]);
-
-
-
-
 		if (body_progress && body_progress.length > 0) {
-
-
 			var first = _.first(body_progress);
 			var last = _.last(body_progress);
-
-
 			var bodyProgress = {
 				"body_fat": {
 					start: first.bodyFatPer,
@@ -764,7 +743,6 @@ workout_progress_helper.user_body_fat = async (id) => {
 					difference: (last.bodyFatPer - first.bodyFatPer).toFixed(2),
 					percentageChange: ((last.bodyFatPer - first.bodyFatPer) / first.bodyFatPer * 100).toFixed(2),
 				},
-
 			}
 			return {
 				status: 1,
