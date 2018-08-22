@@ -188,10 +188,6 @@ router.post("/", async (req, res) => {
 
   if (!errors) {
     var category = await find_badges_category(req.body.task);
-    console.log('------------------------------------');
-    console.log('category : ', category);
-    console.log('------------------------------------');
-
     var badge_obj = {
       name: req.body.name,
       task: req.body.task,
@@ -341,9 +337,7 @@ router.put("/:badge_id", async (req, res) => {
 
   if (!errors) {
     var category = await find_badges_category(req.body.task);
-    console.log('------------------------------------');
-    console.log('category : ', category);
-    console.log('------------------------------------');
+
     var badge_obj = {
       name: req.body.name,
       task: req.body.task,

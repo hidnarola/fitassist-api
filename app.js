@@ -25,7 +25,11 @@ var user_helper = require("./helpers/user_helper");
 
 var app = express();
 // app.use(fileUpload());
-app.use(fileUpload({ limits: { fileSize: 15 * 1024 * 1024 } }));
+app.use(fileUpload({
+  limits: {
+    fileSize: 15 * 1024 * 1024
+  }
+}));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -35,7 +39,9 @@ app.set("view engine", "ejs");
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger("dev"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "doc")));
@@ -49,14 +55,16 @@ app.use(
           if (resp_data.user.email != email) {
             var checkemaildata = await user_helper.checkvalue({
               email: email,
-              authUserId: { $ne: authUserId }
+              authUserId: {
+                $ne: authUserId
+              }
             });
             return checkemaildata.count == 0;
           }
         }
       }
     },
-    isImage: function(value, filename) {
+    isImage: function (value, filename) {
       var extension = path.extname(filename).toLowerCase();
       switch (extension) {
         case ".jpg":
@@ -73,7 +81,7 @@ app.use(
 );
 
 // Support corss origin request
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   // Website you wish to allow to connect
   res.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -112,7 +120,7 @@ app.use("/admin", admin);
 // error handlers
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error("Not Found");
   err.status = 404;
   next(err);
@@ -127,7 +135,7 @@ const BASE_URL = serverpath;
 
 // development error handler, will print stacktrace
 if (app.get("env") === "development") {
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.json({
       message: err.message,
@@ -137,7 +145,7 @@ if (app.get("env") === "development") {
 }
 
 // production error handler, no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.json({
     message: err.message,
@@ -161,8 +169,9 @@ app.use(function(err, req, res, next) {
 //   cluster.fork();
 // });
 
-var server = app.listen(config.node_port || 3000, function() {
-  console.log("Listening on port " + (config.node_port || 3000) + "...");
+var server = app.listen(config.node_port || 3000, function () {
+  console.log('Server is running on :', (config.node_port || 3300));
+
 });
 socket.init(server);
 

@@ -4,7 +4,6 @@ var config = require("../config");
 var constant = require("../constant");
 var user = require("../models/users");
 var jwt = require("jsonwebtoken");
-var moment = require("moment");
 var request = require("request-promise");
 
 var user_helper = require("./../helpers/user_helper");
@@ -19,22 +18,20 @@ var user_nutritions_helper = require("./../helpers/user_nutritions_helper");
 var logger = config.logger;
 
 /* GET home page. */
-router.get("/", function(req, res, next) {
-  res.render("index", { title: "Express" });
+router.get("/", function (req, res, next) {
+  res.render("index", {
+    title: "Express"
+  });
 });
 
 /**
  * @api {post} /user_login User Login
  * @apiName User Login
  * @apiGroup Login API
- *
  * @apiDescription  Login request for user role
- *
  * @apiHeader {String}  Content-Type application/json
- *
  * @apiParam {String} email Email
  * @apiParam {String} password Password
- *
  * @apiSuccess (Success 200) {JSON} user User object.
  * @apiSuccess (Success 200) {String} token Unique token which needs to be passed in subsequent requests.
  * @apiSuccess (Success 200) {String} refresh_token Unique token which needs to be passed to generate next access token.
@@ -48,7 +45,9 @@ router.post("/user_login", async (req, res) => {
     email: {
       notEmpty: true,
       errorMessage: "Email is required.",
-      isEmail: { errorMessage: "Please enter valid email address" }
+      isEmail: {
+        errorMessage: "Please enter valid email address"
+      }
     },
     password: {
       notEmpty: true,
@@ -81,8 +80,10 @@ router.post("/user_login", async (req, res) => {
 
       // Checking password
 
-      common_helper.hashPassword.call(
-        { password: req.body.password, hash: user_resp.user.password },
+      common_helper.hashPassword.call({
+          password: req.body.password,
+          hash: user_resp.user.password
+        },
         async password_resp => {
           logger.trace("password resp = ", password_resp);
           if (password_resp.status === 0 || password_resp.res === false) {
@@ -94,15 +95,18 @@ router.post("/user_login", async (req, res) => {
             if (user_resp.user.status) {
               // Generate token
               logger.trace("valid user. Generating token");
-              var refreshToken = jwt.sign(
-                { id: user_resp.user._id, role: "user" },
-                config.REFRESH_TOKEN_SECRET_KEY,
-                {}
+              var refreshToken = jwt.sign({
+                  id: user_resp.user._id,
+                  role: "user"
+                },
+                config.REFRESH_TOKEN_SECRET_KEY, {}
               );
 
               let update_resp = await user_helper.update_user_by_id(
-                user_resp.user._id,
-                { refreshToken: refreshToken, lastLoginDate: Date.now() }
+                user_resp.user._id, {
+                  refreshToken: refreshToken,
+                  lastLoginDate: Date.now()
+                }
               );
 
               var userJson = {
@@ -132,7 +136,10 @@ router.post("/user_login", async (req, res) => {
               logger.trace("User account is not active");
               res
                 .status(config.BAD_REQUEST)
-                .json({ status: 0, message: "Account is not active" });
+                .json({
+                  status: 0,
+                  message: "Account is not active"
+                });
             }
           }
         }
@@ -141,11 +148,16 @@ router.post("/user_login", async (req, res) => {
       logger.info("Account doesn't exist.");
       res
         .status(config.BAD_REQUEST)
-        .json({ status: 0, message: "Invalid email address" });
+        .json({
+          status: 0,
+          message: "Invalid email address"
+        });
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.BAD_REQUEST).json({
+      message: errors
+    });
   }
 });
 
@@ -153,14 +165,10 @@ router.post("/user_login", async (req, res) => {
  * @api {post} /admin_login Admin Login
  * @apiName Admin Login
  * @apiGroup Login API
- *
  * @apiDescription Login request for admin role
- *
  * @apiHeader {String}  Content-Type application/json
- *
  * @apiParam {String} email Email
  * @apiParam {String} password Password
- *
  * @apiSuccess (Success 200) {JSON} user Admin user object.
  * @apiSuccess (Success 200) {String} token Unique token which needs to be passed in subsequent requests.
  * @apiSuccess (Success 200) {String} refresh_token Unique token which needs to be passed to generate next access token.
@@ -174,7 +182,9 @@ router.post("/admin_login", async (req, res) => {
     email: {
       notEmpty: true,
       errorMessage: "Email is required.",
-      isEmail: { errorMessage: "Please enter valid email address" }
+      isEmail: {
+        errorMessage: "Please enter valid email address"
+      }
     },
     password: {
       notEmpty: true,
@@ -207,8 +217,10 @@ router.post("/admin_login", async (req, res) => {
 
       // Checking password
 
-      common_helper.hashPassword.call(
-        { password: req.body.password, hash: user_resp.admin.password },
+      common_helper.hashPassword.call({
+          password: req.body.password,
+          hash: user_resp.admin.password
+        },
         async password_resp => {
           logger.trace("password resp = ", password_resp);
           if (password_resp.status === 0 || password_resp.res === false) {
@@ -220,15 +232,18 @@ router.post("/admin_login", async (req, res) => {
             if (user_resp.admin.status) {
               // Generate token
               logger.trace("valid admin request. Generating token");
-              var refreshToken = jwt.sign(
-                { id: user_resp.admin._id, role: "admin" },
-                config.REFRESH_TOKEN_SECRET_KEY,
-                {}
+              var refreshToken = jwt.sign({
+                  id: user_resp.admin._id,
+                  role: "admin"
+                },
+                config.REFRESH_TOKEN_SECRET_KEY, {}
               );
 
               let update_resp = await admin_helper.update_admin_by_id(
-                user_resp.admin._id,
-                { refreshToken: refreshToken, lastLoginDate: Date.now() }
+                user_resp.admin._id, {
+                  refreshToken: refreshToken,
+                  lastLoginDate: Date.now()
+                }
               );
 
               var userJson = {
@@ -258,7 +273,10 @@ router.post("/admin_login", async (req, res) => {
               logger.trace("Admin account is not active");
               res
                 .status(config.BAD_REQUEST)
-                .json({ status: 0, message: "Account is not active" });
+                .json({
+                  status: 0,
+                  message: "Account is not active"
+                });
             }
           }
         }
@@ -267,11 +285,16 @@ router.post("/admin_login", async (req, res) => {
       logger.info("Account doesn't exist.");
       res
         .status(config.BAD_REQUEST)
-        .json({ status: 0, message: "Invalid email address" });
+        .json({
+          status: 0,
+          message: "Invalid email address"
+        });
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.BAD_REQUEST).json({
+      message: errors
+    });
   }
 });
 
@@ -280,11 +303,8 @@ router.post("/admin_login", async (req, res) => {
  * @api {post} /user_signup User Signup
  * @apiName User Signup
  * @apiGroup Login API
- *
  * @apiDescription  Signup request for user role
- *
  * @apiHeader {String}  Content-Type application/json
- *
  * @apiParam {String} firstName First name of user
  * @apiParam {String} lastName Last name of user
  * @apiParam {String} username Username
@@ -298,7 +318,6 @@ router.post("/admin_login", async (req, res) => {
  * @apiParam {Number} workout_intensity Workout intensity of user (Between 0 to 100)
  * @apiParam {Number} experience_level Experience level of user (Between 0 to 100)
  * @apiParam {Number} workout_location Workout location of user. Value must be either home or gym
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -317,7 +336,9 @@ router.post("/user_signup", async (req, res) => {
     email: {
       notEmpty: true,
       errorMessage: "Email address is required",
-      isEmail: { errorMessage: "Please enter valid email address" }
+      isEmail: {
+        errorMessage: "Please enter valid email address"
+      }
     }
   };
   req.checkBody(schema);
@@ -328,7 +349,6 @@ router.post("/user_signup", async (req, res) => {
       firstName: req.body.firstName,
       email: req.body.email
     };
-
     var user_data = await user_helper.insert_user(user_obj);
 
     if (user_data.status == 0) {
@@ -341,7 +361,9 @@ router.post("/user_signup", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({ message: errors });
+    res.status(config.BAD_REQUEST).json({
+      message: errors
+    });
   }
 });
 
@@ -368,7 +390,9 @@ router.get("/auth0_user_sync", async (req, res) => {
       var response = await request(options);
       response = JSON.parse(response);
       if (response.email && typeof response.email !== "undefined") {
-        let data = await user_helper.checkvalue({ authUserId: response.sub });
+        let data = await user_helper.checkvalue({
+          authUserId: response.sub
+        });
 
         if (data.count <= 0) {
           var user_obj = {
@@ -379,15 +403,18 @@ router.get("/auth0_user_sync", async (req, res) => {
           };
 
           var username = response.email.split("@")[0];
-          data = await user_helper.checkvalue({ username: username });
+          data = await user_helper.checkvalue({
+            username: username
+          });
           if (data.count <= 0) {
             user_obj.username = username;
           } else {
             username = username + Math.floor(Math.random() * 100 + 1);
-
             var tmp = true;
             while (tmp) {
-              data = await user_helper.checkvalue({ username: username });
+              data = await user_helper.checkvalue({
+                username: username
+              });
               if (data.count <= 0) {
                 user_obj.username = username;
                 tmp = false;
@@ -396,27 +423,24 @@ router.get("/auth0_user_sync", async (req, res) => {
           }
 
           var user_data = await user_helper.insert_user(user_obj);
-
           var exercise_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
           exercise_obj.userId = response.sub;
           var nutrition_obj = constant.NUTRITION_PREFERENCE_DEFUALT_VALUE;
           nutrition_obj.userId = response.sub;
           var setting_obj = constant.UNIT_SETTING_DEFUALT_VALUE;
           setting_obj.userId = response.sub;
-          var user_nutritions_obj = { userId: response.sub };
-
+          var user_nutritions_obj = {
+            userId: response.sub
+          };
           var exercise_data = await exercise_preference_helper.insert_exercise_prefernece(
             exercise_obj
           );
-
           var nutrition_data = await nutrition_preferences_helper.insert_nutrition_preference(
             nutrition_obj
           );
-
           var setting_data = await user_settings_helper.insert_setting(
             setting_obj
           );
-
           var user_nutritions_data = await user_nutritions_helper.insert_user_nutritions(
             user_nutritions_obj
           );
@@ -429,15 +453,21 @@ router.get("/auth0_user_sync", async (req, res) => {
           res.status(config.OK_STATUS).json(data);
         }
       } else {
-        res.status(config.BAD_REQUEST).json({ message: "Auth Server Error" });
+        res.status(config.BAD_REQUEST).json({
+          message: "Auth Server Error"
+        });
       }
     } catch (error) {
-      res.status(config.UNAUTHORIZED).json({ message: "Unauthorized" });
+      res.status(config.UNAUTHORIZED).json({
+        message: "Unauthorized"
+      });
     }
   } else {
     res
       .status(config.UNAUTHORIZED)
-      .json({ message: "authorization token missing" });
+      .json({
+        message: "authorization token missing"
+      });
   }
 });
 
@@ -484,7 +514,6 @@ router.get("/nutrition/", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     logger.trace("nutritions got successfully = ", resp_data);
-
     res.status(config.OK_STATUS).json(resp_data);
   }
 });

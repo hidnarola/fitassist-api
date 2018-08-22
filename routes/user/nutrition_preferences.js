@@ -22,9 +22,9 @@ router.get("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Get nutrition preference by ID API called : ", authUserId);
-  var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_user_id(
-    {userId:authUserId}
-  );
+  var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_user_id({
+    userId: authUserId
+  });
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching nutrition preference = ",
@@ -76,14 +76,11 @@ router.post("/", async (req, res) => {
   if (req.body.excludeIngredients) {
     nutrition_preference_obj.excludeIngredients = req.body.excludeIngredients;
   }
-  
 
-  var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_id(
-    {
-      userId: authUserId
-    }
-  );
-   console.log(resp_data);
+
+  var resp_data = await nutrition_preferences_helper.get_nutrition_preference_by_id({
+    userId: authUserId
+  });
   if (resp_data.status == 1) {
 
     let nutrition_preference_data = await nutrition_preferences_helper.update_nutrition_preference_by_userid(
@@ -95,7 +92,9 @@ router.post("/", async (req, res) => {
         "Error while updating nutrition preferences = ",
         nutrition_preference_data
       );
-      res.status(config.BAD_REQUEST).json({ nutrition_preference_data });
+      res.status(config.BAD_REQUEST).json({
+        nutrition_preference_data
+      });
     } else {
       res.status(config.OK_STATUS).json(nutrition_preference_data);
     }
@@ -103,17 +102,19 @@ router.post("/", async (req, res) => {
   } else if (resp_data.status == 2) {
     let nutrition_preference_data = await nutrition_preferences_helper.insert_nutrition_preference(nutrition_preference_obj);
     if (nutrition_preference_data.status === 0) {
-        logger.error("Error while inserting nutrition preferences = ", nutrition_preference_data);
-        res.status(config.BAD_REQUEST).json({ nutrition_preference_data });
+      logger.error("Error while inserting nutrition preferences = ", nutrition_preference_data);
+      res.status(config.BAD_REQUEST).json({
+        nutrition_preference_data
+      });
     } else {
-        res.status(config.OK_STATUS).json(nutrition_preference_data);
+      res.status(config.OK_STATUS).json(nutrition_preference_data);
     }
-   
+
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 
-  
+
 });
 
 /**
@@ -129,25 +130,27 @@ router.post("/", async (req, res) => {
 router.get("/reset", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  
+
   logger.trace("Reset Nutrition preference API called : ", authUserId);
   let nutrition_preference_data = await nutrition_preferences_helper.update_nutrition_preference_by_userid(
     authUserId,
     constant.NUTRITION_PREFERENCE_DEFUALT_VALUE
   );
   if (nutrition_preference_data.status === 1) {
-    nutrition_preference_data.message="Reset Nutrition preference";
+    nutrition_preference_data.message = "Reset Nutrition preference";
     res.status(config.OK_STATUS).json(nutrition_preference_data);
-    
+
   } else {
     logger.error(
       "Error while reseting Nutrition preferences = ",
       nutrition_preference_data
     );
-   // nutrition_preference_data.message="could not reset Nutrition preference";
-   nutrition_preference_data.message="Reset Nutrition preference failed";
+    // nutrition_preference_data.message="could not reset Nutrition preference";
+    nutrition_preference_data.message = "Reset Nutrition preference failed";
 
-    res.status(config.BAD_REQUEST).json({nutrition_preference_data});
+    res.status(config.BAD_REQUEST).json({
+      nutrition_preference_data
+    });
   }
 });
 module.exports = router;

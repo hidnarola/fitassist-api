@@ -166,10 +166,6 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 						category: "$exercise.category",
 						subCategory: "$exercise.subCategory"
 					},
-					// _id: {
-					// 	category: "$exercise.category",
-					// 	subCategory: "$exercise.subCategory"
-					// },
 					name: {
 						$first: "$exercise.name"
 					},
@@ -196,12 +192,6 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 			},
 		]);
 
-		// return {
-		// 	status: 1,
-		// 	data: progress
-		// }
-
-
 		if (progress && progress.length > 0) {
 			var returnArray = [];
 			var start_totalPostureExercises = 0;
@@ -219,7 +209,6 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				subCategory = p.subCategory;
 				category = p.category;
 
-
 				var name = p.name;
 				var first = _.first(p.exercises);
 				var last = _.last(p.exercises);
@@ -228,12 +217,12 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				tmp.subCategory = subCategory;
 				tmp.category = category;
 				tmp.name = "";
+
 				if (category === "strength") {
 					tmp.name = name;
 				}
-				if (category === "cardio") {
 
-				} else if (category === "strength") {
+				if (category === "strength") {
 					var _first = first[fieldCheckName]; // first strength test data of user
 					var _last = last[fieldCheckName]; // last strength test data of user
 					switch (fieldCheckName) {

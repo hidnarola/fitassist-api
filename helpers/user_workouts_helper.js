@@ -694,13 +694,6 @@ user_workouts_helper.insert_user_workouts_exercises = async (
   childCollectionObject,
   authUserId
 ) => {
-  console.log("------------------------------------");
-  console.log("childCollectionObject : ", childCollectionObject);
-  console.log("------------------------------------");
-  console.log("------------------------------------");
-  console.log("authUserId : ", authUserId);
-  console.log("------------------------------------");
-
   var workoutLogsObj = {};
   var insertWorkoutLogArray = [];
   try {

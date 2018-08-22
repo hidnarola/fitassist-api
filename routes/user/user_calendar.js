@@ -23,10 +23,6 @@ router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var date = req.body.date;
-  startdate = moment().add(5, "y");
-  console.log("------------------------------------");
-  console.log("startdate : ", startdate);
-  console.log("------------------------------------");
 
   var startdate = moment(date).utcOffset(0);
   startdate.toISOString();
@@ -122,18 +118,15 @@ router.put("/", async (req, res) => {
   enddate.format();
 
   logger.trace("complete user's Workout API");
-  let user_workout_data = await user_calendar_helper.complete_workouts(
-    {
-      date: {
-        $gte: startdate,
-        $lte: enddate
-      },
-      userId: authUserId
+  let user_workout_data = await user_calendar_helper.complete_workouts({
+    date: {
+      $gte: startdate,
+      $lte: enddate
     },
-    {
-      isCompleted: 1
-    }
-  );
+    userId: authUserId
+  }, {
+    isCompleted: 1
+  });
 
   if (user_workout_data.status === 1) {
     res.status(config.OK_STATUS).json(user_workout_data);

@@ -57,7 +57,9 @@ router.post("/filter", async (req, res) => {
   let filtered_data = await exercise_helper.get_filtered_records(filter_object);
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.BAD_REQUEST).json({
+      filtered_data
+    });
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
@@ -106,10 +108,6 @@ router.get("/:exercise_id", async (req, res) => {
     logger.error("Error occured while fetching exercise = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    console.log("------------------------------------");
-    console.log("resp_data : ", resp_data);
-    console.log("------------------------------------");
-
     logger.trace("Exercises got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
@@ -205,9 +203,9 @@ router.post("/", async (req, res) => {
       description: req.body.description,
       mainMuscleGroup: mainMuscleGroupData,
       otherMuscleGroup: otherMuscleGroupData ? otherMuscleGroupData : [],
-      detailedMuscleGroup: detailedMuscleGroupData
-        ? detailedMuscleGroupData
-        : [],
+      detailedMuscleGroup: detailedMuscleGroupData ?
+        detailedMuscleGroupData :
+        [],
       category: req.body.category,
       mechanics: req.body.mechanics,
       equipments: equipmentsData ? equipmentsData : [],
@@ -221,7 +219,7 @@ router.post("/", async (req, res) => {
 
     async.waterfall(
       [
-        function(callback) {
+        function (callback) {
           //image upload
           if (req.files && req.files["images"]) {
             var file_path_array = [];
@@ -233,7 +231,7 @@ router.post("/", async (req, res) => {
             // assuming openFiles is an array of file names
             async.eachSeries(
               files,
-              function(file, loop_callback) {
+              function (file, loop_callback) {
                 var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
@@ -241,7 +239,7 @@ router.post("/", async (req, res) => {
                   }
                   extention = path.extname(file.name);
                   filename = "exercise_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function(err) {
+                  file.mv(dir + "/" + filename, function (err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -266,7 +264,7 @@ router.post("/", async (req, res) => {
                   });
                 }
               },
-              function(err) {
+              function (err) {
                 // if any of the file processing produced an error, err would equal that error
                 if (err) {
                   res.status(err.status).json(err);
@@ -290,7 +288,9 @@ router.post("/", async (req, res) => {
         let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
         if (exercise_data.status === 0) {
           logger.error("Error while inserting exercise data = ", exercise_data);
-          return res.status(config.BAD_REQUEST).json({ exercise_data });
+          return res.status(config.BAD_REQUEST).json({
+            exercise_data
+          });
         } else {
           return res.status(config.OK_STATUS).json(exercise_data);
         }
@@ -298,7 +298,9 @@ router.post("/", async (req, res) => {
     );
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -374,12 +376,12 @@ router.put("/:exercise_id", async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       mainMuscleGroup: req.body.mainMuscleGroup,
-      otherMuscleGroup: req.body.otherMuscleGroup
-        ? JSON.parse(req.body.otherMuscleGroup)
-        : null,
-      detailedMuscleGroup: req.body.detailedMuscleGroup
-        ? JSON.parse(req.body.detailedMuscleGroup)
-        : null,
+      otherMuscleGroup: req.body.otherMuscleGroup ?
+        JSON.parse(req.body.otherMuscleGroup) :
+        null,
+      detailedMuscleGroup: req.body.detailedMuscleGroup ?
+        JSON.parse(req.body.detailedMuscleGroup) :
+        null,
       category: req.body.category,
       mechanics: req.body.mechanics,
       equipments: req.body.equipments ? JSON.parse(req.body.equipments) : null,
@@ -400,7 +402,7 @@ router.put("/:exercise_id", async (req, res) => {
 
     async.waterfall(
       [
-        function(callback) {
+        function (callback) {
           if (
             req.body.delete_images &&
             typeof JSON.parse(req.body.delete_images) === "object"
@@ -410,7 +412,7 @@ router.put("/:exercise_id", async (req, res) => {
               var index = new_img_path_list.indexOf(element);
 
               if (index > -1) {
-                fs.unlink(element, function() {});
+                fs.unlink(element, function () {});
 
                 new_img_path_list.splice(index, 1);
               }
@@ -418,7 +420,7 @@ router.put("/:exercise_id", async (req, res) => {
           }
           callback(null, new_img_path_list);
         },
-        function(new_img_path_list, callback) {
+        function (new_img_path_list, callback) {
           //image upload
           var file_path_array = new_img_path_list;
           if (req.files && req.files["images"] && req.files != null) {
@@ -430,14 +432,14 @@ router.put("/:exercise_id", async (req, res) => {
             // assuming openFiles is an array of file names
             async.eachSeries(
               files,
-              function(file, loop_callback) {
+              function (file, loop_callback) {
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
                     fs.mkdirSync(dir);
                   }
                   extention = path.extname(file.name);
                   filename = "exercise_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function(err) {
+                  file.mv(dir + "/" + filename, function (err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -462,7 +464,7 @@ router.put("/:exercise_id", async (req, res) => {
                   });
                 }
               },
-              function(err) {
+              function (err) {
                 // if any of the file processing produced an error, err would equal that error
                 if (err) {
                   res.status(err.status).json(err);
@@ -489,7 +491,9 @@ router.put("/:exercise_id", async (req, res) => {
         );
         if (exercise_data.status === 0) {
           logger.error("Error while updating exercise data = ", exercise_data);
-          res.status(config.BAD_REQUEST).json({ exercise_data });
+          res.status(config.BAD_REQUEST).json({
+            exercise_data
+          });
         } else {
           res.status(config.OK_STATUS).json(exercise_data);
         }
@@ -497,7 +501,9 @@ router.put("/:exercise_id", async (req, res) => {
     );
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -525,7 +531,7 @@ router.delete("/:exercise_id", async (req, res) => {
   } else {
     images = resp_data.exercise.images;
     images.forEach(image => {
-      fs.unlink(image, function() {});
+      fs.unlink(image, function () {});
     });
     res.status(config.OK_STATUS).json(exercise_data);
   }

@@ -14,7 +14,7 @@ var db = mongoose.connection;
 // CONNECTION EVENTS
 // When successfully connected
 db.on("connected", function() {
-  //console.log('Mongoose connection open to ' + mongoDB);
+  // console.log('Mongoose connection open to ' + mongoDB);
 });
 
 // If the connection throws an error
