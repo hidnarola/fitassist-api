@@ -241,7 +241,6 @@ router.post("/", async (req, res) => {
             var file_path_array = [];
             var files = [].concat(req.files.images);
             var dir = "./uploads/user_post";
-            var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
             async.eachSeries(
               files,
