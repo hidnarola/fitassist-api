@@ -10,7 +10,6 @@ var jwtDecode = require("jwt-decode");
 var constant = require("../../constant");
 
 var logger = config.logger;
-
 var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
 var user_helper = require("../../helpers/user_helper");
@@ -400,6 +399,60 @@ router.post("/", async (req, res) => {
       message: errors
     });
   }
+});
+/**
+ * @api {post} /user/timeline/body_fat Body Fat chart
+ * @apiName Body Fat chart
+ * @apiGroup User Timeline
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiSuccess (Success 200) {JSON} body_fat Body Fat chart data
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/body_fat", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var user = await user_helper.get_user_by({
+    username: req.body.username
+  });
+  var friendId = user.user.authUserId;
+  var end = moment().utcOffset(0);
+  end.toISOString();
+  end.format();
+
+  var start = moment(end).utcOffset(0);
+  start.toISOString();
+  start.subtract(1, 'years');
+  start.format();
+
+  var resp_data = await workout_progress_helper.graph_data_body_fat({
+    createdAt: {
+      logDate: {
+        $gte: new Date(start),
+        $lte: new Date(end)
+      },
+      userId: friendId,
+    },
+  });
+  if (resp_data.status == 1) {
+    logger.trace("user body fat found successfully = ", resp_data);
+    resp_data.progress = {
+      graph_data: resp_data.progress,
+      date: {
+        start,
+        end
+      }
+    };
+
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error(
+      "Error occured while fetching body fat = ",
+      resp_data
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
+
 });
 
 /**
