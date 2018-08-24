@@ -32,26 +32,16 @@ router.get("/:type", async (req, res) => {
   } else if (type === "complete") {
     resp_data = await badge_assign_helper.get_all_badges({
       userId: authUserId
-    }, {
-      createdAt: -1
     });
-    console.log('------------------------------------');
-    console.log('complete resp_data : ', resp_data);
-    console.log('------------------------------------');
-
   } else if (type === "incomplete") {
     resp_data = await badge_assign_helper.get_all_badges({
       userId: authUserId
     });
-    console.log('------------------------------------');
-    console.log('incomplete resp_data : ', resp_data);
-    console.log('------------------------------------');
     if (resp_data.status === 1) {
       var completedBadgesIds = [];
       for (let x of resp_data.badges) {
         completedBadgesIds.push(x.badgeId);
       }
-
       resp_data = await badge_helper.get_badges({
         _id: {
           $nin: completedBadgesIds

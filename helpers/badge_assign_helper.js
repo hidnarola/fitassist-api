@@ -22,9 +22,17 @@ var badges_assign_helper = {
  *          status 1 - If badges data found, with badges object
  *          status 2 - If badges not found, with appropriate message
  */
-badges_assign_helper.get_all_badges = async (condition = {}, sort = {}, limit = {}) => {
+badges_assign_helper.get_all_badges = async (condition = {}, sort = {
+  $sort: {
+    createdAt: -1
+  }
+}, limit = false) => {
   try {
-    var badges = await BadgesAssign.aggregate([{
+    console.log('------------------------------------');
+    console.log('limit : ', limit);
+    console.log('------------------------------------');
+
+    var aggregate = [{
         $match: condition
       },
       {
@@ -76,14 +84,18 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {}, limit = 
           }
         }
       },
-      {
-        $sort: sort
-      },
-      {
-        $limit: limit
-      }
-      // {}
-    ]);
+    ];
+    if (sort) {
+      aggregate.push(sort);
+    }
+    if (limit) {
+      aggregate.push(limit);
+    }
+    console.log('------------------------------------');
+    console.log('aggregate : ', aggregate);
+    console.log('------------------------------------');
+
+    var badges = await BadgesAssign.aggregate(aggregate);
     if (badges) {
       return {
         status: 1,
@@ -104,6 +116,7 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {}, limit = 
     };
   }
 };
+
 
 async function badge_assign_for_workout(
   authUserId,
