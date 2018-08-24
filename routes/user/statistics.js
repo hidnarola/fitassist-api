@@ -15,12 +15,14 @@ var statistics_helper = require("../../helpers/statistics_helper");
  * @apiSuccess (Success 200) {JSON} stats JSON of statistics's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:type", async (req, res) => {
+router.post("/", async (req, res) => {
   logger.trace("User Statistics API called with " + type + " type");
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var type = req.params.type;
+  var type = req.body.type;
+  var start = req.body.start;
+  var end = req.body.end;
   var resp_data;
   if (type && type != null) {
     if (type == "strength") {
