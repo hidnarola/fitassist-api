@@ -342,6 +342,12 @@ common_helper.convertUnits = async (from, to, value) => {
         case "feet":
           result = value * 3.28084;
           break;
+        case "km":
+          result = value * 0.001;
+          break;
+        case "mile":
+          result = value * 0.000621371;
+          break;
       }
       break;
     case "feet":
@@ -399,6 +405,36 @@ common_helper.convertUnits = async (from, to, value) => {
           break;
         case "gram":
           result = value * 453.592;
+          break;
+      }
+      break;
+    case "second":
+      switch (to) {
+        case "minute":
+          result = value / 60;
+          break;
+        case "hour":
+          result = value / 3600;
+          break;
+      }
+      break;
+    case "minute":
+      switch (to) {
+        case "second":
+          result = value * 60;
+          break;
+        case "hour":
+          result = value / 60;
+          break;
+      }
+      break;
+    case "hour":
+      switch (to) {
+        case "second":
+          result = value * 3600;
+          break;
+        case "minute":
+          result = value * 60;
           break;
       }
       break;

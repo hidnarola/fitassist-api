@@ -3,6 +3,8 @@ var UserWorkout = require("./../models/user_workouts");
 var UsersRecipe = require("./../models/users_recipe");
 var WorkoutLogs = require("./../models/workout_logs");
 var BodyMeasurements = require("./../models/body_measurements");
+var user_settings_helper = require("./user_settings_helper");
+var common_helper = require("./common_helper");
 var moment = require("moment");
 var user_recipe_helper = require("./user_recipe_helper");
 var _ = require("underscore");
@@ -22,6 +24,9 @@ async function getSum(total, num) {
 statistics_helper.get_strength = async (condition = {}) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
+        $match: {}
+      },
+      {
         $lookup: {
           from: "user_workout_exercises",
           localField: "exerciseId",
@@ -120,17 +125,23 @@ statistics_helper.get_strength = async (condition = {}) => {
       }
 
     ]);
-
+    var measurement_unit_data = await user_settings_helper.get_setting({
+      userId: condition.userId
+    });
+    if (measurement_unit_data.status === 1) {
+      var distanceUnit = measurement_unit_data.user_settings.distance;
+      var weightUnit = measurement_unit_data.user_settings.weight;
+    }
     for (let w of user_workouts) {
 
-      var time = _.pluck(_.pluck(w.fields, "time"), "total");
-      var distance = _.pluck(_.pluck(w.fields, "time"), "total");
-      var effort = _.pluck(_.pluck(w.fields, "time"), "total");
-      var weight = _.pluck(_.pluck(w.fields, "time"), "total");
-      var repTime = _.pluck(_.pluck(w.fields, "time"), "total");
-      var setTime = _.pluck(_.pluck(w.fields, "time"), "total");
-      var reps = _.pluck(_.pluck(w.fields, "time"), "total");
-      var sets = _.pluck(_.pluck(w.fields, "time"), "total");
+      let time = _.pluck(_.pluck(w.fields, "time"), "total");
+      let distance = _.pluck(_.pluck(w.fields, "distance"), "total");
+      let effort = _.pluck(_.pluck(w.fields, "effort"), "total");
+      let weight = _.pluck(_.pluck(w.fields, "weight"), "total");
+      let repTime = _.pluck(_.pluck(w.fields, "repTime"), "total");
+      let setTime = _.pluck(_.pluck(w.fields, "setTime"), "total");
+      let reps = _.pluck(_.pluck(w.fields, "reps"), "total");
+      let sets = _.pluck(_.pluck(w.fields, "sets"), "total");
 
       let totalTime = await time.reduce(getSum);
       let totalDistance = await distance.reduce(getSum);
@@ -140,18 +151,40 @@ statistics_helper.get_strength = async (condition = {}) => {
       let totalSetTime = await setTime.reduce(getSum);
       let totalReps = await reps.reduce(getSum);
       let totalSets = await sets.reduce(getSum);
-
-      console.log('------------------------------------');
-      console.log(' totalTime: ', totalTime);
-      console.log(' totalDistance: ', totalDistance);
-      console.log(' totalEffort: ', totalEffort);
-      console.log(' totalWeight: ', totalWeight);
-      console.log(' totalRepTime: ', totalRepTime);
-      console.log(' totalSetTime: ', totalSetTime);
-      console.log(' totalReps: ', totalReps);
-      console.log(' totalSets: ', totalSets);
-      console.log('------------------------------------');
-
+      w.fields = {};
+      w.fields.time = {
+        total: await common_helper.convertUnits("second", "minute", totalTime),
+        unit: "minute"
+      }
+      w.fields.distance = {
+        total: await common_helper.convertUnits("meter", distanceUnit, totalDistance),
+        unit: distanceUnit
+      }
+      w.fields.effort = {
+        total: totalEffort,
+        unit: ""
+      }
+      w.fields.weight = {
+        ototal: totalWeight,
+        total: await common_helper.convertUnits("gram", weightUnit, totalWeight),
+        unit: weightUnit
+      }
+      w.fields.repTime = {
+        total: await common_helper.convertUnits("second", "minute", totalRepTime),
+        unit: "minute"
+      }
+      w.fields.setTime = {
+        total: await common_helper.convertUnits("second", "minute", totalSetTime),
+        unit: "minute"
+      }
+      w.fields.reps = {
+        total: totalReps,
+        unit: "number"
+      }
+      w.fields.sets = {
+        total: totalSets,
+        unit: "number"
+      }
     }
 
     if (user_workouts) {
@@ -313,209 +346,5 @@ statistics_helper.get_cardio = async (condition = {}) => {
   }
 };
 
-/*
- * get_nutrition is used to fetch all user nutrition data
- * 
- * @return  status 0 - If any internal error occured while fetching nutrition data, with error
- *          status 1 - If nutrition data found, with nutrition object
- *          status 2 - If nutrition not found, with appropriate message
- */
-statistics_helper.get_nutrition = async (condition = {}) => {
-  try {
-    var user_nutrients = await UsersRecipe.aggregate([{
-        $project: {
-          _id: 1,
-          isDeleted: 1,
-          userId: 1,
-          totalNutrients: 1,
-          isCompleted: 1
-        }
-      },
-      {
-        $match: condition
-      },
-      {
-        $unwind: "$totalNutrients"
-      },
-      {
-        $group: {
-          _id: "null",
-          calories_total: {
-            $sum: "$totalNutrients.ENERC_KCAL.quantity"
-          },
-          protein_average: {
-            $avg: "$totalNutrients.PROCNT.quantity"
-          },
-          carbs_total: {
-            $sum: "$totalNutrients.CHOCDF.quantity"
-          },
-          protein_total: {
-            $sum: "$totalNutrients.PROCNT.quantity"
-          },
-          carbs_total: {
-            $sum: "$totalNutrients.CHOCDF.quantity"
-          },
-          // calories_average: { $avg: "$totalNutrients.ENERC_KCAL.quantity" },
-          // calories_most: { $max: "$totalNutrients.ENERC_KCAL.quantity" },
-          // calories_least: { $min: "$totalNutrients.ENERC_KCAL.quantity" },
-          // saturated_total: { $sum: "$totalNutrients.FASAT.quantity" },
-          // saturated_average: { $avg: "$totalNutrients.FASAT.quantity" },
-          // saturated_most: { $sum: "$totalNutrients.FASAT.quantity" },
-          // saturated_least: { $sum: "$totalNutrients.FASAT.quantity" },
-          // trans_total: { $sum: "$totalNutrients.FATRN.quantity" },
-          // trans_average: { $avg: "$totalNutrients.FATRN.quantity" },
-          // trans_most: { $sum: "$totalNutrients.FATRN.quantity" },
-          // trans_least: { $sum: "$totalNutrients.FATRN.quantity" },
-          // folate_total: { $sum: "$totalNutrients.FOLDFE.quantity" },
-          // folate_average: { $avg: "$totalNutrients.FOLDFE.quantity" },
-          // folate_most: { $sum: "$totalNutrients.FOLDFE.quantity" },
-          // folate_least: { $sum: "$totalNutrients.FOLDFE.quantity" },
-          // potassium_total: { $sum: "$totalNutrients.K.quantity" },
-          // potassium_average: { $avg: "$totalNutrients.K.quantity" },
-          // potassium_most: { $sum: "$totalNutrients.K.quantity" },
-          // potassium_least: { $sum: "$totalNutrients.K.quantity" },
-          // magnesium_total: { $sum: "$totalNutrients.MG.quantity" },
-          // magnesium_average: { $avg: "$totalNutrients.MG.quantity" },
-          // magnesium_most: { $sum: "$totalNutrients.MG.quantity" },
-          // magnesium_least: { $sum: "$totalNutrients.MG.quantity" },
-          // sodium_total: { $sum: "$totalNutrients.NA.quantity" },
-          // sodium_average: { $avg: "$totalNutrients.NA.quantity" },
-          // sodium_most: { $sum: "$totalNutrients.NA.quantity" },
-          // sodium_least: { $sum: "$totalNutrients.NA.quantity" },
-          // protein_most: { $sum: "$totalNutrients.PROCNT.quantity" },
-          // protein_least: { $sum: "$totalNutrients.PROCNT.quantity" },
-          // calcium_total: { $sum: "$totalNutrients.CA.quantity" },
-          // calcium_average: { $avg: "$totalNutrients.CA.quantity" },
-          // calcium_most: { $sum: "$totalNutrients.CA.quantity" },
-          // calcium_least: { $sum: "$totalNutrients.CA.quantity" },
-          // carbs_average: { $avg: "$totalNutrients.CHOCDF.quantity" },
-          // carbs_most: { $sum: "$totalNutrients.CHOCDF.quantity" },
-          // carbs_least: { $sum: "$totalNutrients.CHOCDF.quantity" },
-          // cholesterol_total: { $sum: "$totalNutrients.CHOLE.quantity" },
-          // cholesterol_average: { $avg: "$totalNutrients.CHOLE.quantity" },
-          // cholesterol_most: { $sum: "$totalNutrients.CHOLE.quantity" },
-          // cholesterol_least: { $sum: "$totalNutrients.CHOLE.quantity" },
-          // polyunsaturated_total: { $sum: "$totalNutrients.FAPU.quantity" },
-          // polyunsaturated_average: { $avg: "$totalNutrients.FAPU.quantity" },
-          // polyunsaturated_most: { $sum: "$totalNutrients.FAPU.quantity" },
-          // polyunsaturated_least: { $sum: "$totalNutrients.FAPU.quantity" },
-          // monounsaturated_total: { $sum: "$totalNutrients.FAMS.quantity" },
-          // monounsaturated_average: { $avg: "$totalNutrients.FAMS.quantity" },
-          // monounsaturated_most: { $sum: "$totalNutrients.FAMS.quantity" },
-          // monounsaturated_least: { $sum: "$totalNutrients.FAMS.quantity" },
-          // iron_total: { $sum: "$totalNutrients.FE.quantity" },
-          // iron_average: { $avg: "$totalNutrients.FE.quantity" },
-          // iron_most: { $sum: "$totalNutrients.FE.quantity" },
-          // iron_least: { $sum: "$totalNutrients.FE.quantity" },
-          // fiber_total: { $sum: "$totalNutrients.FIBTG.quantity" },
-          // fiber_average: { $avg: "$totalNutrients.FIBTG.quantity" },
-          // fiber_most: { $sum: "$totalNutrients.FIBTG.quantity" },
-          // fiber_least: { $sum: "$totalNutrients.FIBTG.quantity" }
-        }
-      }
-    ]);
-
-    var month = moment()
-      .utc()
-      .format("M");
-    var year = moment()
-      .utc()
-      .format("Y");
-
-    var monthlyProtain = await UsersRecipe.aggregate([{
-        $project: {
-          _id: 1,
-          isDeleted: 1,
-          userId: 1,
-          totalNutrients: 1,
-          isCompleted: 1,
-          year: {
-            $year: "$date"
-          },
-          month: {
-            $month: "$date"
-          }
-        }
-      },
-      {
-        $match: {
-          userId: condition.userId,
-          month: parseInt(month),
-          year: parseInt(year)
-        }
-      },
-      {
-        $unwind: "$totalNutrients"
-      },
-      {
-        $group: {
-          _id: "null",
-          protein_total: {
-            $sum: "$totalNutrients.PROCNT.quantity"
-          }
-        }
-      }
-    ]);
-    // total calories, avg protain, total fat, total excess cals, total cabs, monthly protain
-    var returnObj = user_nutrients[0];
-
-    returnObj.monthly_protain = monthlyProtain[0].protein_total;
-    if (user_nutrients) {
-      return {
-        status: 1,
-        message: "User nutrition data found",
-        statistics: returnObj
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No User nutrition data available",
-        statistics: null
-      };
-    }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding User nutrition data",
-      error: err
-    };
-  }
-};
-
-/*
- * get_body is used to fetch all user body data
- * 
- * @return  status 0 - If any internal error occured while fetching body data, with error
- *          status 1 - If body data found, with body object
- *          status 2 - If body not found, with appropriate message
- */
-statistics_helper.get_body = async (condition = {}) => {
-  try {
-    var resp_data = await BodyMeasurements.aggregate([{
-      $match: condition
-    }]);
-    // body fat change, shoulder waist ration, current weight, resting heart rate, bicep growth, weight change
-
-    if (resp_data) {
-      return {
-        status: 1,
-        message: "User body data found",
-        statistics: resp_data
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No User body data available",
-        statistics: null
-      };
-    }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding User body data",
-      error: err
-    };
-  }
-};
 
 module.exports = statistics_helper;
