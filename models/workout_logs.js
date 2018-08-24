@@ -4,30 +4,66 @@ var mongoose = require("mongoose");
 //Define a schema
 var Schema = mongoose.Schema;
 
-var WorkoutLogsSchema = new Schema(
-  {
-    userId: { type: String, ref: "users", field: "authUserId", required: true },
-    setsDetailId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: false
-    },
-    exerciseId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    isCompleted: { type: Number, default: 0 },
-    time: { type: Number, default: 0 },
-    distance: { type: Number, default: 0 },
-    effort: { type: Number, default: 0 },
-    weight: { type: Number, default: 0 },
-    repTime: { type: Number, default: 0 },
-    setTime: { type: Number, default: 0 },
-    reps: { type: Number, default: 0 },
-    sets: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now }
+var WorkoutLogsSchema = new Schema({
+  userId: {
+    type: String,
+    ref: "users",
+    field: "authUserId",
+    required: true
   },
-  { versionKey: false }
-);
+  setsDetailId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: false
+  },
+  //exerciseId of user_workout_exercises collection
+  exerciseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "user_workout_exercises"
+  },
+  isCompleted: {
+    type: Number,
+    default: 0
+  },
+  time: {
+    type: Number,
+    default: 0
+  },
+  distance: {
+    type: Number,
+    default: 0
+  },
+  effort: {
+    type: Number,
+    default: 0
+  },
+  weight: {
+    type: Number,
+    default: 0
+  },
+  repTime: {
+    type: Number,
+    default: 0
+  },
+  setTime: {
+    type: Number,
+    default: 0
+  },
+  reps: {
+    type: Number,
+    default: 0
+  },
+  sets: {
+    type: Number,
+    default: 0
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  versionKey: false
+});
 
 // Compile model from schema
 var WorkoutLogs = mongoose.model(

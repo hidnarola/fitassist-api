@@ -5,19 +5,19 @@ var jwtDecode = require("jwt-decode");
 
 var logger = config.logger;
 
-var user_leaderboard_helper = require("../../helpers/statistics_helper");
+var statistics_helper = require("../../helpers/statistics_helper");
 
 /**
- * @api {get} /user/user_leaderboard/:type Get
+ * @api {get} /user/statistics/:type Get
  * @apiName Get
- * @apiGroup User Leaderboard
- * @apiDescription <font color=red>Type can be strength, cardio, nutrition, body</font>
+ * @apiGroup User Statistics
+ * @apiDescription <font color=red>Type can be strength, cardio</font>
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} goals JSON of badges_assign's document
+ * @apiSuccess (Success 200) {JSON} stats JSON of statistics's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:type", async (req, res) => {
-  logger.trace("User Leaderboard API called with " + type + " type");
+  logger.trace("User Statistics API called with " + type + " type");
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
@@ -26,40 +26,33 @@ router.get("/:type", async (req, res) => {
   if (type && type != null) {
     if (type == "strength") {
       // weight_lifted_total,weight_lifted_average,workouts_total,reps_total,sets_total, workout_time
-      resp_data = await user_leaderboard_helper.get_strength({
+      resp_data = await statistics_helper.get_strength({
         userId: authUserId,
         isCompleted: 1
       });
     } else if (type == "cardio") {
       // total_distance run, total time running,total elevation, peak heartrate, distance cycled, total steps
-      resp_data = await user_leaderboard_helper.get_cardio({
+      resp_data = await statistics_helper.get_cardio({
         userId: authUserId,
         isCompleted: 1
       });
-    } else if (type == "nutrition") {
-      // total calories, avg protain, total fat, total excess cals, total cabs, monthly protain
-      resp_data = await user_leaderboard_helper.get_nutrition({
-        userId: authUserId
-      });
-    } else if (type == "body") {
-      // body fat change, shoulder waist ration, current weight, resting heart rate, bicep growth, weight change
-      resp_data = await user_leaderboard_helper.get_body({
-        userId: authUserId
-      });
     }
+console.log('------------------------------------');
+console.log('resp_data : ', resp_data);
+console.log('------------------------------------');
 
     if (resp_data.status == 1) {
-      logger.trace("Get user leaderboard data successfully   = ", resp_data);
+      logger.trace("Get user statistics data successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
     } else {
       logger.error(
-        "Error occured while fetching user leaderboard data = ",
+        "Error occured while fetching user statistics data = ",
         resp_data
       );
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     }
   } else {
-    logger.error("NO type provide for leaderboard");
+    logger.error("NO type provided for statistics");
     res.status(config.OK_STATUS).json({
       status: 0,
       message: "please provide type"
@@ -67,59 +60,4 @@ router.get("/:type", async (req, res) => {
   }
 });
 
-// [
-//   {
-//       $lookup:
-//       {
-//           from: "user_workouts",
-//           localField: "userWorkoutsId",
-//           foreignField: "_id",
-//           as: "workout"
-//       }
-//   },
-//   {
-//       $unwind:"$workout"
-//   },
-//   {
-//       $lookup:
-//       {
-//           from: "users",
-//           localField: "workout.userId",
-//           foreignField: "authUserId",
-//           as: "user"
-//       }
-//   },
-//   {
-//       $unwind:"$user"
-//   },
-//   {
-//       $group:{
-//           _id:"$user.authUserId",
-//           weight_lifted_total: { $sum: "baseWeightValue" },
-//           weight_lifted_average: { $avg: "$baseWeightValue" },
-//           weight_lifted_most: { $max: "$baseWeightValue" },
-//           weight_lifted_least: { $min: "$baseWeightValue" },
-//           reps_least: { $min: "$reps" },
-//           reps_total: { $sum: "$reps" },
-//           reps_average: { $avg: "$reps" },
-//           reps_most: { $max: "$reps" },
-//           sets_least: { $min: "$sets" },
-//           sets_total: { $sum: "$sets" },
-//           sets_average: { $avg: "$sets" },
-//           sets_most: { $max: "$sets" },
-//           workouts_total: { $sum: 1 },
-//           firstName: {$first:"$user.firstName"},
-//           lastName: {$first:"$user.lastName"},
-//           avatar: {$first:"$user.avatar"},
-//           username: {$first:"$user.username"},
-//           authUserId: {$first:"$user.authUserId"},
-//       }
-//   },
-//   {
-//       $sort:{
-//           weight_lifted_total:-1
-//           }
-//   }
-
-//   ]
 module.exports = router;

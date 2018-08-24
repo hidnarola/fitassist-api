@@ -18,6 +18,7 @@ var friend_helper = require("../../helpers/friend_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
+var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 
 /**
  * @api {get} /user/timeline/:post_id Get by ID
@@ -401,21 +402,32 @@ router.post("/", async (req, res) => {
   }
 });
 /**
- * @api {post} /user/timeline/body_fat Body Fat chart
- * @apiName Body Fat chart
+ * @api {post} /user/timeline/widgets Get user's widgets
+ * @apiName Get user's widgets
  * @apiGroup User Timeline
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} body_fat Body Fat chart data
+ * @apiSuccess (Success 200) {JSON} widgets widgets data
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post("/body_fat", async (req, res) => {
+router.post("/widgets", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var returnObject = {
+    status: 0,
+    message: "Record not found"
+  }
   var user = await user_helper.get_user_by({
     username: req.body.username
   });
-  var friendId = user.user.authUserId;
+
+  var authIdofUser = user.user.authUserId;
+
+  var widgets_settings = await widgets_settings_helper.get_all_widgets({
+    userId: authIdofUser,
+    widgetFor: "timeline"
+  });
+
   var end = moment().utcOffset(0);
   end.toISOString();
   end.format();
@@ -425,13 +437,43 @@ router.post("/body_fat", async (req, res) => {
   start.subtract(1, 'years');
   start.format();
 
+  if (widgets_settings.status === 1) {
+    if (widgets_settings.widgets.graph && widgets_settings.widgets.graph.length > 0) {
+      for (let x of widgets_settings.widgets.graph) {
+        if (x.name === "body_fat") {
+
+        } else if (["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "weight", "height", "heartRate"].indexOf(x.name) >= 0) {
+
+        }
+      }
+    }
+
+    if (widgets_settings.widgets.state && widgets_settings.widgets.state.length > 0) {
+      for (let x of widgets_settings.widgets.state) {
+        // console.log('------------------------------------');
+        // console.log('x2 : ', x);
+        // console.log('------------------------------------');
+      }
+    }
+
+    if (widgets_settings.widgets.badges) {
+
+    }
+
+    if (widgets_settings.widgets.progressPhoto) {
+
+    }
+
+  }
+
+
   var resp_data = await workout_progress_helper.graph_data_body_fat({
     createdAt: {
       logDate: {
         $gte: new Date(start),
         $lte: new Date(end)
       },
-      userId: friendId,
+      userId: authIdofUser,
     },
   });
   if (resp_data.status == 1) {

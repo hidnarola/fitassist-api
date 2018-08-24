@@ -16,18 +16,22 @@ var WidgetsSettingsSchema = new Schema({
         enum: ["dashboard", "timeline"],
         default: null
     },
-    graph: [{
-        type: String,
+    graph: {
+        type: Array,
         default: null
-    }],
-    badges: [{
-        type: String,
+    },
+    state: {
+        type: Array,
         default: null
-    }],
-    progress: [{
-        type: String,
+    },
+    badges: {
+        type: Number,
         default: null
-    }],
+    },
+    progressPhoto: {
+        type: Number,
+        default: null
+    },
     workout: {
         type: Number,
         default: null
