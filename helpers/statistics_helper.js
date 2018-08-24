@@ -22,9 +22,13 @@ async function getSum(total, num) {
   return await total + num;
 }
 statistics_helper.get_strength = async (condition = {}) => {
+  console.log('------------------------------------');
+  console.log('condition : ', condition);
+  console.log('------------------------------------');
+
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
-        $match: {}
+        $match: condition
       },
       {
         $lookup: {
@@ -154,7 +158,7 @@ statistics_helper.get_strength = async (condition = {}) => {
       w.fields = {};
       w.fields.time = {
         total: await common_helper.convertUnits("second", "minute", totalTime),
-        unit: "minute"
+        unit: "min"
       }
       w.fields.distance = {
         total: await common_helper.convertUnits("meter", distanceUnit, totalDistance),
@@ -165,25 +169,24 @@ statistics_helper.get_strength = async (condition = {}) => {
         unit: ""
       }
       w.fields.weight = {
-        ototal: totalWeight,
-        total: await common_helper.convertUnits("gram", weightUnit, totalWeight),
+        total: parseFloat(await common_helper.convertUnits("gram", weightUnit, totalWeight).toFixed(2)),
         unit: weightUnit
       }
       w.fields.repTime = {
         total: await common_helper.convertUnits("second", "minute", totalRepTime),
-        unit: "minute"
+        unit: "min"
       }
       w.fields.setTime = {
         total: await common_helper.convertUnits("second", "minute", totalSetTime),
-        unit: "minute"
+        unit: "min"
       }
       w.fields.reps = {
         total: totalReps,
-        unit: "number"
+        unit: ""
       }
       w.fields.sets = {
         total: totalSets,
-        unit: "number"
+        unit: ""
       }
     }
 

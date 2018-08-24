@@ -22,9 +22,7 @@ var badges_assign_helper = {
  *          status 1 - If badges data found, with badges object
  *          status 2 - If badges not found, with appropriate message
  */
-badges_assign_helper.get_all_badges = async (condition = {}, sort = {
-  createdAt: -1
-}, limit = {}) => {
+badges_assign_helper.get_all_badges = async (condition = {}, sort = {}, limit = {}) => {
   try {
     var badges = await BadgesAssign.aggregate([{
         $match: condition
@@ -81,7 +79,10 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {
       {
         $sort: sort
       },
-      limit
+      {
+        $limit: limit
+      }
+      // {}
     ]);
     if (badges) {
       return {
