@@ -5,6 +5,7 @@ var WorkoutLogs = require("./../models/workout_logs");
 var BodyMeasurements = require("./../models/body_measurements");
 var moment = require("moment");
 var user_recipe_helper = require("./user_recipe_helper");
+var _ = require("underscore");
 
 var statistics_helper = {};
 
@@ -15,6 +16,9 @@ var statistics_helper = {};
  *          status 1 - If strength data found, with strength object
  *          status 2 - If strength not found, with appropriate message
  */
+async function getSum(total, num) {
+  return await total + num;
+}
 statistics_helper.get_strength = async (condition = {}) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
@@ -116,10 +120,39 @@ statistics_helper.get_strength = async (condition = {}) => {
       }
 
     ]);
-    // weight_lifted_total,weight_lifted_average,workouts_total,reps_total,sets_total, workout_time
-    console.log('------------------------------------');
-    console.log('user_workouts : ', user_workouts);
-    console.log('------------------------------------');
+
+    for (let w of user_workouts) {
+
+      var time = _.pluck(_.pluck(w.fields, "time"), "total");
+      var distance = _.pluck(_.pluck(w.fields, "time"), "total");
+      var effort = _.pluck(_.pluck(w.fields, "time"), "total");
+      var weight = _.pluck(_.pluck(w.fields, "time"), "total");
+      var repTime = _.pluck(_.pluck(w.fields, "time"), "total");
+      var setTime = _.pluck(_.pluck(w.fields, "time"), "total");
+      var reps = _.pluck(_.pluck(w.fields, "time"), "total");
+      var sets = _.pluck(_.pluck(w.fields, "time"), "total");
+
+      let totalTime = await time.reduce(getSum);
+      let totalDistance = await distance.reduce(getSum);
+      let totalEffort = await effort.reduce(getSum);
+      let totalWeight = await weight.reduce(getSum);
+      let totalRepTime = await repTime.reduce(getSum);
+      let totalSetTime = await setTime.reduce(getSum);
+      let totalReps = await reps.reduce(getSum);
+      let totalSets = await sets.reduce(getSum);
+
+      console.log('------------------------------------');
+      console.log(' totalTime: ', totalTime);
+      console.log(' totalDistance: ', totalDistance);
+      console.log(' totalEffort: ', totalEffort);
+      console.log(' totalWeight: ', totalWeight);
+      console.log(' totalRepTime: ', totalRepTime);
+      console.log(' totalSetTime: ', totalSetTime);
+      console.log(' totalReps: ', totalReps);
+      console.log(' totalSets: ', totalSets);
+      console.log('------------------------------------');
+
+    }
 
     if (user_workouts) {
       return {

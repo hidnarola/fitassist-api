@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
-
 var logger = config.logger;
 
 var statistics_helper = require("../../helpers/statistics_helper");
@@ -37,9 +36,9 @@ router.get("/:type", async (req, res) => {
         isCompleted: 1
       });
     }
-console.log('------------------------------------');
-console.log('resp_data : ', resp_data);
-console.log('------------------------------------');
+    console.log('------------------------------------');
+    console.log('resp_data : ', resp_data);
+    console.log('------------------------------------');
 
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);
