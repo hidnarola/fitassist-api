@@ -157,35 +157,35 @@ statistics_helper.get_strength = async (condition = {}) => {
       let totalSets = await sets.reduce(getSum);
       w.fields = {};
       w.fields.time = {
-        total: await common_helper.convertUnits("second", "minute", totalTime),
+        total: Math.round(await common_helper.convertUnits("second", "minute", totalTime)),
         unit: "min"
       }
       w.fields.distance = {
-        total: await common_helper.convertUnits("meter", distanceUnit, totalDistance),
+        total: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
         unit: distanceUnit
       }
       w.fields.effort = {
-        total: totalEffort,
+        total: Math.round(totalEffort),
         unit: ""
       }
       w.fields.weight = {
-        total: parseFloat(await common_helper.convertUnits("gram", weightUnit, totalWeight).toFixed(2)),
+        total: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
         unit: weightUnit
       }
       w.fields.repTime = {
-        total: await common_helper.convertUnits("second", "minute", totalRepTime),
+        total: Math.round(await common_helper.convertUnits("second", "minute", totalRepTime)),
         unit: "min"
       }
       w.fields.setTime = {
-        total: await common_helper.convertUnits("second", "minute", totalSetTime),
+        total: Math.round(await common_helper.convertUnits("second", "minute", totalSetTime)),
         unit: "min"
       }
       w.fields.reps = {
-        total: totalReps,
+        total: Math.round(totalReps),
         unit: ""
       }
       w.fields.sets = {
-        total: totalSets,
+        total: Math.round(totalSets),
         unit: ""
       }
     }
