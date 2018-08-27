@@ -128,12 +128,12 @@ router.post("/single", async (req, res) => {
     var end = req.body.end;
     var exerciseId = mongoose.Types.ObjectId.isValid(req.body.exerciseId) ? mongoose.Types.ObjectId(req.body.exerciseId) : "all";
 
-    var failed_resp_data = {
+    var default_resp_data = {
       status: 0,
       message: "No record found",
       statistics: {
         subCategory: subCategory,
-        exerciseId: null,
+        exerciseId: exerciseId,
         fields: {},
         startDate: start,
         endDate: end
@@ -169,12 +169,18 @@ router.post("/single", async (req, res) => {
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
+    } else if (resp_data.status === 2) {
+      logger.error(
+        "no user statistics data = ",
+        default_resp_data
+      );
+      res.status(config.OK_STATUS).json(default_resp_data);
     } else {
       logger.error(
         "Error occured while fetching user statistics data = ",
-        failed_resp_data
+        default_resp_data
       );
-      res.status(config.INTERNAL_SERVER_ERROR).json(failed_resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(default_resp_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -245,7 +251,7 @@ router.post("/graph_data", async (req, res) => {
       }
     }
 
-    var failed_resp_data = {
+    var default_resp_data = {
       status: 0,
       message: "No graph record found",
       statistics: {
@@ -275,12 +281,18 @@ router.post("/graph_data", async (req, res) => {
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
+    } else if (resp_data.status == 2) {
+      logger.error(
+        "no user statistics data = ",
+        default_resp_data
+      );
+      res.status(config.OK_STATUS).json(default_resp_data);
     } else {
       logger.error(
         "Error occured while fetching user statistics data = ",
-        failed_resp_data
+        default_resp_data
       );
-      res.status(config.INTERNAL_SERVER_ERROR).json(failed_resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(default_resp_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
