@@ -263,6 +263,11 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
         $match: condition2
       },
       {
+        $sort: {
+          createdAt: 1
+        }
+      },
+      {
         $group: {
           _id: "$exercise.exercises.exercises.subCategory",
           "fields": {
@@ -340,6 +345,7 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
         }
       }
     ]);
+    
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
     });

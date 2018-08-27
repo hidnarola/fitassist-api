@@ -36,6 +36,7 @@ router.post("/", async (req, res) => {
       errorMessage: "end date is required"
     },
   }
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
