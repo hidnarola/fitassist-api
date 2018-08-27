@@ -357,13 +357,13 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
           "date": moment(field[activeField].date).format("DD/MM/YYYY"),
         }
         if (activeField === "weight") {
-          tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, field[activeField].total))).toFixed(2)
+          tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, field[activeField].total)).toFixed(2))
           tmp.metaData.unit = weightUnit;
         } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime") {
           tmp.count = await common_helper.convertUnits("second", "minute", field[activeField].total)
           tmp.metaData.unit = minute;
         } else if (activeField === "distance") {
-          tmp.count = parseFloat(await common_helper.convertUnits("cm", distanceUnit, field[activeField].total)).toFixed(2)
+          tmp.count = parseFloat((await common_helper.convertUnits("cm", distanceUnit, field[activeField].total)).toFixed(2))
           tmp.metaData.unit = distanceUnit;
         } else {
           tmp.count = parseInt(field[activeField].total)
