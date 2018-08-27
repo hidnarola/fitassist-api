@@ -11,8 +11,7 @@ var user_notifications_helper = {};
  */
 user_notifications_helper.get_notifications = async userId => {
   try {
-    var notifications = await UserNotifications.aggregate([
-      {
+    var notifications = await UserNotifications.aggregate([{
         $match: userId
       },
       {
@@ -29,7 +28,10 @@ user_notifications_helper.get_notifications = async userId => {
         notifications: notifications
       };
     } else {
-      return { status: 2, message: "No notifications available" };
+      return {
+        status: 2,
+        message: "No notifications available"
+      };
     }
   } catch (err) {
     return {
@@ -91,15 +93,11 @@ user_notifications_helper.add_notifications = async (
       authUserId = notificationObj.receiver.authUserId;
     }
 
-    var user_notifications_count = await user_notifications_helper.get_notifications_count(
-      {
-        "receiver.authUserId": authUserId,
-        isSeen: 0
-      }
-    );
-
+    var user_notifications_count = await user_notifications_helper.get_notifications_count({
+      "receiver.authUserId": authUserId,
+      isSeen: 0
+    });
     var user = socket.users.get(authUserId);
-
     if (user) {
       var socketIds = user.socketIds;
       socketIds.forEach(socketId => {
@@ -137,9 +135,15 @@ user_notifications_helper.notification_seen = async (id, updateObject) => {
   try {
     let resp = await UserNotifications.updateMany(id, updateObject);
     if (!resp) {
-      return { status: 2, message: "notification not found" };
+      return {
+        status: 2,
+        message: "notification not found"
+      };
     } else {
-      return { status: 1, message: "notification marked as read" };
+      return {
+        status: 1,
+        message: "notification marked as read"
+      };
     }
   } catch (err) {
     return {

@@ -234,9 +234,8 @@ statistics_helper.get_strength = async (condition = {}, condition2 = {}, date = 
  *          status 1 - If strength data found, with strength object
  *          status 2 - If strength not found, with appropriate message
  */
-statistics_helper.get_all_strength_graph_data = async (condition = {}, condition2 = {}, activeField, date = false) => {
+statistics_helper.get_all_strength_graph_data = async (condition = {}, condition2 = {}, activeField) => {
   try {
-
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },
@@ -279,9 +278,8 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
                 "total": {
                   $sum: "$distance"
                 },
-                "unit": 'km',
+                "unit": 'meter',
                 "date": "$createdAt"
-
               },
               "effort": {
                 "total": {
@@ -289,15 +287,13 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
                 },
                 "unit": '',
                 "date": "$createdAt"
-
               },
               "weight": {
                 "total": {
                   $sum: "$weight"
                 },
-                "unit": 'kg',
+                "unit": 'gram',
                 "date": "$createdAt"
-
               },
               "repTime": {
                 "total": {
@@ -305,7 +301,6 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
                 },
                 "unit": 'number',
                 "date": "$createdAt"
-
               },
               "setTime": {
                 "total": {
@@ -319,7 +314,6 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
                 },
                 "unit": 'number',
                 "date": "$createdAt"
-
               },
               "sets": {
                 "total": {
@@ -345,7 +339,6 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
           fields: "$fields"
         }
       }
-
     ]);
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
@@ -356,12 +349,27 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
     }
     var graphData = [];
     for (let w of user_workouts) {
-      var data = {
-        metaData: {
-          unit: w.fields[activeField].unit
-        },
-        date: w.fields[activeField].date,
-        count: w.fields[activeField].total
+      for (let field of w.fields) {
+        var tmp = {
+          "metaData": {
+            name: activeField,
+          },
+          "date": field[activeField].date,
+        }
+        if (activeField === "weight") {
+          tmp.count = await common_helper.convertUnits("gram", weightUnit, field[activeField].total)
+          tmp.metaData.unit = weightUnit;
+        } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime") {
+          tmp.count = await common_helper.convertUnits("second", "minute", field[activeField].total)
+          tmp.metaData.unit = minute;
+        } else if (activeField === "distance") {
+          tmp.count = await common_helper.convertUnits("cm", distanceUnit, field[activeField].total)
+          tmp.metaData.unit = distanceUnit;
+        } else {
+          tmp.count = field[activeField].total
+          tmp.metaData.unit = field[activeField].unit;
+        }
+        graphData.push(tmp)
       }
     }
 
@@ -370,7 +378,7 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
         status: 1,
         message: "User Strength graph data found",
         statistics: {
-          data: user_workouts
+          graphData
         }
       };
     } else {

@@ -129,7 +129,7 @@ router.post("/single", async (req, res) => {
     var exerciseId = mongoose.Types.ObjectId.isValid(req.body.exerciseId) ? mongoose.Types.ObjectId(req.body.exerciseId) : "all";
 
     var default_resp_data = {
-      status: 0,
+      status: 1,
       message: "No record found",
       statistics: {
         subCategory: subCategory,
@@ -180,6 +180,7 @@ router.post("/single", async (req, res) => {
         "Error occured while fetching user statistics data = ",
         default_resp_data
       );
+      default_resp_data.status = 0;
       res.status(config.INTERNAL_SERVER_ERROR).json(default_resp_data);
     }
   } else {
@@ -252,7 +253,7 @@ router.post("/graph_data", async (req, res) => {
     }
 
     var default_resp_data = {
-      status: 0,
+      status: 1,
       message: "No graph record found",
       statistics: {
         subCategory: subCategory
@@ -267,10 +268,7 @@ router.post("/graph_data", async (req, res) => {
           $gte: new Date(start),
           $lte: new Date(end),
         }
-      }, condition2, activeField, {
-        start,
-        end
-      });
+      }, condition2, activeField);
     } else if (type == "cardio") {
       resp_data = await statistics_helper.get_cardio({
         userId: authUserId,
@@ -279,6 +277,9 @@ router.post("/graph_data", async (req, res) => {
     }
 
     if (resp_data.status == 1) {
+      resp_data.statistics.start = start;
+      resp_data.statistics.end = end;
+      resp_data.statistics.subCategory = subCategory;
       logger.trace("Get user statistics data successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
     } else if (resp_data.status == 2) {
@@ -292,6 +293,7 @@ router.post("/graph_data", async (req, res) => {
         "Error occured while fetching user statistics data = ",
         default_resp_data
       );
+      default_resp_data.status = 0;
       res.status(config.INTERNAL_SERVER_ERROR).json(default_resp_data);
     }
   } else {
