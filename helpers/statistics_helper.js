@@ -236,7 +236,7 @@ statistics_helper.get_strength = async (condition = {}, condition2 = {}, date = 
  *          status 1 - If strength data found, with strength object
  *          status 2 - If strength not found, with appropriate message
  */
-statistics_helper.get_all_strength_graph_data = async (condition = {}, condition2 = {}) => {
+statistics_helper.get_all_strength_graph_data = async (condition = {}, condition2 = {}, activeField, date = false) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
@@ -338,85 +338,85 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
       }
 
     ]);
-    var measurement_unit_data = await user_settings_helper.get_setting({
-      userId: condition.userId
-    });
-    if (measurement_unit_data.status === 1) {
-      var distanceUnit = measurement_unit_data.user_settings.distance;
-      var weightUnit = measurement_unit_data.user_settings.weight;
-    }
-    for (let w of user_workouts) {
+    // var measurement_unit_data = await user_settings_helper.get_setting({
+    //   userId: condition.userId
+    // });
+    // if (measurement_unit_data.status === 1) {
+    //   var distanceUnit = measurement_unit_data.user_settings.distance;
+    //   var weightUnit = measurement_unit_data.user_settings.weight;
+    // }
+    // for (let w of user_workouts) {
 
-      let time = _.pluck(_.pluck(w.fields, "time"), "total");
-      let distance = _.pluck(_.pluck(w.fields, "distance"), "total");
-      let effort = _.pluck(_.pluck(w.fields, "effort"), "total");
-      let weight = _.pluck(_.pluck(w.fields, "weight"), "total");
-      let repTime = _.pluck(_.pluck(w.fields, "repTime"), "total");
-      let setTime = _.pluck(_.pluck(w.fields, "setTime"), "total");
-      let reps = _.pluck(_.pluck(w.fields, "reps"), "total");
-      let sets = _.pluck(_.pluck(w.fields, "sets"), "total");
+    //   let time = _.pluck(_.pluck(w.fields, "time"), "total");
+    //   let distance = _.pluck(_.pluck(w.fields, "distance"), "total");
+    //   let effort = _.pluck(_.pluck(w.fields, "effort"), "total");
+    //   let weight = _.pluck(_.pluck(w.fields, "weight"), "total");
+    //   let repTime = _.pluck(_.pluck(w.fields, "repTime"), "total");
+    //   let setTime = _.pluck(_.pluck(w.fields, "setTime"), "total");
+    //   let reps = _.pluck(_.pluck(w.fields, "reps"), "total");
+    //   let sets = _.pluck(_.pluck(w.fields, "sets"), "total");
 
-      let totalTime = await time.reduce(getSum);
-      let totalDistance = await distance.reduce(getSum);
-      let totalEffort = await effort.reduce(getSum);
-      let totalWeight = await weight.reduce(getSum);
-      let totalRepTime = await repTime.reduce(getSum);
-      let totalSetTime = await setTime.reduce(getSum);
-      let totalReps = await reps.reduce(getSum);
-      let totalSets = await sets.reduce(getSum);
+    //   let totalTime = await time.reduce(getSum);
+    //   let totalDistance = await distance.reduce(getSum);
+    //   let totalEffort = await effort.reduce(getSum);
+    //   let totalWeight = await weight.reduce(getSum);
+    //   let totalRepTime = await repTime.reduce(getSum);
+    //   let totalSetTime = await setTime.reduce(getSum);
+    //   let totalReps = await reps.reduce(getSum);
+    //   let totalSets = await sets.reduce(getSum);
 
-      w.fields = {};
-      var formatStringForTime = "h.m [hrs]";
-      var formatStringForRepTime = "h.m [hrs]";
-      var formatStringForSetTime = "h.m [hrs]";
-      if (totalTime < 60) {
-        formatStringForTime = "s [sec]";
-      } else if (totalTime < 3600) {
-        formatStringForTime = "m [min]";
-      }
-      if (totalSetTime < 60) {
-        formatStringForSetTime = "s [sec]";
-      } else if (totalSetTime < 3600) {
-        formatStringForSetTime = "m [min]";
-      }
-      if (totalRepTime < 60) {
-        formatStringForRepTime = "s [sec]";
-      } else if (totalRepTime < 3600) {
-        formatStringForRepTime = "m [min]";
-      }
-      w.fields.time = {
-        total: moment.duration(totalTime, "seconds").format(formatStringForTime),
-        unit: ""
-      }
-      w.fields.distance = {
-        total: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
-        unit: distanceUnit
-      }
-      w.fields.effort = {
-        total: Math.round(totalEffort),
-        unit: ""
-      }
-      w.fields.weight = {
-        total: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
-        unit: weightUnit
-      }
-      w.fields.repTime = {
-        total: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
-        unit: ""
-      }
-      w.fields.setTime = {
-        total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
-        unit: ""
-      }
-      w.fields.reps = {
-        total: Math.round(totalReps),
-        unit: ""
-      }
-      w.fields.sets = {
-        total: Math.round(totalSets),
-        unit: ""
-      }
-    }
+    //   w.fields = {};
+    //   var formatStringForTime = "h.m [hrs]";
+    //   var formatStringForRepTime = "h.m [hrs]";
+    //   var formatStringForSetTime = "h.m [hrs]";
+    //   if (totalTime < 60) {
+    //     formatStringForTime = "s [sec]";
+    //   } else if (totalTime < 3600) {
+    //     formatStringForTime = "m [min]";
+    //   }
+    //   if (totalSetTime < 60) {
+    //     formatStringForSetTime = "s [sec]";
+    //   } else if (totalSetTime < 3600) {
+    //     formatStringForSetTime = "m [min]";
+    //   }
+    //   if (totalRepTime < 60) {
+    //     formatStringForRepTime = "s [sec]";
+    //   } else if (totalRepTime < 3600) {
+    //     formatStringForRepTime = "m [min]";
+    //   }
+    //   w.fields.time = {
+    //     total: moment.duration(totalTime, "seconds").format(formatStringForTime),
+    //     unit: ""
+    //   }
+    //   w.fields.distance = {
+    //     total: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
+    //     unit: distanceUnit
+    //   }
+    //   w.fields.effort = {
+    //     total: Math.round(totalEffort),
+    //     unit: ""
+    //   }
+    //   w.fields.weight = {
+    //     total: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
+    //     unit: weightUnit
+    //   }
+    //   w.fields.repTime = {
+    //     total: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
+    //     unit: ""
+    //   }
+    //   w.fields.setTime = {
+    //     total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
+    //     unit: ""
+    //   }
+    //   w.fields.reps = {
+    //     total: Math.round(totalReps),
+    //     unit: ""
+    //   }
+    //   w.fields.sets = {
+    //     total: Math.round(totalSets),
+    //     unit: ""
+    //   }
+    // }
 
     if (user_workouts && user_workouts.length > 0) {
       return {
@@ -640,7 +640,7 @@ statistics_helper.get_strength_single = async (condition = {}, condition2 = {}, 
       };
     } else {
       return {
-        status: 2,
+        status: 1,
         message: "No User Strength data available",
         statistics: null
       };
