@@ -377,15 +377,13 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
       return {
         status: 1,
         message: "User Strength graph data found",
-        statistics: {
-          graphData
-        }
+        graphData
       };
     } else {
       return {
         status: 2,
         message: "No User Strength graph data available",
-        statistics: null
+        graphData: null
       };
     }
   } catch (err) {
@@ -554,35 +552,35 @@ statistics_helper.get_strength_single = async (condition = {}, condition2 = {}, 
         formatStringForRepTime = "m [min]";
       }
       w.fields.time = {
-        total: moment.duration(totalTime, "seconds").format(formatStringForTime),
+        count: moment.duration(totalTime, "seconds").format(formatStringForTime),
         unit: ""
       }
       w.fields.distance = {
-        total: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
+        count: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
         unit: distanceUnit
       }
       w.fields.effort = {
-        total: Math.round(totalEffort),
+        count: Math.round(totalEffort),
         unit: ""
       }
       w.fields.weight = {
-        total: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
+        count: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
         unit: weightUnit
       }
       w.fields.repTime = {
-        total: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
+        count: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
         unit: ""
       }
       w.fields.setTime = {
-        total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
+        count: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
         unit: "min"
       }
       w.fields.reps = {
-        total: Math.round(totalReps),
+        count: Math.round(totalReps),
         unit: ""
       }
       w.fields.sets = {
-        total: Math.round(totalSets),
+        count: Math.round(totalSets),
         unit: ""
       }
     }
