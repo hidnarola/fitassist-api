@@ -21,23 +21,29 @@ router.post("/", async (req, res) => {
   logger.trace("User Statistics API called with " + req.body.type + " type");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+
+  var schema = {
+    type: {
+      notEmpty: true,
+      errorMessage: "type is required"
+    },
+    start: {
+      notEmpty: true,
+      errorMessage: "start date is required"
+    },
+    end: {
+      notEmpty: true,
+      errorMessage: "end date is required"
+    },
+  }
+
   var type = req.body.type ? req.body.type : "strength"; // cateogry
-  var subCategory = req.body.subCategory;
-  // var start = moment(req.body.start).startOf('day');
-  // var end = moment(req.body.end).endOf('day');
+  // var subCategory = req.body.subCategory;
   var start = req.body.start;
   var end = req.body.end;
   var activeField = req.body.activeField;
 
-
-  var resp_data = {
-    status: 0,
-    message: "No record found",
-    statistics: {}
-  };
-
   if (type == "strength") {
-
     resp_data = await statistics_helper.get_strength({
       userId: authUserId,
       isCompleted: 1,
@@ -47,10 +53,11 @@ router.post("/", async (req, res) => {
       }
     }, {
       "exercise.exercises.exercises.category": "strength",
+    }, {
+      start,
+      end
     });
-
   } else if (type == "cardio") {
-
     resp_data = await statistics_helper.get_cardio({
       userId: authUserId,
       isCompleted: 1
@@ -87,17 +94,22 @@ router.post("/single", async (req, res) => {
   var subCategory = req.body.subCategory;
   var start = req.body.start;
   var end = req.body.end;
-  var exerciseId = mongoose.Types.ObjectId(req.body.exerciseId);;
 
+  try {
+    var exerciseId = mongoose.Types.ObjectId(req.body.exerciseId);
+  } catch (err) {
+    return res.send({
+      status: 0,
+      message: "Invalid exerciseId",
+    })
+  }
   var resp_data = {
     status: 0,
     message: "No record found",
     statistics: {}
   };
-
   if (type == "strength") {
-
-    resp_data = await statistics_helper.get_strength({
+    resp_data = await statistics_helper.get_strength_single({
       userId: authUserId,
       isCompleted: 1,
       createdAt: {
@@ -108,10 +120,11 @@ router.post("/single", async (req, res) => {
       "exercise.exercises.exercises.category": type,
       "exercise.exercises.exercises._id": exerciseId,
       "exercise.exercises.exercises.subCategory": subCategory,
+    }, {
+      start,
+      end
     });
-
   } else if (type == "cardio") {
-
     resp_data = await statistics_helper.get_cardio({
       userId: authUserId,
       isCompleted: 1
