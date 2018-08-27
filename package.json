@@ -25,6 +25,7 @@
     "jwt-decode": "^2.2.0",
     "log4js": "^2.5.3",
     "moment": "^2.21.0",
+    "moment-duration-format": "^2.2.2",
     "mongoose": "^5.0.10",
     "morgan": "~1.6.1",
     "request-promise": "^4.2.2",

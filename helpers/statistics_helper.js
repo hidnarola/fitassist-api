@@ -6,9 +6,12 @@ var BodyMeasurements = require("./../models/body_measurements");
 var user_settings_helper = require("./user_settings_helper");
 var common_helper = require("./common_helper");
 var moment = require("moment");
+var momentDurationFormatSetup = require("moment-duration-format");
 var user_recipe_helper = require("./user_recipe_helper");
 var _ = require("underscore");
-
+momentDurationFormatSetup(moment);
+// typeof moment.duration.fn.format === "function";
+// typeof moment.duration.format === "function";
 var statistics_helper = {};
 
 /*
@@ -21,10 +24,8 @@ var statistics_helper = {};
 async function getSum(total, num) {
   return await total + num;
 }
-statistics_helper.get_strength = async (condition = {}) => {
-  console.log('------------------------------------');
-  console.log('condition : ', condition);
-  console.log('------------------------------------');
+statistics_helper.get_strength = async (condition = {}, condition2 = {}) => {
+
 
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
@@ -51,9 +52,7 @@ statistics_helper.get_strength = async (condition = {}) => {
         }
       },
       {
-        $match: {
-          "exercise.exercises.exercises.category": "strength"
-        }
+        $match: condition2
       },
       {
         $group: {
@@ -155,10 +154,29 @@ statistics_helper.get_strength = async (condition = {}) => {
       let totalSetTime = await setTime.reduce(getSum);
       let totalReps = await reps.reduce(getSum);
       let totalSets = await sets.reduce(getSum);
+
       w.fields = {};
+      var formatStringForTime = "h.m [hrs]";
+      var formatStringForRepTime = "h.m [hrs]";
+      var formatStringForSetTime = "h.m [hrs]";
+      if (totalTime) {
+        formatStringForTime = "s [sec]";
+      } else if (totalTime < 3600) {
+        formatStringForTime = "m [min]";
+      }
+      if (totalSetTime) {
+        formatStringForSetTime = "s [sec]";
+      } else if (totalSetTime < 3600) {
+        formatStringForSetTime = "m [min]";
+      }
+      if (totalRepTime) {
+        formatStringForRepTime = "s [sec]";
+      } else if (totalRepTime < 3600) {
+        formatStringForRepTime = "m [min]";
+      }
       w.fields.time = {
-        total: Math.round(await common_helper.convertUnits("second", "minute", totalTime)),
-        unit: "min"
+        total: moment.duration(totalTime, "seconds").format(formatStringForTime),
+        unit: ""
       }
       w.fields.distance = {
         total: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
@@ -173,11 +191,11 @@ statistics_helper.get_strength = async (condition = {}) => {
         unit: weightUnit
       }
       w.fields.repTime = {
-        total: Math.round(await common_helper.convertUnits("second", "minute", totalRepTime)),
-        unit: "min"
+        total: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
+        unit: ""
       }
       w.fields.setTime = {
-        total: Math.round(await common_helper.convertUnits("second", "minute", totalSetTime)),
+        total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
         unit: "min"
       }
       w.fields.reps = {
