@@ -357,16 +357,16 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
           "date": moment(field[activeField].date).format("DD/MM/YYYY"),
         }
         if (activeField === "weight") {
-          tmp.count = (await common_helper.convertUnits("gram", weightUnit, field[activeField].total)).toFixed(2)
+          tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, field[activeField].total))).toFixed(2)
           tmp.metaData.unit = weightUnit;
         } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime") {
           tmp.count = await common_helper.convertUnits("second", "minute", field[activeField].total)
           tmp.metaData.unit = minute;
         } else if (activeField === "distance") {
-          tmp.count = await common_helper.convertUnits("cm", distanceUnit, field[activeField].total)
+          tmp.count = parseFloat(await common_helper.convertUnits("cm", distanceUnit, field[activeField].total)).toFixed(2)
           tmp.metaData.unit = distanceUnit;
         } else {
-          tmp.count = field[activeField].total
+          tmp.count = parseInt(field[activeField].total)
           tmp.metaData.unit = field[activeField].unit;
         }
         graphData.push(tmp)
@@ -552,35 +552,35 @@ statistics_helper.get_strength_single = async (condition = {}, condition2 = {}, 
         formatStringForRepTime = "m [min]";
       }
       w.fields.time = {
-        count: moment.duration(totalTime, "seconds").format(formatStringForTime),
+        total: moment.duration(totalTime, "seconds").format(formatStringForTime),
         unit: ""
       }
       w.fields.distance = {
-        count: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
+        total: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
         unit: distanceUnit
       }
       w.fields.effort = {
-        count: Math.round(totalEffort),
+        total: Math.round(totalEffort),
         unit: ""
       }
       w.fields.weight = {
-        count: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
+        total: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
         unit: weightUnit
       }
       w.fields.repTime = {
-        count: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
+        total: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
         unit: ""
       }
       w.fields.setTime = {
-        count: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
+        total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
         unit: "min"
       }
       w.fields.reps = {
-        count: Math.round(totalReps),
+        total: Math.round(totalReps),
         unit: ""
       }
       w.fields.sets = {
-        count: Math.round(totalSets),
+        total: Math.round(totalSets),
         unit: ""
       }
     }
