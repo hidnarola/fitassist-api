@@ -354,10 +354,10 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
           "metaData": {
             name: activeField,
           },
-          "date": field[activeField].date,
+          "date": moment(field[activeField].date).format("DD/MM/YYYY"),
         }
         if (activeField === "weight") {
-          tmp.count = await common_helper.convertUnits("gram", weightUnit, field[activeField].total)
+          tmp.count = (await common_helper.convertUnits("gram", weightUnit, field[activeField].total)).toFixed(2)
           tmp.metaData.unit = weightUnit;
         } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime") {
           tmp.count = await common_helper.convertUnits("second", "minute", field[activeField].total)

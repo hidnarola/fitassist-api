@@ -247,7 +247,7 @@ router.post("/graph_data", async (req, res) => {
     else {
       condition2 = {
         "exercise.exercises.exercises.category": type,
-        "exercise.exercises.exercises._id": exerciseId,
+        "exercise.exercises.exercises._id": mongoose.Types.ObjectId(exerciseId),
         "exercise.exercises.exercises.subCategory": subCategory,
       }
     }
