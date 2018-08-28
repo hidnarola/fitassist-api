@@ -57,7 +57,22 @@ router.post("/", async (req, res) => {
       start,
       end
     });
-
+    overview = await statistics_helper.get_overview_statistics_data({
+      userId: authUserId,
+      isCompleted: 1,
+      createdAt: {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      }
+    }, {
+      "exercise.exercises.exercises.category": type,
+    }, {
+      start,
+      end
+    });
+    if (overview.status === 1) {
+      resp_data.statistics.data.splice(0, 0, overview.overview);
+    }
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
@@ -141,24 +156,18 @@ router.post("/single", async (req, res) => {
       condition2["exercise.exercises.exercises._id"] = exerciseId;
     }
 
-    if (type == "strength") {
-      resp_data = await statistics_helper.get_strength_single({
-        userId: authUserId,
-        isCompleted: 1,
-        createdAt: {
-          $gte: new Date(start),
-          $lte: new Date(end),
-        }
-      }, condition2, {
-        start,
-        end
-      });
-    } else if (type == "cardio") {
-      resp_data = await statistics_helper.get_cardio({
-        userId: authUserId,
-        isCompleted: 1
-      });
-    }
+    resp_data = await statistics_helper.get_statistics_single_data({
+      userId: authUserId,
+      isCompleted: 1,
+      createdAt: {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      }
+    }, condition2, {
+      start,
+      end
+    });
+
 
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);

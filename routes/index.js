@@ -255,17 +255,18 @@ router.post("/admin_login", async (req, res) => {
                 expiresIn: config.ACCESS_TOKEN_EXPIRE_TIME
               });
 
-              delete user_resp.admin.password;
-              delete user_resp.admin.refreshToken;
-              delete user_resp.admin.lastLoginDate;
-              delete user_resp.admin.createdAt;
-              await delete user_resp.admin.modifiedAt;
+              var userResp = {
+                firstName: user_resp.admin.firstName,
+                lastName: user_resp.admin.lastName,
+                email: user_resp.admin.email,
+                refreshToken: user_resp.admin.refreshToken,
+              }
 
               logger.info("Token generated");
               res.status(config.OK_STATUS).json({
                 status: 1,
                 message: "Logged in successful",
-                user: user_resp.admin,
+                user: userResp,
                 token: token,
                 refresh_token: refreshToken
               });
