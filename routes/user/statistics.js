@@ -44,26 +44,19 @@ router.post("/", async (req, res) => {
     var type = req.body.type ? req.body.type : "strength"; // cateogry
     var start = req.body.start;
     var end = req.body.end;
-    if (type == "strength") {
-      resp_data = await statistics_helper.get_strength({
-        userId: authUserId,
-        isCompleted: 1,
-        createdAt: {
-          $gte: new Date(start),
-          $lte: new Date(end),
-        }
-      }, {
-        "exercise.exercises.exercises.category": "strength",
-      }, {
-        start,
-        end
-      });
-    } else if (type == "cardio") {
-      resp_data = await statistics_helper.get_cardio({
-        userId: authUserId,
-        isCompleted: 1
-      });
-    }
+    resp_data = await statistics_helper.get_statistics_data({
+      userId: authUserId,
+      isCompleted: 1,
+      createdAt: {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      }
+    }, {
+      "exercise.exercises.exercises.category": type,
+    }, {
+      start,
+      end
+    });
 
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);

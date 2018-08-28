@@ -34,15 +34,18 @@ myIo.init = function (server) {
         };
         users.set(authUserId, obj);
       }
+      var userdata = await user_helper.get_user_by_id(authUserId);
+      var username = userdata.user.username;
+
       socketToUsers.set(socket.id, authUserId);
       var user_friends = await friend_helper.get_friend_by_username({
-          username: "amc"
+          username: username
         },
         2
       );
       var usersFriendsSocketIds = [];
       var onlineFriends = [];
-      user_friends.friends.forEach((element, index) => {
+      user_friends.friends.forEach((element) => {
         var socketId = users.get(element.authUserId);
 
         if (socketId) {

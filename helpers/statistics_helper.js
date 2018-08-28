@@ -18,12 +18,12 @@ async function getSum(total, num) {
 }
 
 /*
- * get_strength is used to fetch all user  strength data
- * @return  status 0 - If any internal error occured while fetching strength data, with error
- *          status 1 - If strength data found, with strength object
- *          status 2 - If strength not found, with appropriate message
+ * get_statistics_data is used to fetch all user  statistics data
+ * @return  status 0 - If any internal error occured while fetching statistics data, with error
+ *          status 1 - If statistics data found, with statistics object
+ *          status 2 - If statistics not found, with appropriate message
  */
-statistics_helper.get_strength = async (condition = {}, condition2 = {}, date = null) => {
+statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, date = null) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
@@ -209,7 +209,7 @@ statistics_helper.get_strength = async (condition = {}, condition2 = {}, date = 
     if (user_workouts && user_workouts.length > 0) {
       return {
         status: 1,
-        message: "User Strength data found",
+        message: "Success",
         statistics: {
           data: user_workouts
         }
@@ -345,7 +345,7 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
         }
       }
     ]);
-    
+
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
     });
