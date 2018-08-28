@@ -233,7 +233,7 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
  *          status 1 - If statistics data found, with statistics object
  *          status 2 - If statistics not found, with appropriate message
  */
-statistics_helper.get_overview_statistics_data = async (condition = {}, condition2 = {}, date = null) => {
+statistics_helper.get_overview_statistics_data = async (condition = {}, date = null) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
@@ -257,9 +257,6 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, conditio
           path: "$exercise.exercises",
           preserveNullAndEmptyArrays: true
         }
-      },
-      {
-        $match: condition2
       },
       {
         $group: {
@@ -437,12 +434,176 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, conditio
 };
 
 /*
- * get_all_strength_graph_data is used to fetch all user all strength graph data 
+ * get_overview_graph_data is used to fetch all user all strength graph data 
  * @return  status 0 - If any internal error occured while fetching strength data, with error
  *          status 1 - If strength data found, with strength object
  *          status 2 - If strength not found, with appropriate message
  */
-statistics_helper.get_all_strength_graph_data = async (condition = {}, condition2 = {}, activeField) => {
+statistics_helper.get_overview_graph_data = async (condition = {}, activeField) => {
+  try {
+    var user_workouts = await WorkoutLogs.aggregate([{
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_workout_exercises",
+          localField: "exerciseId",
+          foreignField: "_id",
+          as: "exercise"
+        }
+      },
+      {
+        $unwind: {
+          path: "$exercise",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$exercise.exercises",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: {
+          createdAt: 1
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          "fields": {
+            $push: {
+              "time": {
+                "total": {
+                  $sum: "$time"
+                },
+                "unit": 'second',
+                "date": "$createdAt"
+              },
+              "distance": {
+                "total": {
+                  $sum: "$distance"
+                },
+                "unit": 'meter',
+                "date": "$createdAt"
+              },
+              "effort": {
+                "total": {
+                  $sum: "$effort"
+                },
+                "unit": '',
+                "date": "$createdAt"
+              },
+              "weight": {
+                "total": {
+                  $sum: "$weight"
+                },
+                "unit": 'gram',
+                "date": "$createdAt"
+              },
+              "repTime": {
+                "total": {
+                  $sum: "$repTime"
+                },
+                "unit": 'number',
+                "date": "$createdAt"
+              },
+              "setTime": {
+                "total": {
+                  $sum: "$setTime"
+                },
+                "unit": 'second'
+              },
+              "reps": {
+                "total": {
+                  $sum: "$reps"
+                },
+                "unit": 'number',
+                "date": "$createdAt"
+              },
+              "sets": {
+                "total": {
+                  $sum: "$sets"
+                },
+                "unit": 'number',
+                "date": "$createdAt"
+              },
+            }
+          },
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          subCategory: "Overview",
+          fields: "$fields"
+        }
+      }
+    ]);
+
+    var measurement_unit_data = await user_settings_helper.get_setting({
+      userId: condition.userId
+    });
+    if (measurement_unit_data.status === 1) {
+      var distanceUnit = measurement_unit_data.user_settings.distance;
+      var weightUnit = measurement_unit_data.user_settings.weight;
+    }
+    var graphData = [];
+    for (let w of user_workouts) {
+      for (let field of w.fields) {
+        var tmp = {
+          "metaData": {
+            name: activeField,
+          },
+          "date": moment(field[activeField].date).format("DD/MM/YYYY"),
+        }
+        if (activeField === "weight") {
+          tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, field[activeField].total)).toFixed(2))
+          tmp.metaData.unit = weightUnit;
+        } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime") {
+          tmp.count = await common_helper.convertUnits("second", "minute", field[activeField].total)
+          tmp.metaData.unit = minute;
+        } else if (activeField === "distance") {
+          tmp.count = parseFloat((await common_helper.convertUnits("cm", distanceUnit, field[activeField].total)).toFixed(2))
+          tmp.metaData.unit = distanceUnit;
+        } else {
+          tmp.count = parseInt(field[activeField].total)
+          tmp.metaData.unit = field[activeField].unit;
+        }
+        graphData.push(tmp)
+      }
+    }
+
+
+    if (user_workouts && user_workouts.length > 0) {
+      return {
+        status: 1,
+        message: "Success",
+        graphData
+      };
+    } else {
+      return {
+        status: 2,
+        message: "Error",
+        graphData: null
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error while finding data",
+      error: err
+    };
+  }
+};
+/*
+ * get_graph_data is used to fetch all user all strength graph data 
+ * @return  status 0 - If any internal error occured while fetching strength data, with error
+ *          status 1 - If strength data found, with strength object
+ *          status 2 - If strength not found, with appropriate message
+ */
+statistics_helper.get_graph_data = async (condition = {}, condition2 = {}, activeField) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
@@ -590,20 +751,20 @@ statistics_helper.get_all_strength_graph_data = async (condition = {}, condition
     if (user_workouts && user_workouts.length > 0) {
       return {
         status: 1,
-        message: "User Strength graph data found",
+        message: "Success",
         graphData
       };
     } else {
       return {
         status: 2,
-        message: "No User Strength graph data available",
+        message: "Error",
         graphData: null
       };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding User Strength graph data",
+      message: "Error while finding data",
       error: err
     };
   }
@@ -1009,20 +1170,20 @@ statistics_helper.get_strength_single_graph_data = async (condition = {}, condit
     if (user_workouts && user_workouts.length > 0) {
       return {
         status: 1,
-        message: "User Strength graph data found",
+        message: "Success",
         statistics: user_workouts[0]
       };
     } else {
       return {
         status: 2,
-        message: "No User Strength graph data available",
+        message: "Error",
         statistics: null
       };
     }
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while finding User Strength graph data",
+      message: "Error while finding data",
       error: err
     };
   }

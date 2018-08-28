@@ -65,8 +65,6 @@ router.post("/", async (req, res) => {
         $lte: new Date(end),
       }
     }, {
-      "exercise.exercises.exercises.category": type,
-    }, {
       start,
       end
     });
@@ -245,27 +243,38 @@ router.post("/graph_data", async (req, res) => {
     var exerciseId = x.exerciseId;
     var activeField = x.activeField;
     var condition2 = {};
+    var resp_data;
     var default_resp_data = {
       subCategory: subCategory,
       graphData: [],
       startDate: start,
       endDate: end
     };
-    if (exerciseId === "all")
-      condition2 = {
-        "exercise.exercises.exercises.category": type,
-        "exercise.exercises.exercises.subCategory": subCategory,
-      }
-    else {
-      condition2 = {
-        "exercise.exercises.exercises.category": type,
-        "exercise.exercises.exercises._id": mongoose.Types.ObjectId(exerciseId),
-        "exercise.exercises.exercises.subCategory": subCategory,
-      }
-    }
+    if (subCategory === "Overview") {
 
-    if (type == "strength") {
-      resp_data = await statistics_helper.get_all_strength_graph_data({
+      resp_data = await statistics_helper.get_overview_graph_data({
+        userId: authUserId,
+        isCompleted: 1,
+        createdAt: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        }
+      }, activeField);
+
+    } else {
+      if (exerciseId === "all")
+        condition2 = {
+          "exercise.exercises.exercises.category": type,
+          "exercise.exercises.exercises.subCategory": subCategory,
+        }
+      else {
+        condition2 = {
+          "exercise.exercises.exercises.category": type,
+          "exercise.exercises.exercises._id": mongoose.Types.ObjectId(exerciseId),
+          "exercise.exercises.exercises.subCategory": subCategory,
+        }
+      }
+      resp_data = await statistics_helper.get_graph_data({
         userId: authUserId,
         isCompleted: 1,
         createdAt: {
@@ -273,24 +282,15 @@ router.post("/graph_data", async (req, res) => {
           $lte: new Date(end),
         }
       }, condition2, activeField);
-    } else if (type == "cardio") {
-      resp_data = await statistics_helper.get_cardio({
-        userId: authUserId,
-        isCompleted: 1
-      });
     }
 
-    if (resp_data.status == 1) {
 
+    if (resp_data.status == 1) {
       delete resp_data.status;
       delete resp_data.message;
       resp_data.start = start;
       resp_data.end = end;
       resp_data.subCategory = subCategory;
-      console.log('------------------------------------');
-      console.log('resp_data : ', resp_data);
-      console.log('------------------------------------');
-
       returnArray.push(resp_data);
     } else if (resp_data.status == 2) {
       returnArray.push(default_resp_data);
