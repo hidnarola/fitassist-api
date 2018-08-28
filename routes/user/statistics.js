@@ -153,18 +153,33 @@ router.post("/single", async (req, res) => {
     if (exerciseId !== "all") {
       condition2["exercise.exercises.exercises._id"] = exerciseId;
     }
+    if (subCategory === "Overview") {
+      resp_data = await statistics_helper.get_overview_single_data({
+        userId: authUserId,
+        isCompleted: 1,
+        createdAt: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        }
+      }, {
+        start,
+        end
+      });
 
-    resp_data = await statistics_helper.get_statistics_single_data({
-      userId: authUserId,
-      isCompleted: 1,
-      createdAt: {
-        $gte: new Date(start),
-        $lte: new Date(end),
-      }
-    }, condition2, {
-      start,
-      end
-    });
+    } else {
+      resp_data = await statistics_helper.get_statistics_single_data({
+        userId: authUserId,
+        isCompleted: 1,
+        createdAt: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        }
+      }, condition2, {
+        start,
+        end
+      });
+
+    }
 
 
     if (resp_data.status == 1) {
