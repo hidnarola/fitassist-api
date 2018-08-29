@@ -46,7 +46,7 @@ var body_part_helper = require("../../helpers/body_parts_helper");
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
  * @apiParam {Number} pageSize pageSize
  * @apiParam {Number} page page number
- * @apiSuccess (Success 200) {JSON} filtered_badges filtered details
+ * @apiSuccess (Success 200) {JSON} filtered_bodypart filtered details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/filter", async (req, res) => {
