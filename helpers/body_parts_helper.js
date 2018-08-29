@@ -169,4 +169,55 @@ body_part_helper.delete_bodypart_by_id = async (bodypart_id) => {
     }
 }
 
+/*
+ * get_filtered_records is used to fetch all filtered data
+ * 
+ * @return  status 0 - If any internal error occured while fetching filtered data, with error
+ *          status 1 - If filtered data found, with filtered object
+ *          status 2 - If filtered not found, with appropriate message
+ */
+body_part_helper.get_filtered_records = async filter_obj => {
+    skip = filter_obj.pageSize * filter_obj.page;
+    try {
+        var searched_record_count = await BodyPart.aggregate([{
+            $match: filter_object.columnFilter
+        }]);
+        var filtered_data = await BodyPart.aggregate([{
+                $match: filter_object.columnFilter
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: filter_object.pageSize
+            },
+            {
+                $sort: filter_obj.columnSort
+            }
+        ]);
+
+        if (filtered_data) {
+            return {
+                status: 1,
+                message: "filtered data is found",
+                count: searched_record_count.length,
+                filtered_total_pages: Math.ceil(
+                    searched_record_count.length / filter_obj.pageSize
+                ),
+                filtered_bodypart: filtered_data
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No filtered data available"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while filtering data",
+            error: err
+        };
+    }
+};
 module.exports = body_part_helper;

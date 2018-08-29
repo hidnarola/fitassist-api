@@ -10,6 +10,57 @@ var logger = config.logger;
 
 var body_part_helper = require("../../helpers/body_parts_helper");
 
+
+
+/**
+ * @api {post} /admin/badge/filter Filter
+ * @apiName Filter
+ * @apiDescription Request Object :<pre><code>{
+  pageSize: 10,
+  page: 0,
+  columnFilter: [
+    {
+      id: "firstName",
+      value: "mi"
+    }
+  ],
+  columnSort: [
+    {
+      id: "firstName",
+      value: true
+    }
+  ],
+  columnFilterEqual: [
+    {
+      id: "email",
+      value: "ake@narola.email"
+    }
+  ]
+ * }</code></pre>
+ * @apiGroup BodyPart
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ *
+ * @apiParam {Object} columnFilter columnFilter Object for filter data
+ * @apiParam {Object} columnSort columnSort Object for Sorting Data
+ * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
+ * @apiParam {Number} pageSize pageSize
+ * @apiParam {Number} page page number
+ * @apiSuccess (Success 200) {JSON} filtered_badges filtered details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/filter", async (req, res) => {
+  filter_object = common_helper.changeObject(req.body);
+  let filtered_data = await body_part_helper.get_filtered_records(filter_object);
+  if (filtered_data.status === 0) {
+    logger.error("Error while fetching searched data = ", filtered_data);
+    return res.status(config.BAD_REQUEST).json(filtered_data);
+  } else {
+    return res.status(config.OK_STATUS).json(filtered_data);
+  }
+});
+
+
 /**
  * @api {get} /admin/bodypart Get all
  * @apiName Get all
@@ -80,13 +131,17 @@ router.post("/", async (req, res) => {
     let body_part_data = await body_part_helper.insert_body_part(body_part_obj);
     if (body_part_data.status === 0) {
       logger.error("Error while inserting bodypart data = ", body_part_data);
-      return res.status(config.BAD_REQUEST).json({ body_part_data });
+      return res.status(config.BAD_REQUEST).json({
+        body_part_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(body_part_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -122,13 +177,17 @@ router.put("/:body_part_id", async (req, res) => {
     );
     if (body_part_data.status === 0) {
       logger.error("Error while updating bodypart data = ", body_part_data);
-      return res.status(config.BAD_REQUEST).json({ body_part_data });
+      return res.status(config.BAD_REQUEST).json({
+        body_part_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(body_part_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

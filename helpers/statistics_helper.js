@@ -299,6 +299,12 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
                 },
                 "unit": 'kg'
               },
+              "speed": {
+                "total": {
+                  $sum: "$speed"
+                },
+                "unit": 'kmph'
+              },
               "repTime": {
                 "total": {
                   $sum: "$repTime"

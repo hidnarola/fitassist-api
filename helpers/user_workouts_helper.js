@@ -704,14 +704,20 @@ user_workouts_helper.insert_user_workouts_exercises = async (
 
     _.each(user_workouts_exercise_data.exercises, ex => {
       if (ex.differentSets) {
-        _.each(ex.setsDetails, childDetail => {
+        var totalSetDetails = ex.setsDetails;
+        _.each(ex.setsDetails, index, childDetail => {
           var time = 0;
           var distance = 0;
           var effort = 0;
           var weight = 0;
           var repTime = 0;
+          var restTime = 0;
           var setTime = 0;
+          var speed = 0;
           var reps = 0;
+          if (index < totalSetDetails - 1) {
+            restTime += childDetail.restTime;
+          }
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
               time += childDetail.field1.baseValue;
@@ -726,6 +732,8 @@ user_workouts_helper.insert_user_workouts_exercises = async (
               weight += childDetail.field2.baseValue;
             } else if (childDetail.field2.baseUnit === "effort") {
               effort += childDetail.field2.baseValue;
+            } else if (childDetail.field2.baseUnit === "kmph") {
+              speed += childDetail.field2.baseValue;
             }
           }
           if (childDetail.field3) {
@@ -748,6 +756,8 @@ user_workouts_helper.insert_user_workouts_exercises = async (
             weight,
             repTime,
             setTime,
+            restTime,
+            speed,
             reps,
             sets: 1,
             logDate: childCollectionObject.date
@@ -757,13 +767,18 @@ user_workouts_helper.insert_user_workouts_exercises = async (
       } else {
         var childDetail = ex.setsDetails[0];
         for (var i = 0; i < ex.sets; i++) {
+          var restTime = 0;
           var time = 0;
           var distance = 0;
           var effort = 0;
           var weight = 0;
           var repTime = 0;
           var setTime = 0;
+          var speed = 0;
           var reps = 0;
+          if (i < ex.sets - 1) {
+            restTime = ex.baseRestTime;
+          }
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
               time += childDetail.field1.baseValue;
@@ -778,6 +793,8 @@ user_workouts_helper.insert_user_workouts_exercises = async (
               weight += childDetail.field2.baseValue;
             } else if (childDetail.field2.baseUnit === "effort") {
               effort += childDetail.field2.baseValue;
+            } else if (childDetail.field2.baseUnit === "kmph") {
+              speed += childDetail.field2.baseValue;
             }
           }
           if (childDetail.field3) {
@@ -801,6 +818,8 @@ user_workouts_helper.insert_user_workouts_exercises = async (
             repTime,
             setTime,
             reps,
+            restTime,
+            speed,
             sets: 1,
             logDate: childCollectionObject.date
           };
@@ -924,8 +943,11 @@ user_workouts_helper.copy_exercise_by_id = async (
               var effort = 0;
               var weight = 0;
               var repTime = 0;
+              var speed = 0;
               var setTime = 0;
               var reps = 0;
+              var restTime = 0;
+              restTime += childDetail.restTime;
               if (childDetail.field1) {
                 if (childDetail.field1.baseUnit === "second") {
                   time += childDetail.field1.baseValue;
@@ -940,6 +962,8 @@ user_workouts_helper.copy_exercise_by_id = async (
                   weight += childDetail.field2.baseValue;
                 } else if (childDetail.field2.baseUnit === "effort") {
                   effort += childDetail.field2.baseValue;
+                } else if (childDetail.field2.baseUnit === "kmph") {
+                  speed += childDetail.field2.baseValue;
                 }
               }
               if (childDetail.field3) {
@@ -961,6 +985,8 @@ user_workouts_helper.copy_exercise_by_id = async (
                 effort,
                 weight,
                 repTime,
+                speed,
+                restTime,
                 setTime,
                 reps,
                 sets: 1
@@ -975,8 +1001,11 @@ user_workouts_helper.copy_exercise_by_id = async (
               var effort = 0;
               var weight = 0;
               var repTime = 0;
+              var speed = 0;
               var setTime = 0;
+              var restTime = 0;
               var reps = 0;
+              restTime += childDetail.restTime ? childDetail.restTime : 0;
               if (childDetail.field1) {
                 if (childDetail.field1.baseUnit === "second") {
                   time += childDetail.field1.baseValue;
@@ -991,6 +1020,8 @@ user_workouts_helper.copy_exercise_by_id = async (
                   weight += childDetail.field2.baseValue;
                 } else if (childDetail.field2.baseUnit === "effort") {
                   effort += childDetail.field2.baseValue;
+                } else if (childDetail.field2.baseUnit === "kmph") {
+                  speed += childDetail.field2.baseValue;
                 }
               }
               if (childDetail.field3) {
@@ -1011,6 +1042,7 @@ user_workouts_helper.copy_exercise_by_id = async (
                 distance,
                 effort,
                 weight,
+                restTime,
                 repTime,
                 setTime,
                 reps,
@@ -1086,7 +1118,9 @@ user_workouts_helper.update_user_workout_exercise = async (
           var weight = 0;
           var repTime = 0;
           var setTime = 0;
+          var restTime = 0;
           var reps = 0;
+          restTime += childDetail.restTime;
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
               time += childDetail.field1.baseValue;
@@ -1122,6 +1156,7 @@ user_workouts_helper.update_user_workout_exercise = async (
             effort,
             weight,
             repTime,
+            restTime,
             setTime,
             reps,
             sets: 1
@@ -1131,6 +1166,7 @@ user_workouts_helper.update_user_workout_exercise = async (
       } else {
         var childDetail = childExercises.setsDetails[0];
         for (var i = 0; i < childExercises.sets; i++) {
+          var restTime = 0;
           var time = 0;
           var distance = 0;
           var effort = 0;
@@ -1138,6 +1174,7 @@ user_workouts_helper.update_user_workout_exercise = async (
           var repTime = 0;
           var setTime = 0;
           var reps = 0;
+          restTime = childExercises.baseRestTime
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
               time += childDetail.field1.baseValue;
@@ -1173,6 +1210,7 @@ user_workouts_helper.update_user_workout_exercise = async (
             effort,
             weight,
             repTime,
+            restTime,
             setTime,
             reps,
             sets: 1

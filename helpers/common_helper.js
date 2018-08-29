@@ -141,30 +141,26 @@ common_helper.unit_converter = async (data, unit) => {
     case "cm":
       return {
         baseValue: data,
-        baseUnit: "cm"
+        baseUnit: unit
       };
-      break;
     case "feet":
       calculatedData = data * 30.48;
       return {
         baseValue: calculatedData,
         baseUnit: "cm"
       };
-      break;
     case "kg":
       calculatedData = data * 1000;
       return {
         baseValue: calculatedData,
         baseUnit: "g"
       };
-      break;
     case "lb":
       calculatedData = data / 0.0022046;
       return {
         baseValue: calculatedData,
         baseUnit: "g"
       };
-      break;
     case "in":
     case "inch":
       calculatedData = data * 2.54;
@@ -172,60 +168,62 @@ common_helper.unit_converter = async (data, unit) => {
         baseValue: calculatedData,
         baseUnit: "cm"
       };
-      break;
     case "hour":
       calculatedData = data * 60 * 60;
       return {
         baseValue: calculatedData,
         baseUnit: "second"
       };
-      break;
     case "minute":
       calculatedData = data * 60;
       return {
         baseValue: calculatedData,
         baseUnit: "second"
       };
-      break;
     case "km":
       calculatedData = data * 1000;
       return {
         baseValue: calculatedData,
         baseUnit: "meter"
       };
-      break;
     case "meter":
       return {
         baseValue: data,
-        baseUnit: "meter"
+        baseUnit: unit
       };
-      break;
     case "mile":
       calculatedData = data * 1609.344;
       return {
         baseValue: calculatedData,
         baseUnit: "meter"
       };
-      break;
     case "g":
       return {
         baseValue: data,
-        baseUnit: "g"
+        baseUnit: unit
       };
-      break;
     case "mg":
       calculatedData = data / 1000;
       return {
         baseValue: calculatedData,
         baseUnit: "g"
       };
-      break;
+    case "kmph":
+      return {
+        baseValue: data,
+        baseUnit: unit
+      };
+    case "mph":
+      calculatedData = data * 1.60934;
+      return {
+        baseValue: calculatedData,
+        baseUnit: "kmph"
+      };
     default:
       return {
         baseValue: data,
         baseUnit: unit
       };
-      break;
   }
 };
 
