@@ -762,6 +762,9 @@ user_workouts_helper.insert_user_workouts_exercises = async (
             sets: 1,
             logDate: childCollectionObject.date
           };
+          console.log('------------------------------------');
+          console.log('workoutLogsObj : ', workoutLogsObj);
+          console.log('------------------------------------');
           insertWorkoutLogArray.push(workoutLogsObj);
         });
       } else {
@@ -823,6 +826,10 @@ user_workouts_helper.insert_user_workouts_exercises = async (
             sets: 1,
             logDate: childCollectionObject.date
           };
+          console.log('------------------------------------');
+          console.log('diffrent set workoutLogsObj : ', workoutLogsObj);
+          console.log('------------------------------------');
+
           insertWorkoutLogArray.push(workoutLogsObj);
         }
       }
@@ -995,6 +1002,10 @@ user_workouts_helper.copy_exercise_by_id = async (
                 reps,
                 sets: 1
               };
+              console.log('------------------------------------');
+              console.log('copy diff workoutLogsObj : ', workoutLogsObj);
+              console.log('------------------------------------');
+
               insertWorkoutLogArray.push(workoutLogsObj);
               cnt++;
             }
@@ -1055,6 +1066,10 @@ user_workouts_helper.copy_exercise_by_id = async (
                 reps,
                 sets: 1
               };
+              console.log('------------------------------------');
+              console.log('copy not diff workoutLogsObj : ', workoutLogsObj);
+              console.log('------------------------------------');
+
               insertWorkoutLogArray.push(workoutLogsObj);
             }
           }
@@ -1172,6 +1187,10 @@ user_workouts_helper.update_user_workout_exercise = async (
             reps,
             sets: 1
           };
+          console.log('------------------------------------');
+          console.log('update diff workoutLogsObj : ', workoutLogsObj);
+          console.log('------------------------------------');
+
           insertWorkoutLogArray.push(workoutLogsObj);
           cnt++;
         }
@@ -1229,6 +1248,9 @@ user_workouts_helper.update_user_workout_exercise = async (
             reps,
             sets: 1
           };
+          console.log('------------------------------------');
+          console.log('update not diff workoutLogsObj : ', workoutLogsObj);
+          console.log('------------------------------------');
           insertWorkoutLogArray.push(workoutLogsObj);
         }
       }
