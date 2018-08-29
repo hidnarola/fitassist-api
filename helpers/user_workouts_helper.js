@@ -749,7 +749,8 @@ user_workouts_helper.insert_user_workouts_exercises = async (
             repTime,
             setTime,
             reps,
-            sets: 1
+            sets: 1,
+            logDate: childCollectionObject.date
           };
           insertWorkoutLogArray.push(workoutLogsObj);
         });
@@ -800,14 +801,15 @@ user_workouts_helper.insert_user_workouts_exercises = async (
             repTime,
             setTime,
             reps,
-            sets: 1
+            sets: 1,
+            logDate: childCollectionObject.date
           };
           insertWorkoutLogArray.push(workoutLogsObj);
         }
       }
     });
 
-    let workout_logs_data = await WorkoutLogs.insertMany(insertWorkoutLogArray);
+    await WorkoutLogs.insertMany(insertWorkoutLogArray);
     if (user_workouts_exercise_data) {
       return {
         status: 1,

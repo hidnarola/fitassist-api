@@ -5,6 +5,7 @@ var path = require("path");
 var router = express.Router();
 
 var config = require("../../config");
+var mongoose = require("mongoose");
 var logger = config.logger;
 
 var equipment_helper = require("../../helpers/equipment_helper");
@@ -57,7 +58,9 @@ router.post("/filter", async (req, res) => {
   );
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.BAD_REQUEST).json({
+      filtered_data
+    });
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
@@ -166,7 +169,7 @@ router.post("/", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "equipment_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -198,13 +201,17 @@ router.post("/", async (req, res) => {
     let equipment_data = await equipment_helper.insert_equipment(equipment_obj);
     if (equipment_data.status === 0) {
       logger.error("Error while inserting equipment = ", equipment_data);
-      res.status(config.BAD_REQUEST).json({ equipment_data });
+      res.status(config.BAD_REQUEST).json({
+        equipment_data
+      });
     } else {
       res.status(config.OK_STATUS).json(equipment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -268,7 +275,7 @@ router.put("/:equipment_id", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "equipment_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -297,7 +304,7 @@ router.put("/:equipment_id", async (req, res) => {
       var resp_data = await equipment_helper.get_equipment_id(
         req.params.equipment_id
       );
-      fs.unlink(resp_data.equipment.image, function(err, Success) {
+      fs.unlink(resp_data.equipment.image, function (err, Success) {
         if (err) throw err;
       });
       equipment_obj.image = "uploads/equipment/" + filename;
@@ -309,13 +316,17 @@ router.put("/:equipment_id", async (req, res) => {
     );
     if (equipment_data.status === 0) {
       logger.error("Error while updating equipment = ", equipment_data);
-      res.status(config.BAD_REQUEST).json({ equipment_data });
+      res.status(config.BAD_REQUEST).json({
+        equipment_data
+      });
     } else {
       res.status(config.OK_STATUS).json(equipment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -323,9 +334,7 @@ router.put("/:equipment_id", async (req, res) => {
  * @api {delete} /admin/equipment/:equipment_id Delete
  * @apiName Delete
  * @apiGroup Equipment
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -335,14 +344,43 @@ router.delete("/:equipment_id", async (req, res) => {
     req.params.equipment_id
   );
 
-  let equipment_data = await equipment_helper.delete_equipment_by_id(
-    req.params.equipment_id
-  );
+  let equipment_data = await equipment_helper.delete_equipment_by_id({
+    _id: mongoose.Types.ObjectId(req.params.equipment_id)
+  }, {
+    isDeleted: 1
+  });
 
   if (equipment_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
   } else {
-    fs.unlink(resp_data.equipment.image, function() {});
+    res.status(config.OK_STATUS).json(equipment_data);
+  }
+});
+
+/**
+ * @api {get} /admin/equipment/undo/:equipment_id Undo
+ * @apiName Undo
+ * @apiGroup Equipment
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/undo/:equipment_id", async (req, res) => {
+  logger.trace("Undo equipment API - Id = ", req.params.equipment_id);
+  var resp_data = await equipment_helper.get_equipment_id(
+    req.params.equipment_id
+  );
+
+  let equipment_data = await equipment_helper.delete_equipment_by_id({
+    _id: mongoose.Types.ObjectId(req.params.equipment_id)
+  }, {
+    isDeleted: 0
+  });
+
+  if (equipment_data.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
+  } else {
+    equipment_data.message = "Equipment recoved"
     res.status(config.OK_STATUS).json(equipment_data);
   }
 });

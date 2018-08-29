@@ -12,9 +12,16 @@ equipment_helper.get_all_equipment = async () => {
   try {
     var equipment = await Equipment.find();
     if (equipment) {
-      return { status: 1, message: "Equipments found", equipments: equipment };
+      return {
+        status: 1,
+        message: "Equipments found",
+        equipments: equipment
+      };
     } else {
-      return { status: 2, message: "No equipment available" };
+      return {
+        status: 2,
+        message: "No equipment available"
+      };
     }
   } catch (err) {
     return {
@@ -36,11 +43,20 @@ equipment_helper.get_all_equipment = async () => {
  */
 equipment_helper.get_equipment_id = async id => {
   try {
-    var equipment = await Equipment.findOne({ _id: id });
+    var equipment = await Equipment.findOne({
+      _id: id
+    });
     if (equipment) {
-      return { status: 1, message: "Equipment found", equipment: equipment };
+      return {
+        status: 1,
+        message: "Equipment found",
+        equipment: equipment
+      };
     } else {
-      return { status: 2, message: "No equipment available" };
+      return {
+        status: 2,
+        message: "No equipment available"
+      };
     }
   } catch (err) {
     return {
@@ -96,13 +112,18 @@ equipment_helper.update_equipment_by_id = async (
   equipment_object
 ) => {
   try {
-    let equipment = await Equipment.findOneAndUpdate(
-      { _id: equipment_id },
-      equipment_object,
-      { new: true }
+    let equipment = await Equipment.findOneAndUpdate({
+        _id: equipment_id
+      },
+      equipment_object, {
+        new: true
+      }
     );
     if (!equipment) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -129,13 +150,21 @@ equipment_helper.update_equipment_by_id = async (
  * 
  * @developed by "amc"
  */
-equipment_helper.delete_equipment_by_id = async equipment_id => {
+equipment_helper.delete_equipment_by_id = async (id, update) => {
   try {
-    let resp = await Equipment.findOneAndRemove({ _id: equipment_id });
+    let resp = await Equipment.findByIdAndUpdate(id, update, {
+      new: true
+    });
     if (!resp) {
-      return { status: 2, message: "Equipment not found" };
+      return {
+        status: 2,
+        message: "Equipment not found"
+      };
     } else {
-      return { status: 1, message: "Equipment deleted" };
+      return {
+        status: 1,
+        message: "Equipment deleted"
+      };
     }
   } catch (err) {
     return {
@@ -156,19 +185,22 @@ equipment_helper.delete_equipment_by_id = async equipment_id => {
 equipment_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await Equipment.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
+    var searched_record_count = await Equipment.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
 
-    var filtered_data = await Equipment.aggregate([
-      {
+    var filtered_data = await Equipment.aggregate([{
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
+      {
+        $sort: filter_obj.columnSort
+      }
     ]);
 
     if (filtered_data) {
@@ -182,7 +214,10 @@ equipment_helper.get_filtered_records = async filter_obj => {
         filtered_equipments: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {

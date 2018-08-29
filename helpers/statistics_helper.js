@@ -123,8 +123,8 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
           fields: "$fields"
         }
       }
-
     ]);
+
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
     });
@@ -143,6 +143,16 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
       let setTime = _.pluck(_.pluck(w.fields, "setTime"), "total");
       let reps = _.pluck(_.pluck(w.fields, "reps"), "total");
       let sets = _.pluck(_.pluck(w.fields, "sets"), "total");
+      console.log('------------------------------------');
+      console.log(' time: ', time);
+      console.log(' distance: ', distance);
+      console.log(' effort: ', effort);
+      console.log(' weight: ', weight);
+      console.log(' repTime: ', repTime);
+      console.log(' setTime: ', setTime);
+      console.log(' reps: ', reps);
+      console.log(' sets: ', sets);
+      console.log('------------------------------------');
 
       let totalTime = await time.reduce(getSum);
       let totalDistance = await distance.reduce(getSum);
@@ -173,35 +183,35 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
         formatStringForRepTime = "m [min]";
       }
       w.fields.time = {
-        total: moment.duration(totalTime, "seconds").format(formatStringForTime),
+        total: totalTime > 0 ? moment.duration(totalTime, "seconds").format(formatStringForTime) : 0,
         unit: ""
       }
       w.fields.distance = {
-        total: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
+        total: distanceUnit > 0 ? Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)) : 0,
         unit: distanceUnit
       }
       w.fields.effort = {
-        total: Math.round(totalEffort),
+        total: totalEffort > 0 ? Math.round(totalEffort) : 0,
         unit: ""
       }
       w.fields.weight = {
-        total: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
+        total: totalWeight > 0 ? Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)) : 0,
         unit: weightUnit
       }
       w.fields.repTime = {
-        total: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
+        total: totalRepTime > 0 ? moment.duration(totalRepTime, "seconds").format(formatStringForRepTime) : 0,
         unit: ""
       }
       w.fields.setTime = {
-        total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
+        total: totalSetTime > 0 ? moment.duration(totalSetTime, "seconds").format(formatStringForSetTime) : 0,
         unit: ""
       }
       w.fields.reps = {
-        total: Math.round(totalReps),
+        total: totalReps > 0 ? Math.round(totalReps) : 0,
         unit: ""
       }
       w.fields.sets = {
-        total: Math.round(totalSets),
+        total: totalSets > 0 ? Math.round(totalSets) : 0,
         unit: ""
       }
     }
@@ -216,7 +226,9 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
       };
     } else {
       return {
-        status: 2
+        status: 1,
+        statistics: null,
+        message: "Success"
       };
     }
   } catch (err) {
@@ -332,6 +344,10 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
       }
 
     ]);
+    return {
+      status: 1,
+      overview: user_workouts
+    }
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
     });
@@ -380,35 +396,35 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
         formatStringForRepTime = "m [min]";
       }
       w.fields.time = {
-        total: moment.duration(totalTime, "seconds").format(formatStringForTime),
+        total: totalTime > 0 ? moment.duration(totalTime, "seconds").format(formatStringForTime) : 0,
         unit: ""
       }
       w.fields.distance = {
-        total: Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)),
+        total: totalDistance > 0 ? Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)) : 0,
         unit: distanceUnit
       }
       w.fields.effort = {
-        total: Math.round(totalEffort),
+        total: totalEffort > 0 ? Math.round(totalEffort) : 0,
         unit: ""
       }
       w.fields.weight = {
-        total: Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)),
+        total: totalWeight > 0 ? Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)) : 0,
         unit: weightUnit
       }
       w.fields.repTime = {
-        total: moment.duration(totalRepTime, "seconds").format(formatStringForRepTime),
+        total: totalRepTime > 0 ? moment.duration(totalRepTime, "seconds").format(formatStringForRepTime) : 0,
         unit: ""
       }
       w.fields.setTime = {
-        total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
+        total: totalSetTime > 0 ? moment.duration(totalSetTime, "seconds").format(formatStringForSetTime) : 0,
         unit: ""
       }
       w.fields.reps = {
-        total: Math.round(totalReps),
+        total: totalReps > 0 ? Math.round(totalReps) : 0,
         unit: ""
       }
       w.fields.sets = {
-        total: Math.round(totalSets),
+        total: totalSets > 0 ? Math.round(totalSets) : 0,
         unit: ""
       }
     }
@@ -466,7 +482,7 @@ statistics_helper.get_overview_graph_data = async (condition = {}, activeField) 
       },
       {
         $sort: {
-          createdAt: 1
+          logDate: 1
         }
       },
       {
@@ -479,35 +495,35 @@ statistics_helper.get_overview_graph_data = async (condition = {}, activeField) 
                   $sum: "$time"
                 },
                 "unit": 'second',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "distance": {
                 "total": {
                   $sum: "$distance"
                 },
                 "unit": 'meter',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "effort": {
                 "total": {
                   $sum: "$effort"
                 },
                 "unit": '',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "weight": {
                 "total": {
                   $sum: "$weight"
                 },
                 "unit": 'gram',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "repTime": {
                 "total": {
                   $sum: "$repTime"
                 },
                 "unit": 'number',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "setTime": {
                 "total": {
@@ -520,14 +536,14 @@ statistics_helper.get_overview_graph_data = async (condition = {}, activeField) 
                   $sum: "$reps"
                 },
                 "unit": 'number',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "sets": {
                 "total": {
                   $sum: "$sets"
                 },
                 "unit": 'number',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
             }
           },
@@ -633,7 +649,7 @@ statistics_helper.get_graph_data = async (condition = {}, condition2 = {}, activ
       },
       {
         $sort: {
-          createdAt: 1
+          logDate: 1
         }
       },
       {
@@ -646,35 +662,35 @@ statistics_helper.get_graph_data = async (condition = {}, condition2 = {}, activ
                   $sum: "$time"
                 },
                 "unit": 'second',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "distance": {
                 "total": {
                   $sum: "$distance"
                 },
                 "unit": 'meter',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "effort": {
                 "total": {
                   $sum: "$effort"
                 },
                 "unit": '',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "weight": {
                 "total": {
                   $sum: "$weight"
                 },
                 "unit": 'gram',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "repTime": {
                 "total": {
                   $sum: "$repTime"
                 },
                 "unit": 'number',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "setTime": {
                 "total": {
@@ -687,14 +703,14 @@ statistics_helper.get_graph_data = async (condition = {}, condition2 = {}, activ
                   $sum: "$reps"
                 },
                 "unit": 'number',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
               "sets": {
                 "total": {
                   $sum: "$sets"
                 },
                 "unit": 'number',
-                "date": "$createdAt"
+                "date": "$logDate"
               },
             }
           },
@@ -965,7 +981,9 @@ statistics_helper.get_overview_single_data = async (condition = {}, date = null)
       };
     } else {
       return {
-        status: 2
+        status: 1,
+        message: "Success",
+        statistics: []
       };
     }
   } catch (err) {

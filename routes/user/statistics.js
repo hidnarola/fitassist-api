@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
     resp_data = await statistics_helper.get_statistics_data({
       userId: authUserId,
       isCompleted: 1,
-      createdAt: {
+      logDate: {
         $gte: new Date(start),
         $lte: new Date(end),
       }
@@ -60,7 +60,7 @@ router.post("/", async (req, res) => {
     overview = await statistics_helper.get_overview_statistics_data({
       userId: authUserId,
       isCompleted: 1,
-      createdAt: {
+      logDate: {
         $gte: new Date(start),
         $lte: new Date(end),
       }
@@ -69,7 +69,9 @@ router.post("/", async (req, res) => {
       end
     });
     if (overview.status === 1) {
-      resp_data.statistics.data.splice(0, 0, overview.overview);
+      if (resp_data.statistics) {
+        resp_data.statistics.data.splice(0, 0, overview.overview);
+      }
     }
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);
@@ -157,7 +159,7 @@ router.post("/single", async (req, res) => {
       resp_data = await statistics_helper.get_overview_single_data({
         userId: authUserId,
         isCompleted: 1,
-        createdAt: {
+        logDate: {
           $gte: new Date(start),
           $lte: new Date(end),
         }
@@ -170,7 +172,7 @@ router.post("/single", async (req, res) => {
       resp_data = await statistics_helper.get_statistics_single_data({
         userId: authUserId,
         isCompleted: 1,
-        createdAt: {
+        logDate: {
           $gte: new Date(start),
           $lte: new Date(end),
         }
@@ -270,7 +272,7 @@ router.post("/graph_data", async (req, res) => {
       resp_data = await statistics_helper.get_overview_graph_data({
         userId: authUserId,
         isCompleted: 1,
-        createdAt: {
+        logDate: {
           $gte: new Date(start),
           $lte: new Date(end),
         }
@@ -292,7 +294,7 @@ router.post("/graph_data", async (req, res) => {
       resp_data = await statistics_helper.get_graph_data({
         userId: authUserId,
         isCompleted: 1,
-        createdAt: {
+        logDate: {
           $gte: new Date(start),
           $lte: new Date(end),
         }

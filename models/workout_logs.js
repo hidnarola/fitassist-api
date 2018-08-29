@@ -41,6 +41,18 @@ var WorkoutLogsSchema = new Schema({
     type: Number,
     default: 0
   },
+  restTime: {
+    type: Number,
+    default: 0
+  },
+  oneRm: {
+    type: Number,
+    default: 0
+  },
+  speed: {
+    type: Number,
+    default: 0
+  },
   repTime: {
     type: Number,
     default: 0
@@ -56,6 +68,10 @@ var WorkoutLogsSchema = new Schema({
   sets: {
     type: Number,
     default: 0
+  },
+  logDate: {
+    type: Date,
+    default: null
   },
   createdAt: {
     type: Date,

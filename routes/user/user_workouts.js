@@ -569,6 +569,7 @@ router.post("/workout", async (req, res) => {
 			);
 
 			if (workout_day.status == 1) {
+				console.log('insert');
 
 				var workout_id = mongoose.Types.ObjectId(req.body.userWorkoutsId);
 				var resp_data = await get_respose_data_for_workout(workout_id, authUserId);
@@ -582,6 +583,8 @@ router.post("/workout", async (req, res) => {
 					res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
 				}
 			} else {
+				console.log('not insert');
+
 				res.status(config.BAD_REQUEST).json(workout_day);
 			}
 		}
