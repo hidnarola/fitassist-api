@@ -704,7 +704,7 @@ user_workouts_helper.insert_user_workouts_exercises = async (
 
     _.each(user_workouts_exercise_data.exercises, ex => {
       if (ex.differentSets) {
-        var totalSetDetails = ex.setsDetails;
+        var totalSetDetails = ex.setsDetails.length;
         _.each(ex.setsDetails, index, childDetail => {
           var time = 0;
           var distance = 0;
@@ -937,6 +937,8 @@ user_workouts_helper.copy_exercise_by_id = async (
         for (let childExercises of mainExercise.exercises) {
           if (childExercises.differentSets) {
             // _.each(childExercises.setsDetails, childDetail => {
+            let totalChildExercise = childExercises.setsDetails.length;
+            let cnt = 0;
             for (let childDetail of childExercises.setsDetails) {
               var time = 0;
               var distance = 0;
@@ -947,7 +949,9 @@ user_workouts_helper.copy_exercise_by_id = async (
               var setTime = 0;
               var reps = 0;
               var restTime = 0;
-              restTime += childDetail.restTime;
+              if (cnt < (totalChildExercise - 1)) {
+                restTime += childDetail.restTime;
+              }
               if (childDetail.field1) {
                 if (childDetail.field1.baseUnit === "second") {
                   time += childDetail.field1.baseValue;
@@ -992,6 +996,7 @@ user_workouts_helper.copy_exercise_by_id = async (
                 sets: 1
               };
               insertWorkoutLogArray.push(workoutLogsObj);
+              cnt++;
             }
           } else {
             var childDetail = childExercises.setsDetails[0];
@@ -1005,7 +1010,9 @@ user_workouts_helper.copy_exercise_by_id = async (
               var setTime = 0;
               var restTime = 0;
               var reps = 0;
-              restTime += childDetail.restTime ? childDetail.restTime : 0;
+              if (i < childExercises.sets - 1) {
+                restTime += childDetail.restTime ? childDetail.restTime : 0;
+              }
               if (childDetail.field1) {
                 if (childDetail.field1.baseUnit === "second") {
                   time += childDetail.field1.baseValue;
@@ -1111,6 +1118,8 @@ user_workouts_helper.update_user_workout_exercise = async (
     for (let childExercises of user_workouts_data.exercises) {
       if (childExercises.differentSets) {
         // _.each(childExercises.setsDetails, childDetail => {
+        let totalChildExercise = childExercises.setsDetails.length;
+        let cnt = 0;
         for (let childDetail of childExercises.setsDetails) {
           var time = 0;
           var distance = 0;
@@ -1120,7 +1129,9 @@ user_workouts_helper.update_user_workout_exercise = async (
           var setTime = 0;
           var restTime = 0;
           var reps = 0;
-          restTime += childDetail.restTime;
+          if (cnt < (totalChildExercise - 1)) {
+            restTime += childDetail.restTime;
+          }
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
               time += childDetail.field1.baseValue;
@@ -1162,6 +1173,7 @@ user_workouts_helper.update_user_workout_exercise = async (
             sets: 1
           };
           insertWorkoutLogArray.push(workoutLogsObj);
+          cnt++;
         }
       } else {
         var childDetail = childExercises.setsDetails[0];
@@ -1174,7 +1186,9 @@ user_workouts_helper.update_user_workout_exercise = async (
           var repTime = 0;
           var setTime = 0;
           var reps = 0;
-          restTime = childExercises.baseRestTime
+          if (i < childExercises.sets - 1) {
+            restTime = childExercises.baseRestTime
+          }
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
               time += childDetail.field1.baseValue;
