@@ -1828,6 +1828,104 @@
   },
   {
     "type": "post",
+    "url": "/admin/badge/filter",
+    "title": "Filter",
+    "name": "Filter",
+    "description": "<p>Request Object :<pre><code>{ pageSize: 10, page: 0, columnFilter: [ { id: &quot;firstName&quot;, value: &quot;mi&quot; } ], columnSort: [ { id: &quot;firstName&quot;, value: true } ], columnFilterEqual: [ { id: &quot;email&quot;, value: &quot;ake@narola.email&quot; } ] }</code></pre></p>",
+    "group": "BodyPart",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilter",
+            "description": "<p>columnFilter Object for filter data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnSort",
+            "description": "<p>columnSort Object for Sorting Data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilterEqual",
+            "description": "<p>columnFilterEqual Object for select box</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>pageSize</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>page number</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "filtered_bodypart",
+            "description": "<p>filtered details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
+    "groupTitle": "BodyPart"
+  },
+  {
+    "type": "post",
     "url": "/admin/bodypart",
     "title": "Add",
     "name": "Add",
@@ -2044,7 +2142,7 @@
   },
   {
     "type": "put",
-    "url": "/admin/bodypart",
+    "url": "/admin/bodypart/:body_part_id",
     "title": "Update",
     "name": "Update",
     "group": "Body_Parts",
@@ -2474,6 +2572,55 @@
             "optional": false,
             "field": "equipment",
             "description": "<p>Object of equipment document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/equipment.js",
+    "groupTitle": "Equipment"
+  },
+  {
+    "type": "get",
+    "url": "/admin/equipment/undo/:equipment_id",
+    "title": "Undo",
+    "name": "Undo",
+    "group": "Equipment",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -8855,56 +9002,6 @@
     "groupTitle": "User_Gallery"
   },
   {
-    "type": "get",
-    "url": "/user/user_leaderboard/:type",
-    "title": "Get",
-    "name": "Get",
-    "group": "User_Leaderboard",
-    "description": "<p><font color=red>Type can be strength, cardio, nutrition, body</font></p>",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "goals",
-            "description": "<p>JSON of badges_assign's document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/statistics.js",
-    "groupTitle": "User_Leaderboard"
-  },
-  {
     "type": "post",
     "url": "/user/measurement/get_log_dates_by_date",
     "title": "Get Logs of User Measurement",
@@ -9388,7 +9485,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/users_nutritions.js",
+    "filename": "routes/user/notifications.js",
     "groupTitle": "User_Notification"
   },
   {
@@ -9437,7 +9534,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/notifications.js",
+    "filename": "routes/user/users_nutritions.js",
     "groupTitle": "User_Notification"
   },
   {
@@ -10931,7 +11028,7 @@
   },
   {
     "type": "put",
-    "url": "/user/user_program",
+    "url": "/user/user_program/day/:program_day_id",
     "title": "update user's program",
     "name": "update_user_s_program",
     "group": "User_Program",
@@ -10980,7 +11077,7 @@
   },
   {
     "type": "put",
-    "url": "/user/user_program/day/:program_day_id",
+    "url": "/user/user_program",
     "title": "update user's program",
     "name": "update_user_s_program",
     "group": "User_Program",
@@ -12025,6 +12122,156 @@
   },
   {
     "type": "post",
+    "url": "/user/statistics/graph_data",
+    "title": "Get Graph Data",
+    "name": "Get_Graph_Data",
+    "group": "User_Statistics",
+    "description": "<p><font color=red>Type can be strength, cardio</font></p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "stats",
+            "description": "<p>JSON of statistics's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/statistics.js",
+    "groupTitle": "User_Statistics"
+  },
+  {
+    "type": "post",
+    "url": "/user/statistics",
+    "title": "Get",
+    "name": "Get_statistics_data_for_strength_and_cardio",
+    "group": "User_Statistics",
+    "description": "<p><font color=red>Type can be strength, cardio</font></p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "stats",
+            "description": "<p>JSON of statistics's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/statistics.js",
+    "groupTitle": "User_Statistics"
+  },
+  {
+    "type": "post",
+    "url": "/user/statistics/single",
+    "title": "Get",
+    "name": "Get_statistics_data_for_strength_and_cardio",
+    "group": "User_Statistics",
+    "description": "<p><font color=red>Type can be strength, cardio</font></p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "stats",
+            "description": "<p>JSON of statistics's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/statistics.js",
+    "groupTitle": "User_Statistics"
+  },
+  {
+    "type": "post",
     "url": "/user/test_exercise",
     "title": "Save exercise Preference",
     "name": "Save",
@@ -12473,6 +12720,62 @@
     "groupTitle": "User_Timeline"
   },
   {
+    "type": "post",
+    "url": "/user/timeline/widgets",
+    "title": "Get user's widgets",
+    "name": "Get_user_s_widgets",
+    "group": "User_Timeline",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>user's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "widgets",
+            "description": "<p>widgets data</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/timeline.js",
+    "groupTitle": "User_Timeline"
+  },
+  {
     "type": "put",
     "url": "/user/timeline/:photo_id",
     "title": "Update",
@@ -12620,55 +12923,6 @@
   },
   {
     "type": "post",
-    "url": "/user/workout/first_workout",
-    "title": "Get all user's workout",
-    "name": "Get_all_user_s_workout",
-    "group": "User_Workout",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "workout_id",
-            "description": "<p>Id of user_workout document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_workouts.js",
-    "groupTitle": "User_Workout"
-  },
-  {
-    "type": "post",
     "url": "/user/workout/today",
     "title": "Get all user's workout",
     "name": "Get_all_user_s_workout",
@@ -12695,6 +12949,55 @@
             "optional": false,
             "field": "user_workouts",
             "description": "<p>JSON of user_workout document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workouts.js",
+    "groupTitle": "User_Workout"
+  },
+  {
+    "type": "post",
+    "url": "/user/workout/first_workout",
+    "title": "Get all user's workout",
+    "name": "Get_all_user_s_workout",
+    "group": "User_Workout",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "workout_id",
+            "description": "<p>Id of user_workout document</p>"
           }
         ]
       }
@@ -12834,96 +13137,6 @@
     "version": "0.0.0",
     "filename": "routes/user/workout_progress.js",
     "groupTitle": "User_Workout_Progress"
-  },
-  {
-    "type": "post",
-    "url": "/user/user_workouts/exercises",
-    "title": "Add User Workouts",
-    "name": "Add_User_Workouts",
-    "group": "User_Workouts",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "type",
-            "description": "<p>type of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "subType",
-            "description": "<p>subType of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userWorkoutsId",
-            "description": "<p>userWorkoutsId of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Array",
-            "optional": false,
-            "field": "exercises",
-            "description": "<p>exercises of workout</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "workout",
-            "description": "<p>workout details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_workouts.js",
-    "groupTitle": "User_Workouts"
   },
   {
     "type": "post",
@@ -13415,8 +13628,8 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "workouts",
-            "description": "<p>workouts data of program</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -13435,7 +13648,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_program.js",
+    "filename": "routes/user/user_workouts.js",
     "groupTitle": "User_Workouts"
   },
   {
@@ -13491,8 +13704,8 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "message",
-            "description": "<p>Success message</p>"
+            "field": "workouts",
+            "description": "<p>workouts data of program</p>"
           }
         ]
       }
@@ -13511,7 +13724,7 @@
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_workouts.js",
+    "filename": "routes/user/user_program.js",
     "groupTitle": "User_Workouts"
   },
   {
@@ -13833,8 +14046,8 @@
     "groupTitle": "User_Workouts"
   },
   {
-    "type": "put",
-    "url": "/user/user_workouts/:workout_id",
+    "type": "post",
+    "url": "/user/user_workouts/exercises",
     "title": "Update User Workouts",
     "name": "Update_User_Workouts",
     "group": "User_Workouts",
@@ -13865,29 +14078,29 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "title",
-            "description": "<p>title of workout</p>"
+            "field": "type",
+            "description": "<p>type of workout</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
-            "field": "description",
-            "description": "<p>description of workout</p>"
+            "optional": false,
+            "field": "subType",
+            "description": "<p>subType of workout</p>"
           },
           {
             "group": "Parameter",
-            "type": "Enum",
-            "optional": true,
-            "field": "type",
-            "description": "<p>type of workout | Possbile value <code>Enum: [&quot;exercise&quot;,&quot;restday&quot;]</code></p>"
+            "type": "String",
+            "optional": false,
+            "field": "userWorkoutsId",
+            "description": "<p>userWorkoutsId of workout</p>"
           },
           {
             "group": "Parameter",
-            "type": "Date",
-            "optional": true,
-            "field": "date",
-            "description": "<p>date of workout</p>"
+            "type": "Array",
+            "optional": false,
+            "field": "exercises",
+            "description": "<p>exercises of workout</p>"
           }
         ]
       }
@@ -13899,8 +14112,8 @@
             "group": "Success 200",
             "type": "JSON",
             "optional": false,
-            "field": "friend",
-            "description": "<p>approved friend detail</p>"
+            "field": "workout",
+            "description": "<p>workout details</p>"
           }
         ]
       }
@@ -13991,6 +14204,96 @@
             "optional": false,
             "field": "workout",
             "description": "<p>workout details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workouts.js",
+    "groupTitle": "User_Workouts"
+  },
+  {
+    "type": "put",
+    "url": "/user/user_workouts/:workout_id",
+    "title": "Update User Workouts",
+    "name": "Update_User_Workouts",
+    "group": "User_Workouts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "title",
+            "description": "<p>title of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "description",
+            "description": "<p>description of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": true,
+            "field": "type",
+            "description": "<p>type of workout | Possbile value <code>Enum: [&quot;exercise&quot;,&quot;restday&quot;]</code></p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": true,
+            "field": "date",
+            "description": "<p>date of workout</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "friend",
+            "description": "<p>approved friend detail</p>"
           }
         ]
       }

@@ -1412,6 +1412,42 @@ router.post("/workout_delete", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/user_workouts/workouts_list_by_first_workout Multiple Workout delete by Days
+ * @apiName Multiple Workout delete by Days
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Array} exerciseIds ids of Days
+ * @apiParam {Array} parentId parentId of Day
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/workouts_list_by_first_workout", async (req, res) => {
+	var decoded = jwtDecode(req.headers["authorization"]);
+	var authUserId = decoded.sub;
+	var date = req.body.date;
+	var start = moment(date).utcOffset(0);
+	start.toISOString();
+	start.format();
+	var end = moment(date)
+		.utcOffset(0)
+		.add(23, "hours")
+		.add(59, "minutes");
+	end.toISOString();
+	end.format();
+	var related_date_data = await user_workout_helper.get_id_title_workouts_by_date({
+		userId: authUserId,
+		date: {
+			$gte: new Date(start),
+			$lte: new Date(end)
+		}
+	});
+	if (related_date_data.status === 1) {
+		res.status(config.OK_STATUS).json(related_date_data);
+	} else {
+		res.status(config.INTERNAL_SERVER_ERROR).json(related_date_data);
+	}
+});
+/**
  * @api {post} /user/user_workouts/delete Multiple Workout delete by Days
  * @apiName Multiple Workout delete by Days
  * @apiGroup  User Workouts
@@ -1464,6 +1500,9 @@ async function assign_badges(authUserId) {
 	);
 	//badge assign end
 }
+
+
+//Function for send respose while adding,updating,completing workouts
 async function get_respose_data_for_workout(workoutId, authUserId) {
 	var workout_id = workoutId;
 	var resp_data = await user_workout_helper.get_all_workouts_group_by({
@@ -1508,8 +1547,9 @@ async function get_respose_data_for_workout(workoutId, authUserId) {
 			return mongoose.Types.ObjectId(id);
 		});
 
-		resp_data.workouts_list = related_date_data.workouts ?
-			related_date_data.workouts : [];
+		resp_data.workouts_list = related_date_data.workouts_list ?
+			related_date_data.workouts_list : [];
+
 		resp_data.calendar_list = calendar_data.workouts ?
 			calendar_data.workouts : [];
 

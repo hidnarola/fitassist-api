@@ -319,7 +319,7 @@ user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
       return {
         status: 1,
         message: "User workouts found",
-        workouts: user_workouts
+        workouts_list: user_workouts
       };
     } else {
       return {
