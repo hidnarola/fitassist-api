@@ -167,7 +167,7 @@ router.post("/single", async (req, res) => {
     if (exerciseId !== "all") {
       condition.exerciseId = exerciseId;
     }
-    if (subCategory === "overview") {
+    if (subCategory === "Overview") {
       resp_data = await statistics_helper.get_overview_single_data({
         userId: authUserId,
         isCompleted: 1,
