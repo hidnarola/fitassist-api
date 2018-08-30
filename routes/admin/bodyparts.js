@@ -147,7 +147,7 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/bodypart Update
+ * @api {put} /admin/bodypart/:body_part_id Update
  * @apiName Update
  * @apiGroup  Body Parts
  * @apiHeader {String}  x-access-token Admin's unique access-key

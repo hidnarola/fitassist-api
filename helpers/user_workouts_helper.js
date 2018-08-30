@@ -301,11 +301,11 @@ user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
         $project: {
           _id: 1,
           title: 1,
+          description: 1,
           isCompleted: 1,
           date: 1,
           type: 1,
           dayType: 1
-
         }
       },
       {
@@ -694,6 +694,7 @@ user_workouts_helper.insert_user_workouts_exercises = async (
   childCollectionObject,
   authUserId
 ) => {
+
   var workoutLogsObj = {};
   var insertWorkoutLogArray = [];
   try {
@@ -703,20 +704,15 @@ user_workouts_helper.insert_user_workouts_exercises = async (
     var user_workouts_exercise_data = await user_workouts_exercise.save();
 
     _.each(user_workouts_exercise_data.exercises, ex => {
+
       if (ex.differentSets) {
         var totalSetDetails = ex.setsDetails.length;
-        _.each(ex.setsDetails, index, childDetail => {
-          var time = 0;
-          var distance = 0;
-          var effort = 0;
-          var weight = 0;
-          var repTime = 0;
-          var restTime = 0;
-          var setTime = 0;
-          var speed = 0;
-          var reps = 0;
-          if (index < totalSetDetails - 1) {
-            restTime += childDetail.restTime;
+        var cnt = 0;
+        _.each(ex.setsDetails, (childDetail) => {
+          var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
+          if (cnt < totalSetDetails - 1) {
+            restTime += childDetail.baseRestTime;
+
           }
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
@@ -747,40 +743,35 @@ user_workouts_helper.insert_user_workouts_exercises = async (
           }
 
           workoutLogsObj = {
-            exerciseId: user_workouts_exercise_data._id,
+            workoutId: user_workouts_exercise_data._id,
             setsDetailId: ex._id,
             userId: authUserId,
+            exerciseId: ex.exercises._id,
+            name: ex.exercises.name,
+            type: ex.exercises.category,
+            subType: ex.exercises.subCategory,
             time,
             distance,
             effort,
             weight,
             repTime,
-            setTime,
-            restTime,
             speed,
+            restTime,
+            setTime,
             reps,
-            sets: 1,
-            logDate: childCollectionObject.date
+            logDate: childCollectionObject.date,
+            sets: 1
           };
-          console.log('------------------------------------');
-          console.log('workoutLogsObj : ', workoutLogsObj);
-          console.log('------------------------------------');
           insertWorkoutLogArray.push(workoutLogsObj);
+          cnt++;
         });
       } else {
+
         var childDetail = ex.setsDetails[0];
         for (var i = 0; i < ex.sets; i++) {
-          var restTime = 0;
-          var time = 0;
-          var distance = 0;
-          var effort = 0;
-          var weight = 0;
-          var repTime = 0;
-          var setTime = 0;
-          var speed = 0;
-          var reps = 0;
+          var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
           if (i < ex.sets - 1) {
-            restTime = ex.baseRestTime;
+            restTime = childDetail.baseRestTime;
           }
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
@@ -811,24 +802,26 @@ user_workouts_helper.insert_user_workouts_exercises = async (
           }
 
           workoutLogsObj = {
-            exerciseId: user_workouts_exercise_data._id,
+            workoutId: user_workouts_exercise_data._id,
             setsDetailId: ex._id,
             userId: authUserId,
+            exerciseId: ex.exercises._id,
+            name: ex.exercises.name,
+            type: ex.exercises.category,
+            subType: ex.exercises.subCategory,
             time,
             distance,
             effort,
             weight,
             repTime,
+            speed,
+            restTime,
             setTime,
             reps,
-            restTime,
-            speed,
-            sets: 1,
-            logDate: childCollectionObject.date
+            logDate: childCollectionObject.date,
+            sets: 1
           };
-          console.log('------------------------------------');
-          console.log('diffrent set workoutLogsObj : ', workoutLogsObj);
-          console.log('------------------------------------');
+
 
           insertWorkoutLogArray.push(workoutLogsObj);
         }
@@ -893,7 +886,7 @@ user_workouts_helper.insert_user_workouts_day = async masterCollectionObject => 
  * @developed by "amc"
  */
 user_workouts_helper.copy_exercise_by_id = async (
-  exerciseId,
+  workoutId,
   date,
   authUserId
 ) => {
@@ -901,7 +894,7 @@ user_workouts_helper.copy_exercise_by_id = async (
   var insertWorkoutLogArray = [];
   try {
     var day_data = await UserWorkouts.findOne({
-      _id: exerciseId
+      _id: workoutId
     }, {
       _id: 0,
       type: 1,
@@ -916,7 +909,7 @@ user_workouts_helper.copy_exercise_by_id = async (
     var workout_day = await user_workouts.save();
 
     var exercise_data = await UserWorkoutExercises.find({
-      userWorkoutsId: exerciseId
+      userWorkoutsId: workoutId
     }, {
       isCompleted: 0,
       userWorkoutsId: 0
@@ -947,17 +940,10 @@ user_workouts_helper.copy_exercise_by_id = async (
             let totalChildExercise = childExercises.setsDetails.length;
             let cnt = 0;
             for (let childDetail of childExercises.setsDetails) {
-              var time = 0;
-              var distance = 0;
-              var effort = 0;
-              var weight = 0;
-              var repTime = 0;
-              var speed = 0;
-              var setTime = 0;
-              var reps = 0;
-              var restTime = 0;
+              var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
               if (cnt < (totalChildExercise - 1)) {
-                restTime += childDetail.restTime;
+                // restTime += childDetail.restTime;
+                restTime += childDetail.baseRestTime
               }
               if (childDetail.field1) {
                 if (childDetail.field1.baseUnit === "second") {
@@ -988,9 +974,13 @@ user_workouts_helper.copy_exercise_by_id = async (
               }
 
               workoutLogsObj = {
-                exerciseId: mainExercise._id,
+                workoutId: mainExercise._id,
                 setsDetailId: childExercises._id,
                 userId: authUserId,
+                exerciseId: childExercises.exercises._id,
+                name: childExercises.exercises.name,
+                type: childExercises.exercises.category,
+                subType: childExercises.exercises.subCategory,
                 time,
                 distance,
                 effort,
@@ -1000,29 +990,20 @@ user_workouts_helper.copy_exercise_by_id = async (
                 restTime,
                 setTime,
                 reps,
+                logDate: date,
                 sets: 1
               };
-              console.log('------------------------------------');
-              console.log('copy diff workoutLogsObj : ', workoutLogsObj);
-              console.log('------------------------------------');
-
               insertWorkoutLogArray.push(workoutLogsObj);
               cnt++;
             }
           } else {
             var childDetail = childExercises.setsDetails[0];
             for (var i = 0; i < childExercises.sets; i++) {
-              var time = 0;
-              var distance = 0;
-              var effort = 0;
-              var weight = 0;
-              var repTime = 0;
-              var speed = 0;
-              var setTime = 0;
-              var restTime = 0;
-              var reps = 0;
+              var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
               if (i < childExercises.sets - 1) {
-                restTime += childDetail.restTime ? childDetail.restTime : 0;
+                // restTime += childDetail.restTime ? childDetail.restTime : 0;
+                restTime += childDetail.baseRestTime;
+
               }
               if (childDetail.field1) {
                 if (childDetail.field1.baseUnit === "second") {
@@ -1053,23 +1034,25 @@ user_workouts_helper.copy_exercise_by_id = async (
               }
 
               workoutLogsObj = {
-                exerciseId: mainExercise._id,
+                workoutId: mainExercise._id,
                 setsDetailId: childExercises._id,
                 userId: authUserId,
+                exerciseId: childExercises.exercises._id,
+                name: childExercises.exercises.name,
+                type: childExercises.exercises.category,
+                subType: childExercises.exercises.subCategory,
                 time,
                 distance,
                 effort,
                 weight,
-                restTime,
                 repTime,
+                speed,
+                restTime,
                 setTime,
                 reps,
+                logDate: date,
                 sets: 1
               };
-              console.log('------------------------------------');
-              console.log('copy not diff workoutLogsObj : ', workoutLogsObj);
-              console.log('------------------------------------');
-
               insertWorkoutLogArray.push(workoutLogsObj);
             }
           }
@@ -1125,27 +1108,20 @@ user_workouts_helper.update_user_workout_exercise = async (
         new: true
       }
     );
-
     var delete_workout_log = await WorkoutLogs.remove({
-      exerciseId: id,
+      workoutId: id,
       isCompleted: 0
     });
     for (let childExercises of user_workouts_data.exercises) {
       if (childExercises.differentSets) {
-        // _.each(childExercises.setsDetails, childDetail => {
+
         let totalChildExercise = childExercises.setsDetails.length;
         let cnt = 0;
         for (let childDetail of childExercises.setsDetails) {
-          var time = 0;
-          var distance = 0;
-          var effort = 0;
-          var weight = 0;
-          var repTime = 0;
-          var setTime = 0;
-          var restTime = 0;
-          var reps = 0;
+          var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
+
           if (cnt < (totalChildExercise - 1)) {
-            restTime += childDetail.restTime;
+            restTime += childDetail.baseRestTime;
           }
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
@@ -1161,6 +1137,8 @@ user_workouts_helper.update_user_workout_exercise = async (
               weight += childDetail.field2.baseValue;
             } else if (childDetail.field2.baseUnit === "effort") {
               effort += childDetail.field2.baseValue;
+            } else if (childDetail.field2.baseUnit === "kmph") {
+              speed += childDetail.field2.baseValue;
             }
           }
           if (childDetail.field3) {
@@ -1174,40 +1152,38 @@ user_workouts_helper.update_user_workout_exercise = async (
           }
 
           workoutLogsObj = {
-            exerciseId: user_workouts_data._id,
+            workoutId: user_workouts_data._id,
             setsDetailId: childExercises._id,
             userId: authUserId,
+            exerciseId: childExercises.exercises._id,
+            name: childExercises.exercises.name,
+            type: childExercises.exercises.category,
+            subType: childExercises.exercises.subCategory,
             time,
             distance,
             effort,
             weight,
             repTime,
+            speed,
             restTime,
             setTime,
             reps,
+            logDate: childCollectionObject.date,
             sets: 1
           };
-          console.log('------------------------------------');
-          console.log('update diff workoutLogsObj : ', workoutLogsObj);
-          console.log('------------------------------------');
-
           insertWorkoutLogArray.push(workoutLogsObj);
           cnt++;
         }
       } else {
         var childDetail = childExercises.setsDetails[0];
+
         for (var i = 0; i < childExercises.sets; i++) {
-          var restTime = 0;
-          var time = 0;
-          var distance = 0;
-          var effort = 0;
-          var weight = 0;
-          var repTime = 0;
-          var setTime = 0;
-          var reps = 0;
+          var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
+
           if (i < childExercises.sets - 1) {
-            restTime = childExercises.baseRestTime
+            restTime += childDetail.baseRestTime;
           }
+
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
               time += childDetail.field1.baseValue;
@@ -1217,13 +1193,17 @@ user_workouts_helper.update_user_workout_exercise = async (
               distance += childDetail.field1.baseValue;
             }
           }
+
           if (childDetail.field2) {
             if (childDetail.field2.baseUnit === "g") {
               weight += childDetail.field2.baseValue;
             } else if (childDetail.field2.baseUnit === "effort") {
               effort += childDetail.field2.baseValue;
+            } else if (childDetail.field2.baseUnit === "kmph") {
+              speed += childDetail.field2.baseValue;
             }
           }
+
           if (childDetail.field3) {
             if (childDetail.field3.baseUnit === "reps") {
               reps += childDetail.field3.baseValue;
@@ -1235,29 +1215,30 @@ user_workouts_helper.update_user_workout_exercise = async (
           }
 
           workoutLogsObj = {
-            exerciseId: user_workouts_data._id,
+            workoutId: user_workouts_data._id,
             setsDetailId: childExercises._id,
             userId: authUserId,
+            exerciseId: childExercises.exercises._id,
+            name: childExercises.exercises.name,
+            type: childExercises.exercises.category,
+            subType: childExercises.exercises.subCategory,
             time,
             distance,
             effort,
             weight,
             repTime,
+            speed,
             restTime,
             setTime,
             reps,
+            logDate: childCollectionObject.date,
             sets: 1
           };
-          console.log('------------------------------------');
-          console.log('update not diff workoutLogsObj : ', workoutLogsObj);
-          console.log('------------------------------------');
           insertWorkoutLogArray.push(workoutLogsObj);
         }
       }
     }
-
-    let workout_logs_data = await WorkoutLogs.insertMany(insertWorkoutLogArray);
-
+    await WorkoutLogs.insertMany(insertWorkoutLogArray);
     if (user_workouts_data) {
       return {
         status: 1,
@@ -1432,7 +1413,7 @@ user_workouts_helper.complete_workout = async (id, updateObject) => {
     );
 
     let user_workouts_data3 = await WorkoutLogs.updateMany({
-        exerciseId: {
+        workoutId: {
           $in: id
         }
       },
@@ -1456,7 +1437,7 @@ user_workouts_helper.complete_workout = async (id, updateObject) => {
 
 /*
  * delete_user_workouts_exercise is used to delete user_workouts exercise from database
- * @param   exerciseId String  _id of user_workouts exercise that need to be delete
+ * @param   workoutId String  _id of user_workouts exercise that need to be delete
  * @return  status  0 - If any error occur in deletion of user_workouts exercise, with error
  *          status  1 - If user_workouts exercise deleted successfully, with appropriate message
  * @developed by "amc"
@@ -1509,16 +1490,16 @@ user_workouts_helper.delete_user_workouts_exercise = async (
 
 /*
  * delete_user_workouts_by_exercise_ids is used to delete user_workouts from database
- * @param   exerciseIds String  _id of user_workouts that need to be delete
+ * @param   workoutIds String  _id of user_workouts that need to be delete
  * @return  status  0 - If any error occur in deletion of user_workouts, with error
  *          status  1 - If user_workouts deleted successfully, with appropriate message
  * @developed by "amc"
  */
-user_workouts_helper.delete_user_workouts_by_exercise_ids = async exerciseIds => {
+user_workouts_helper.delete_user_workouts_by_exercise_ids = async workoutIds => {
   try {
     let ids = await UserWorkoutExercises.find({
       _id: {
-        $in: exerciseIds
+        $in: workoutIds
       }
     }, {
       _id: 1
@@ -1527,12 +1508,12 @@ user_workouts_helper.delete_user_workouts_by_exercise_ids = async exerciseIds =>
 
     let user_workouts_data = await UserWorkoutExercises.remove({
       _id: {
-        $in: exerciseIds
+        $in: workoutIds
       }
     });
 
     let workout_logs_data = await WorkoutLogs.remove({
-      exerciseId: {
+      workoutId: {
         $in: ids
       },
       isCompleted: 0
@@ -1564,17 +1545,17 @@ user_workouts_helper.delete_user_workouts_by_exercise_ids = async exerciseIds =>
  *          status  1 - If user_workouts deleted successfully, with appropriate message
  * @developed by "amc"
  */
-user_workouts_helper.delete_user_workouts_by_id = async exerciseIds => {
+user_workouts_helper.delete_user_workouts_by_id = async workoutIds => {
   try {
     let user_workouts_data1 = await UserWorkouts.remove({
       _id: {
-        $in: exerciseIds
+        $in: workoutIds
       }
     });
 
     let ids = await UserWorkoutExercises.find({
       userWorkoutsId: {
-        $in: exerciseIds
+        $in: workoutIds
       }
     }, {
       _id: 1
@@ -1582,11 +1563,11 @@ user_workouts_helper.delete_user_workouts_by_id = async exerciseIds => {
     ids = _.pluck(ids, "_id");
     let user_workouts_data2 = await UserWorkoutExercises.remove({
       userWorkoutsId: {
-        $in: exerciseIds
+        $in: workoutIds
       }
     });
     let workout_logs_data = await WorkoutLogs.remove({
-      exerciseId: {
+      workoutId: {
         $in: ids
       },
       isCompleted: 0
@@ -1642,7 +1623,7 @@ user_workouts_helper.complete_workout_by_days = async (id, updateObject) => {
       }
     );
     let user_workouts_data3 = await WorkoutLogs.updateMany({
-        exerciseId: {
+        workoutId: {
           $in: idsForWorkoutLog
         }
       },

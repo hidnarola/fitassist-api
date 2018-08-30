@@ -23,37 +23,14 @@ async function getSum(total, num) {
  *          status 1 - If statistics data found, with statistics object
  *          status 2 - If statistics not found, with appropriate message
  */
-statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, date = null) => {
+statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },
       {
-        $lookup: {
-          from: "user_workout_exercises",
-          localField: "exerciseId",
-          foreignField: "_id",
-          as: "exercise"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise.exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: condition2
-      },
-      {
         $group: {
-          _id: "$exercise.exercises.exercises.subCategory",
+          _id: "$subType",
           "fields": {
             $push: {
               "time": {
@@ -108,8 +85,8 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
           },
           "exercises": {
             $addToSet: {
-              name: "$exercise.exercises.exercises.name",
-              _id: "$exercise.exercises.exercises._id"
+              name: "$name",
+              _id: "$exerciseId"
             }
           },
         }
@@ -120,7 +97,9 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
           subCategory: "$_id",
           exerciseId: 'all',
           exercises: "$exercises",
-          fields: "$fields"
+          fields: "$fields",
+          start: date.start,
+          end: date.end
         }
       }
     ]);
@@ -133,8 +112,6 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
       var weightUnit = measurement_unit_data.user_settings.weight;
     }
     for (let w of user_workouts) {
-      w.startDate = date.start ? date.start : null;
-      w.endDate = date.end ? date.end : null;
       let time = _.pluck(_.pluck(w.fields, "time"), "total");
       let distance = _.pluck(_.pluck(w.fields, "distance"), "total");
       let effort = _.pluck(_.pluck(w.fields, "effort"), "total");
@@ -143,16 +120,6 @@ statistics_helper.get_statistics_data = async (condition = {}, condition2 = {}, 
       let setTime = _.pluck(_.pluck(w.fields, "setTime"), "total");
       let reps = _.pluck(_.pluck(w.fields, "reps"), "total");
       let sets = _.pluck(_.pluck(w.fields, "sets"), "total");
-      console.log('------------------------------------');
-      console.log(' time: ', time);
-      console.log(' distance: ', distance);
-      console.log(' effort: ', effort);
-      console.log(' weight: ', weight);
-      console.log(' repTime: ', repTime);
-      console.log(' setTime: ', setTime);
-      console.log(' reps: ', reps);
-      console.log(' sets: ', sets);
-      console.log('------------------------------------');
 
       let totalTime = await time.reduce(getSum);
       let totalDistance = await distance.reduce(getSum);
@@ -251,109 +218,58 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
         $match: condition
       },
       {
-        $lookup: {
-          from: "user_workout_exercises",
-          localField: "exerciseId",
-          foreignField: "_id",
-          as: "exercise"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise.exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
         $group: {
-          _id: null,
-          "fields": {
-            $push: {
-              "time": {
-                "total": {
-                  $sum: "$time"
-                },
-                "unit": 'second'
-              },
-              "distance": {
-                "total": {
-                  $sum: "$distance"
-                },
-                "unit": 'km'
-              },
-              "effort": {
-                "total": {
-                  $sum: "$effort"
-                },
-                "unit": ''
-              },
-              "weight": {
-                "total": {
-                  $sum: "$weight"
-                },
-                "unit": 'kg'
-              },
-              "speed": {
-                "total": {
-                  $sum: "$speed"
-                },
-                "unit": 'kmph'
-              },
-              "repTime": {
-                "total": {
-                  $sum: "$repTime"
-                },
-                "unit": 'number'
-              },
-              "setTime": {
-                "total": {
-                  $sum: "$setTime"
-                },
-                "unit": 'second'
-              },
-              "reps": {
-                "total": {
-                  $sum: "$reps"
-                },
-                "unit": 'number'
-              },
-              "sets": {
-                "total": {
-                  $sum: "$sets"
-                },
-                "unit": 'number'
-              },
-            }
+          _id: "$subType",
+          time: {
+            $sum: "$time"
+          },
+          distance: {
+            $sum: "$distance"
+          },
+          effort: {
+            $sum: "$effort"
+          },
+          weight: {
+            $sum: "$weight"
+          },
+          restTime: {
+            $sum: "$restTime"
+          },
+          oneRm: {
+            $sum: "$oneRm"
+          },
+          speed: {
+            $sum: "$speed"
+          },
+          repTime: {
+            $sum: "$repTime"
+          },
+          setTime: {
+            $sum: "$setTime"
+          },
+          reps: {
+            $sum: "$reps"
+          },
+          sets: {
+            $sum: "$sets"
+          },
+          "subCategory": {
+            $first: "Overview"
+          },
+          "exerciseId": {
+            $first: null
           },
           "exercises": {
-            $addToSet: {
-              name: "$exercise.exercises.exercises.name",
-              _id: "$exercise.exercises.exercises._id"
-            }
-          },
+            $first: null
+          }
         }
       },
       {
         $project: {
-          _id: 0,
-          subCategory: "Overview",
-          exerciseId: 'all',
-          exercises: [],
-          fields: "$fields"
+          _id: 0
         }
       }
-
     ]);
-    return {
-      status: 1,
-      overview: user_workouts
-    }
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
     });
@@ -361,76 +277,58 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
       var distanceUnit = measurement_unit_data.user_settings.distance;
       var weightUnit = measurement_unit_data.user_settings.weight;
     }
+
     for (let w of user_workouts) {
-      w.startDate = date.start ? date.start : null;
-      w.endDate = date.end ? date.end : null;
-      let time = _.pluck(_.pluck(w.fields, "time"), "total");
-      let distance = _.pluck(_.pluck(w.fields, "distance"), "total");
-      let effort = _.pluck(_.pluck(w.fields, "effort"), "total");
-      let weight = _.pluck(_.pluck(w.fields, "weight"), "total");
-      let repTime = _.pluck(_.pluck(w.fields, "repTime"), "total");
-      let setTime = _.pluck(_.pluck(w.fields, "setTime"), "total");
-      let reps = _.pluck(_.pluck(w.fields, "reps"), "total");
-      let sets = _.pluck(_.pluck(w.fields, "sets"), "total");
-
-      let totalTime = await time.reduce(getSum);
-      let totalDistance = await distance.reduce(getSum);
-      let totalEffort = await effort.reduce(getSum);
-      let totalWeight = await weight.reduce(getSum);
-      let totalRepTime = await repTime.reduce(getSum);
-      let totalSetTime = await setTime.reduce(getSum);
-      let totalReps = await reps.reduce(getSum);
-      let totalSets = await sets.reduce(getSum);
-
-      w.fields = {};
+      w.exercises = [];
       var formatStringForTime = "h.m [hrs]";
       var formatStringForRepTime = "h.m [hrs]";
       var formatStringForSetTime = "h.m [hrs]";
-      if (totalTime < 60) {
+      if (w.time < 60) {
         formatStringForTime = "s [sec]";
-      } else if (totalTime < 3600) {
+      } else if (w.time < 3600) {
         formatStringForTime = "m [min]";
       }
-      if (totalSetTime < 60) {
+      if (w.sets < 60) {
         formatStringForSetTime = "s [sec]";
       } else if (totalSetTime < 3600) {
         formatStringForSetTime = "m [min]";
       }
-      if (totalRepTime < 60) {
+      if (w.repTime < 60) {
         formatStringForRepTime = "s [sec]";
-      } else if (totalRepTime < 3600) {
+      } else if (repTime < 3600) {
         formatStringForRepTime = "m [min]";
       }
-      w.fields.time = {
-        total: totalTime > 0 ? moment.duration(totalTime, "seconds").format(formatStringForTime) : 0,
+
+      w.time = {
+        total: w.time > 0 ? moment.duration(w.time, "seconds").format(formatStringForTime) : 0,
         unit: ""
       }
-      w.fields.distance = {
-        total: totalDistance > 0 ? Math.round(await common_helper.convertUnits("meter", distanceUnit, totalDistance)) : 0,
+      w.distance = {
+        total: w.distance > 0 ? Math.round(await common_helper.convertUnits("meter", distanceUnit, w.distance)) : 0,
         unit: distanceUnit
       }
-      w.fields.effort = {
-        total: totalEffort > 0 ? Math.round(totalEffort) : 0,
+      w.effort = {
+        total: w.effort > 0 ? Math.round(w.effort) : 0,
         unit: ""
       }
-      w.fields.weight = {
-        total: totalWeight > 0 ? Math.round(await common_helper.convertUnits("gram", weightUnit, totalWeight)) : 0,
+      w.weight = {
+        total: w.weight > 0 ? Math.round(await common_helper.convertUnits("gram", weightUnit, w.weight)) : 0,
         unit: weightUnit
       }
-      w.fields.repTime = {
-        total: totalRepTime > 0 ? moment.duration(totalRepTime, "seconds").format(formatStringForRepTime) : 0,
+      w.repTime = {
+        total: w.repTime > 0 ? moment.duration(w.repTime, "seconds").format(formatStringForRepTime) : 0,
         unit: ""
       }
-      w.fields.setTime = {
-        total: totalSetTime > 0 ? moment.duration(totalSetTime, "seconds").format(formatStringForSetTime) : 0,
+      w.setTime = {
+        total: w.setTime > 0 ? moment.duration(w.setTime, "seconds").format(formatStringForSetTime) : 0,
         unit: ""
       }
-      w.fields.reps = {
-        total: totalReps > 0 ? Math.round(totalReps) : 0,
+      w.reps = {
+        total: w.reps > 0 ? Math.round(w.reps) : 0,
         unit: ""
       }
-      w.fields.sets = {
-        total: totalSets > 0 ? Math.round(totalSets) : 0,
+      w.sets = {
+        total: w.sets > 0 ? Math.round(w.sets) : 0,
         unit: ""
       }
     }
@@ -465,26 +363,6 @@ statistics_helper.get_overview_graph_data = async (condition = {}, activeField) 
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
-      },
-      {
-        $lookup: {
-          from: "user_workout_exercises",
-          localField: "exerciseId",
-          foreignField: "_id",
-          as: "exercise"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise.exercises",
-          preserveNullAndEmptyArrays: true
-        }
       },
       {
         $sort: {
@@ -625,33 +503,10 @@ statistics_helper.get_overview_graph_data = async (condition = {}, activeField) 
  *          status 1 - If strength data found, with strength object
  *          status 2 - If strength not found, with appropriate message
  */
-statistics_helper.get_graph_data = async (condition = {}, condition2 = {}, activeField) => {
+statistics_helper.get_graph_data = async (condition = {}, activeField) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
-      },
-      {
-        $lookup: {
-          from: "user_workout_exercises",
-          localField: "exerciseId",
-          foreignField: "_id",
-          as: "exercise"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise.exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: condition2
       },
       {
         $sort: {
@@ -660,7 +515,7 @@ statistics_helper.get_graph_data = async (condition = {}, condition2 = {}, activ
       },
       {
         $group: {
-          _id: "$exercise.exercises.exercises.subCategory",
+          _id: "$subType",
           "fields": {
             $push: {
               "time": {
@@ -722,8 +577,8 @@ statistics_helper.get_graph_data = async (condition = {}, condition2 = {}, activ
           },
           "exercises": {
             $addToSet: {
-              name: "$exercise.exercises.exercises.name",
-              _id: "$exercise.exercises.exercises._id"
+              name: "$name",
+              _id: "$exerciseId"
             }
           },
         }
@@ -805,26 +660,6 @@ statistics_helper.get_overview_single_data = async (condition = {}, date = null)
         $match: condition
       },
       {
-        $lookup: {
-          from: "user_workout_exercises",
-          localField: "exerciseId",
-          foreignField: "_id",
-          as: "exercise"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise.exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
         $group: {
           _id: null,
           "fields": {
@@ -881,8 +716,8 @@ statistics_helper.get_overview_single_data = async (condition = {}, date = null)
           },
           "exercises": {
             $addToSet: {
-              name: "$exercise.exercises.exercises.name",
-              _id: "$exercise.exercises.exercises._id"
+              name: "$name",
+              _id: "$exerciseId"
             }
           },
         }
@@ -1006,37 +841,14 @@ statistics_helper.get_overview_single_data = async (condition = {}, date = null)
  *          status 1 - If single statistics data found, with single statistics object
  *          status 2 - If single statistics not found, with appropriate message
  */
-statistics_helper.get_statistics_single_data = async (condition = {}, condition2 = {}, date = null) => {
+statistics_helper.get_statistics_single_data = async (condition = {}, date = null) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },
       {
-        $lookup: {
-          from: "user_workout_exercises",
-          localField: "exerciseId",
-          foreignField: "_id",
-          as: "exercise"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise.exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: condition2
-      },
-      {
         $group: {
-          _id: "$exercise.exercises.exercises.subCategory",
+          _id: "$subType",
           "fields": {
             $push: {
               "time": {
@@ -1091,8 +903,8 @@ statistics_helper.get_statistics_single_data = async (condition = {}, condition2
           },
           "exercises": {
             $addToSet: {
-              name: "$exercise.exercises.exercises.name",
-              _id: "$exercise.exercises.exercises._id"
+              name: "$name",
+              _id: "$exerciseId"
             }
           },
         }
@@ -1101,11 +913,10 @@ statistics_helper.get_statistics_single_data = async (condition = {}, condition2
         $project: {
           _id: 0,
           subCategory: "$_id",
-          exerciseId: condition2["exercise.exercises.exercises._id"],
+          exerciseId: condition["exerciseId"],
           fields: "$fields"
         }
       }
-
     ]);
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
@@ -1216,37 +1027,14 @@ statistics_helper.get_statistics_single_data = async (condition = {}, condition2
  *          status 1 - If strength data found, with strength object
  *          status 2 - If strength not found, with appropriate message
  */
-statistics_helper.get_strength_single_graph_data = async (condition = {}, condition2 = {}) => {
+statistics_helper.get_strength_single_graph_data = async (condition = {}) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },
       {
-        $lookup: {
-          from: "user_workout_exercises",
-          localField: "exerciseId",
-          foreignField: "_id",
-          as: "exercise"
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: "$exercise.exercises",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $match: condition2
-      },
-      {
         $group: {
-          _id: "$exercise.exercises.exercises.subCategory",
+          _id: "$subType",
           "fields": {
             $push: {
               "time": {
@@ -1301,8 +1089,8 @@ statistics_helper.get_strength_single_graph_data = async (condition = {}, condit
           },
           "exercises": {
             $addToSet: {
-              name: "$exercise.exercises.exercises.name",
-              _id: "$exercise.exercises.exercises._id"
+              name: "$name",
+              _id: "$exerciseId"
             }
           },
         }
@@ -1311,7 +1099,7 @@ statistics_helper.get_strength_single_graph_data = async (condition = {}, condit
         $project: {
           _id: 0,
           subCategory: "$_id",
-          exerciseId: condition2["exercise.exercises.exercises._id"],
+          exerciseId: condition["exerciseId"],
           fields: "$fields"
         }
       }
@@ -1419,139 +1207,5 @@ statistics_helper.get_strength_single_graph_data = async (condition = {}, condit
   }
 };
 
-/*
- * get_cardio is used to fetch all user  cardio data
- * @return  status 0 - If any internal error occured while fetching cardio data, with error
- *          status 1 - If cardio data found, with cardio object
- *          status 2 - If cardio not found, with appropriate message
- */
-statistics_helper.get_cardio = async (condition = {}) => {
-  try {
-    var user_workouts = await WorkoutLogs.aggregate([{
-        $match: condition
-      },
-      {
-        $group: {
-          _id: "$exerciseId",
-          distance_total: {
-            $sum: "$distance"
-          },
-          time_total: {
-            $sum: "$time"
-          },
-          weight_lifted_total: {
-            $sum: "$weight"
-          },
-          weight_lifted_average: {
-            $avg: "$weight"
-          },
-          weight_lifted_most: {
-            $max: "$weight"
-          },
-          weight_lifted_least: {
-            $min: "$weight"
-          },
-          reps_least: {
-            $min: "$reps"
-          },
-          reps_total: {
-            $sum: "$reps"
-          },
-          reps_average: {
-            $avg: "$reps"
-          },
-          reps_most: {
-            $max: "$reps"
-          },
-          sets_least: {
-            $min: "$sets"
-          },
-          sets_total: {
-            $sum: "$sets"
-          },
-          sets_average: {
-            $avg: "$sets"
-          },
-          sets_most: {
-            $max: "$sets"
-          },
-          workouts_total: {
-            $sum: 1
-          }
-        }
-      },
-      {
-        $project: {
-          weight_lifted_total: 1,
-          weight_lifted_average: 1,
-          weight_lifted_most: 1,
-          time_total: 1,
-          weight_lifted_least: 1,
-          reps_least: 1,
-          reps_total: 1,
-          reps_average: 1,
-          reps_most: 1,
-          sets_least: 1,
-          sets_total: 1,
-          sets_average: 1,
-          sets_most: 1,
-          workouts_total: 1
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          weight_lifted_total: {
-            $sum: "$weight_lifted_total"
-          },
-          weight_lifted_average: {
-            $avg: "$weight_lifted_average"
-          },
-          workouts_total: {
-            $sum: "$workouts_total"
-          },
-          reps_total: {
-            $sum: "$reps_total"
-          },
-          sets_total: {
-            $sum: "$sets_total"
-          },
-          workout_time: {
-            $sum: "$time_total"
-          }
-          // weight_lifted_most: { $max: "$weight_lifted_most" },
-          // weight_lifted_least: { $min: "$weight_lifted_least" },
-          // reps_least: { $min: "$reps_least" },
-          // reps_average: { $avg: "$reps_average" },
-          // reps_most: { $max: "$reps_most" },
-          // sets_least: { $min: "$sets_least" },
-          // sets_average: { $avg: "$sets_average" },
-          // sets_most: { $max: "$sets_most" }
-        }
-      }
-    ]);
-    // total_distance run, total time running,total elevation, distance cycled, total steps
-
-    if (user_workouts && user_workouts.length > 0) {
-      return {
-        status: 1,
-        message: "User Cardio data found",
-        statistics: user_workouts[0]
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No Use Cardio data available",
-        statistics: null
-      };
-    }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding User Cardio data",
-      error: err
-    };
-  }
-};
 
 module.exports = statistics_helper;

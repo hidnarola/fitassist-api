@@ -15,8 +15,14 @@ var WorkoutLogsSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: false
   },
-  //exerciseId of user_workout_exercises collection
+  //exerciseId of exercise collection
   exerciseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "exercise"
+  },
+  //workoutId of user_workout_exercises collection
+  workoutId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "user_workout_exercises"
@@ -68,6 +74,18 @@ var WorkoutLogsSchema = new Schema({
   sets: {
     type: Number,
     default: 0
+  },
+  name: {
+    type: String,
+    default: null
+  },
+  type: {
+    type: String,
+    default: null
+  },
+  subType: {
+    type: String,
+    default: null
   },
   logDate: {
     type: Date,

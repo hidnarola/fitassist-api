@@ -515,16 +515,22 @@ router.post("/workout", async (req, res) => {
 				single.exercises = _.find(exercise_data.exercise, exerciseDb => {
 					return exerciseDb._id.toString() === single.exerciseId.toString();
 				});
-				var data = await common_helper.unit_converter(
-					single.restTime,
-					single.restTimeUnit
-				);
-
-				single.baseRestTimeUnit = data.baseUnit;
-				single.baseRestTime = data.baseValue;
 				delete single.exerciseId;
-
 				for (let tmp of single.setsDetails) {
+					var data = null;
+					if (req.body.subType === "exercise" && single.differentSets == 1) {
+						data = await common_helper.unit_converter(
+							tmp.restTime,
+							tmp.restTimeUnit
+						);
+					} else {
+						data = await common_helper.unit_converter(
+							single.restTime,
+							single.restTimeUnit
+						);
+					}
+					tmp.baseRestTimeUnit = data.baseUnit;
+					tmp.baseRestTime = data.baseValue;
 					if (tmp.field1) {
 						var data = await common_helper.unit_converter(
 							tmp.field1.value,
@@ -569,8 +575,6 @@ router.post("/workout", async (req, res) => {
 			);
 
 			if (workout_day.status == 1) {
-				console.log('insert');
-
 				var workout_id = mongoose.Types.ObjectId(req.body.userWorkoutsId);
 				var resp_data = await get_respose_data_for_workout(workout_id, authUserId);
 				if (resp_data.status === 1) {
@@ -583,8 +587,6 @@ router.post("/workout", async (req, res) => {
 					res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
 				}
 			} else {
-				console.log('not insert');
-
 				res.status(config.BAD_REQUEST).json(workout_day);
 			}
 		}
@@ -1078,16 +1080,32 @@ router.put("/workout", async (req, res) => {
 				single.exercises = _.find(exercise_data.exercise, exerciseDb => {
 					return exerciseDb._id.toString() === single.exerciseId.toString();
 				});
-				var data = await common_helper.unit_converter(
-					single.restTime,
-					single.restTimeUnit
-				);
-
-				single.baseRestTimeUnit = data.baseUnit;
-				single.baseRestTime = data.baseValue;
 				delete single.exerciseId;
-
 				for (let tmp of single.setsDetails) {
+					var data = null;
+					if (req.body.subType === "exercise" && single.differentSets == 1) {
+						data = await common_helper.unit_converter(
+							tmp.restTime,
+							tmp.restTimeUnit
+						);
+					} else {
+						data = await common_helper.unit_converter(
+							single.restTime,
+							single.restTimeUnit
+						);
+					}
+					tmp.baseRestTimeUnit = data.baseUnit;
+					tmp.baseRestTime = data.baseValue;
+
+					if (tmp.restTime && tmp.restTime > 0) {
+						var data = await common_helper.unit_converter(
+							tmp.restTime,
+							tmp.restTimeUnit
+						);
+						tmp.baseRestTimeUnit = data.baseUnit;
+						tmp.baseRestTime = data.baseValue;
+					}
+
 					if (tmp.field1) {
 						var data = await common_helper.unit_converter(
 							tmp.field1.value,
@@ -1116,28 +1134,43 @@ router.put("/workout", async (req, res) => {
 					}
 				}
 			}
-
 			var updateObject = {
 				userWorkoutsId: req.body.userWorkoutsId,
 				type: req.body.type,
 				subType: req.body.subType,
-				exercises: exercises
+				exercises: exercises,
+				date: req.body.date
 			};
-
 			var workout_day = await user_workout_helper.update_user_workout_exercise(
 				workout_id,
 				updateObject,
 				authUserId
 			);
 
+			// if (workout_day.status == 1) {
+			// 	workout_day = await user_workout_helper.get_all_workouts_group_by({
+			// 			_id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
+			// 		},
+			// 		true
+			// 	);
+			// 	workout_day.message = "Workout Updated";
+			// 	res.status(config.OK_STATUS).json(workout_day);
+			// } else {
+			// 	res.status(config.BAD_REQUEST).json(workout_day);
+			// }
+
 			if (workout_day.status == 1) {
-				workout_day = await user_workout_helper.get_all_workouts_group_by({
-						_id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
-					},
-					true
-				);
-				workout_day.message = "Workout Updated";
-				res.status(config.OK_STATUS).json(workout_day);
+				var workout_id = mongoose.Types.ObjectId(req.body.userWorkoutsId);
+				var resp_data = await get_respose_data_for_workout(workout_id, authUserId);
+				if (resp_data.status === 1) {
+					logger.trace("user workouts got successfully = ", resp_data);
+					res.status(config.OK_STATUS).json(resp_data);
+				} else {
+					resp_data.message = "No workout found";
+					resp_data.status = 0;
+					logger.error("Error occured while fetching user workouts = ", resp_data);
+					res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+				}
 			} else {
 				res.status(config.BAD_REQUEST).json(workout_day);
 			}
@@ -1208,8 +1241,8 @@ router.put("/:workout_id", async (req, res) => {
 });
 
 /**
- * @api {post} /user/user_workouts/exercises Add User Workouts
- * @apiName Add User Workouts
+ * @api {post} /user/user_workouts/exercises Update User Workouts
+ * @apiName Update User Workouts
  * @apiGroup  User Workouts
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key

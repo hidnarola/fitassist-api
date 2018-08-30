@@ -47,16 +47,16 @@ router.post("/", async (req, res) => {
     resp_data = await statistics_helper.get_statistics_data({
       userId: authUserId,
       isCompleted: 1,
+      type: type,
       logDate: {
         $gte: new Date(start),
         $lte: new Date(end),
-      }
-    }, {
-      "exercise.exercises.exercises.category": type,
+      },
     }, {
       start,
       end
     });
+
     overview = await statistics_helper.get_overview_statistics_data({
       userId: authUserId,
       isCompleted: 1,
@@ -105,6 +105,7 @@ router.post("/single", async (req, res) => {
   logger.trace("User Statistics single API called with " + req.body.type + " type");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var condition = {};
   var schema = {
     type: {
       notEmpty: true,
@@ -148,12 +149,19 @@ router.post("/single", async (req, res) => {
         endDate: end
       }
     };
-    var condition2 = {
-      "exercise.exercises.exercises.category": type,
-      "exercise.exercises.exercises.subCategory": subCategory,
+    condition = {
+      userId: authUserId,
+      isCompleted: 1,
+      logDate: {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      },
+      type: type,
+      subType: subCategory
     }
+
     if (exerciseId !== "all") {
-      condition2["exercise.exercises.exercises._id"] = exerciseId;
+      condition.exerciseId = exerciseId;
     }
     if (subCategory === "Overview") {
       resp_data = await statistics_helper.get_overview_single_data({
@@ -167,16 +175,8 @@ router.post("/single", async (req, res) => {
         start,
         end
       });
-
     } else {
-      resp_data = await statistics_helper.get_statistics_single_data({
-        userId: authUserId,
-        isCompleted: 1,
-        logDate: {
-          $gte: new Date(start),
-          $lte: new Date(end),
-        }
-      }, condition2, {
+      resp_data = await statistics_helper.get_statistics_single_data(condition, {
         start,
         end
       });
