@@ -1412,13 +1412,11 @@ router.post("/workout_delete", async (req, res) => {
 });
 
 /**
- * @api {post} /user/user_workouts/workouts_list_by_first_workout Multiple Workout delete by Days
- * @apiName Multiple Workout delete by Days
+ * @api {post} /user/user_workouts/workouts_list_by_first_workout List of all workout by Date
+ * @apiName List of all workout by Date
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Array} exerciseIds ids of Days
- * @apiParam {Array} parentId parentId of Day
- * @apiSuccess (Success 200) {String} message Success message
+ * @apiSuccess (Success 200) {JSON} workouts_list Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/workouts_list_by_first_workout", async (req, res) => {
