@@ -1419,6 +1419,7 @@ router.post("/workout_delete", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} workouts_list Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
+
 router.post("/workouts_list_by_date", async (req, res) => {
 	var decoded = jwtDecode(req.headers["authorization"]);
 	var authUserId = decoded.sub;
