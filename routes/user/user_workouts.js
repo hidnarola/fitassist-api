@@ -1412,14 +1412,14 @@ router.post("/workout_delete", async (req, res) => {
 });
 
 /**
- * @api {post} /user/user_workouts/workouts_list_by_first_workout List of all workout by Date
+ * @api {post} /user/user_workouts/workouts_list_by_date List of all workout by Date
  * @apiName List of all workout by Date
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
  * @apiSuccess (Success 200) {JSON} workouts_list Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post("/workouts_list_by_first_workout", async (req, res) => {
+router.post("/workouts_list_by_date", async (req, res) => {
 	var decoded = jwtDecode(req.headers["authorization"]);
 	var authUserId = decoded.sub;
 	var date = req.body.date;
@@ -1432,7 +1432,7 @@ router.post("/workouts_list_by_first_workout", async (req, res) => {
 		.add(59, "minutes");
 	end.toISOString();
 	end.format();
-	var related_date_data = await user_workout_helper.get_id_title_workouts_by_date({
+	var related_date_data = await user_workout_helper.get_workouts_by_date({
 		userId: authUserId,
 		date: {
 			$gte: new Date(start),
@@ -1521,7 +1521,7 @@ async function get_respose_data_for_workout(workoutId, authUserId) {
 			.add(59, "minutes");
 		end.toISOString();
 		end.format();
-		var related_date_data = await user_workout_helper.get_id_title_workouts_by_date({
+		var related_date_data = await user_workout_helper.get_workout_by_date({
 			userId: authUserId,
 			date: {
 				$gte: new Date(start),

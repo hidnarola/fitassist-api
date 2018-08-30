@@ -246,13 +246,13 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
   }
 };
 /*
- * get_id_title_workouts_by_date is used to fetch all user exercises data
+ * get_workouts_by_date is used to fetch all user workouts data
  * @params condition condition of aggregate pipeline.
- * @return  status 0 - If any internal error occured while fetching user exercises data, with error
- *          status 1 - If user exercises data found, with user exercises object
- *          status 2 - If user exercises not found, with appropriate message
+ * @return  status 0 - If any internal error occured while fetching user workouts data, with error
+ *          status 1 - If user workouts data found, with user workouts object
+ *          status 2 - If user workouts not found, with appropriate message
  */
-user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
+user_workouts_helper.get_workouts_by_date = async (condition = {}) => {
   try {
     var user_workouts = await UserWorkouts.aggregate([{
         $match: condition
@@ -335,6 +335,7 @@ user_workouts_helper.get_id_title_workouts_by_date = async (condition = {}) => {
     };
   }
 };
+
 /*
  * get_all_workouts_group_by is used to fetch all user exercises data
  * @params condition condition of aggregate pipeline.
