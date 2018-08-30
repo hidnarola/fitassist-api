@@ -13938,7 +13938,7 @@
   },
   {
     "type": "post",
-    "url": "/user/user_workouts/workouts_list_by_first_workout",
+    "url": "/user/user_workouts/workouts_list_by_date",
     "title": "List of all workout by Date",
     "name": "List_of_all_workout_by_Date",
     "group": "User_Workouts",
