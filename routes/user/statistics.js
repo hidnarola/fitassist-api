@@ -68,6 +68,10 @@ router.post("/", async (req, res) => {
       start,
       end
     });
+    console.log('------------------------------------');
+    console.log('overview : ', overview);
+    console.log('------------------------------------');
+
     if (overview.status === 1) {
       if (resp_data.statistics) {
         resp_data.statistics.data.splice(0, 0, overview.overview);

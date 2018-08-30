@@ -323,17 +323,17 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
       }
       if (w.sets < 60) {
         formatStringForSetTime = "s [sec]";
-      } else if (totalSetTime < 3600) {
+      } else if (w.sets < 3600) {
         formatStringForSetTime = "m [min]";
       }
       if (w.repTime < 60) {
         formatStringForRepTime = "s [sec]";
-      } else if (repTime < 3600) {
+      } else if (w.repTime < 3600) {
         formatStringForRepTime = "m [min]";
       }
-      if (totalRestTime < 60) {
+      if (w.restTime < 60) {
         formatStringForRestTime = "s [sec]";
-      } else if (totalRestTime < 3600) {
+      } else if (w.restTime < 3600) {
         formatStringForRestTime = "m [min]";
       }
 
