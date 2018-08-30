@@ -146,14 +146,18 @@ equipment_category_helper.delete_equipment_category_by_id = async equipment_cate
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message
  */
-body_part_helper.get_filtered_records = async filter_obj => {
+equipment_category_helper.get_filtered_records = async filter_obj => {
+
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await BodyPart.aggregate([{
+    var searched_record_count = await Equipment_category.aggregate([{
       $match: filter_object.columnFilter
     }]);
-    var filtered_data = await BodyPart.aggregate([{
+    var filtered_data = await Equipment_category.aggregate([{
         $match: filter_object.columnFilter
+      },
+      {
+        $sort: filter_obj.columnSort
       },
       {
         $skip: skip
@@ -161,9 +165,6 @@ body_part_helper.get_filtered_records = async filter_obj => {
       {
         $limit: filter_object.pageSize
       },
-      {
-        $sort: filter_obj.columnSort
-      }
     ]);
 
     if (filtered_data) {
