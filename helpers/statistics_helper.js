@@ -51,6 +51,18 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
                 },
                 "unit": ''
               },
+              "restTime": {
+                "total": {
+                  $sum: "$restTime"
+                },
+                "unit": ''
+              },
+              "speed": {
+                "total": {
+                  $sum: "$speed"
+                },
+                "unit": ''
+              },
               "weight": {
                 "total": {
                   $sum: "$weight"
@@ -98,8 +110,8 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
           exerciseId: 'all',
           exercises: "$exercises",
           fields: "$fields",
-          start: date.start,
-          end: date.end
+          startDate: date.start,
+          endDate: date.end
         }
       }
     ]);
@@ -110,6 +122,7 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
     if (measurement_unit_data.status === 1) {
       var distanceUnit = measurement_unit_data.user_settings.distance;
       var weightUnit = measurement_unit_data.user_settings.weight;
+      var speedUnit = distanceUnit === "km" ? "kmph" : "mph";
     }
     for (let w of user_workouts) {
       let time = _.pluck(_.pluck(w.fields, "time"), "total");
@@ -117,6 +130,8 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
       let effort = _.pluck(_.pluck(w.fields, "effort"), "total");
       let weight = _.pluck(_.pluck(w.fields, "weight"), "total");
       let repTime = _.pluck(_.pluck(w.fields, "repTime"), "total");
+      let restTime = _.pluck(_.pluck(w.fields, "restTime"), "total");
+      let speed = _.pluck(_.pluck(w.fields, "speed"), "total");
       let setTime = _.pluck(_.pluck(w.fields, "setTime"), "total");
       let reps = _.pluck(_.pluck(w.fields, "reps"), "total");
       let sets = _.pluck(_.pluck(w.fields, "sets"), "total");
@@ -128,12 +143,14 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
       let totalRepTime = await repTime.reduce(getSum);
       let totalSetTime = await setTime.reduce(getSum);
       let totalReps = await reps.reduce(getSum);
-      let totalSets = await sets.reduce(getSum);
+      let totalRestTime = await restTime.reduce(getSum);
+      let totalSpeed = await speed.reduce(getSum);
 
       w.fields = {};
       var formatStringForTime = "h.m [hrs]";
       var formatStringForRepTime = "h.m [hrs]";
       var formatStringForSetTime = "h.m [hrs]";
+      var formatStringForRestTime = "h.m [hrs]";
       if (totalTime < 60) {
         formatStringForTime = "s [sec]";
       } else if (totalTime < 3600) {
@@ -148,6 +165,11 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
         formatStringForRepTime = "s [sec]";
       } else if (totalRepTime < 3600) {
         formatStringForRepTime = "m [min]";
+      }
+      if (totalRestTime < 60) {
+        formatStringForRestTime = "s [sec]";
+      } else if (totalRestTime < 3600) {
+        formatStringForRestTime = "m [min]";
       }
       w.fields.time = {
         total: totalTime > 0 ? moment.duration(totalTime, "seconds").format(formatStringForTime) : 0,
@@ -179,6 +201,14 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
       }
       w.fields.sets = {
         total: totalSets > 0 ? Math.round(totalSets) : 0,
+        unit: ""
+      }
+      w.fields.restTime = {
+        total: totalRestTime > 0 ? moment.duration(totalRestTime, "seconds").format(formatStringForRestTime) : 0,
+        unit: ""
+      }
+      w.fields.speed = {
+        total: totalSpeed > 0 ? Math.round(await common_helper.convertUnits("kmph", speedUnit, totalSpeed)) : 0,
         unit: ""
       }
     }
@@ -235,9 +265,6 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
           restTime: {
             $sum: "$restTime"
           },
-          oneRm: {
-            $sum: "$oneRm"
-          },
           speed: {
             $sum: "$speed"
           },
@@ -257,7 +284,7 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
             $first: "Overview"
           },
           "exerciseId": {
-            $first: null
+            $first: ""
           },
           "exercises": {
             $first: null
@@ -278,8 +305,8 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
       var weightUnit = measurement_unit_data.user_settings.weight;
     }
 
+    var returnObject = {};
     for (let w of user_workouts) {
-      w.exercises = [];
       var formatStringForTime = "h.m [hrs]";
       var formatStringForRepTime = "h.m [hrs]";
       var formatStringForSetTime = "h.m [hrs]";
@@ -298,36 +325,41 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
       } else if (repTime < 3600) {
         formatStringForRepTime = "m [min]";
       }
-
-      w.time = {
+      returnObject.subCategory = "Overview";
+      returnObject.exerciseId = "all";
+      returnObject.exercises = [];
+      returnObject.fields = {};
+      returnObject.startDate = date.start;
+      returnObject.endDate = date.end;
+      returnObject.fields.time = {
         total: w.time > 0 ? moment.duration(w.time, "seconds").format(formatStringForTime) : 0,
         unit: ""
       }
-      w.distance = {
+      returnObject.fields.distance = {
         total: w.distance > 0 ? Math.round(await common_helper.convertUnits("meter", distanceUnit, w.distance)) : 0,
         unit: distanceUnit
       }
-      w.effort = {
+      returnObject.fields.effort = {
         total: w.effort > 0 ? Math.round(w.effort) : 0,
         unit: ""
       }
-      w.weight = {
+      returnObject.fields.weight = {
         total: w.weight > 0 ? Math.round(await common_helper.convertUnits("gram", weightUnit, w.weight)) : 0,
         unit: weightUnit
       }
-      w.repTime = {
+      returnObject.fields.repTime = {
         total: w.repTime > 0 ? moment.duration(w.repTime, "seconds").format(formatStringForRepTime) : 0,
         unit: ""
       }
-      w.setTime = {
+      returnObject.fields.setTime = {
         total: w.setTime > 0 ? moment.duration(w.setTime, "seconds").format(formatStringForSetTime) : 0,
         unit: ""
       }
-      w.reps = {
+      returnObject.fields.reps = {
         total: w.reps > 0 ? Math.round(w.reps) : 0,
         unit: ""
       }
-      w.sets = {
+      returnObject.fields.sets = {
         total: w.sets > 0 ? Math.round(w.sets) : 0,
         unit: ""
       }
@@ -337,7 +369,7 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
       return {
         status: 1,
         message: "Success",
-        overview: user_workouts[0]
+        overview: returnObject
       };
     } else {
       return {
@@ -843,6 +875,10 @@ statistics_helper.get_overview_single_data = async (condition = {}, date = null)
  */
 statistics_helper.get_statistics_single_data = async (condition = {}, date = null) => {
   try {
+    console.log('------------------------------------');
+    console.log('condition : ', condition);
+    console.log('------------------------------------');
+
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },

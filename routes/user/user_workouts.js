@@ -1433,6 +1433,7 @@ router.post("/workouts_list_by_date", async (req, res) => {
 		.add(59, "minutes");
 	end.toISOString();
 	end.format();
+
 	var related_date_data = await user_workout_helper.get_workouts_by_date({
 		userId: authUserId,
 		date: {
@@ -1440,6 +1441,8 @@ router.post("/workouts_list_by_date", async (req, res) => {
 			$lte: new Date(end)
 		}
 	});
+
+
 	if (related_date_data.status === 1) {
 		res.status(config.OK_STATUS).json(related_date_data);
 	} else {
@@ -1522,7 +1525,7 @@ async function get_respose_data_for_workout(workoutId, authUserId) {
 			.add(59, "minutes");
 		end.toISOString();
 		end.format();
-		var related_date_data = await user_workout_helper.get_workout_by_date({
+		var related_date_data = await user_workout_helper.get_workouts_by_date({
 			userId: authUserId,
 			date: {
 				$gte: new Date(start),
