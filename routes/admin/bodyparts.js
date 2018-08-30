@@ -14,7 +14,7 @@ var common_helper = require("../../helpers/common_helper");
 
 
 /**
- * @api {post} /admin/badge/filter Filter
+ * @api {post} /admin/bodyparts/filter Filter
  * @apiName Filter
  * @apiDescription Request Object :<pre><code>{
   pageSize: 10,
@@ -34,7 +34,7 @@ var common_helper = require("../../helpers/common_helper");
   columnFilterEqual: [
     {
       id: "email",
-      value: "ake@narola.email"
+      value: "amc@narola.email"
     }
   ]
  * }</code></pre>

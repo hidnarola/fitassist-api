@@ -5,14 +5,61 @@ var config = require("../../config");
 var logger = config.logger;
 
 var equipment_category_helper = require("../../helpers/equipment_category_helper");
+var common_helper = require("../../helpers/common_helper");
+
+/**
+ * @api {post} /admin/equipment_category/filter Filter
+ * @apiName Filter
+ * @apiDescription Request Object :<pre><code>{
+  pageSize: 10,
+  page: 0,
+  columnFilter: [
+    {
+      id: "firstName",
+      value: "mi"
+    }
+  ],
+  columnSort: [
+    {
+      id: "firstName",
+      value: true
+    }
+  ],
+  columnFilterEqual: [
+    {
+      id: "email",
+      value: "amc@narola.email"
+    }
+  ]
+ * }</code></pre>
+ * @apiGroup BodyPart
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ *
+ * @apiParam {Object} columnFilter columnFilter Object for filter data
+ * @apiParam {Object} columnSort columnSort Object for Sorting Data
+ * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
+ * @apiParam {Number} pageSize pageSize
+ * @apiParam {Number} page page number
+ * @apiSuccess (Success 200) {JSON} filtered_equipment_categories filtered details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/filter", async (req, res) => {
+  filter_object = common_helper.changeObject(req.body);
+  let filtered_data = await equipment_category_helper.get_filtered_records(filter_object);
+  if (filtered_data.status === 0) {
+    logger.error("Error while fetching searched data = ", filtered_data);
+    return res.status(config.BAD_REQUEST).json(filtered_data);
+  } else {
+    return res.status(config.OK_STATUS).json(filtered_data);
+  }
+});
 
 /**
  * @api {get} /admin/equipment_category Get all
  * @apiName Get all
  * @apiGroup Equipment category
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {Array} equipment_categories Array of equipment's categories document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -69,13 +116,17 @@ router.post("/", async (req, res) => {
         "Error while inserting equipment_category = ",
         equipment_category_data
       );
-      res.status(config.BAD_REQUEST).json({ equipment_category_data });
+      res.status(config.BAD_REQUEST).json({
+        equipment_category_data
+      });
     } else {
       res.status(config.OK_STATUS).json(equipment_category_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -122,17 +173,21 @@ router.put("/:equipment_category_id", async (req, res) => {
         "Error while updating equipment_category = ",
         equipment_category_data
       );
-      res.status(config.BAD_REQUEST).json({ equipment_category_data });
+      res.status(config.BAD_REQUEST).json({
+        equipment_category_data
+      });
     } else {
       res.status(config.OK_STATUS).json(equipment_category_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 
   req.checkBody(schema);
-  req.getValidationResult().then(function(result) {
+  req.getValidationResult().then(function (result) {
     if (result.isEmpty()) {
       var obj = {
         question: req.body.question,
@@ -145,9 +200,11 @@ router.put("/:equipment_category_id", async (req, res) => {
       equipment_category_helper.update_equipment_category_by_id(
         req.body.id,
         obj,
-        function(resp) {
+        function (resp) {
           if (resp.status == 0) {
-            res.status(config.INTERNAL_SERVER_ERROR).json({ error: resp.err });
+            res.status(config.INTERNAL_SERVER_ERROR).json({
+              error: resp.err
+            });
           } else {
             res.status(config.OK_STATUS).json({
               message: "Equipment category has been updated successfully"

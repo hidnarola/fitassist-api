@@ -18,7 +18,10 @@ equipment_category_helper.get_all_equipment_category = async () => {
         equipment_categories: equipment_category
       };
     } else {
-      return { status: 2, message: "No equipment's category available" };
+      return {
+        status: 2,
+        message: "No equipment's category available"
+      };
     }
   } catch (err) {
     return {
@@ -74,13 +77,18 @@ equipment_category_helper.update_equipment_category_by_id = async (
   equipment_category_object
 ) => {
   try {
-    let equipment_category = await Equipment_category.findOneAndUpdate(
-      { _id: equipment_category_id },
-      equipment_category_object,
-      { new: true }
+    let equipment_category = await Equipment_category.findOneAndUpdate({
+        _id: equipment_category_id
+      },
+      equipment_category_object, {
+        new: true
+      }
     );
     if (!equipment_category) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -113,14 +121,71 @@ equipment_category_helper.delete_equipment_category_by_id = async equipment_cate
       _id: equipment_category_id
     });
     if (!resp) {
-      return { status: 2, message: "Equipment_category not found" };
+      return {
+        status: 2,
+        message: "Equipment_category not found"
+      };
     } else {
-      return { status: 1, message: "Equipment_category deleted" };
+      return {
+        status: 1,
+        message: "Equipment_category deleted"
+      };
     }
   } catch (err) {
     return {
       status: 0,
       message: "Error occured while deleting equipment_category",
+      error: err
+    };
+  }
+};
+
+/*
+ * get_filtered_records is used to fetch all filtered data
+ * @return  status 0 - If any internal error occured while fetching filtered data, with error
+ *          status 1 - If filtered data found, with filtered object
+ *          status 2 - If filtered not found, with appropriate message
+ */
+body_part_helper.get_filtered_records = async filter_obj => {
+  skip = filter_obj.pageSize * filter_obj.page;
+  try {
+    var searched_record_count = await BodyPart.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
+    var filtered_data = await BodyPart.aggregate([{
+        $match: filter_object.columnFilter
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
+      {
+        $sort: filter_obj.columnSort
+      }
+    ]);
+
+    if (filtered_data) {
+      return {
+        status: 1,
+        message: "filtered data is found",
+        count: searched_record_count.length,
+        filtered_total_pages: Math.ceil(
+          searched_record_count.length / filter_obj.pageSize
+        ),
+        filtered_equipment_categories: filtered_data
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while filtering data",
       error: err
     };
   }
