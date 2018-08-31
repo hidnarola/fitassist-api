@@ -1184,6 +1184,26 @@ router.put("/workout", async (req, res) => {
 });
 
 /**
+ * @api {put} /user/user_workouts/reorder_exercises Update reorder of exercise
+ * @apiName Update reorder of exercise
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Array} sequenceArray sequenceArray of exercise
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/reorder_exercises", async (req, res) => {
+	var decoded = jwtDecode(req.headers["authorization"]);
+	var authUserId = decoded.sub;
+	var resp_data = await user_workout_helper.reorder_exercises(req.body.sequenceArray);
+
+	if (resp_data.status === 1) {
+		res.status(config.OK_STATUS).json(resp_data);
+	} else {
+		res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+	}
+});
+/**
  * @api {put} /user/user_workouts/:workout_id  Update User Workouts
  * @apiName Update User Workouts
  * @apiGroup  User Workouts
@@ -1487,6 +1507,8 @@ router.post("/delete", async (req, res) => {
 		res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
 	}
 });
+
+
 
 //@param authUserId auth user id
 async function assign_badges(authUserId) {

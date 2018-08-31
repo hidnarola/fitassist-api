@@ -3,6 +3,7 @@ var UserWorkoutExercises = require("./../models/user_workout_exercises");
 var WorkoutLogs = require("./../models/workout_logs");
 var user_workouts_helper = {};
 var _ = require("underscore");
+var mongoose = require("mongoose");
 
 /*
  * get_workouts_for_calendar is used to fetch all user exercises data
@@ -1588,7 +1589,8 @@ user_workouts_helper.delete_user_workouts_by_id = async workoutIds => {
 
 /*
  * complete_workout_by_days is used to complete user workouts data based on user workouts date
- * @param   condition         Object  condition of user_workouts that need to be complete
+ * @param   id         Object  condition of user_workouts that need to be complete
+ * @param   updateObject         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
  *          status  2 - If user_workouts not completed, with appropriate message 
@@ -1636,6 +1638,51 @@ user_workouts_helper.complete_workout_by_days = async (id, updateObject) => {
     return {
       status: 1,
       message: "Workout completed"
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user workouts completed",
+      error: err
+    };
+  }
+};
+
+/*
+ * reorder_exercises is used to reorder user workouts data based on user workouts sequence
+ * @param   condition         Object  condition of user_workouts that need to be complete
+ * @return  status  0 - If any error occur in updating user_workouts, with error
+ *          status  1 - If user_workouts completed successfully, with appropriate message
+ *          status  2 - If user_workouts not completed, with appropriate message 
+ * @developed by "amc"
+ */
+user_workouts_helper.reorder_exercises = async (reorderArray) => {
+  try {
+    var condition = {};
+    var updateObj = {}
+    var returnArray = [];
+    for (let x of reorderArray) {
+      condition = {
+        _id: mongoose.Types.ObjectId(x.workoutId)
+      }
+      updateObj = {
+        sequence: x.sequence
+      }
+      let resp_data = await UserWorkoutExercises.findByIdAndUpdate(condition, updateObj, {
+        new: true
+      });
+      if (resp_data) {
+        // returnArray.push({
+        //   _id: resp_data._id,
+        //   sequence: resp_data.sequence,
+        // });
+        returnArray.push(resp_data);
+      }
+    }
+    return {
+      status: 1,
+      message: "Workout sequence updated",
+      sequence: returnArray
     };
   } catch (err) {
     return {
