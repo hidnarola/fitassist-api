@@ -1663,19 +1663,22 @@ user_workouts_helper.reorder_exercises = async (reorderArray) => {
     var returnArray = [];
     for (let x of reorderArray) {
       condition = {
-        _id: mongoose.Types.ObjectId(x.workoutId)
+        _id: mongoose.Types.ObjectId(x.id)
       }
       updateObj = {
         sequence: x.sequence
       }
+
       let resp_data = await UserWorkoutExercises.findByIdAndUpdate(condition, updateObj, {
         new: true
       });
+
       if (resp_data) {
-        // returnArray.push({
+        // tmp = {
         //   _id: resp_data._id,
         //   sequence: resp_data.sequence,
-        // });
+        // }
+        // returnArray.push(tmp);
         returnArray.push(resp_data);
       }
     }
