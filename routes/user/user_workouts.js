@@ -1195,7 +1195,7 @@ router.put("/workout", async (req, res) => {
 router.put("/reorder_exercises", async (req, res) => {
 	var decoded = jwtDecode(req.headers["authorization"]);
 	var authUserId = decoded.sub;
-	var resp_data = await user_workout_helper.reorder_exercises(req.body.sequenceArray);
+	var resp_data = await user_workout_helper.reorder_exercises(req.body);
 
 	if (resp_data.status === 1) {
 		res.status(config.OK_STATUS).json(resp_data);
