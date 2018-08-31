@@ -23,7 +23,7 @@ var common_helper = require('../../helpers/common_helper');
  */
 router.put("/", async (req, res) => {
 
-  logger.trace("API - Admin login called");
+  logger.trace("API - Admin change password  called");
   logger.debug("req.body = ", req.body);
   var token = req.headers['x-access-token'];
   var resp = null;
