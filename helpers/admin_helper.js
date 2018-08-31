@@ -12,14 +12,29 @@ var admin_helper = {};
  */
 admin_helper.get_admin_by_id = async (admin_id) => {
     try {
-        var admin = await Admin.findOne({ "_id": { "$eq": admin_id } });
+        var admin = await Admin.findOne({
+            "_id": {
+                "$eq": admin_id
+            }
+        });
         if (admin) {
-            return { "status": 1, "message": "Admin details found", "admin": admin };
+            return {
+                "status": 1,
+                "message": "Admin details found",
+                "admin": admin
+            };
         } else {
-            return { "status": 2, "message": "Admin not found" };
+            return {
+                "status": 2,
+                "message": "Admin not found"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding admin", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while finding admin",
+            "error": err
+        }
     }
 };
 
@@ -31,44 +46,67 @@ admin_helper.get_admin_by_id = async (admin_id) => {
  * @return  status  0 - If any error occur in finding admin, with error
  *          status  1 - If Admin found, with found admin document
  *          status  2 - If Admin not found, with appropriate error message
- * 
  * @developed by "amc"
  */
 admin_helper.get_admin_by_email = async (email) => {
     try {
-        var admin = await Admin.findOne({ "email": email });
+        var admin = await Admin.findOne({
+            "email": email
+        });
         if (admin) {
-            return { "status": 1, "message": "Admin details found", "admin": admin };
+            return {
+                "status": 1,
+                "message": "Admin details found",
+                "admin": admin
+            };
         } else {
-            return { "status": 2, "message": "Admin not found" };
+            return {
+                "status": 2,
+                "message": "Admin not found"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding admin", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while finding admin",
+            "error": err
+        }
     }
 };
 
 /*
  * update_admin_by_id is used to update admin data based on admin_id
- * 
  * @param   admin_id         String  _id of admin that need to be update
  * @param   admin_object     JSON    object consist of all property that need to update
  * 
  * @return  status  0 - If any error occur in updating admin, with error
  *          status  1 - If Admin updated successfully, with appropriate message
  *          status  2 - If Admin not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 admin_helper.update_admin_by_id = async (admin_id, admin_object) => {
     try {
-        let admin = await Admin.findOneAndUpdate({ _id: admin_id }, admin_object);
+        let admin = await Admin.findOneAndUpdate({
+            _id: admin_id
+        }, admin_object);
         if (!admin) {
-            return { "status": 2, "message": "Record has not updated" };
+            return {
+                "status": 2,
+                "message": "Record has not updated"
+            };
         } else {
-            return { "status": 1, "message": "Record has been updated", "admin": admin };
+            return {
+                "status": 1,
+                "message": "Record has been updated",
+                "admin": admin
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while updating admin", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while updating admin",
+            "error": err
+        }
     }
 };
 

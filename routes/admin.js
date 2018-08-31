@@ -3,7 +3,6 @@ var router = express.Router();
 
 var auth = require("./../middlewares/auth");
 var authorization = require("./../middlewares/authorization");
-
 var nutrition = require("./admin/nutrition");
 var equipment_category = require("./admin/equipment_category");
 var equipment = require("./admin/equipment");
@@ -19,7 +18,7 @@ var badge_category = require("./admin/badge_category");
 var badge_task = require("./admin/badge_task");
 var badge = require("./admin/badge");
 var test_exercises = require("./admin/test_exercises");
-// var item = require("./admin/item");
+var password = require("./admin/password");
 
 router.use("/nutrition", auth, authorization, nutrition);
 router.use("/equipment_category", auth, authorization, equipment_category);
@@ -41,5 +40,7 @@ router.use("/badge_category", auth, authorization, badge_category);
 router.use("/badge_task", auth, authorization, badge_task);
 router.use("/badge", auth, authorization, badge);
 router.use("/test_exercise", auth, authorization, test_exercises);
+router.use("/change_password", auth, authorization, password);
+
 
 module.exports = router;
