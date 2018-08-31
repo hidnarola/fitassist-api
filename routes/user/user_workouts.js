@@ -1188,7 +1188,7 @@ router.put("/workout", async (req, res) => {
  * @apiName Update reorder of exercise
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Array} sequenceArray sequenceArray of exercise
+ * @apiParam {Array} &nbsp  array of exercise seq
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
