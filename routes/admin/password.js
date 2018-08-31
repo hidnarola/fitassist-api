@@ -144,7 +144,7 @@ router.put("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
       message: errors
     });
   }
