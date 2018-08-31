@@ -1188,21 +1188,32 @@ router.put("/workout", async (req, res) => {
  * @apiName Update reorder of exercise
  * @apiGroup  User Workouts
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {Array} &nbsp  array of exercise seq
+ * @apiParam {String} workoutId workoutId of exercise
+ * @apiParam {Array} reorderExercises array of new exercise sequence
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/reorder_exercises", async (req, res) => {
 	var decoded = jwtDecode(req.headers["authorization"]);
 	var authUserId = decoded.sub;
-	var resp_data = await user_workout_helper.reorder_exercises(req.body);
+	var resp_data = await user_workout_helper.reorder_exercises(req.body.reorderExercises);
 
 	if (resp_data.status === 1) {
-		res.status(config.OK_STATUS).json(resp_data);
+		var group_by_data = await user_workout_helper.get_all_workouts_group_by({
+				_id: mongoose.Types.ObjectId(req.body.workoutId)
+			},
+			false
+		);
+		if (group_by_data.status === 1) {
+			res.status(config.OK_STATUS).json(group_by_data);
+		} else {
+			res.status(config.OK_STATUS).json(group_by_data);
+		}
 	} else {
 		res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
 	}
 });
+
 /**
  * @api {put} /user/user_workouts/:workout_id  Update User Workouts
  * @apiName Update User Workouts
@@ -1530,7 +1541,8 @@ async function assign_badges(authUserId) {
 async function get_respose_data_for_workout(workoutId, authUserId) {
 	var workout_id = workoutId;
 	var resp_data = await user_workout_helper.get_all_workouts_group_by({
-			_id: workout_id
+			_id: workout_id,
+			userId: authUserId
 		},
 		false
 	);

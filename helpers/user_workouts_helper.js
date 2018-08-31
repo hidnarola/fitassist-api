@@ -1668,24 +1668,18 @@ user_workouts_helper.reorder_exercises = async (reorderArray) => {
       updateObj = {
         sequence: x.sequence
       }
-
       let resp_data = await UserWorkoutExercises.findByIdAndUpdate(condition, updateObj, {
         new: true
       });
-
       if (resp_data) {
-        // tmp = {
-        //   _id: resp_data._id,
-        //   sequence: resp_data.sequence,
-        // }
-        // returnArray.push(tmp);
-        returnArray.push(resp_data);
+        console.log('------------------------------------');
+        console.log('resp_data : ', resp_data);
+        console.log('------------------------------------');
       }
     }
     return {
       status: 1,
       message: "Workout sequence updated",
-      sequence: returnArray
     };
   } catch (err) {
     return {
