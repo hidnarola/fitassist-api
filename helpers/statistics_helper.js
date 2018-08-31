@@ -404,106 +404,56 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
     };
   }
 };
-
 /*
- * get_overview_graph_data is used to fetch all user all strength graph data 
+ * graph_data is used to fetch all user all strength graph data 
  * @return  status 0 - If any internal error occured while fetching strength data, with error
  *          status 1 - If strength data found, with strength object
  *          status 2 - If strength not found, with appropriate message
  */
-statistics_helper.get_overview_graph_data = async (condition = {}, activeField) => {
+statistics_helper.graph_data = async (condition = {}, activeField) => {
   try {
+
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
       },
       {
-        $sort: {
-          logDate: 1
-        }
-      },
-      {
         $group: {
-          _id: null,
-          "fields": {
-            $push: {
-              "time": {
-                "total": {
-                  $sum: "$time"
-                },
-                "unit": 'second',
-                "date": "$logDate"
-              },
-              "distance": {
-                "total": {
-                  $sum: "$distance"
-                },
-                "unit": 'meter',
-                "date": "$logDate"
-              },
-              "effort": {
-                "total": {
-                  $sum: "$effort"
-                },
-                "unit": '',
-                "date": "$logDate"
-              },
-              "weight": {
-                "total": {
-                  $sum: "$weight"
-                },
-                "unit": 'gram',
-                "date": "$logDate"
-              },
-              "repTime": {
-                "total": {
-                  $sum: "$repTime"
-                },
-                "unit": 'number',
-                "date": "$logDate"
-              },
-              "setTime": {
-                "total": {
-                  $sum: "$setTime"
-                },
-                "unit": 'second'
-              },
-              "reps": {
-                "total": {
-                  $sum: "$reps"
-                },
-                "unit": 'number',
-                "date": "$logDate"
-              },
-              "sets": {
-                "total": {
-                  $sum: "$sets"
-                },
-                "unit": 'number',
-                "date": "$logDate"
-              },
-              "restTime": {
-                "total": {
-                  $sum: "$restTime"
-                },
-                "unit": 'second',
-                "date": "$logDate"
-              },
-              "speed": {
-                "total": {
-                  $sum: "$speed"
-                },
-                "unit": 'kmph',
-                "date": "$logDate"
-              },
-            }
+          _id: "$logDate",
+          "time": {
+            $sum: "$time"
+          },
+          "distance": {
+            $sum: "$distance"
+          },
+          "effort": {
+            $sum: "$effort"
+          },
+          "weight": {
+            $sum: "$weight"
+          },
+          "repTime": {
+            $sum: "$repTime"
+          },
+          "setTime": {
+            $sum: "$setTime"
+          },
+          "sets": {
+            $sum: "$sets"
+          },
+          "reps": {
+            $sum: "$reps"
+          },
+          "restTime": {
+            $sum: "$restTime"
+          },
+          "speed": {
+            $sum: "$speed"
           },
         }
       },
       {
-        $project: {
-          _id: 0,
-          subCategory: "Overview",
-          fields: "$fields"
+        $sort: {
+          _id: 1
         }
       }
     ]);
@@ -518,37 +468,33 @@ statistics_helper.get_overview_graph_data = async (condition = {}, activeField) 
     }
     var graphData = [];
     for (let w of user_workouts) {
-      for (let field of w.fields) {
-        var tmp = {
-          "metaData": {
-            name: activeField,
-          },
-          "date": moment(field[activeField].date).format("DD/MM/YYYY"),
-        }
-        if (activeField === "weight") {
-          tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, field[activeField].total)).toFixed(2))
-          tmp.metaData.unit = weightUnit;
-        } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime") {
-          tmp.count = await common_helper.convertUnits("second", "minute", field[activeField].total)
-          tmp.metaData.unit = "minute";
-        } else if (activeField === "distance") {
-          tmp.count = parseFloat((await common_helper.convertUnits("cm", distanceUnit, field[activeField].total)).toFixed(2))
-          tmp.metaData.unit = distanceUnit;
-        } else if (activeField === "restTime") {
-          tmp.count = parseFloat((await common_helper.convertUnits("second", "minute", field[activeField].total)).toFixed(2))
-          tmp.metaData.unit = "minute";
-        } else if (activeField === "speed") {
-          tmp.count = parseFloat((await common_helper.convertUnits("kmph", speedUnit, field[activeField].total)).toFixed(2))
-          tmp.metaData.unit = speedUnit;
-        } else {
-          tmp.count = parseInt(field[activeField].total)
-          tmp.metaData.unit = field[activeField].unit;
-        }
-        graphData.push(tmp)
+      var tmp = {
+        "metaData": {
+          name: activeField,
+        },
+        "date": moment(w._id).format("DD/MM/YYYY"),
       }
+      if (activeField === "weight") {
+        tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, w[activeField])).toFixed(2))
+        tmp.metaData.unit = weightUnit;
+      } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime" || activeField === "restTime") {
+        tmp.count = await common_helper.convertUnits("second", "minute", w[activeField])
+        tmp.metaData.unit = "minute";
+      } else if (activeField === "distance") {
+        tmp.count = parseFloat((await common_helper.convertUnits("meter", distanceUnit, w[activeField])).toFixed(2))
+        tmp.metaData.unit = distanceUnit;
+      } else if (activeField === "speed") {
+        tmp.count = parseFloat((await common_helper.convertUnits("kmph", speedUnit, w[activeField])).toFixed(2))
+        tmp.metaData.unit = speedUnit;
+      } else if (activeField === "effort") {
+        tmp.count = parseInt(w[activeField])
+        tmp.metaData.unit = "%";
+      } else {
+        tmp.count = parseInt(w[activeField])
+        tmp.metaData.unit = "";
+      }
+      graphData.push(tmp)
     }
-
-
     if (user_workouts && user_workouts.length > 0) {
       return {
         status: 1,
@@ -740,8 +686,6 @@ statistics_helper.get_graph_data = async (condition = {}, activeField) => {
     };
   }
 };
-
-
 /*
  * get_overview_single_data is used to fetch all user  statistics single data
  * @return  status 0 - If any internal error occured while fetching statistics single data, with error

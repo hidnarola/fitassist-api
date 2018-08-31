@@ -60,6 +60,7 @@ router.post("/", async (req, res) => {
     overview = await statistics_helper.get_overview_statistics_data({
       userId: authUserId,
       isCompleted: 1,
+      type: type,
       logDate: {
         $gte: new Date(start),
         $lte: new Date(end),
@@ -68,9 +69,6 @@ router.post("/", async (req, res) => {
       start,
       end
     });
-    console.log('------------------------------------');
-    console.log('overview : ', overview);
-    console.log('------------------------------------');
 
     if (overview.status === 1) {
       if (resp_data.statistics) {
@@ -171,6 +169,7 @@ router.post("/single", async (req, res) => {
       resp_data = await statistics_helper.get_overview_single_data({
         userId: authUserId,
         isCompleted: 1,
+        type: type,
         logDate: {
           $gte: new Date(start),
           $lte: new Date(end),
@@ -186,8 +185,6 @@ router.post("/single", async (req, res) => {
       });
 
     }
-
-
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
@@ -228,33 +225,6 @@ router.post("/graph_data", async (req, res) => {
   logger.trace("User Statistics graph_data API called with " + req.body.type + " type");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  // var schema = {
-  //   type: {
-  //     notEmpty: true,
-  //     errorMessage: "type is required"
-  //   },
-  //   subCategory: {
-  //     notEmpty: true,
-  //     errorMessage: "subCategory is required"
-  //   },
-  //   start: {
-  //     notEmpty: true,
-  //     errorMessage: "start date is required"
-  //   },
-  //   end: {
-  //     notEmpty: true,
-  //     errorMessage: "end date is required"
-  //   },
-  //   exerciseId: {
-  //     notEmpty: true,
-  //     errorMessage: "exerciseId is required"
-  //   },
-  // }
-  // req.checkBody(schema);
-  // var errors = req.validationErrors();
-
-  // if (!errors) {
-
   var returnArray = [];
   for (let x of req.body) {
     var type = x.type; // cateogry
@@ -263,8 +233,17 @@ router.post("/graph_data", async (req, res) => {
     var end = x.end;
     var exerciseId = x.exerciseId;
     var activeField = x.activeField;
-    var condition2 = {};
     var resp_data;
+    var condition = {
+      userId: authUserId,
+      isCompleted: 1,
+      logDate: {
+        $gte: new Date(start),
+        $lte: new Date(end),
+      },
+      type: type,
+      subType: subCategory
+    }
     var default_resp_data = {
       subCategory: subCategory,
       graphData: [],
@@ -272,8 +251,7 @@ router.post("/graph_data", async (req, res) => {
       endDate: end
     };
     if (subCategory === "Overview") {
-
-      resp_data = await statistics_helper.get_overview_graph_data({
+      resp_data = await statistics_helper.graph_data({
         userId: authUserId,
         isCompleted: 1,
         logDate: {
@@ -281,31 +259,12 @@ router.post("/graph_data", async (req, res) => {
           $lte: new Date(end),
         }
       }, activeField);
-
     } else {
-      if (exerciseId === "all")
-        condition2 = {
-          "exercise.exercises.exercises.category": type,
-          "exercise.exercises.exercises.subCategory": subCategory,
-        }
-      else {
-        condition2 = {
-          "exercise.exercises.exercises.category": type,
-          "exercise.exercises.exercises._id": mongoose.Types.ObjectId(exerciseId),
-          "exercise.exercises.exercises.subCategory": subCategory,
-        }
+      if (exerciseId !== "all") {
+        condition.exerciseId = mongoose.Types.ObjectId(exerciseId);
       }
-      resp_data = await statistics_helper.get_graph_data({
-        userId: authUserId,
-        isCompleted: 1,
-        logDate: {
-          $gte: new Date(start),
-          $lte: new Date(end),
-        }
-      }, condition2, activeField);
+      resp_data = await statistics_helper.graph_data(condition, activeField);
     }
-
-
     if (resp_data.status == 1) {
       delete resp_data.status;
       delete resp_data.message;
