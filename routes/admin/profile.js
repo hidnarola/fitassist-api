@@ -44,10 +44,6 @@ router.put("/", async (req, res) => {
       notEmpty: true,
       errorMessage: "First name is required."
     },
-    id: {
-      notEmpty: true,
-      errorMessage: "Admin id is required."
-    },
     lastName: {
       notEmpty: true,
       errorMessage: "Last name is required."
