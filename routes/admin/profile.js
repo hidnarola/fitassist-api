@@ -1,15 +1,8 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
 var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcrypt");
-var SALT_WORK_FACTOR = 10;
 var admin_helper = require('../../helpers/admin_helper');
-var common_helper = require('../../helpers/common_helper');
 
 /**
  * @api {get} /admin/:admin_id Admin Get by ID
@@ -21,10 +14,10 @@ var common_helper = require('../../helpers/common_helper');
  * @apiSuccess (Success 200) {JSON} user Admin user object.
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:admin_id", async (req, res) => {
+router.get("/", async (req, res) => {
   logger.trace("API - update admin profile called");
-  logger.debug("req.body = ", req.body);
-  let admin = await admin_helper.get_admin_by_id(req.params.admin_id);
+  logger.debug("req.body = ", req.userInfo);
+  let admin = await admin_helper.get_admin_by_id(req.userInfo.id);
   if (admin.status == 1) {
     res.status(config.OK_STATUS).json(admin);
   } else {
@@ -44,10 +37,8 @@ router.get("/:admin_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
-
   logger.trace("API - update admin profile called");
   logger.debug("req.body = ", req.body);
-  var resp = null;
   var schema = {
     firstName: {
       notEmpty: true,
@@ -81,14 +72,14 @@ router.put("/", async (req, res) => {
         },
         {
           "_id": {
-            "$ne": req.body.id
+            "$ne": req.userInfo.id
           }
         }
       ]
     });
     if (checkEmail.status == 1) {
       let update_resp = await admin_helper.update_admin_by_id(
-        req.body.id, {
+        req.userInfo.id, {
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           email: req.body.email

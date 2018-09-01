@@ -3,16 +3,13 @@ var router = express.Router();
 
 var config = require("../../config");
 var logger = config.logger;
-
 var nutrition_helper = require("../../helpers/nutrition_helper");
 
 /**
  * @api {get} /admin/nutrition Get all
  * @apiName Get all
  * @apiGroup Nutrition
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {Array} nutritions Array of nutrition's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -85,13 +82,17 @@ router.post("/", async (req, res) => {
     let nutrition_data = await nutrition_helper.insert_nutrition(nutrition_obj);
     if (nutrition_data.status === 0) {
       logger.error("Error while inserting nutrition = ", nutrition_data);
-      res.status(config.BAD_REQUEST).json({ nutrition_data });
+      res.status(config.BAD_REQUEST).json({
+        nutrition_data
+      });
     } else {
       res.status(config.OK_STATUS).json(nutrition_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -135,17 +136,21 @@ router.put("/:nutrition_id", async (req, res) => {
     );
     if (nutrition_data.status === 0) {
       logger.error("Error while updating nutrition = ", nutrition_data);
-      res.status(config.BAD_REQUEST).json({ nutrition_data });
+      res.status(config.BAD_REQUEST).json({
+        nutrition_data
+      });
     } else {
       res.status(config.OK_STATUS).json(nutrition_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 
   req.checkBody(schema);
-  req.getValidationResult().then(function(result) {
+  req.getValidationResult().then(function (result) {
     if (result.isEmpty()) {
       var obj = {
         question: req.body.question,
@@ -155,13 +160,17 @@ router.put("/:nutrition_id", async (req, res) => {
       if (req.body.is_active && req.body.is_active != null) {
         obj.is_active = req.body.is_active;
       }
-      nutrition_helper.update_nutrition_by_id(req.body.id, obj, function(resp) {
+      nutrition_helper.update_nutrition_by_id(req.body.id, obj, function (resp) {
         if (resp.status == 0) {
-          res.status(config.INTERNAL_SERVER_ERROR).json({ error: resp.err });
+          res.status(config.INTERNAL_SERVER_ERROR).json({
+            error: resp.err
+          });
         } else {
           res
             .status(config.OK_STATUS)
-            .json({ message: "Nutrition has been updated successfully" });
+            .json({
+              message: "Nutrition has been updated successfully"
+            });
         }
       });
     } else {

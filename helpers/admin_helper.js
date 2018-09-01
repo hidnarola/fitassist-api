@@ -74,7 +74,6 @@ admin_helper.get_admin_by_email = async (email) => {
     }
 };
 
-
 /*
  * checkEmail is used to fetch single admin by email address
  * @param   condition   Specify condition condition of admin
