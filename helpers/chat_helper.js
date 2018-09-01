@@ -13,11 +13,9 @@ var chat_helper = {};
  */
 chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
   try {
-    var conversation = await Conversations.aggregate([
-      {
+    var conversation = await Conversations.aggregate([{
         $match: {
-          $or: [
-            {
+          $or: [{
               userId: userId
             },
             {
@@ -26,8 +24,6 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
           ]
         }
       },
-      skip,
-      limit,
       {
         $lookup: {
           from: "conversations_replies",
@@ -69,17 +65,28 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
       {
         $group: {
           _id: "$_id",
-          lastReplyAt: { $first: "$lastReplyAt" },
-          userData: { $first: "$userId" },
-          friendData: { $first: "$friendId" },
-          conversation: { $first: "$conversations" }
+          lastReplyAt: {
+            $first: "$lastReplyAt"
+          },
+          userData: {
+            $first: "$userId"
+          },
+          friendData: {
+            $first: "$friendId"
+          },
+          conversation: {
+            $first: "$conversations"
+          }
         }
       },
       {
         $sort: {
           lastReplyAt: -1
         }
-      }
+      },
+      skip,
+      limit,
+
     ]);
 
     if (conversation) {
@@ -89,7 +96,10 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
         channels: conversation
       };
     } else {
-      return { status: 2, message: "No messages available" };
+      return {
+        status: 2,
+        message: "No messages available"
+      };
     }
   } catch (err) {
     return {
@@ -111,16 +121,26 @@ chat_helper.get_channel_id = async (userId, friendId) => {
   try {
     var conversation_id;
     var conversation_pair = {
-      $or: [
-        {
-          $and: [{ userId: userId }, { friendId: friendId }]
+      $or: [{
+          $and: [{
+            userId: userId
+          }, {
+            friendId: friendId
+          }]
         },
         {
-          $and: [{ userId: friendId }, { friendId: userId }]
+          $and: [{
+            userId: friendId
+          }, {
+            friendId: userId
+          }]
         }
       ]
     };
-    var conversations_obj = { userId: userId, friendId: friendId };
+    var conversations_obj = {
+      userId: userId,
+      friendId: friendId
+    };
     let check_conversation_channel = await Conversations.findOne(
       conversation_pair
     );
@@ -131,8 +151,7 @@ chat_helper.get_channel_id = async (userId, friendId) => {
       let chat_message = await chat_message_data.save();
       conversation_id = chat_message._id;
     }
-    var conversation = await Conversations.aggregate([
-      {
+    var conversation = await Conversations.aggregate([{
         $match: {
           _id: mongoose.Types.ObjectId(conversation_id)
         }
@@ -179,7 +198,10 @@ chat_helper.get_channel_id = async (userId, friendId) => {
         channel: conversation[0]
       };
     } else {
-      return { status: 2, message: "Could not find or create channel" };
+      return {
+        status: 2,
+        message: "Could not find or create channel"
+      };
     }
   } catch (err) {
     return {
@@ -204,8 +226,7 @@ chat_helper.get_conversation = async (
   limit = {}
 ) => {
   // try {
-  var conversation = await Conversations.aggregate([
-    {
+  var conversation = await Conversations.aggregate([{
       $match: condition
     },
     {
@@ -236,10 +257,18 @@ chat_helper.get_conversation = async (
         preserveNullAndEmptyArrays: true
       }
     },
-    { $sort: { "messages.createdAt": -1 } },
+    {
+      $sort: {
+        "messages.createdAt": -1
+      }
+    },
     skip,
     limit,
-    { $sort: { "messages.createdAt": 1 } },
+    {
+      $sort: {
+        "messages.createdAt": 1
+      }
+    },
     {
       $group: {
         _id: "$_id",
@@ -268,7 +297,9 @@ chat_helper.get_conversation = async (
                 if: "$messages",
                 then: {
                   $cond: {
-                    if: { $eq: ["$messages.userId", authUserId] },
+                    if: {
+                      $eq: ["$messages.userId", authUserId]
+                    },
                     then: "sent",
                     else: "recieved"
                   }
@@ -301,7 +332,10 @@ chat_helper.get_conversation = async (
       channel: conversation[0]
     };
   } else {
-    return { status: 2, message: "No conversation available" };
+    return {
+      status: 2,
+      message: "No conversation available"
+    };
   }
   // } catch (err) {
   //   return {
@@ -321,10 +355,13 @@ chat_helper.get_conversation = async (
  */
 chat_helper.count_unread_messages = async userId => {
   try {
-    var count = await Conversations.aggregate([
-      {
+    var count = await Conversations.aggregate([{
         $match: {
-          $or: [{ userId: userId }, { friendId: userId }]
+          $or: [{
+            userId: userId
+          }, {
+            friendId: userId
+          }]
         }
       },
       {
@@ -341,13 +378,17 @@ chat_helper.count_unread_messages = async userId => {
       {
         $match: {
           "messages.isSeen": 0,
-          "messages.userId": { $ne: userId }
+          "messages.userId": {
+            $ne: userId
+          }
         }
       },
       {
         $group: {
           _id: "$_id",
-          messages: { $push: "$messages" }
+          messages: {
+            $push: "$messages"
+          }
         }
       }
     ]);
@@ -359,7 +400,10 @@ chat_helper.count_unread_messages = async userId => {
         count: count.length
       };
     } else {
-      return { status: 2, message: "No count available" };
+      return {
+        status: 2,
+        message: "No count available"
+      };
     }
   } catch (err) {
     return {
@@ -386,17 +430,22 @@ chat_helper.send_message = async (
 ) => {
   try {
     var conversation_pair = {
-      $or: [
-        {
-          $and: [
-            { userId: conversations_obj.userId },
-            { friendId: conversations_obj.friendId }
+      $or: [{
+          $and: [{
+              userId: conversations_obj.userId
+            },
+            {
+              friendId: conversations_obj.friendId
+            }
           ]
         },
         {
-          $and: [
-            { userId: conversations_obj.friendId },
-            { friendId: conversations_obj.userId }
+          $and: [{
+              userId: conversations_obj.friendId
+            },
+            {
+              friendId: conversations_obj.userId
+            }
           ]
         }
       ]
@@ -421,16 +470,19 @@ chat_helper.send_message = async (
     chat_message_data = new ConversationsReplies(conversations_replies_obj);
     chat_message = await chat_message_data.save();
 
-    let lastReplyAt = await Conversations.update(
-      { _id: mongoose.Types.ObjectId(conversation_id) },
-      {
-        $currentDate: {
-          lastReplyAt: true
-        }
+    let lastReplyAt = await Conversations.update({
+      _id: mongoose.Types.ObjectId(conversation_id)
+    }, {
+      $currentDate: {
+        lastReplyAt: true
       }
-    );
+    });
 
-    return { status: 1, message: "message sent", channel: chat_message };
+    return {
+      status: 1,
+      message: "message sent",
+      channel: chat_message
+    };
   } catch (err) {
     return {
       status: 0,
@@ -458,9 +510,15 @@ chat_helper.mark_message_as_read = async (condition, updateObject) => {
       updateObject
     );
     if (resp_data) {
-      return { status: 2, message: "chat message not marked as read" };
+      return {
+        status: 2,
+        message: "chat message not marked as read"
+      };
     } else {
-      return { status: 1, message: "chat message marked as read" };
+      return {
+        status: 1,
+        message: "chat message marked as read"
+      };
     }
   } catch (err) {
     return {
@@ -490,14 +548,23 @@ chat_helper.delete_chat_message_by_user_id = async (id, updateObject) => {
       deleteIds.push(single._id);
     });
 
-    let resp2 = await ConversationsReplies.updateMany(
-      { conversationId: { $in: deleteIds } },
+    let resp2 = await ConversationsReplies.updateMany({
+        conversationId: {
+          $in: deleteIds
+        }
+      },
       updateObject
     );
     if (!resp && !resp2) {
-      return { status: 2, message: "chat message not found" };
+      return {
+        status: 2,
+        message: "chat message not found"
+      };
     } else {
-      return { status: 1, message: "chat message deleted" };
+      return {
+        status: 1,
+        message: "chat message deleted"
+      };
     }
   } catch (err) {
     return {

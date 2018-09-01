@@ -236,6 +236,7 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
             "user.username": 1,
             "user.lastName": 1,
             "user.friendshipId": 1,
+            "user.totalFriends": 1,
           }
         }
       ]);
@@ -326,6 +327,7 @@ friend_helper.get_friend_by_username = async (username, statusType) => {
             "user.username": 1,
             "user.lastName": 1,
             "user.friendshipId": 1,
+            "user.totalFriends": 1,
           }
         }
       ]);

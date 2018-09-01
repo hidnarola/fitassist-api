@@ -110,10 +110,18 @@ router.put("/", async (req, res) => {
                         password: hash,
                       }
                     );
-                    res.status(config.OK_STATUS).json({
-                      status: 1,
-                      message: "Password Changed successful",
-                    });
+                    if (update_resp.status === 1) {
+                      res.status(config.OK_STATUS).json({
+                        status: 1,
+                        message: "Password Changed successful",
+                      });
+
+                    } else {
+                      res.status(config.INTERNAL_SERVER_ERROR).json({
+                        status: 2,
+                        message: "Password does not changed",
+                      });
+                    }
                   });
                 });
               } else {
