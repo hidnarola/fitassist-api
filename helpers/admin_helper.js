@@ -122,7 +122,9 @@ admin_helper.update_admin_by_id = async (admin_id, admin_object) => {
     try {
         let admin = await Admin.findOneAndUpdate({
             _id: admin_id
-        }, admin_object).lean();
+        }, admin_object, {
+            new: true
+        }).lean();
         if (!admin) {
             return {
                 "status": 2,
