@@ -21,7 +21,6 @@ router.get("/", async (req, res) => {
   if (admin.status == 1) {
     delete admin.admin.password;
     res.status(config.OK_STATUS).json(admin);
-    res.status(config.OK_STATUS).json(admin);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(admin);
   }
