@@ -16,7 +16,7 @@ admin_helper.get_admin_by_id = async (admin_id) => {
             "_id": {
                 "$eq": admin_id
             }
-        });
+        }).lean();
         if (admin) {
             return {
                 "status": 1,
@@ -122,7 +122,7 @@ admin_helper.update_admin_by_id = async (admin_id, admin_object) => {
     try {
         let admin = await Admin.findOneAndUpdate({
             _id: admin_id
-        }, admin_object);
+        }, admin_object).lean();
         if (!admin) {
             return {
                 "status": 2,

@@ -19,6 +19,8 @@ router.get("/", async (req, res) => {
   logger.debug("req.body = ", req.userInfo);
   let admin = await admin_helper.get_admin_by_id(req.userInfo.id);
   if (admin.status == 1) {
+    delete admin.admin.password;
+    res.status(config.OK_STATUS).json(admin);
     res.status(config.OK_STATUS).json(admin);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(admin);
@@ -83,10 +85,8 @@ router.put("/", async (req, res) => {
       );
 
       if (update_resp.status === 1) {
-        res.status(config.OK_STATUS).json({
-          status: 1,
-          message: "Profile updated successful",
-        });
+        delete update_resp.admin.password;
+        res.status(config.OK_STATUS).json(update_resp);
 
       } else {
         res.status(config.INTERNAL_SERVER_ERROR).json({
