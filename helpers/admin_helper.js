@@ -74,6 +74,41 @@ admin_helper.get_admin_by_email = async (email) => {
     }
 };
 
+
+/*
+ * checkEmail is used to fetch single admin by email address
+ * @param   condition   Specify condition condition of admin
+ * @return  status  0 - If any error occur in finding admin, with error
+ *          status  1 - If Admin found, with found admin document
+ *          status  2 - If Admin not found, with appropriate error message
+ * @developed by "amc"
+ */
+admin_helper.checkEmail = async (condition) => {
+    try {
+        var count = await Admin.count(condition);
+        if (count === 0) {
+            return {
+                "status": 1,
+                "message": "Email exists",
+                "count": count
+            };
+        } else {
+            return {
+                "status": 2,
+                "message": "Email not Exist",
+                "count": count
+            };
+        }
+    } catch (err) {
+        return {
+            "status": 0,
+            "message": "Error occured while finding admin",
+            "error": err
+        }
+    }
+};
+
+
 /*
  * update_admin_by_id is used to update admin data based on admin_id
  * @param   admin_id         String  _id of admin that need to be update
@@ -92,7 +127,8 @@ admin_helper.update_admin_by_id = async (admin_id, admin_object) => {
         if (!admin) {
             return {
                 "status": 2,
-                "message": "Record has not updated"
+                "message": "Record has not updated",
+                "error": admin
             };
         } else {
             return {

@@ -19,6 +19,7 @@ var badge_task = require("./admin/badge_task");
 var badge = require("./admin/badge");
 var test_exercises = require("./admin/test_exercises");
 var password = require("./admin/password");
+var profile = require("./admin/profile");
 
 router.use("/nutrition", auth, authorization, nutrition);
 router.use("/equipment_category", auth, authorization, equipment_category);
@@ -41,6 +42,7 @@ router.use("/badge_task", auth, authorization, badge_task);
 router.use("/badge", auth, authorization, badge);
 router.use("/test_exercise", auth, authorization, test_exercises);
 router.use("/change_password", auth, authorization, password);
+router.use("/profile", auth, authorization, profile);
 
 
 module.exports = router;

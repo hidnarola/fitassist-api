@@ -38,6 +38,12 @@ router.put("/", async (req, res) => {
     }
   };
   req.checkBody(schema);
+  req.checkBody('password', 'Password field should be between 8 to 32 characters').isLength({
+    min: 8,
+    max: 32
+  });
+
+
   var errors = req.validationErrors();
   if (!errors) {
     if (token) {

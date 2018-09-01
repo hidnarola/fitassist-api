@@ -206,9 +206,6 @@ myIo.init = function (server) {
             $limit: limit
           }
         );
-        console.log('------------------------------------');
-        console.log('resp_data : ', resp_data);
-        console.log('------------------------------------');
 
         if (resp_data.status == 0) {
           logger.error(
