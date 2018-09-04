@@ -57,11 +57,11 @@ router.put("/", async (req, res) => {
       }
     }
   };
-
   req.checkBody(schema);
   var errors = req.validationErrors();
+
   if (!errors) {
-    let checkEmail = await admin_helper.checkEmail({
+    var checkEmail = await admin_helper.checkEmail({
       "$and": [{
           "email": {
             "$eq": req.body.email
