@@ -3,10 +3,7 @@ var _ = require("underscore");
 var router = express.Router();
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
-var mongoose = require("mongoose")
-
 var logger = config.logger;
-
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var badge_helper = require("../../helpers/badge_helper");
 
@@ -14,6 +11,7 @@ var badge_helper = require("../../helpers/badge_helper");
  * @api {get} /user/badge/:type Get all
  * @apiName Get all
  * @apiGroup User Badges
+ * @apiParam type type of badges<code>Possible values complete,incomplete or tracking</code>
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {JSON} badges JSON of badges_assign's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -45,9 +43,20 @@ router.get("/:type", async (req, res) => {
       resp_data = await badge_helper.get_badges({
         _id: {
           $nin: completedBadgesIds
-        }
+        },
+        status: 1,
+        isDeleted: 0
       });
     }
+  } else {
+    logger.error(
+      "Invalid badge type = ",
+      req.params.type
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json({
+      status: 0,
+      message: "Invalid badge type"
+    });
   }
 
   if (resp_data && resp_data.status === 1) {

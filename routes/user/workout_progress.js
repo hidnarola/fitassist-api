@@ -3,13 +3,11 @@ var router = express.Router();
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
 var moment = require("moment");
+var workout_progress_helper = require("../../helpers/workout_progress_helper");
 var logger = config.logger;
 
-var workout_progress_helper = require("../../helpers/workout_progress_helper");
-var measurement_helper = require("../../helpers/measurement_helper");
-
 /**
- * @api {post} /user/workout_progress Get Progress Detail by Date and type
+ * @api {post} /user/progress Get Progress Detail by Date and type
  * @apiName Get Progress Detail by Date and type
  * @apiGroup User Workout Progress
  * @apiHeader {String}  authorization user's unique access-key
@@ -20,25 +18,25 @@ var measurement_helper = require("../../helpers/measurement_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
-  logger.trace("Get all user's progress detail");
+  logger.trace("Get all user's workout progress detail");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var resp_data = {
     status: 0,
-    message: "no record found"
+    message: "No record found"
   }
   var schema = {
     start: {
       notEmpty: true,
-      errorMessage: "start date is required"
+      errorMessage: "Start date is required"
     },
     end: {
       notEmpty: true,
-      errorMessage: "end date is required"
+      errorMessage: "End date is required"
     },
     category: {
       notEmpty: true,
-      errorMessage: "category is required"
+      errorMessage: "Category is required"
     }
   };
 
@@ -76,20 +74,6 @@ router.post("/", async (req, res) => {
           $lte: new Date(end)
         }
       });
-      // var body = await workout_progress_helper.graph_data_body_data({
-      //   createdAt: {
-      //     logDate: {
-      //       $gte: new Date(start),
-      //       $lte: new Date(end)
-      //     },
-      //     userId: authUserId
-      //   },
-      // });
-      // if (body.status === 1) {
-      //   try {
-      //     resp_data.progress.data.body.graph_data = body
-      //   } catch (error) {}
-      // }
     } else if (req.body.category === "strength") {
       resp_data = await workout_progress_helper.get_progress_detail({
         createdAt: {
@@ -180,11 +164,11 @@ router.post("/", async (req, res) => {
     }
 
     if (resp_data.status === 1) {
-      logger.trace("user progress  got successfully   = ", resp_data);
+      logger.trace("User progress got successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
     } else {
       logger.error(
-        "no record found = ",
+        "No record found = ",
         resp_data
       );
       res.status(config.OK_STATUS).json(resp_data);

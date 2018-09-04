@@ -421,7 +421,7 @@ router.delete("/:badge_id", async (req, res) => {
 });
 
 /**
- * @api {put} /admin/badge/undo/:badge_id Undo
+ * @api {get} /admin/badge/undo/:badge_id Undo
  * @apiName Undo
  * @apiGroup  Badge
  * @apiHeader {String}  x-access-token Admin's unique access-key

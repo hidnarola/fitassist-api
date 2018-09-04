@@ -29,6 +29,7 @@ var body_fat_helper = require("../../helpers/body_fat_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/get_by_id_logdate", async (req, res) => {
+  logger.trace("Get measurement by authUserId and logDate API called");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logDate = req.body.logDate;
@@ -58,7 +59,6 @@ router.post("/get_by_id_logdate", async (req, res) => {
     enddate.toISOString();
     enddate.format();
 
-    logger.trace("Get measurement by authUserId and logDate API called");
     var resp_data = await measurement_helper.get_body_measurement_id({
       userId: authUserId,
       logDate: {
@@ -83,6 +83,10 @@ router.post("/get_by_id_logdate", async (req, res) => {
       if (body_fat.body_fat_log) {
         measurement_obj.body_fat_log = body_fat.body_fat_log;
       }
+      logger.trace("Get measurement by authUserId and logDate successfully");
+      res.status(config.OK_STATUS).json(measurement_obj);
+    } else {
+      logger.trace("No record found");
       res.status(config.OK_STATUS).json(measurement_obj);
     }
   } else {
@@ -97,34 +101,29 @@ router.post("/get_by_id_logdate", async (req, res) => {
  * @api {post} /user/measurement Save User Measurement
  * @apiName Save User Measurement
  * @apiGroup User Measurement
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} userId userId of User Collection
- * @apiParam {Date} logDate logDate of bodymesurement
- * @apiParam {Number} [neck] neck of bodymesurement
- * @apiParam {Number} [shoulder] shoulder of bodymesurement
- * @apiParam {Number} [chest] chest of bodymesurement
- * @apiParam {Number} [upperArm] upperArm of bodymesurement
- * @apiParam {Number} [waist] waist of bodymesurement
- * @apiParam {Number} [forearm] forearm of bodymesurement
- * @apiParam {Number} [hips] hips of bodymesurement
- * @apiParam {Number} [thigh] thigh of bodymesurement
- * @apiParam {Number} [calf] calf of bodymesurement
- * @apiParam {Number} [weight] weight of bodymesurement
- * @apiParam {Number} [height] height of bodymesurement
- *
+ * @apiParam {Date} logDate logDate of body mesurement
+ * @apiParam {Number} neck neck of body mesurement
+ * @apiParam {Number} shoulder shoulder of body mesurement
+ * @apiParam {Number} chest chest of body mesurement
+ * @apiParam {Number} upperArm upperArm of body mesurement
+ * @apiParam {Number} waist waist of body mesurement
+ * @apiParam {Number} forearm forearm of body mesurement
+ * @apiParam {Number} hips hips of body mesurement
+ * @apiParam {Number} thigh thigh of body mesurement
+ * @apiParam {Number} calf calf of body mesurement
+ * @apiParam {Number} weight weight of body mesurement
+ * @apiParam {Number} height height of body mesurement
  * @apiSuccess (Success 200) {JSON} measurement Measurement details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
 router.post("/", async (req, res) => {
+  logger.trace("Save user measurement API called");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var logDate = req.body.logDate;
-
-  logger.trace("Get measurement by authUserId and logDate API called");
-
   var schema = {
     logDate: {
       notEmpty: true,
@@ -192,7 +191,7 @@ router.post("/", async (req, res) => {
       );
       measurement_obj = {
         userId: authUserId,
-        logDate: req.body.logDate,
+        logDate: logDate,
         neck: req.body.neck,
         shoulders: req.body.shoulders,
         chest: req.body.chest,
@@ -264,7 +263,7 @@ router.post("/", async (req, res) => {
 
       measurement_obj = {
         userId: authUserId,
-        logDate: req.body.logDate,
+        logDate: logDate,
         neck: neck.baseValue,
         shoulders: shoulders.baseValue,
         chest: chest.baseValue,
@@ -286,7 +285,7 @@ router.post("/", async (req, res) => {
       height: height.baseValue
     };
 
-    let user_height_and_weight = await user_helper.update_user_by_id(
+    await user_helper.update_user_by_id(
       authUserId,
       user_height_and_weight_object
     );
@@ -310,7 +309,7 @@ router.post("/", async (req, res) => {
       }
     });
 
-    if (resp_data.status == 2) {
+    if (resp_data.status == 2 || resp_data.status == 0) {
       let measurement_data = await measurement_helper.insert_body_measurement(
         measurement_obj
       );
@@ -323,6 +322,10 @@ router.post("/", async (req, res) => {
           measurement_data
         });
       } else {
+        logger.trace(
+          "Successfully inserted measurement data = ",
+          measurement_data
+        );
         badgesAssign(authUserId);
         return res.status(config.OK_STATUS).json(measurement_data);
       }
@@ -332,15 +335,19 @@ router.post("/", async (req, res) => {
         measurement_obj
       );
 
-      if (measurement_data.status === 0) {
+      if (measurement_data.status === 0 || measurement_data.status === 2) {
         logger.error(
-          "Error while inserting measurement data = ",
+          "Error while updating measurement data = ",
           measurement_data
         );
         return res.status(config.BAD_REQUEST).json({
           measurement_data
         });
       } else {
+        logger.trace(
+          "updating measurement data = ",
+          measurement_data
+        );
         badgesAssign(authUserId);
         return res.status(config.OK_STATUS).json(measurement_data);
       }
@@ -357,11 +364,9 @@ router.post("/", async (req, res) => {
  * @api {post} /user/measurement/get_log_dates_by_date Get Logs of User Measurement
  * @apiName Get Logs of User Measurement
  * @apiGroup User Measurement
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
  * @apiParam {Number} logDate logDate of user's Measurement
- *
  * @apiSuccess (Success 200) {JSON} logdates Measurement details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

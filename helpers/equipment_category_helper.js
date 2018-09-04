@@ -8,9 +8,9 @@ var equipment_category_helper = {};
  *          status 1 - If equipment's category data found, with equipment's category object
  *          status 2 - If equipment's category not found, with appropriate message
  */
-equipment_category_helper.get_all_equipment_category = async () => {
+equipment_category_helper.get_all_equipment_category = async (condition = {}) => {
   try {
-    var equipment_category = await Equipment_category.find();
+    var equipment_category = await Equipment_category.find(condition);
     if (equipment_category) {
       return {
         status: 1,
@@ -43,8 +43,8 @@ equipment_category_helper.get_all_equipment_category = async () => {
  * @developed by "amc"
  */
 equipment_category_helper.insert_equipment_category = async equipment_category_object => {
-  let equipment_category = new Equipment_category(equipment_category_object);
   try {
+    let equipment_category = new Equipment_category(equipment_category_object);
     let equipment_category_data = await equipment_category.save();
     return {
       status: 1,
@@ -139,6 +139,8 @@ equipment_category_helper.delete_equipment_category_by_id = async equipment_cate
     };
   }
 };
+
+
 
 /*
  * get_filtered_records is used to fetch all filtered data
