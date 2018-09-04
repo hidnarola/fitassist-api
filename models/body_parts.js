@@ -5,10 +5,25 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var BodyPartSchema = new Schema({
-    bodypart: {type: String, required:true},
-    createdAt: {type: Date, default: Date.now},
-    modifiedAt: {type: Date, default: Date.now}
-}, {versionKey: false});
+    bodypart: {
+        type: String,
+        required: true
+    },
+    isDeleted: {
+        type: Number,
+        default: 0
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    modifiedAt: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+    versionKey: false
+});
 
 // Compile model from schema
 var BodyPart = mongoose.model('bodyparts', BodyPartSchema, 'bodyparts');

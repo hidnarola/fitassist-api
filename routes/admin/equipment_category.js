@@ -65,7 +65,6 @@ router.post("/filter", async (req, res) => {
 router.get("/", async (req, res) => {
   logger.trace("Get all equipment_category API called");
   var resp_data = await equipment_category_helper.get_all_equipment_category({
-    status: 1,
     isDeleted: 0
   });
   if (resp_data.status == 0) {
@@ -98,7 +97,7 @@ router.post("/", async (req, res) => {
       errorMessage: "Name is required"
     }
   };
-  req.checkBody('name', 'Name field should be between 3 to 50 characters').isLength({
+  req.checkBody('name', 'Name should be between 3 to 50 characters').isLength({
     min: 3,
     max: 50
   });
@@ -154,7 +153,7 @@ router.put("/:equipment_category_id", async (req, res) => {
     }
   };
 
-  req.checkBody('name', 'Name field should be between 3 to 50 characters').isLength({
+  req.checkBody('name', 'Name should be between 3 to 50 characters').isLength({
     min: 3,
     max: 50
   });

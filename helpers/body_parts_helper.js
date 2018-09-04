@@ -108,7 +108,7 @@ body_part_helper.insert_body_part = async (body_part_obj) => {
  */
 body_part_helper.update_bodypart_by_id = async (body_part_id, body_part_obj) => {
     try {
-        let bodypart = await BodyPart.findOneAndUpdate({
+        let bodypart = await BodyPart.findByIdAndUpdate({
             _id: body_part_id
         }, body_part_obj, {
             new: true

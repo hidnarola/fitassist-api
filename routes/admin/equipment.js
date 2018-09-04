@@ -70,43 +70,39 @@ router.post("/filter", async (req, res) => {
  * @api {get} /admin/equipment Get all
  * @apiName Get all
  * @apiGroup Equipment
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {Array} equipments Array of equipments document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
   logger.trace("Get all equipment API called");
   var resp_data = await equipment_helper.get_all_equipment();
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching equipment = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
+  if (resp_data.status === 1) {
     logger.trace("Equipments got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching equipment = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
 /**
- * @api {get} /admin/equipment/equipment_id Get by ID
+ * @api {get} /admin/equipment/:equipment_id Get by ID
  * @apiName Get equipment by ID
  * @apiGroup Equipment
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Object} equipment Object of equipment document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:equipment_id", async (req, res) => {
-  equipment_id = req.params.equipment_id;
-  logger.trace("Get all equipment API called");
-  var resp_data = await equipment_helper.get_equipment_id(equipment_id);
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching equipment = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
+  logger.trace("Get by equipment id API called: " + req.params.equipment_id);
+  var resp_data = await equipment_helper.get_equipment_id(req.params.equipment_id);
+  if (resp_data.status === 1) {
     logger.trace("Equipments got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching equipment = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
@@ -114,7 +110,6 @@ router.get("/:equipment_id", async (req, res) => {
  * @api {post} /admin/equipment Add
  * @apiName  Add
  * @apiGroup Equipment
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} category_id Equipment's Category id
@@ -122,7 +117,6 @@ router.get("/:equipment_id", async (req, res) => {
  * @apiParam {Boolean} status status of Equipment
  * @apiParam {String} [description] Description of Equipment
  * @apiParam {File} [equipment_img] Equipment image
- *
  * @apiSuccess (Success 200) {JSON} equipment Equipment details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -146,6 +140,10 @@ router.post("/", async (req, res) => {
     }
   };
 
+  req.checkBody('name', 'Name should be between 3 to 50 characters').isLength({
+    min: 3,
+    max: 50
+  });
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
@@ -155,7 +153,6 @@ router.post("/", async (req, res) => {
       category_id: req.body.category_id,
       status: req.body.status
     };
-
     //image upload
     var filename;
     if (req.files && req.files["equipment_img"]) {
@@ -190,7 +187,6 @@ router.post("/", async (req, res) => {
       }
     } else {
       logger.info("Image not available to upload. Executing next instruction");
-      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
     }
     if (filename) {
       equipment_obj.image = "uploads/equipment/" + filename;
@@ -199,13 +195,14 @@ router.post("/", async (req, res) => {
     //End image upload
 
     let equipment_data = await equipment_helper.insert_equipment(equipment_obj);
-    if (equipment_data.status === 0) {
+    if (equipment_data.status === 1) {
+      logger.trace("successfully inserted equipment = ", equipment_data);
+      res.status(config.OK_STATUS).json(equipment_data);
+    } else {
       logger.error("Error while inserting equipment = ", equipment_data);
       res.status(config.BAD_REQUEST).json({
         equipment_data
       });
-    } else {
-      res.status(config.OK_STATUS).json(equipment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -219,10 +216,8 @@ router.post("/", async (req, res) => {
  * @api {put} /admin/equipment/:equipment_id Update
  * @apiName Update
  * @apiGroup Equipment
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {String} name Name of equipment Equipment
  * @apiParam {String} [description] Description of equipment
  * @apiParam {File} [equipment_img] Equipment image
@@ -250,18 +245,23 @@ router.put("/:equipment_id", async (req, res) => {
       errorMessage: "Status is required"
     }
   };
-
+  req.checkBody('name', 'Name should be between 3 to 50 characters').isLength({
+    min: 3,
+    max: 50
+  });
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
     var equipment_obj = {
       name: req.body.name,
-      description: req.body.description ? req.body.description : null,
       category_id: req.body.category_id,
       status: req.body.status,
       modifiedAt: new Date()
     };
 
+    if (req.body.description) {
+      equipment_obj.description = req.body.description;
+    }
     // Image upload
     var filename;
     if (req.files && req.files["equipment_img"]) {
@@ -304,9 +304,11 @@ router.put("/:equipment_id", async (req, res) => {
       var resp_data = await equipment_helper.get_equipment_id(
         req.params.equipment_id
       );
-      fs.unlink(resp_data.equipment.image, function (err, Success) {
-        if (err) throw err;
-      });
+      try {
+        fs.unlink(resp_data.equipment.image, function (err, Success) {
+          if (err) logger.error("Image could not deleted = ", resp_data.equipment.image);
+        });
+      } catch (error) {}
       equipment_obj.image = "uploads/equipment/" + filename;
     }
 
@@ -314,13 +316,14 @@ router.put("/:equipment_id", async (req, res) => {
       req.params.equipment_id,
       equipment_obj
     );
-    if (equipment_data.status === 0) {
+    if (equipment_data.status === 1) {
+      logger.trace("equipment updated = ", equipment_data);
+      res.status(config.OK_STATUS).json(equipment_data);
+    } else {
       logger.error("Error while updating equipment = ", equipment_data);
       res.status(config.BAD_REQUEST).json({
         equipment_data
       });
-    } else {
-      res.status(config.OK_STATUS).json(equipment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -340,20 +343,18 @@ router.put("/:equipment_id", async (req, res) => {
  */
 router.delete("/:equipment_id", async (req, res) => {
   logger.trace("Delete equipment API - Id = ", req.params.equipment_id);
-  var resp_data = await equipment_helper.get_equipment_id(
-    req.params.equipment_id
-  );
-
   let equipment_data = await equipment_helper.delete_equipment_by_id({
     _id: mongoose.Types.ObjectId(req.params.equipment_id)
   }, {
     isDeleted: 1
   });
 
-  if (equipment_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
-  } else {
+  if (equipment_data.status === 1) {
+    logger.trace("Delete equipment successfully = ", req.params.equipment_id);
     res.status(config.OK_STATUS).json(equipment_data);
+  } else {
+    logger.error("failed to delete equipment = ", req.params.equipment_id);
+    res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
   }
 });
 
@@ -367,9 +368,6 @@ router.delete("/:equipment_id", async (req, res) => {
  */
 router.get("/undo/:equipment_id", async (req, res) => {
   logger.trace("Undo equipment API - Id = ", req.params.equipment_id);
-  var resp_data = await equipment_helper.get_equipment_id(
-    req.params.equipment_id
-  );
 
   let equipment_data = await equipment_helper.delete_equipment_by_id({
     _id: mongoose.Types.ObjectId(req.params.equipment_id)
@@ -377,10 +375,12 @@ router.get("/undo/:equipment_id", async (req, res) => {
     isDeleted: 0
   });
 
-  if (equipment_data.status === 0) {
+  if (equipment_data.status === 1) {
+    equipment_data.message = "Equipment recoved"
+    logger.trace("Undo equipment successfully ", req.params.equipment_id);
     res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
   } else {
-    equipment_data.message = "Equipment recoved"
+    logger.error("Undo equipment failed ", req.params.equipment_id);
     res.status(config.OK_STATUS).json(equipment_data);
   }
 });

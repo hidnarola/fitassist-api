@@ -42,7 +42,6 @@ var common_helper = require("../../helpers/common_helper");
  *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
@@ -69,21 +68,19 @@ router.post("/filter", async (req, res) => {
  * @api {get} /admin/exercise Get all
  * @apiName Get all
  * @apiGroup Exercise
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {Array} exercises Array of Exercises document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
   logger.trace("Get all exercise API called");
   var resp_data = await exercise_helper.get_all_exercise();
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching exercise = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
+  if (resp_data.status == 1) {
     logger.trace("Exercises got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching exercise = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
@@ -91,25 +88,23 @@ router.get("/", async (req, res) => {
  * @api {get} /admin/exercise/exercise_id Get by ID
  * @apiName Get Exercise by ID
  * @apiGroup Exercise
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * * @apiParam {String} exercise_id ID of Exercise
-
- * @apiSuccess (Success 200) {Array} exercise Array of Exercise document
+ * @apiParam {String} exercise_id ID of Exercise
+ * @apiSuccess (Success 200) {JSON} exercise Array of Exercise document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:exercise_id", async (req, res) => {
-  exercise_id = req.params.exercise_id;
   logger.trace("Get all exercise API called");
+  exercise_id = req.params.exercise_id;
   var resp_data = await exercise_helper.get_exercise_id({
     _id: mongoose.Types.ObjectId(exercise_id)
   });
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching exercise = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
+  if (resp_data.status == 1) {
     logger.trace("Exercises got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching exercise = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
@@ -125,7 +120,7 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiParam {Array} [otherMuscleGroup] Reference ids of from muscles group collection
  * @apiParam {Array} [detailedMuscleGroup] Reference ids of from muscles group collection
  * @apiParam {Array} category Category of exercise
- * @apiParam {Array} subCategory Sub Category of exercise
+ * @apiParam {Array} subCategory Sub Category of exercise <code>not required if category balance is seleted</code>
  * @apiParam {Enum} [mechanics] Mechanics of Exercise | Possible Values('Compound', 'Isolation')
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
@@ -135,7 +130,6 @@ router.get("/:exercise_id", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} exercise Exercise details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-
 router.post("/", async (req, res) => {
   var schema = {
     name: {
@@ -158,58 +152,67 @@ router.post("/", async (req, res) => {
       notEmpty: true,
       errorMessage: "Equipments is required"
     },
+    status: {
+      notEmpty: true,
+      errorMessage: "Status is required"
+    },
     difficltyLevel: {
       notEmpty: true,
       errorMessage: "Difficlty Level is required"
     }
   };
-  if (req.body.subCategory) {
+
+  if (req.body.category && req.body.category !== "balance") {
     schema.subCategory = {
-      notEmpty: false,
+      notEmpty: true,
       isIn: {
         options: [constants.EXERCISES_SUBCATEGORIES],
         errorMessage: "Please enter valid Sub category "
       },
       errorMessage: "Sub Category is required"
-    };
+    }
   }
 
+  req.checkBody('name', 'Name should be between 3 to 100 characters').isLength({
+    min: 3,
+    max: 100
+  });
   req.checkBody(schema);
   var errors = req.validationErrors();
-  mainMuscleGroupData = mongoose.Types.ObjectId(req.body.mainMuscleGroup);
-  detailedMuscleGroupData = [];
-  equipmentsData = [];
-  otherMuscleGroupData = [];
 
-  if (req.body.otherMuscleGroup) {
-    JSON.parse(req.body.otherMuscleGroup).forEach(element => {
-      otherMuscleGroupData.push(mongoose.Types.ObjectId(element));
-    });
-  }
-  if (req.body.detailedMuscleGroup) {
-    JSON.parse(req.body.detailedMuscleGroup).forEach(element => {
-      detailedMuscleGroupData.push(mongoose.Types.ObjectId(element));
-    });
-  }
-  if (req.body.equipments) {
-    JSON.parse(req.body.equipments).forEach(element => {
-      equipmentsData.push(mongoose.Types.ObjectId(element));
-    });
-  }
 
   if (!errors) {
+    mainMuscleGroupData = mongoose.Types.ObjectId(req.body.mainMuscleGroup);
+    detailedMuscleGroupData = [];
+    equipmentsData = [];
+    otherMuscleGroupData = [];
+
+    if (req.body.otherMuscleGroup) {
+      JSON.parse(req.body.otherMuscleGroup).forEach(element => {
+        otherMuscleGroupData.push(mongoose.Types.ObjectId(element));
+      });
+    }
+    if (req.body.detailedMuscleGroup) {
+      JSON.parse(req.body.detailedMuscleGroup).forEach(element => {
+        detailedMuscleGroupData.push(mongoose.Types.ObjectId(element));
+      });
+    }
+    if (req.body.equipments) {
+      JSON.parse(req.body.equipments).forEach(element => {
+        equipmentsData.push(mongoose.Types.ObjectId(element));
+      });
+    }
     var exercise_obj = {
       name: req.body.name,
-      description: req.body.description,
+      description: req.body.description ? req.body.description : null,
       mainMuscleGroup: mainMuscleGroupData,
-      otherMuscleGroup: otherMuscleGroupData ? otherMuscleGroupData : [],
-      detailedMuscleGroup: detailedMuscleGroupData ?
-        detailedMuscleGroupData :
-        [],
+      otherMuscleGroup: otherMuscleGroupData,
+      detailedMuscleGroup: detailedMuscleGroupData,
       category: req.body.category,
-      mechanics: req.body.mechanics,
-      equipments: equipmentsData ? equipmentsData : [],
+      mechanics: req.body.mechanics ? req.body.mechanics : null,
+      equipments: equipmentsData,
       difficltyLevel: req.body.difficltyLevel,
+      status: req.body.status,
       steps: req.body.steps ? JSON.parse(req.body.steps) : [],
       tips: req.body.tips ? JSON.parse(req.body.tips) : []
     };
@@ -226,7 +229,6 @@ router.post("/", async (req, res) => {
             // var files = req.files['images'];
             var files = [].concat(req.files.images);
             var dir = "./uploads/exercise";
-            var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
             // assuming openFiles is an array of file names
             async.eachSeries(
@@ -286,13 +288,14 @@ router.post("/", async (req, res) => {
         exercise_obj.images = file_path_array;
 
         let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
-        if (exercise_data.status === 0) {
+        if (exercise_data.status === 1) {
+          logger.error("Successfully inserted exercise data = ", exercise_data);
+          res.status(config.OK_STATUS).json(exercise_data);
+        } else {
           logger.error("Error while inserting exercise data = ", exercise_data);
-          return res.status(config.BAD_REQUEST).json({
+          res.status(config.BAD_REQUEST).json({
             exercise_data
           });
-        } else {
-          return res.status(config.OK_STATUS).json(exercise_data);
         }
       }
     );
@@ -308,7 +311,7 @@ router.post("/", async (req, res) => {
  * @api {put} /admin/exercise Update
  * @apiName Update
  * @apiGroup Exercise
- *
+ * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name Name of Exercise
  * @apiParam {String} [description] Description of Exercise
@@ -316,15 +319,14 @@ router.post("/", async (req, res) => {
  * @apiParam {Array} [otherMuscleGroup] Reference ids of from muscles group collection
  * @apiParam {Array} [detailedMuscleGroup] Reference ids of from muscles group collection
  * @apiParam {Array} category Category of exercise
- * @apiParam {Array} subCategory Sub Category of exercise
+ * @apiParam {Array} subCategory Sub Category of exercise <code>not required if category balance is seleted</code>
  * @apiParam {Enum} [mechanics] Mechanics of Exercise | Possible Values('Compound', 'Isolation')
  * @apiParam {Array} equipments Reference ids from equipments collection
  * @apiParam {Enum} difficltyLevel Difficlty level of exercise | Possible Values('Beginner', 'Intermediate', 'Expert')
  * @apiParam {Array} [steps] Steps of Exercise
  * @apiParam {Array} [tips] tips of Exercise
- * @apiParam {Array} [delete_images] Path of all images to be delete
- * @apiParam {File} [images] New Images of Exercise
- * @apiSuccess (Success 200) {Array} exercise Array of Exercises document
+ * @apiParam {Files} [images] Images of Exercise
+ * @apiSuccess (Success 200) {JSON} exercise Exercise details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:exercise_id", async (req, res) => {
@@ -337,7 +339,7 @@ router.put("/:exercise_id", async (req, res) => {
     },
     mainMuscleGroup: {
       notEmpty: true,
-      errorMessage: "mainMuscleGroup is required"
+      errorMessage: "Main Muscle Group is required"
     },
     category: {
       notEmpty: true,
@@ -349,50 +351,80 @@ router.put("/:exercise_id", async (req, res) => {
     },
     equipments: {
       notEmpty: true,
-      errorMessage: "equipments is required"
+      errorMessage: "Equipments is required"
     },
     difficltyLevel: {
       notEmpty: true,
-      errorMessage: "difficltyLevel is required"
-    }
+      errorMessage: "Difficlty Level is required"
+    },
+    status: {
+      notEmpty: true,
+      errorMessage: "Status is required"
+    },
   };
-
-  if (req.body.subCategory) {
+  if (req.body.category && req.body.category !== "balance") {
     schema.subCategory = {
-      notEmpty: false,
+      notEmpty: true,
       isIn: {
         options: [constants.EXERCISES_SUBCATEGORIES],
         errorMessage: "Please enter valid Sub category "
       },
       errorMessage: "Sub Category is required"
-    };
+    }
   }
-
+  req.checkBody('name', 'Name should be between 3 to 100 characters').isLength({
+    min: 3,
+    max: 100
+  });
   req.checkBody(schema);
   var errors = req.validationErrors();
 
   if (!errors) {
     var exercise_obj = {
       name: req.body.name,
-      description: req.body.description,
       mainMuscleGroup: req.body.mainMuscleGroup,
-      otherMuscleGroup: req.body.otherMuscleGroup ?
-        JSON.parse(req.body.otherMuscleGroup) :
-        null,
-      detailedMuscleGroup: req.body.detailedMuscleGroup ?
-        JSON.parse(req.body.detailedMuscleGroup) :
-        null,
       category: req.body.category,
-      mechanics: req.body.mechanics,
-      equipments: req.body.equipments ? JSON.parse(req.body.equipments) : null,
       difficltyLevel: req.body.difficltyLevel,
-      steps: req.body.steps ? JSON.parse(req.body.steps) : null,
-      tips: req.body.tips ? JSON.parse(req.body.tips) : null,
+      status: req.body.status,
       modifiedAt: new Date()
     };
 
+    if (req.body.equipments) {
+      let equipmentsData = [];
+      JSON.parse(req.body.equipments).forEach(element => {
+        equipmentsData.push(mongoose.Types.ObjectId(element));
+      });
+      exercise_obj.equipments = equipmentsData;
+    }
+
+    if (req.body.description) {
+      exercise_obj.description = req.body.description;
+    }
+    if (req.body.otherMuscleGroup) {
+      let otherMuscleGroupData = [];
+      JSON.parse(req.body.otherMuscleGroup).forEach(element => {
+        otherMuscleGroupData.push(mongoose.Types.ObjectId(element));
+      });
+      exercise_obj.otherMuscleGroup = otherMuscleGroupData;
+    }
+    if (req.body.detailedMuscleGroup) {
+      let detailedMuscleGroupData = [];
+      JSON.parse(req.body.detailedMuscleGroup).forEach(element => {
+        detailedMuscleGroupData.push(mongoose.Types.ObjectId(element));
+      });
+      exercise_obj.detailedMuscleGroupData = detailedMuscleGroupData;
+    }
+    if (req.body.mechanics) {
+      exercise_obj.mechanics = req.body.mechanics;
+    }
     if (req.body.subCategory) {
       exercise_obj.subCategory = req.body.subCategory;
+    }
+    if (req.body.steps) {
+      exercise_obj.steps = JSON.parse(req.body.steps);
+    }
+    if (req.body.tips) {
+      exercise_obj.tips = JSON.parse(req.body.tips);
     }
 
     var resp_data = await exercise_helper.get_exercise_id({
@@ -489,13 +521,14 @@ router.put("/:exercise_id", async (req, res) => {
           req.params.exercise_id,
           exercise_obj
         );
-        if (exercise_data.status === 0) {
+        if (exercise_data.status === 1) {
+          logger.error("successfully updated exercise data = ", exercise_data);
+          res.status(config.OK_STATUS).json(exercise_data);
+        } else {
           logger.error("Error while updating exercise data = ", exercise_data);
           res.status(config.BAD_REQUEST).json({
             exercise_data
           });
-        } else {
-          res.status(config.OK_STATUS).json(exercise_data);
         }
       }
     );
@@ -508,31 +541,53 @@ router.put("/:exercise_id", async (req, res) => {
 });
 
 /**
+ * @api {put} /admin/exercise/undo/:exercise_id Undo
+ * @apiName Undo
+ * @apiGroup Exercise
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/undo/:exercise_id", async (req, res) => {
+  logger.trace("Undo Exercise API - Id = ", req.params.exercise_id);
+  let exercise_data = await exercise_helper.update_exercise_by_id(
+    req.params.exercise_id, {
+      isDeleted: 0
+    }
+  );
+  if (exercise_data.status === 1) {
+    exercise_data.message = "Exercise recovered";
+    logger.trace("Exercise undo Successfully = ", req.params.exercise_id);
+    res.status(config.OK_STATUS).json(exercise_data);
+  } else {
+    exercise_data.message = "Exercise could not recovered";
+    logger.error("Exercise not recovered Successfully = ", req.params.exercise_id);
+    res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
+  }
+});
+
+/**
  * @api {delete} /admin/exercise/:exercise_id Delete
  * @apiName Delete
  * @apiGroup Exercise
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:exercise_id", async (req, res) => {
   logger.trace("Delete Exercise API - Id = ", req.params.exercise_id);
-
-  var resp_data = await exercise_helper.get_exercise_id(req.params.exercise_id);
-  images = resp_data.exercise.images;
-
-  let exercise_data = await exercise_helper.delete_exercise_by_id(
-    req.params.exercise_id
+  let exercise_data = await exercise_helper.update_exercise_by_id(
+    req.params.exercise_id, {
+      isDeleted: 1
+    }
   );
-  if (exercise_data.status === 0) {
+  if (exercise_data.status === 1) {
+    exercise_data.message = "Exercise deleted";
+    logger.trace("Exercise deleted Successfully = ", req.params.exercise_id);
     res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
   } else {
-    images = resp_data.exercise.images;
-    images.forEach(image => {
-      fs.unlink(image, function () {});
-    });
+    exercise_data.message = "Exercise could not deleted";
+    logger.error("Exercise not deleted Successfully = ", req.params.exercise_id);
     res.status(config.OK_STATUS).json(exercise_data);
   }
 });

@@ -12,9 +12,16 @@ exercise_helper.get_all_exercise = async (condition = {}, project = {}) => {
   try {
     var exercise = await Exercise.find(condition, project);
     if (exercise) {
-      return { status: 1, message: "Exercise found", exercises: exercise };
+      return {
+        status: 1,
+        message: "Exercise found",
+        exercises: exercise
+      };
     } else {
-      return { status: 2, message: "No exercise available" };
+      return {
+        status: 2,
+        message: "No exercise available"
+      };
     }
   } catch (err) {
     return {
@@ -126,19 +133,43 @@ exercise_helper.get_all_exercise_for_user = async () => {
       {
         $group: {
           _id: "$_id",
-          name: { $push: "$name" },
+          name: {
+            $push: "$name"
+          },
           // cols:filter_object.columnFilter,
-          otherMuscleGroup: { $addToSet: "$otherMuscleGroup.bodypart" },
-          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
-          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup.bodypart" },
-          equipments: { $addToSet: "$equipments.name" },
-          mainMuscleGroup: { $first: "$mainMuscleGroup.bodypart" },
-          name: { $first: "$name" },
-          category: { $first: "$category" },
-          subCategory: { $first: "$subCategory" },
-          description: { $first: "$description" },
-          mechanics: { $first: "$mechanics" },
-          difficltyLevel: { $first: "$difficltyLevel" }
+          otherMuscleGroup: {
+            $addToSet: "$otherMuscleGroup.bodypart"
+          },
+          detailedMuscleGroup: {
+            $addToSet: "$detailedMuscleGroup.bodypart"
+          },
+          detailedMuscleGroup: {
+            $addToSet: "$detailedMuscleGroup.bodypart"
+          },
+          equipments: {
+            $addToSet: "$equipments.name"
+          },
+          mainMuscleGroup: {
+            $first: "$mainMuscleGroup.bodypart"
+          },
+          name: {
+            $first: "$name"
+          },
+          category: {
+            $first: "$category"
+          },
+          subCategory: {
+            $first: "$subCategory"
+          },
+          description: {
+            $first: "$description"
+          },
+          mechanics: {
+            $first: "$mechanics"
+          },
+          difficltyLevel: {
+            $first: "$difficltyLevel"
+          }
         }
       }
     ]);
@@ -150,7 +181,10 @@ exercise_helper.get_all_exercise_for_user = async () => {
         exercises: exercise
       };
     } else {
-      return { status: 2, message: "No exercise available" };
+      return {
+        status: 2,
+        message: "No exercise available"
+      };
     }
   } catch (err) {
     return {
@@ -170,8 +204,7 @@ exercise_helper.get_all_exercise_for_user = async () => {
  */
 exercise_helper.get_exercise_id = async (id, flag = 0) => {
   try {
-    var exercise = await Exercise.aggregate([
-      {
+    var exercise = await Exercise.aggregate([{
         $match: id
       },
       {
@@ -257,22 +290,52 @@ exercise_helper.get_exercise_id = async (id, flag = 0) => {
       {
         $group: {
           _id: "$_id",
-          name: { $push: "$name" },
+          name: {
+            $push: "$name"
+          },
           // cols:filter_object.columnFilter,
-          otherMuscleGroup: { $addToSet: "$otherMuscleGroup._id" },
-          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup._id" },
-          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup._id" },
-          equipments: { $addToSet: "$equipments._id" },
-          category: { $first: "$category" },
-          subCategory: { $first: "$subCategory" },
-          mainMuscleGroup: { $first: "$mainMuscleGroup._id" },
-          name: { $first: "$name" },
-          description: { $first: "$description" },
-          images: { $first: "$images" },
-          steps: { $first: "$steps" },
-          tips: { $first: "$tips" },
-          mechanics: { $first: "$mechanics" },
-          difficltyLevel: { $first: "$difficltyLevel" }
+          otherMuscleGroup: {
+            $addToSet: "$otherMuscleGroup._id"
+          },
+          detailedMuscleGroup: {
+            $addToSet: "$detailedMuscleGroup._id"
+          },
+          detailedMuscleGroup: {
+            $addToSet: "$detailedMuscleGroup._id"
+          },
+          equipments: {
+            $addToSet: "$equipments._id"
+          },
+          category: {
+            $first: "$category"
+          },
+          subCategory: {
+            $first: "$subCategory"
+          },
+          mainMuscleGroup: {
+            $first: "$mainMuscleGroup._id"
+          },
+          name: {
+            $first: "$name"
+          },
+          description: {
+            $first: "$description"
+          },
+          images: {
+            $first: "$images"
+          },
+          steps: {
+            $first: "$steps"
+          },
+          tips: {
+            $first: "$tips"
+          },
+          mechanics: {
+            $first: "$mechanics"
+          },
+          difficltyLevel: {
+            $first: "$difficltyLevel"
+          }
         }
       }
     ]);
@@ -284,7 +347,10 @@ exercise_helper.get_exercise_id = async (id, flag = 0) => {
         exercise: flag ? exercise : exercise[0]
       };
     } else {
-      return { status: 2, message: "No exercise available" };
+      return {
+        status: 2,
+        message: "No exercise available"
+      };
     }
   } catch (err) {
     return {
@@ -333,7 +399,11 @@ exercise_helper.insert_exercise = async exercise_object => {
   let exercise = new Exercise(exercise_object);
   try {
     let exercise_data = await exercise.save();
-    return { status: 1, message: "Exercise inserted", exercise: exercise_data };
+    return {
+      status: 1,
+      message: "Exercise inserted",
+      exercise: exercise_data
+    };
   } catch (err) {
     return {
       status: 0,
@@ -359,13 +429,18 @@ exercise_helper.update_exercise_by_id = async (
   exercise_object
 ) => {
   try {
-    let exercise = await Exercise.findOneAndUpdate(
-      { _id: exercise_id },
-      exercise_object,
-      { new: true }
+    let exercise = await Exercise.findByIdAndUpdate({
+        _id: exercise_id
+      },
+      exercise_object, {
+        new: true
+      }
     );
     if (!exercise) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -394,11 +469,19 @@ exercise_helper.update_exercise_by_id = async (
  */
 exercise_helper.delete_exercise_by_id = async exercise_id => {
   try {
-    let resp = await Exercise.findOneAndRemove({ _id: exercise_id });
+    let resp = await Exercise.findOneAndRemove({
+      _id: exercise_id
+    });
     if (!resp) {
-      return { status: 2, message: "Exercise not found" };
+      return {
+        status: 2,
+        message: "Exercise not found"
+      };
     } else {
-      return { status: 1, message: "Exercise deleted" };
+      return {
+        status: 1,
+        message: "Exercise deleted"
+      };
     }
   } catch (err) {
     return {
@@ -419,15 +502,10 @@ exercise_helper.delete_exercise_by_id = async exercise_id => {
 exercise_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await Exercise.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
-    var filtered_data = await Exercise.aggregate([
-      { $unwind: "$otherMuscleGroup" },
-      { $unwind: "$detailedMuscleGroup" },
-      {
+    var searched_record_count = await Exercise.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
+    var filtered_data = await Exercise.aggregate([{
         $lookup: {
           from: "bodyparts",
           localField: "mainMuscleGroup",
@@ -439,53 +517,49 @@ exercise_helper.get_filtered_records = async filter_obj => {
         $unwind: "$mainMuscle"
       },
       {
-        $lookup: {
-          from: "bodyparts",
-          localField: "otherMuscleGroup",
-          foreignField: "_id",
-          as: "otherMuscle"
-        }
-      },
-      {
-        $unwind: "$otherMuscle"
-      },
-      {
-        $lookup: {
-          from: "bodyparts",
-          localField: "detailedMuscleGroup",
-          foreignField: "_id",
-          as: "detailedMuscle"
-        }
-      },
-      {
-        $unwind: "$detailedMuscle"
-      },
-
-      {
         $group: {
           _id: "$_id",
-          name: { $push: "$name" },
-          // cols:filter_object.columnFilter,
-          otherMuscle: { $addToSet: "$otherMuscle" },
-          detailedMuscle: { $addToSet: "$detailedMuscle" },
-          detailedMuscleGroup: { $addToSet: "$detailedMuscleGroup" },
-          category: { $first: "$category" },
-          subCategory: { $first: "$subCategory" },
-          mainMuscle: { $first: "$mainMuscle" },
-          name: { $first: "$name" },
-          description: { $first: "$description" },
-          mainMuscleGroup: { $first: "$mainMuscleGroup" },
-          otherMuscleGroup: { $addToSet: "$otherMuscleGroup" },
-          mechanics: { $first: "$mechanics" },
-          difficltyLevel: { $first: "$difficltyLevel" }
+          name: {
+            $push: "$name"
+          },
+          category: {
+            $first: "$category"
+          },
+          subCategory: {
+            $first: "$subCategory"
+          },
+          mainMuscle: {
+            $first: "$mainMuscle"
+          },
+          name: {
+            $first: "$name"
+          },
+          description: {
+            $first: "$description"
+          },
+          mainMuscleGroup: {
+            $first: "$mainMuscleGroup"
+          },
+          mechanics: {
+            $first: "$mechanics"
+          },
+          difficltyLevel: {
+            $first: "$difficltyLevel"
+          }
         }
       },
       {
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
+      {
+        $sort: filter_obj.columnSort
+      }
     ]);
 
     if (filtered_data) {
@@ -499,7 +573,10 @@ exercise_helper.get_filtered_records = async filter_obj => {
         filtered_exercises: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {

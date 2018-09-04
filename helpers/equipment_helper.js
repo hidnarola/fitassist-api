@@ -3,7 +3,6 @@ var equipment_helper = {};
 
 /*
  * get_all_equipment is used to fetch all equipment
- * 
  * @return  status 0 - If any internal error occured while fetching equipment data, with error
  *          status 1 - If equipment data found, with equipment object
  *          status 2 - If equipment not found, with appropriate message
