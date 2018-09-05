@@ -790,6 +790,7 @@ workout_progress_helper.graph_data_body_fat = async (condition = {}) => {
 
 		if (progress && progress.length > 0) {
 			_.each(progress, function (o) {
+				o.count = parseFloat(o.count.toFixed(2));
 				o.date = moment(o.date).format("DD/MM/YYYY");
 			})
 			return {

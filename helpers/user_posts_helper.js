@@ -22,7 +22,10 @@ user_post_helper.count_post = async id => {
         count: user_post_photos
       };
     } else {
-      return { status: 2, message: "No user photos available" };
+      return {
+        status: 2,
+        message: "No user photos available"
+      };
     }
   } catch (err) {
     return {
@@ -42,8 +45,7 @@ user_post_helper.count_post = async id => {
  */
 user_post_helper.get_user_post_photos = async (username, skip, limit) => {
   try {
-    var user_post_photos = await UserPost.aggregate([
-      {
+    var user_post_photos = await UserPost.aggregate([{
         $lookup: {
           from: "users",
           localField: "userId",
@@ -55,7 +57,10 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
         $unwind: "$users"
       },
       {
-        $match: { "users.username": username, isDeleted: 0 }
+        $match: {
+          "users.username": username,
+          isDeleted: 0
+        }
       },
       {
         $lookup: {
@@ -69,17 +74,31 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
         $unwind: "$images"
       },
       {
-        $match: { "images.isDeleted": 0 }
+        $match: {
+          "images.isDeleted": 0
+        }
       },
       {
         $group: {
           _id: "$_id",
-          description: { $first: "$description" },
-          privacy: { $first: "$privacy" },
-          postType: { $first: "$postType" },
-          status: { $first: "$status" },
-          userId: { $first: "$userId" },
-          images: { $addToSet: "$images" }
+          description: {
+            $first: "$description"
+          },
+          privacy: {
+            $first: "$privacy"
+          },
+          postType: {
+            $first: "$postType"
+          },
+          status: {
+            $first: "$status"
+          },
+          userId: {
+            $first: "$userId"
+          },
+          images: {
+            $addToSet: "$images"
+          }
         }
       },
       skip,
@@ -93,7 +112,10 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
         user_gallery_photos: user_post_photos
       };
     } else {
-      return { status: 2, message: "No user photos available" };
+      return {
+        status: 2,
+        message: "No user photos available"
+      };
     }
   } catch (err) {
     return {
@@ -116,8 +138,9 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
 user_post_helper.get_user_timeline_by_id = async user_auth_id => {
   try {
     //#region timeline old query
-    var timeline = await UserTimeline.aggregate([
-      { $match: user_auth_id },
+    var timeline = await UserTimeline.aggregate([{
+        $match: user_auth_id
+      },
       {
         $lookup: {
           from: "user_progress_photos",
@@ -202,7 +225,11 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           preserveNullAndEmptyArrays: true
         }
       },
-      { $sort: { "likes.createdAt": 1 } },
+      {
+        $sort: {
+          "likes.createdAt": 1
+        }
+      },
       {
         $lookup: {
           from: "users",
@@ -254,12 +281,24 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
       {
         $group: {
           _id: "$_id",
-          progress_photos: { $addToSet: "$user_progress_photos" },
-          post_images: { $addToSet: "$user_post_images" },
-          tag_line: { $first: "$tagLine" },
-          type: { $first: "$type" },
-          progress_description: { $first: "$user_progress_photos.description" },
-          post_description: { $first: "$user_posts.description" },
+          progress_photos: {
+            $addToSet: "$user_progress_photos"
+          },
+          post_images: {
+            $addToSet: "$user_post_images"
+          },
+          tag_line: {
+            $first: "$tagLine"
+          },
+          type: {
+            $first: "$type"
+          },
+          progress_description: {
+            $first: "$user_progress_photos.description"
+          },
+          post_description: {
+            $first: "$user_posts.description"
+          },
           created_by: {
             $first: {
               authUserId: "$created_by.authUserId",
@@ -278,8 +317,12 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
               username: "$users.username"
             }
           },
-          privacy: { $first: "$user_posts.privacy" },
-          createdAt: { $first: "$createdAt" },
+          privacy: {
+            $first: "$user_posts.privacy"
+          },
+          createdAt: {
+            $first: "$createdAt"
+          },
           likes: {
             $addToSet: {
               _id: "$likes._id",
@@ -322,7 +365,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
           comments.push(comment);
         }
       });
-      tmp = _.sortBy(comments, function(o) {
+      tmp = _.sortBy(comments, function (o) {
         return o.create_date;
       });
       t.likes = likes;
@@ -330,7 +373,7 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
     });
 
     if (timeline || timeline.length != 0) {
-      var tmp = _.sortBy(timeline[0].comments, function(o) {
+      var tmp = _.sortBy(timeline[0].comments, function (o) {
         return o.create_date;
       });
 
@@ -342,7 +385,10 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
         timeline: timeline[0]
       };
     } else {
-      return { status: 2, message: "No user timeline available" };
+      return {
+        status: 2,
+        message: "No user timeline available"
+      };
     }
   } catch (err) {
     return {
@@ -368,12 +414,13 @@ user_post_helper.get_user_timeline = async (
 ) => {
   try {
     //#region timeline old query
-    var timeline = await UserTimeline.aggregate([
-      {
+    var timeline = await UserTimeline.aggregate([{
         $match: user_auth_id
       },
       {
-        $sort: { createdAt: -1 }
+        $sort: {
+          createdAt: -1
+        }
       },
       skip,
       offset,
@@ -517,12 +564,24 @@ user_post_helper.get_user_timeline = async (
       {
         $group: {
           _id: "$_id",
-          progress_photos: { $addToSet: "$user_progress_photos" },
-          post_images: { $addToSet: "$user_post_images" },
-          tag_line: { $first: "$tagLine" },
-          type: { $first: "$type" },
-          progress_description: { $first: "$user_progress_photos.description" },
-          post_description: { $first: "$user_posts.description" },
+          progress_photos: {
+            $addToSet: "$user_progress_photos"
+          },
+          post_images: {
+            $addToSet: "$user_post_images"
+          },
+          tag_line: {
+            $first: "$tagLine"
+          },
+          type: {
+            $first: "$type"
+          },
+          progress_description: {
+            $first: "$user_progress_photos.description"
+          },
+          post_description: {
+            $first: "$user_posts.description"
+          },
           created_by: {
             $first: {
               firstName: "$created_by.firstName",
@@ -539,8 +598,12 @@ user_post_helper.get_user_timeline = async (
               username: "$users.username"
             }
           },
-          privacy: { $first: "$user_posts.privacy" },
-          createdAt: { $first: "$createdAt" },
+          privacy: {
+            $first: "$user_posts.privacy"
+          },
+          createdAt: {
+            $first: "$createdAt"
+          },
           likes: {
             $addToSet: {
               _id: "$likes._id",
@@ -587,7 +650,7 @@ user_post_helper.get_user_timeline = async (
           comments.push(comment);
         }
       });
-      tmp = _.sortBy(comments, function(o) {
+      tmp = _.sortBy(comments, function (o) {
         return o.create_date;
       });
       t.likes = likes;
@@ -595,9 +658,16 @@ user_post_helper.get_user_timeline = async (
     });
 
     if (timeline || timeline.length != 0) {
-      return { status: 1, message: "User timeline found", timeline: timeline };
+      return {
+        status: 1,
+        message: "User timeline found",
+        timeline: timeline
+      };
     } else {
-      return { status: 2, message: "No user timeline available" };
+      return {
+        status: 2,
+        message: "No user timeline available"
+      };
     }
   } catch (err) {
     return {
@@ -625,7 +695,10 @@ user_post_helper.get_user_post_photo_by_id = async id => {
         user_post_photo: user_post_photo
       };
     } else {
-      return { status: 2, message: "No user post photos available" };
+      return {
+        status: 2,
+        message: "No user post photos available"
+      };
     }
   } catch (err) {
     return {
@@ -721,11 +794,15 @@ user_post_helper.update_user_post_photo = async (
   try {
     let user_post_photo = await UserPostsImages.findOneAndUpdate(
       authUserId,
-      user_post_photo_obj,
-      { new: true }
+      user_post_photo_obj, {
+        new: true
+      }
     );
     if (!user_post_photo) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -756,7 +833,10 @@ user_post_helper.delete_user_post_photo = async (id, user_post_photo_obj) => {
       user_post_photo_obj
     );
     if (!user_post_photo) {
-      return { status: 2, message: "Record has not deleted" };
+      return {
+        status: 2,
+        message: "Record has not deleted"
+      };
     } else {
       return {
         status: 1,

@@ -6,13 +6,16 @@ var jwtDecode = require("jwt-decode");
 
 var jwtDecode = require("jwt-decode");
 var moment = require("moment");
+var _ = require("underscore");
 
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 var user_workouts_helper = require("../../helpers/user_workouts_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var workout_progress_helper = require("../../helpers/workout_progress_helper");
+var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_helper = require("../../helpers/user_helper");
+var friend_helper = require("../../helpers/friend_helper");
 
 /**
  * @api {get} /user/dashboard Get User Dashboard
@@ -70,7 +73,33 @@ router.get("/", async (req, res) => {
         dashboard.data.workouts = [];
       }
     }
-    if (widgets.widgets.activityFeed) {}
+    if (widgets.widgets.activityFeed) {
+      var userdata = await friend_helper.find({
+        authUserId: authUserId
+      });
+      var username = userdata.friends.username;
+      var resp_data = await friend_helper.get_friend_by_username({
+          username: username
+        },
+        2
+      );
+      var friendsIds = _.pluck(resp_data.friends, 'authUserId');
+      var activityFeed = await user_posts_helper.get_user_timeline({
+        userId: {
+          $in: friendsIds
+        },
+        isDeleted: 0
+      }, {
+        $skip: 0
+      }, {
+        $limit: 10
+      });
+      if (activityFeed.status === 1) {
+        dashboard.data.activityFeed = activityFeed.timeline;
+      } else {
+        dashboard.data.activityFeed = [];
+      }
+    }
     if (widgets.widgets.badges) {
       var badges = await badge_assign_helper.get_all_badges({
         userId: authUserId
