@@ -16,14 +16,6 @@ var WidgetsSettingsSchema = new Schema({
         enum: ["dashboard", "timeline"],
         default: null
     },
-    graph: [{
-        type: Object,
-        default: null
-    }],
-    state: [{
-        type: Object,
-        default: null
-    }],
     badges: {
         type: Number,
         default: null
@@ -57,10 +49,6 @@ var WidgetsSettingsSchema = new Schema({
         default: null
     },
     endurance: {
-        type: Number,
-        default: null
-    },
-    profileComplete: {
         type: Number,
         default: null
     },

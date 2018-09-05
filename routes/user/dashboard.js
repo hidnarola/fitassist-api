@@ -100,9 +100,6 @@ router.get("/", async (req, res) => {
           userId: authUserId,
         },
       });
-      console.log('------------------------------------');
-      console.log('body : ', body);
-      console.log('------------------------------------');
       if (body.status === 1) {
         data.body_fat = body.progress;
       }
