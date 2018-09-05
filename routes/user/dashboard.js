@@ -47,8 +47,9 @@ router.get("/", async (req, res) => {
     data: {
       userWidgets: null,
       todaysWorkout: null,
-      activityFeed: [],
-      badges: [],
+      activityFeed: null,
+      badges: null,
+      bodyFat: null,
       profileComplete: null,
     }
   }
@@ -65,7 +66,7 @@ router.get("/", async (req, res) => {
   });
 
   if (widgets.status === 1) {
-    data.userWidgets = widgets.widgets;
+    dashboard.data.userWidgets = widgets.widgets;
     if (widgets.widgets.workout && widgets.widgets.workout.status === 1) {
       var workout = await user_workouts_helper.get_all_workouts_group_by({
         userId: authUserId,
@@ -104,42 +105,37 @@ router.get("/", async (req, res) => {
         },
       });
       if (body.status === 1) {
-        dashboard.data.body_fat = body.progress;
+        dashboard.data.bodyFat = body.progress;
       }
     }
-
-    if (widgets.widgets.profileComplete) {
-      var user_data = await user_helper.get_user_by_id(authUserId);
-      if (user_data.status === 1) {
-        var resp_data = user_data.user;
-
-        var percentage = 0;
-        for (const key of Object.keys(resp_data)) {
-          if (resp_data[key] != null) {
-            if (key == "gender") {
-              percentage += 10;
-            } else if (key == "dateOfBirth") {
-              percentage += 15;
-            } else if (key == "height") {
-              percentage += 10;
-            } else if (key == "weight") {
-              percentage += 10;
-            } else if (key == "avatar") {
-              percentage += 15;
-            } else if (key == "aboutMe") {
-              percentage += 10;
-            } else if (key == "lastName") {
-              percentage += 10;
-            } else if (key == "mobileNumber") {
-              percentage += 10;
-            } else if (key == "goal") {
-              percentage += 10;
-            }
+    var user_data = await user_helper.get_user_by_id(authUserId);
+    if (user_data.status === 1) {
+      var resp_data = user_data.user;
+      var percentage = 0;
+      for (const key of Object.keys(resp_data)) {
+        if (resp_data[key] != null) {
+          if (key == "gender") {
+            percentage += 10;
+          } else if (key == "dateOfBirth") {
+            percentage += 15;
+          } else if (key == "height") {
+            percentage += 10;
+          } else if (key == "weight") {
+            percentage += 10;
+          } else if (key == "avatar") {
+            percentage += 15;
+          } else if (key == "aboutMe") {
+            percentage += 10;
+          } else if (key == "lastName") {
+            percentage += 10;
+          } else if (key == "mobileNumber") {
+            percentage += 10;
+          } else if (key == "goal") {
+            percentage += 10;
           }
         }
-        dashboard.data.profileComplete = percentage;
-
       }
+      dashboard.data.profileComplete = percentage;
     }
   }
   //Today's workout

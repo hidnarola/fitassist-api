@@ -20,10 +20,6 @@ var WidgetsSettingsSchema = new Schema({
         type: Number,
         default: null
     },
-    progressPhoto: {
-        type: Number,
-        default: null
-    },
     workout: {
         type: Object,
         default: null
@@ -33,25 +29,29 @@ var WidgetsSettingsSchema = new Schema({
         default: null
     },
     bodyFat: {
-        type: Number,
+        type: Object,
         default: null
     },
-    mobility: {
-        type: Number,
-        default: null
-    },
-    muscle: {
-        type: Number,
-        default: null
-    },
-    strength: {
-        type: Number,
-        default: null
-    },
-    endurance: {
-        type: Number,
-        default: null
-    },
+    // progressPhoto: {
+    //     type: Number,
+    //     default: null
+    // },
+    // mobility: {
+    //     type: Number,
+    //     default: null
+    // },
+    // muscle: {
+    //     type: Number,
+    //     default: null
+    // },
+    // strength: {
+    //     type: Number,
+    //     default: null
+    // },
+    // endurance: {
+    //     type: Number,
+    //     default: null
+    // },
     createdAt: {
         type: Date,
         default: Date.now

@@ -30,14 +30,14 @@ router.post("/:type", async (req, res) => {
     userId: authUserId,
     widgetFor: type,
     badges: req.body.badges ? req.body.badges : null,
-    progressPhoto: req.body.progressPhoto ? req.body.progressPhoto : null,
     workout: req.body.workout ? req.body.workout : null,
-    bodyFat: req.body.body_fat ? req.body.body_fat : null,
-    mobility: req.body.mobility ? req.body.mobility : null,
-    muscle: req.body.muscle ? req.body.muscle : null,
-    strength: req.body.strength ? req.body.strength : null,
-    endurance: req.body.endurance ? req.body.endurance : null,
+    bodyFat: req.body.bodyFat ? req.body.bodyFat : null,
     activityFeed: req.body.activityFeed ? req.body.activityFeed : null,
+    // progressPhoto: req.body.progressPhoto ? req.body.progressPhoto : null,
+    // mobility: req.body.mobility ? req.body.mobility : null,
+    // muscle: req.body.muscle ? req.body.muscle : null,
+    // strength: req.body.strength ? req.body.strength : null,
+    // endurance: req.body.endurance ? req.body.endurance : null,
     modifiedAt: new Date()
   }
 
