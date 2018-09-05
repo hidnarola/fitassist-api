@@ -41,13 +41,16 @@ router.get("/", async (req, res) => {
 
 
 
-
-  var data = {
-    userWidgets: null,
-    todaysWorkout: null,
-    activityFeed: [],
-    badges: [],
-    profileComplete: null,
+  var dashboard = {
+    status: 1,
+    message: "success",
+    data: {
+      userWidgets: null,
+      todaysWorkout: null,
+      activityFeed: [],
+      badges: [],
+      profileComplete: null,
+    }
   }
   //Widgets
   var widgets = await widgets_settings_helper.get_all_widgets({
@@ -72,7 +75,7 @@ router.get("/", async (req, res) => {
         }
       });
       if (workout.status === 1) {
-        data.todaysWorkout = workout.workouts;
+        dashboard.data.todaysWorkout = workout.workouts;
       }
     }
     if (widgets.widgets.activityFeed) {}
@@ -87,7 +90,7 @@ router.get("/", async (req, res) => {
         $limit: 5
       });
       if (badges.status === 1) {
-        data.badges = badges.badges;
+        dashboard.data.badges = badges.badges;
       }
     }
     if (widgets.widgets.bodyFat) {
@@ -101,7 +104,7 @@ router.get("/", async (req, res) => {
         },
       });
       if (body.status === 1) {
-        data.body_fat = body.progress;
+        dashboard.data.body_fat = body.progress;
       }
     }
 
@@ -134,14 +137,14 @@ router.get("/", async (req, res) => {
             }
           }
         }
-        data.profileComplete = percentage;
+        dashboard.data.profileComplete = percentage;
 
       }
     }
   }
   //Today's workout
 
-  return res.send(data);
+  return res.send(dashboard);
 
 });
 
