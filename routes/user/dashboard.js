@@ -27,26 +27,15 @@ router.get("/", async (req, res) => {
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
-  var startdate = moment().utcOffset(0);
-  startdate.toISOString();
-  startdate.format();
-
-  var enddate = moment()
-    .utcOffset(0)
-    .add(23, "hours")
-    .add(59, "minutes");
-  enddate.toISOString();
-  enddate.format();
-
-
+  var startdate = moment().startOf('day').utc();
+  var enddate = moment().endOf('day').utc();
 
   var dashboard = {
     status: 1,
-    message: "success",
+    message: "Success",
     data: {
       userWidgets: null,
-      todaysWorkout: null,
+      workouts: null,
       activityFeed: null,
       badges: null,
       bodyFat: null,
@@ -67,16 +56,18 @@ router.get("/", async (req, res) => {
 
   if (widgets.status === 1) {
     dashboard.data.userWidgets = widgets.widgets;
-    if (widgets.widgets.workout && widgets.widgets.workout.status === 1) {
-      var workout = await user_workouts_helper.get_all_workouts_group_by({
+    if (widgets.widgets.workout) {
+      var workout = await user_workouts_helper.get_workouts_by_date({
         userId: authUserId,
         date: {
-          $gte: new Date(widgets.widgets.workout.start),
-          $lte: new Date(widgets.widgets.workout.end)
+          $gte: new Date(startdate),
+          $lte: new Date(enddate)
         }
       });
       if (workout.status === 1) {
-        dashboard.data.todaysWorkout = workout.workouts;
+        dashboard.data.workouts = workout.workouts_list;
+      } else {
+        dashboard.data.workouts = [];
       }
     }
     if (widgets.widgets.activityFeed) {}
