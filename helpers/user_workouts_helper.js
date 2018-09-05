@@ -415,7 +415,7 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
       }
     ]);
 
-    if (user_workouts) {
+    if (user_workouts && user_workouts.length > 0) {
       var returnObj = {
         _id: user_workouts[0].userWorkoutsId,
         isCompleted: user_workouts[0].isCompleted,

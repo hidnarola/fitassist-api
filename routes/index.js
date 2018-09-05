@@ -65,7 +65,9 @@ router.post("/user_login", async (req, res) => {
     // Checking for user availability
     logger.trace("Checking for user availability");
 
-    let user_resp = await user_helper.get_user_by_email(req.body.email);
+    let user_resp = await user_helper.get_user_by({
+      email: req.body.email
+    });
     logger.trace("User checked resp = ", user_resp);
     if (user_resp.status === 0) {
       logger.error(

@@ -519,8 +519,6 @@ router.put("/preferences", async (req, res) => {
 async function badgeAssign(authUserId) {
 
   var user_data = await user_helper.get_user_by_id(authUserId);
-
-
   if (user_data.status === 1) {
     var data = user_data.user;
 

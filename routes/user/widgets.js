@@ -11,7 +11,7 @@ var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 var badge_helper = require("../../helpers/badge_helper");
 
 /**
- * @api {post} /user/widgets_settings Save
+ * @api {post} /user/widgets/:type Save
  * @apiName Save Widgets
  * @apiGroup User Widgets
  * @apiHeader {String}  authorization user's unique access-key
@@ -34,6 +34,12 @@ router.post("/:type", async (req, res) => {
     progress: req.body.progress,
     workout: req.body.workout,
     meal: req.body.meal,
+    bodyFat: body_fat,
+    mobility: mobility,
+    muscle: muscle,
+    strength: strength,
+    endurance: endurance,
+    profileComplete: profile_complete,
     activityFeed: req.body.activityFeed,
     modifiedAt: new Date()
   }

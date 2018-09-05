@@ -28,10 +28,6 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {
   }
 }, limit = false) => {
   try {
-    console.log('------------------------------------');
-    console.log('limit : ', limit);
-    console.log('------------------------------------');
-
     var aggregate = [{
         $match: condition
       },
@@ -91,10 +87,6 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {
     if (limit) {
       aggregate.push(limit);
     }
-    console.log('------------------------------------');
-    console.log('aggregate : ', aggregate);
-    console.log('------------------------------------');
-
     var badges = await BadgesAssign.aggregate(aggregate);
     if (badges) {
       return {

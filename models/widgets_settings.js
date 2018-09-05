@@ -16,14 +16,14 @@ var WidgetsSettingsSchema = new Schema({
         enum: ["dashboard", "timeline"],
         default: null
     },
-    graph: {
-        type: Array,
+    graph: [{
+        type: Object,
         default: null
-    },
-    state: {
-        type: Array,
+    }],
+    state: [{
+        type: Object,
         default: null
-    },
+    }],
     badges: {
         type: Number,
         default: null
@@ -33,14 +33,34 @@ var WidgetsSettingsSchema = new Schema({
         default: null
     },
     workout: {
-        type: Number,
-        default: null
-    },
-    meal: {
-        type: Number,
+        type: Object,
         default: null
     },
     activityFeed: {
+        type: Number,
+        default: null
+    },
+    bodyFat: {
+        type: Number,
+        default: null
+    },
+    mobility: {
+        type: Number,
+        default: null
+    },
+    muscle: {
+        type: Number,
+        default: null
+    },
+    strength: {
+        type: Number,
+        default: null
+    },
+    endurance: {
+        type: Number,
+        default: null
+    },
+    profileComplete: {
         type: Number,
         default: null
     },
