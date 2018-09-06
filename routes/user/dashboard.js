@@ -6,6 +6,7 @@ var jwtDecode = require("jwt-decode");
 
 var jwtDecode = require("jwt-decode");
 var moment = require("moment");
+var mongoose = require("mongoose");
 var _ = require("underscore");
 
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
@@ -16,6 +17,7 @@ var workout_progress_helper = require("../../helpers/workout_progress_helper");
 var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
+var common_helper = require("../../helpers/common_helper");
 
 /**
  * @api {get} /user/dashboard Get User Dashboard
@@ -92,7 +94,7 @@ router.get("/", async (req, res) => {
       }, {
         $skip: 0
       }, {
-        $limit: 10
+        $limit: 5
       });
       if (activityFeed.status === 1) {
         dashboard.data.activityFeed = activityFeed.timeline;
@@ -129,37 +131,36 @@ router.get("/", async (req, res) => {
         dashboard.data.bodyFat = body.progress;
       }
     }
-    var user_data = await user_helper.get_user_by_id(authUserId);
-    if (user_data.status === 1) {
-      var resp_data = user_data.user;
-      var percentage = 0;
-      for (const key of Object.keys(resp_data)) {
-        if (resp_data[key] != null) {
-          if (key == "gender") {
-            percentage += 10;
-          } else if (key == "dateOfBirth") {
-            percentage += 15;
-          } else if (key == "height") {
-            percentage += 10;
-          } else if (key == "weight") {
-            percentage += 10;
-          } else if (key == "avatar") {
-            percentage += 15;
-          } else if (key == "aboutMe") {
-            percentage += 10;
-          } else if (key == "lastName") {
-            percentage += 10;
-          } else if (key == "mobileNumber") {
-            percentage += 10;
-          } else if (key == "goal") {
-            percentage += 10;
-          }
+  }
+  var user_data = await user_helper.get_user_by_id(authUserId);
+  if (user_data.status === 1) {
+    var resp_data = user_data.user;
+    var percentage = 0;
+    for (const key of Object.keys(resp_data)) {
+      if (resp_data[key] != null) {
+        if (key == "gender") {
+          percentage += 10;
+        } else if (key == "dateOfBirth") {
+          percentage += 15;
+        } else if (key == "height") {
+          percentage += 10;
+        } else if (key == "weight") {
+          percentage += 10;
+        } else if (key == "avatar") {
+          percentage += 15;
+        } else if (key == "aboutMe") {
+          percentage += 10;
+        } else if (key == "lastName") {
+          percentage += 10;
+        } else if (key == "mobileNumber") {
+          percentage += 10;
+        } else if (key == "goal") {
+          percentage += 10;
         }
       }
-      dashboard.data.profileComplete = percentage;
     }
+    dashboard.data.profileComplete = percentage;
   }
-
   return res.send(dashboard);
 
 });
@@ -168,7 +169,7 @@ router.get("/", async (req, res) => {
 /**
  * @api {post} /user/dashboard/body_fat Save
  * @apiName Save Bodyfat
- * @apiGroup User Bodyfat
+ * @apiGroup User Dashboard
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {JSON} widgets JSON of widgets_settings's document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -243,6 +244,40 @@ router.post("/body_fat", async (req, res) => {
   }
 });
 
+/**
+ * @api {post} /user/dashboard/complete Workout completed
+ * @apiName  Workout completed
+ * @apiGroup User Dashboard
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Array} exerciseId id of Day
+ * @apiParam {Object} isCompleted status of workout
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/workout_complete", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var workoutId = mongoose.Types.ObjectId(req.body.workoutId);
+  var isCompleted = req.body.isCompleted;
+
+  logger.trace("Complete workout by id = ", workoutId);
+  let workout_data = await user_workouts_helper.complete_workout_by_days(
+    [workoutId], authUserId, {
+      isCompleted: isCompleted
+    }
+  );
+
+  if (workout_data.status === 1) {
+    workout_data = await user_workouts_helper.get_user_workouts_by_id({
+      _id: workoutId,
+      userId: authUserId
+    });
+    res.status(config.OK_STATUS).json(workout_data);
+    common_helper.assign_badges(authUserId);
+  } else {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
+  }
+});
 
 module.exports = router;
 

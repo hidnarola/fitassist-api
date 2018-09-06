@@ -2,10 +2,13 @@ var bcrypt = require("bcrypt");
 var common_helper = {};
 var async = require("async");
 var _ = require("underscore");
+var constant = require("../constant");
 var NutritionalLabels = require("./../models/nutritional_labels");
 var Nutritions = require("./../models/nutritions");
 var user_helper = require("./../helpers/user_helper");
+var user_workouts_helper = require("./../helpers/user_workouts_helper");
 var notification_helper = require("./../helpers/notification_helper");
+var badge_assign_helper = require("./../helpers/badge_assign_helper");
 var socket = require("../socket/socketServer");
 
 common_helper.hashPassword = function (callback) {
@@ -438,5 +441,20 @@ common_helper.convertUnits = async (from, to, value) => {
       break;
   }
   return result;
+}
+
+//@param authUserId auth user id
+common_helper.assign_badges = async (authUserId) => {
+  let workout_detail = await user_workouts_helper.workout_detail_for_badges({
+    userId: authUserId
+  });
+
+  //badge assign start;
+  var badges = await badge_assign_helper.badge_assign(
+    authUserId,
+    constant.BADGES_TYPE.WORKOUTS.concat(constant.BADGES_TYPE.WEIGHT_LIFTED),
+    workout_detail.workouts
+  );
+  //badge assign end
 }
 module.exports = common_helper;

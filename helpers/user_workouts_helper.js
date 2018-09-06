@@ -660,9 +660,7 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
  */
 user_workouts_helper.get_user_workouts_by_id = async id => {
   try {
-    var user_workout = await UserWorkouts.findOne({
-      _id: id
-    });
+    var user_workout = await UserWorkouts.findOne(id);
     if (user_workout) {
       return {
         status: 1,
@@ -1590,50 +1588,56 @@ user_workouts_helper.delete_user_workouts_by_id = async workoutIds => {
 /*
  * complete_workout_by_days is used to complete user workouts data based on user workouts date
  * @param   id         Object  condition of user_workouts that need to be complete
+ * @param   userId         userId of user
  * @param   updateObject         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
  *          status  2 - If user_workouts not completed, with appropriate message 
  * @developed by "amc"
  */
-user_workouts_helper.complete_workout_by_days = async (id, updateObject) => {
+user_workouts_helper.complete_workout_by_days = async (id, userId, updateObject) => {
   try {
     let user_workouts_data1 = await UserWorkouts.updateMany({
         _id: {
           $in: id
-        }
+        },
+        userId: userId
       },
       updateObject, {
         new: true
       }
     );
-
-    let idsForWorkoutLog = await UserWorkoutExercises.find({
-      userWorkoutsId: {
-        $in: id
-      }
-    }, {
-      _id: 1
-    });
-    idsForWorkoutLog = _.pluck(idsForWorkoutLog, "_id");
-    let user_workouts_data2 = await UserWorkoutExercises.updateMany({
+    if (user_workouts_data1) {
+      let idsForWorkoutLog = await UserWorkoutExercises.find({
         userWorkoutsId: {
           $in: id
         }
-      },
-      updateObject, {
-        new: true
-      }
-    );
-    let user_workouts_data3 = await WorkoutLogs.updateMany({
-        workoutId: {
-          $in: idsForWorkoutLog
+      }, {
+        _id: 1
+      });
+
+      idsForWorkoutLog = _.pluck(idsForWorkoutLog, "_id");
+      await UserWorkoutExercises.updateMany({
+          userWorkoutsId: {
+            $in: id
+          }
+        },
+        updateObject, {
+          new: true
         }
-      },
-      updateObject, {
-        new: true
-      }
-    );
+      );
+      await WorkoutLogs.updateMany({
+          workoutId: {
+            $in: idsForWorkoutLog
+          },
+          userId: userId
+        },
+        updateObject, {
+          new: true
+        }
+      );
+    }
+
 
     return {
       status: 1,

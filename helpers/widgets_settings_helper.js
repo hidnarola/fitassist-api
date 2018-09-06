@@ -76,10 +76,6 @@ widgets_settings_helper.save_widgets = async (widgets_object, widgets_id = false
   try {
     let widgets_data = false;
     if (widgets_id) {
-      console.log('------------------------------------');
-      console.log('widgets_id : ', widgets_id);
-      console.log('------------------------------------');
-
       widgets_data = await WidgetsSettings.findOneAndUpdate(widgets_id, widgets_object, {
         new: true
       });
@@ -87,10 +83,6 @@ widgets_settings_helper.save_widgets = async (widgets_object, widgets_id = false
       var widgets = new WidgetsSettings(widgets_object);
       widgets_data = await widgets.save();
     }
-    console.log('------------------------------------');
-    console.log('widgets_data : ', widgets_data);
-    console.log('------------------------------------');
-
     return {
       status: 1,
       message: "Widgets saved",

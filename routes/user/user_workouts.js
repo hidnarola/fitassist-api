@@ -733,7 +733,7 @@ router.post("/bulk_complete", async (req, res) => {
 	});
 	logger.trace("Complete workout by id = ", exerciseIds);
 	let workout_data = await user_workout_helper.complete_workout_by_days(
-		exerciseIds, {
+		exerciseIds, authUserId, {
 			isCompleted: isCompleted
 		}
 	);
@@ -741,7 +741,8 @@ router.post("/bulk_complete", async (req, res) => {
 	if (workout_data.status === 1) {
 		res.status(config.OK_STATUS).json(workout_data);
 		//CALL assign_badges function for assigning badges for workout
-		assign_badges(authUserId);
+		// assign_badges(authUserId);
+		common_helper.assign_badges(authUserId);
 	} else {
 		res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
 	}
@@ -806,7 +807,8 @@ router.put("/complete", async (req, res) => {
 		workout.message = "Workout completed";
 		res.status(config.OK_STATUS).json(workout);
 		//CALL assign_badges function for assigning badges for workout
-		assign_badges(authUserId);
+		// assign_badges(authUserId);
+		common_helper.assign_badges(authUserId);
 	} else {
 		res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
 	}
@@ -1521,20 +1523,20 @@ router.post("/delete", async (req, res) => {
 
 
 
-//@param authUserId auth user id
-async function assign_badges(authUserId) {
-	let workout_detail = await user_workout_helper.workout_detail_for_badges({
-		userId: authUserId
-	});
+// //@param authUserId auth user id
+// async function assign_badges(authUserId) {
+// 	let workout_detail = await user_workout_helper.workout_detail_for_badges({
+// 		userId: authUserId
+// 	});
 
-	//badge assign start;
-	var badges = await badge_assign_helper.badge_assign(
-		authUserId,
-		constant.BADGES_TYPE.WORKOUTS.concat(constant.BADGES_TYPE.WEIGHT_LIFTED),
-		workout_detail.workouts
-	);
-	//badge assign end
-}
+// 	//badge assign start;
+// 	var badges = await badge_assign_helper.badge_assign(
+// 		authUserId,
+// 		constant.BADGES_TYPE.WORKOUTS.concat(constant.BADGES_TYPE.WEIGHT_LIFTED),
+// 		workout_detail.workouts
+// 	);
+// 	//badge assign end
+// }
 
 
 //Function for send respose while adding,updating,completing workouts
