@@ -109,63 +109,133 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
   }, {
     $limit: parseInt(limit)
   });
-  var progress_photos_data = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
-    userId: user.user.authUserId,
-    isDeleted: 0
-  });
-  var end = moment().utcOffset(0);
-  end.toISOString();
-  end.format();
 
-  var start = moment(end).utcOffset(0);
-  start.toISOString();
-  start.subtract(1, 'years');
-  start.format();
 
-  var body = await workout_progress_helper.graph_data_body_fat({
-    createdAt: {
-      logDate: {
-        $gte: new Date(start),
-        $lte: new Date(end)
-      },
-      userId: friendId,
-    },
-  });
-  var badges = await badge_assign_helper.get_all_badges({
-    userId: friendId
+  //start other data on timeline
+
+  var timeline = {
+    status: 1,
+    message: "Success",
+    data: {
+      userWidgets: null,
+      progressPhoto: null,
+      badges: null,
+      bodyFat: null,
+      muscle: null,
+    }
+  }
+  //Widgets
+  var widgets = await widgets_settings_helper.get_all_widgets({
+    userId: authUserId,
+    widgetFor: "timeline"
   }, {
-    createdAt: -1
-  }, {
-    $limit: 10
+    "progressPhoto": 1,
+    "badges": 1,
+    "bodyFat": 1,
+    "muscle": 1,
   });
 
-  resp_data.progress_photos = {};
-  resp_data.body_fat = {};
-  resp_data.badges = {};
+  if (widgets.status === 1) {
+    timeline.data.userWidgets = widgets.widgets;
+    if (widgets.widgets.progressPhoto) {
+      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
+        userId: user.user.authUserId,
+        isDeleted: 0
+      });
+      if (progressPhoto.status === 1) {
+        timeline.data.progressPhoto = progressPhoto.user_progress_photos;
+      } else {
+        timeline.data.progressPhoto = null;
+      }
+    }
+    if (widgets.widgets.badges) {
+      var badges = await badge_assign_helper.get_all_badges({
+        userId: authUserId
+      }, {
+        $sort: {
+          createdAt: -1
+        }
+      }, {
+        $limit: 5
+      });
+      if (badges.status === 1) {
+        timeline.data.badges = badges.badges;
+      }
+    }
+    if (widgets.widgets.bodyFat) {
+      var body = await workout_progress_helper.graph_data_body_fat({
+        createdAt: {
+          logDate: {
+            $gte: new Date(widgets.widgets.bodyFat.start),
+            $lte: new Date(widgets.widgets.bodyFat.end)
+          },
+          userId: authUserId,
+        },
+      });
 
-  if (progress_photos_data.status == 1) {
-    resp_data.progress_photos = progress_photos_data.user_progress_photos;
-  }
-  if (badges.status == 1) {
-    resp_data.badges = badges.badges;
-  }
-  if (body.status == 1) {
-    resp_data.body_fat.graph_data = body.progress;
-    resp_data.body_fat.date = {
-      start,
-      end
-    };
+      if (body.status === 1) {
+        timeline.data.bodyFat = body.progress;
+      }
+    }
+    if (widgets.widgets.muscle) {
+      var muscle = await workout_progress_helper.user_body_progress({
+        userId: authUserId,
+        logDate: {
+          $gte: new Date(widgets.widgets.muscle.start),
+          $lte: new Date(widgets.widgets.end)
+        }
+      });
 
+      if (muscle.status === 1) {
+        timeline.data.muscle = muscle.timeline;
+      } else {
+        timeline.data.muscle = [];
+      }
+    }
+
+
+    var user_data = await user_helper.get_user_by_id(authUserId);
+    if (user_data.status === 1) {
+      var user_data = user_data.user;
+      var percentage = 0;
+      for (const key of Object.keys(user_data)) {
+        if (user_data[key] != null) {
+          if (key == "gender") {
+            percentage += 10;
+          } else if (key == "dateOfBirth") {
+            percentage += 15;
+          } else if (key == "height") {
+            percentage += 10;
+          } else if (key == "weight") {
+            percentage += 10;
+          } else if (key == "avatar") {
+            percentage += 15;
+          } else if (key == "aboutMe") {
+            percentage += 10;
+          } else if (key == "lastName") {
+            percentage += 10;
+          } else if (key == "mobileNumber") {
+            percentage += 10;
+          } else if (key == "goal") {
+            percentage += 10;
+          }
+        }
+      }
+      timeline.data.profileComplete = percentage;
+    }
   }
-  if (resp_data.status == 0) {
+  //end Other data on timeline 
+
+  if (resp_data.status === 1) {
+    logger.trace("user timeline got successfully = ", resp_data);
+    resp_data.widgets = timeline;
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
     logger.error(
       "Error occured while fetching get all user timeline = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user timeline got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
@@ -314,82 +384,82 @@ router.post("/", async (req, res) => {
           async.each(
             file_path_array,
             async function (file, callback) {
-              post_image_obj.image = file;
-              let user_post_data = await user_posts_helper.insert_user_post_image(
-                post_image_obj
-              );
-              if (user_post_data.status === 0) {
-                unsuccess++;
-                logger.error(
-                  "Error while inserting user post data = ",
-                  user_post_data
+                post_image_obj.image = file;
+                let user_post_data = await user_posts_helper.insert_user_post_image(
+                  post_image_obj
                 );
-              } else {
-                success++;
-              }
-            },
-            async function (err) {
-              if (err) {
-                console.log("Failed to upload image");
-              } else {
-                //TIMELINE START
-                let resp_data_for_single_post;
-                var timelineObj = {
-                  userId: req.body.onWall,
-                  createdBy: authUserId,
-                  postPhotoId: user_post_data.user_post_photo._id,
-                  tagLine: "added a new post",
-                  type: "timeline",
-                  privacy: req.body.privacy ? req.body.privacy : 3
-                };
-                let user_timeline_data = await user_timeline_helper.insert_timeline_data(
-                  timelineObj
-                );
-
-                if (user_timeline_data.status === 0) {
+                if (user_post_data.status === 0) {
+                  unsuccess++;
                   logger.error(
-                    "Error while inserting timeline data = ",
-                    user_timeline_data
+                    "Error while inserting user post data = ",
+                    user_post_data
                   );
                 } else {
-                  resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id({
-                    _id: mongoose.Types.ObjectId(
-                      user_timeline_data.user_timeline._id
-                    ),
-                    isDeleted: 0
+                  success++;
+                }
+              },
+              async function (err) {
+                if (err) {
+                  console.log("Failed to upload image");
+                } else {
+                  //TIMELINE START
+                  let resp_data_for_single_post;
+                  var timelineObj = {
+                    userId: req.body.onWall,
+                    createdBy: authUserId,
+                    postPhotoId: user_post_data.user_post_photo._id,
+                    tagLine: "added a new post",
+                    type: "timeline",
+                    privacy: req.body.privacy ? req.body.privacy : 3
+                  };
+                  let user_timeline_data = await user_timeline_helper.insert_timeline_data(
+                    timelineObj
+                  );
+
+                  if (user_timeline_data.status === 0) {
+                    logger.error(
+                      "Error while inserting timeline data = ",
+                      user_timeline_data
+                    );
+                  } else {
+                    resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id({
+                      _id: mongoose.Types.ObjectId(
+                        user_timeline_data.user_timeline._id
+                      ),
+                      isDeleted: 0
+                    });
+
+                    logger.error(
+                      "successfully added timeline data = ",
+                      user_timeline_data
+                    );
+                  }
+                  //TIMELINE END
+
+                  // Badge assign
+                  var total_post = await user_posts_helper.count_post({
+                    userId: authUserId
                   });
 
-                  logger.error(
-                    "successfully added timeline data = ",
-                    user_timeline_data
+                  var post_data = await badge_assign_helper.badge_assign(
+                    authUserId,
+                    constant.BADGES_TYPE.PROFILE, {
+                      post: total_post.count
+                    }
                   );
+                  // Badge assign end
+
+                  return res.status(config.OK_STATUS).json({
+                    status: 1,
+                    message: "post successfully added, " +
+                      success +
+                      " successfully uploaded image(s), " +
+                      unsuccess +
+                      " failed uploaded image(s)",
+                    timeline: resp_data_for_single_post.timeline
+                  });
                 }
-                //TIMELINE END
-
-                // Badge assign
-                var total_post = await user_posts_helper.count_post({
-                  userId: authUserId
-                });
-
-                var post_data = await badge_assign_helper.badge_assign(
-                  authUserId,
-                  constant.BADGES_TYPE.PROFILE, {
-                    post: total_post.count
-                  }
-                );
-                // Badge assign end
-
-                return res.status(config.OK_STATUS).json({
-                  status: 1,
-                  message: "post successfully added, " +
-                    success +
-                    " successfully uploaded image(s), " +
-                    unsuccess +
-                    " failed uploaded image(s)",
-                  timeline: resp_data_for_single_post.timeline
-                });
               }
-            }
           );
         }
       }

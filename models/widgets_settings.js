@@ -32,26 +32,14 @@ var WidgetsSettingsSchema = new Schema({
         type: Object,
         default: null
     },
-    // progressPhoto: {
-    //     type: Number,
-    //     default: null
-    // },
-    // mobility: {
-    //     type: Number,
-    //     default: null
-    // },
-    // muscle: {
-    //     type: Number,
-    //     default: null
-    // },
-    // strength: {
-    //     type: Number,
-    //     default: null
-    // },
-    // endurance: {
-    //     type: Number,
-    //     default: null
-    // },
+    progressPhoto: {
+        type: Number,
+        default: null
+    },
+    muscle: [{
+        type: Object,
+        default: null
+    }],
     createdAt: {
         type: Date,
         default: Date.now

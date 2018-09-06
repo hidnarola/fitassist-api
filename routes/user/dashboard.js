@@ -32,12 +32,6 @@ router.get("/", async (req, res) => {
   var authUserId = decoded.sub;
   var startdate = moment().startOf('day').utc();
   var enddate = moment().endOf('day').utc();
-  console.log('------------------------------------');
-  console.log('startdate : ', startdate);
-  console.log('------------------------------------');
-  console.log('------------------------------------');
-  console.log('enddate : ', enddate);
-  console.log('------------------------------------');
 
   var dashboard = {
     status: 1,
@@ -130,6 +124,7 @@ router.get("/", async (req, res) => {
           userId: authUserId,
         },
       });
+
       if (body.status === 1) {
         dashboard.data.bodyFat = body.progress;
       }
@@ -164,10 +159,88 @@ router.get("/", async (req, res) => {
       dashboard.data.profileComplete = percentage;
     }
   }
-  //Today's workout
 
   return res.send(dashboard);
 
+});
+
+
+/**
+ * @api {post} /user/dashboard/body_fat Save
+ * @apiName Save Bodyfat
+ * @apiGroup User Bodyfat
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiSuccess (Success 200) {JSON} widgets JSON of widgets_settings's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/body_fat", async (req, res) => {
+  logger.trace("Save user's body fat widgets API called");
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var returnObj = {
+    status: 1,
+    message: "Success",
+    data: {
+      widgets: null,
+      bodyFat: null
+    }
+  }
+  var schema = {
+    start: {
+      notEmpty: true,
+      errorMessage: "Start date required"
+    },
+    end: {
+      notEmpty: true,
+      errorMessage: "End date required"
+    }
+  }
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+
+    var widgets_settings_object = {
+      userId: authUserId,
+      modifiedAt: new Date()
+    }
+
+    widgets_settings_object.bodyFat = {
+      start: req.body.start,
+      end: req.body.end
+    }
+
+    var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
+      userId: authUserId,
+      widgetFor: "dashboard"
+    });
+
+    if (widgets_data && widgets_data.status === 1) {
+      returnObj.data.widgets = widgets_data.widgets
+      var body = await workout_progress_helper.graph_data_body_fat({
+        createdAt: {
+          logDate: {
+            $gte: new Date(req.body.start),
+            $lte: new Date(req.body.end)
+          },
+          userId: authUserId,
+        },
+      });
+
+      if (body.status === 1) {
+        returnObj.data.bodyFat = body.progress
+      }
+      logger.trace("user body fat widget saved   = ", returnObj);
+      res.status(config.OK_STATUS).json(returnObj);
+    } else {
+      logger.error("Error occured while saving user body fat widgets = ", widgets_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
+  }
 });
 
 

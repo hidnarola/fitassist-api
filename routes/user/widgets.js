@@ -29,16 +29,26 @@ router.post("/:type", async (req, res) => {
   var widgets_settings_object = {
     userId: authUserId,
     widgetFor: type,
-    badges: req.body.badges ? req.body.badges : null,
-    workout: req.body.workout ? req.body.workout : null,
-    bodyFat: req.body.bodyFat ? req.body.bodyFat : null,
-    activityFeed: req.body.activityFeed ? req.body.activityFeed : null,
-    // progressPhoto: req.body.progressPhoto ? req.body.progressPhoto : null,
-    // mobility: req.body.mobility ? req.body.mobility : null,
-    // muscle: req.body.muscle ? req.body.muscle : null,
-    // strength: req.body.strength ? req.body.strength : null,
-    // endurance: req.body.endurance ? req.body.endurance : null,
     modifiedAt: new Date()
+  }
+
+  if (typeof req.body.badges !== "undefined") {
+    widgets_settings_object.badges = req.body.badges;
+  }
+  if (typeof req.body.workout !== "undefined") {
+    widgets_settings_object.workout = req.body.workout;
+  }
+  if (typeof req.body.bodyFat !== "undefined") {
+    widgets_settings_object.bodyFat = req.body.bodyFat;
+  }
+  if (typeof req.body.activityFeed !== "undefined") {
+    widgets_settings_object.activityFeed = req.body.activityFeed;
+  }
+  if (typeof req.body.progressPhoto !== "undefined") {
+    widgets_settings_object.progressPhoto = req.body.progressPhoto;
+  }
+  if (typeof req.body.muscle !== "undefined") {
+    widgets_settings_object.muscle = req.body.muscle;
   }
 
   var resp_data = await widgets_settings_helper.get_all_widgets({
@@ -61,5 +71,7 @@ router.post("/:type", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
   }
 });
+
+
 
 module.exports = router;
