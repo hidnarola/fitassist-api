@@ -38,7 +38,7 @@ router.post("/:type", async (req, res) => {
   if (typeof req.body.workout !== "undefined") {
     widgets_settings_object.workout = req.body.workout;
   }
-  if (typeof req.body.bodyFat !== "undefined") {
+  if (typeof req.body.bodyFat !== "undefined" && req.body.bodyFat) {
     widgets_settings_object.bodyFat = req.body.bodyFat;
   }
   if (typeof req.body.activityFeed !== "undefined") {
@@ -50,6 +50,9 @@ router.post("/:type", async (req, res) => {
   if (typeof req.body.muscle !== "undefined") {
     widgets_settings_object.muscle = req.body.muscle;
   }
+  console.log('------------------------------------');
+  console.log('widgets_settings_object : ', widgets_settings_object);
+  console.log('------------------------------------');
 
   var resp_data = await widgets_settings_helper.get_all_widgets({
     userId: authUserId,
