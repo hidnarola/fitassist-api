@@ -38,7 +38,7 @@ router.post("/:type", async (req, res) => {
   if (typeof req.body.workout !== "undefined") {
     widgets_settings_object.workout = req.body.workout;
   }
-  if (typeof req.body.bodyFat !== "undefined" && req.body.bodyFat) {
+  if (typeof req.body.bodyFat !== "undefined" && req.body.bodyFat !== "") {
     widgets_settings_object.bodyFat = req.body.bodyFat;
   }
   if (typeof req.body.activityFeed !== "undefined") {

@@ -170,6 +170,8 @@ router.get("/", async (req, res) => {
  * @api {post} /user/dashboard/body_fat Save
  * @apiName Save Bodyfat
  * @apiGroup User Dashboard
+ * @apiParam start start date
+ * @apiParam end end date
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {JSON} widgets JSON of widgets_settings's document
  * @apiError (Error 4xx) {String} message Validation or error message.
