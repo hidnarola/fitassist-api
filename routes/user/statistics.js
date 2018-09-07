@@ -5,8 +5,12 @@ var jwtDecode = require("jwt-decode");
 var moment = require("moment");
 var mongoose = require("mongoose");
 var logger = config.logger;
+var _ = require("underscore");
 
 var statistics_helper = require("../../helpers/statistics_helper");
+var user_workouts_helper = require("../../helpers/user_workouts_helper");
+var friend_helper = require("../../helpers/friend_helper");
+var user_helper = require("../../helpers/user_helper");
 
 /**
  * @api {post} /user/statistics Get
@@ -226,6 +230,26 @@ router.post("/graph_data", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var returnArray = [];
+  var friend_overview_data = {
+    status: 0,
+    message: "no record found"
+  }
+  var userData = await user_helper.get_user_by_id(authUserId);
+  userData = userData.user.username
+  var resp_data = await friend_helper.get_friend_by_username({
+      username: userData
+    },
+    2
+  );
+  var friendsIds = _.pluck(resp_data.friends, 'authUserId');
+  var totalFriends = friendsIds.length;
+  var totalGlobalUserCount = 0;
+  var totalGlobalUser = await user_workouts_helper.totalGlobalUserWhoHaveCompletedExercises();
+
+  if (totalGlobalUser.status == 1) {
+    totalGlobalUserCount = totalGlobalUser.count
+  }
+
   for (let x of req.body) {
     var type = x.type; // cateogry
     var subCategory = x.subCategory;
@@ -250,6 +274,7 @@ router.post("/graph_data", async (req, res) => {
       startDate: start,
       endDate: end
     };
+
     if (subCategory === "Overview") {
       resp_data = await statistics_helper.graph_data({
         userId: authUserId,
@@ -259,15 +284,58 @@ router.post("/graph_data", async (req, res) => {
           $lte: new Date(end),
         }
       }, activeField);
+
+      friend_overview_data = await statistics_helper.graph_data({
+        userId: {
+          $in: friendsIds
+        },
+        isCompleted: 1,
+        logDate: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        }
+      }, activeField);
+      _.map(friend_overview_data.graphData, function (o) {
+        o.count = parseFloat((o.count / totalFriends).toFixed(2));
+      });
+
+      global_overview_data = await statistics_helper.graph_data({
+        isCompleted: 1,
+        logDate: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        }
+      }, activeField);
+      _.map(global_overview_data.graphData, function (o) {
+        o.count = parseFloat((o.count / totalGlobalUserCount).toFixed(2));
+      });
     } else {
       if (exerciseId !== "all") {
         condition.exerciseId = mongoose.Types.ObjectId(exerciseId);
       }
+
       resp_data = await statistics_helper.graph_data(condition, activeField);
+      condition.userId = {
+        $in: friendsIds
+      }
+
+      friend_overview_data = await statistics_helper.graph_data(condition, activeField);
+      _.map(friend_overview_data.graphData, function (o) {
+        o.count = parseFloat((o.count / totalFriends).toFixed(2));
+      });
+
+      delete condition.userId;
+      global_overview_data = await statistics_helper.graph_data(condition, activeField);
+      _.map(global_overview_data.graphData, function (o) {
+        o.count = parseFloat((o.count / totalGlobalUserCount).toFixed(2));
+      });
     }
+
     if (resp_data.status == 1) {
       delete resp_data.status;
       delete resp_data.message;
+      resp_data.friendGraphData = friend_overview_data.graphData;
+      resp_data.globalGraphData = global_overview_data.graphData;
       resp_data.start = start;
       resp_data.end = end;
       resp_data.subCategory = subCategory;
@@ -279,21 +347,13 @@ router.post("/graph_data", async (req, res) => {
       returnArray.push(default_resp_data);
     }
   }
+
   var returnObj = {
     status: 1,
     message: "record found",
     statistics: returnArray
   }
   return res.send(returnObj);
-  //}
-  // else {
-  //   logger.error("Validation Error = ", errors);
-  //   res.status(config.VALIDATION_FAILURE_STATUS).json({
-  //     message: errors
-  //   });
-  // }
-
-
 });
 
 module.exports = router;

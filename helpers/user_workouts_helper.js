@@ -147,6 +147,7 @@ user_workouts_helper.get_first_workout_by_date = async (condition = {}) => {
     };
   }
 };
+
 /*
  * get_all_workouts_by_date is used to fetch all user exercises data
  * @params condition condition of aggregate pipeline.
@@ -1654,7 +1655,7 @@ user_workouts_helper.complete_workout_by_days = async (id, userId, updateObject)
 
 /*
  * reorder_exercises is used to reorder user workouts data based on user workouts sequence
- * @param   condition         Object  condition of user_workouts that need to be complete
+ * @param   condition         Object  condition of user_workouts that need to be order
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
  *          status  2 - If user_workouts not completed, with appropriate message 
@@ -1688,4 +1689,44 @@ user_workouts_helper.reorder_exercises = async (reorderArray) => {
     };
   }
 };
+
+/*
+ * totalGlobalUserWhoHaveCompletedExercises is used to count user
+ * @param   condition         Object  condition of count user
+ * @return  status  0 - If any error occur in updating user_workouts, with error
+ *          status  1 - If user_workouts completed successfully, with appropriate message
+ *          status  2 - If user_workouts not completed, with appropriate message 
+ * @developed by "amc"
+ */
+user_workouts_helper.totalGlobalUserWhoHaveCompletedExercises = async () => {
+  try {
+    var count = await UserWorkouts.aggregate([{
+      $group: {
+        _id: "$userId",
+      }
+    }, ]);
+
+    if (count.length > 0) {
+      return {
+        status: 1,
+        message: "Total user count",
+        count: count.length
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No user available",
+        count: 0
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user",
+      error: err
+    };
+  }
+};
+
+
 module.exports = user_workouts_helper;
