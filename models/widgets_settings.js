@@ -36,10 +36,10 @@ var WidgetsSettingsSchema = new Schema({
         type: Number,
         default: null
     },
-    muscle: [{
-        type: Object,
+    muscle: {
+        type: Array,
         default: null
-    }],
+    },
     createdAt: {
         type: Date,
         default: Date.now

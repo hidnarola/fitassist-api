@@ -7,7 +7,7 @@ var widgets_settings_helper = {};
  *          status 1 - If widgets data found, with widgets object
  *          status 2 - If widgets not found, with appropriate message
  */
-widgets_settings_helper.get_all_widgets = async (condition, project = {}) => {
+widgets_settings_helper.get_all_widgets = async (condition = {}, project = {}) => {
   try {
     var widgets = await WidgetsSettings.findOne(condition, project);
     if (widgets) {

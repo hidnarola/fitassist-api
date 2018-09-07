@@ -20,6 +20,109 @@ var user_progress_photos_helper = require("../../helpers/user_progress_photos_he
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 
+
+/**
+ * @api {get} /user/timeline/widgets Get user's widgets
+ * @apiName Get user's widgets
+ * @apiGroup User Timeline
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiSuccess (Success 200) {JSON} data widgets data
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/widgets", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  //start other data on timeline
+  var timeline = {
+    status: 1,
+    message: "Success",
+    data: {
+      userWidgets: null,
+      progressPhoto: null,
+      badges: null,
+      bodyFat: null,
+      muscle: null,
+    }
+  }
+  //Widgets
+  var widgets = await widgets_settings_helper.get_all_widgets({
+    userId: authUserId,
+    widgetFor: "timeline"
+  }, {
+    bodyFat: 1,
+    muscle: 1,
+    badges: 1,
+    progressPhoto: 1,
+  });
+
+  if (widgets.status === 1) {
+    timeline.data.userWidgets = widgets.widgets;
+    if (widgets.widgets.progressPhoto) {
+      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
+        userId: authUserId,
+        isDeleted: 0
+      });
+      if (progressPhoto.status === 1) {
+        timeline.data.progressPhoto = progressPhoto.user_progress_photos;
+      } else {
+        timeline.data.progressPhoto = null;
+      }
+    }
+    if (widgets.widgets.badges) {
+      var badges = await badge_assign_helper.get_all_badges({
+        userId: authUserId
+      }, {
+        $sort: {
+          createdAt: -1
+        }
+      }, {
+        $limit: 5
+      });
+      if (badges.status === 1) {
+        timeline.data.badges = badges.badges;
+      }
+    }
+    if (widgets.widgets.bodyFat) {
+      var body = await workout_progress_helper.graph_data_body_fat({
+        createdAt: {
+          logDate: {
+            $gte: new Date(widgets.widgets.bodyFat.start),
+            $lte: new Date(widgets.widgets.bodyFat.end)
+          },
+          userId: authUserId,
+        },
+      });
+
+      if (body.status === 1) {
+        timeline.data.bodyFat = body.progress;
+      }
+    }
+
+    if (widgets.widgets.muscle) {
+      var muscle = {};
+      var bodyMeasurment;
+      for (let x of widgets.widgets.muscle) {
+        bodyMeasurment = await workout_progress_helper.user_body_progress({
+          userId: authUserId,
+          logDate: {
+            $gte: new Date(x.start),
+            $lte: new Date(x.end)
+          }
+        });
+
+        if (bodyMeasurment.status === 1) {
+          muscle[x.name] = bodyMeasurment.progress.data[x.name];
+        } else {
+          muscle[x.name] = null;
+        }
+      }
+      timeline.data.muscle = muscle;
+    }
+  }
+  return res.send(timeline);
+  //end Other data on timeline 
+});
 /**
  * @api {get} /user/timeline/:post_id Get by ID
  * @apiName Get by ID
@@ -145,6 +248,166 @@ router.get("/:user_post_id", async (req, res) => {
   } else {
     logger.trace("user post photo got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+/**
+ * @api {post} /user/timeline/body_fat Save
+ * @apiName Save Bodyfat
+ * @apiGroup User Timeline
+ * @apiParam start start date
+ * @apiParam end end date
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiSuccess (Success 200) {JSON} widgets JSON of widgets_settings's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/body_fat", async (req, res) => {
+  logger.trace("Save user's body fat widgets API called");
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var returnObj = {
+    status: 1,
+    message: "Success",
+    data: {
+      widgets: null,
+      bodyFat: null
+    }
+  }
+  var schema = {
+    start: {
+      notEmpty: true,
+      errorMessage: "Start date required"
+    },
+    end: {
+      notEmpty: true,
+      errorMessage: "End date required"
+    }
+  }
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+
+    var widgets_settings_object = {
+      userId: authUserId,
+      modifiedAt: new Date()
+    }
+
+    widgets_settings_object.bodyFat = {
+      start: req.body.start,
+      end: req.body.end
+    }
+
+    var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
+      userId: authUserId,
+      widgetFor: "timeline"
+    });
+
+    if (widgets_data && widgets_data.status === 1) {
+      returnObj.data.widgets = widgets_data.widgets
+      var body = await workout_progress_helper.graph_data_body_fat({
+        createdAt: {
+          logDate: {
+            $gte: new Date(req.body.start),
+            $lte: new Date(req.body.end)
+          },
+          userId: authUserId,
+        },
+      });
+
+      if (body.status === 1) {
+        returnObj.data.bodyFat = body.progress
+      }
+      logger.trace("user body fat widget saved   = ", returnObj);
+      res.status(config.OK_STATUS).json(returnObj);
+    } else {
+      logger.error("Error occured while saving user body fat widgets = ", widgets_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
+  }
+});
+
+/**
+ * @api {post} /user/timeline/muscle Save
+ * @apiName Save Muscle
+ * @apiGroup User Timeline
+ * @apiParam start start date
+ * @apiParam end end date
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiSuccess (Success 200) {JSON} widgets JSON of widgets_settings's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/muscle", async (req, res) => {
+  logger.trace("Save user's body fat widgets API called");
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var returnObj = {
+    status: 1,
+    message: "Success",
+    data: {
+      widgets: null,
+      bodyFat: null
+    }
+  }
+  var schema = {
+    start: {
+      notEmpty: true,
+      errorMessage: "Start date required"
+    },
+    end: {
+      notEmpty: true,
+      errorMessage: "End date required"
+    }
+  }
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+
+    var widgets_settings_object = {
+      userId: authUserId,
+      modifiedAt: new Date()
+    }
+
+    widgets_settings_object.bodyFat = {
+      start: req.body.start,
+      end: req.body.end
+    }
+
+    var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
+      userId: authUserId,
+      widgetFor: "timeline"
+    });
+
+    if (widgets_data && widgets_data.status === 1) {
+      returnObj.data.widgets = widgets_data.widgets
+      var body = await workout_progress_helper.graph_data_body_fat({
+        createdAt: {
+          logDate: {
+            $gte: new Date(req.body.start),
+            $lte: new Date(req.body.end)
+          },
+          userId: authUserId,
+        },
+      });
+
+      if (body.status === 1) {
+        returnObj.data.bodyFat = body.progress
+      }
+      logger.trace("user body fat widget saved   = ", returnObj);
+      res.status(config.OK_STATUS).json(returnObj);
+    } else {
+      logger.error("Error occured while saving user body fat widgets = ", widgets_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -347,186 +610,6 @@ router.post("/", async (req, res) => {
         }
       }
     );
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({
-      message: errors
-    });
-  }
-});
-/**
- * @api {get} /user/timeline/widgets Get user's widgets
- * @apiName Get user's widgets
- * @apiGroup User Timeline
- * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} widgets widgets data
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get("/widgets", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-
-  //start other data on timeline
-
-  var timeline = {
-    status: 1,
-    message: "Success",
-    data: {
-      userWidgets: null,
-      progressPhoto: null,
-      badges: null,
-      bodyFat: null,
-      muscle: null,
-    }
-  }
-  //Widgets
-  var widgets = await widgets_settings_helper.get_all_widgets({
-    userId: authUserId,
-    widgetFor: "timeline"
-  }, {
-    "progressPhoto": 1,
-    "badges": 1,
-    "bodyFat": 1,
-    "muscle": 1,
-  });
-
-  if (widgets.status === 1) {
-    timeline.data.userWidgets = widgets.widgets;
-    if (widgets.widgets.progressPhoto) {
-      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
-        userId: authUserId,
-        isDeleted: 0
-      });
-      if (progressPhoto.status === 1) {
-        timeline.data.progressPhoto = progressPhoto.user_progress_photos;
-      } else {
-        timeline.data.progressPhoto = null;
-      }
-    }
-    if (widgets.widgets.badges) {
-      var badges = await badge_assign_helper.get_all_badges({
-        userId: authUserId
-      }, {
-        $sort: {
-          createdAt: -1
-        }
-      }, {
-        $limit: 5
-      });
-      if (badges.status === 1) {
-        timeline.data.badges = badges.badges;
-      }
-    }
-    if (widgets.widgets.bodyFat) {
-      var body = await workout_progress_helper.graph_data_body_fat({
-        createdAt: {
-          logDate: {
-            $gte: new Date(widgets.widgets.bodyFat.start),
-            $lte: new Date(widgets.widgets.bodyFat.end)
-          },
-          userId: authUserId,
-        },
-      });
-
-      if (body.status === 1) {
-        timeline.data.bodyFat = body.progress;
-      }
-    }
-    if (widgets.widgets.muscle) {
-      var muscle = await workout_progress_helper.user_body_progress({
-        userId: authUserId,
-        logDate: {
-          $gte: new Date(widgets.widgets.muscle.start),
-          $lte: new Date(widgets.widgets.end)
-        }
-      });
-
-      if (muscle.status === 1) {
-        timeline.data.muscle = muscle.timeline;
-      } else {
-        timeline.data.muscle = [];
-      }
-    }
-  }
-
-  return res.send(timeline);
-  //end Other data on timeline 
-
-});
-
-/**
- * @api {post} /user/timeline/body_fat Save
- * @apiName Save Bodyfat
- * @apiGroup User Dashboard
- * @apiParam start start date
- * @apiParam end end date
- * @apiHeader {String}  authorization user's unique access-key
- * @apiSuccess (Success 200) {JSON} widgets JSON of widgets_settings's document
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.post("/body_fat", async (req, res) => {
-  logger.trace("Save user's body fat widgets API called");
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var returnObj = {
-    status: 1,
-    message: "Success",
-    data: {
-      widgets: null,
-      bodyFat: null
-    }
-  }
-  var schema = {
-    start: {
-      notEmpty: true,
-      errorMessage: "Start date required"
-    },
-    end: {
-      notEmpty: true,
-      errorMessage: "End date required"
-    }
-  }
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-  if (!errors) {
-
-    var widgets_settings_object = {
-      userId: authUserId,
-      modifiedAt: new Date()
-    }
-
-    widgets_settings_object.bodyFat = {
-      start: req.body.start,
-      end: req.body.end
-    }
-
-    var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
-      userId: authUserId,
-      widgetFor: "timeline"
-    });
-
-    if (widgets_data && widgets_data.status === 1) {
-      returnObj.data.widgets = widgets_data.widgets
-      var body = await workout_progress_helper.graph_data_body_fat({
-        createdAt: {
-          logDate: {
-            $gte: new Date(req.body.start),
-            $lte: new Date(req.body.end)
-          },
-          userId: authUserId,
-        },
-      });
-
-      if (body.status === 1) {
-        returnObj.data.bodyFat = body.progress
-      }
-      logger.trace("user body fat widget saved   = ", returnObj);
-      res.status(config.OK_STATUS).json(returnObj);
-    } else {
-      logger.error("Error occured while saving user body fat widgets = ", widgets_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
-    }
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.VALIDATION_FAILURE_STATUS).json({
