@@ -51,16 +51,20 @@ router.post("/:type", async (req, res) => {
     widgets_settings_object.muscle = req.body.muscle;
   }
 
-  var resp_data = await widgets_settings_helper.get_all_widgets({
+  var resp_data = await widgets_settings_helper.countWidgets({
     userId: authUserId,
     widgetFor: type
   });
+
   if (resp_data.status === 1) {
     widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
       userId: authUserId
     });
-  } else {
+  } else if (resp_data.status === 2) {
     widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object);
+  } else {
+    logger.error("Error occured while saving user widgets = ", widgets_data);
+    return res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
   }
 
   if (widgets_data && widgets_data.status === 1) {

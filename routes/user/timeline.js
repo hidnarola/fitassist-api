@@ -8,6 +8,7 @@ var moment = require("moment");
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
 var constant = require("../../constant");
+var _ = require("underscore");
 
 var logger = config.logger;
 var user_posts_helper = require("../../helpers/user_posts_helper");
@@ -22,7 +23,7 @@ var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 
 
 /**
- * @api {get} /user/timeline/widgets Get user's widgets
+ * @api {get} /user/timeline/widgets/:username Get user's widgets
  * @apiName Get user's widgets
  * @apiGroup User Timeline
  * @apiHeader {String}  Content-Type application/json
@@ -30,9 +31,18 @@ var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
  * @apiSuccess (Success 200) {JSON} data widgets data
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/widgets", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
+router.get("/widgets/:username", async (req, res) => {
+  var userId = await user_helper.get_user_by({
+    username: req.params.username
+  });
+  try {
+    var authUserId = userId.user.authUserId;
+  } catch (error) {
+    return res.send({
+      status: 2,
+      message: "Invalid username"
+    });
+  }
   //start other data on timeline
   var timeline = {
     status: 1,
@@ -123,6 +133,7 @@ router.get("/widgets", async (req, res) => {
   return res.send(timeline);
   //end Other data on timeline 
 });
+
 /**
  * @api {get} /user/timeline/:post_id Get by ID
  * @apiName Get by ID
@@ -335,6 +346,7 @@ router.post("/body_fat", async (req, res) => {
  * @api {post} /user/timeline/muscle Save
  * @apiName Save Muscle
  * @apiGroup User Timeline
+ * @apiParam type type type of muscle
  * @apiParam start start date
  * @apiParam end end date
  * @apiHeader {String}  authorization user's unique access-key
@@ -350,7 +362,7 @@ router.post("/muscle", async (req, res) => {
     message: "Success",
     data: {
       widgets: null,
-      bodyFat: null
+      muscle: null
     }
   }
   var schema = {
@@ -361,10 +373,16 @@ router.post("/muscle", async (req, res) => {
     end: {
       notEmpty: true,
       errorMessage: "End date required"
+    },
+    type: {
+      notEmpty: true,
+      errorMessage: "Muscle type required"
     }
   }
+
   req.checkBody(schema);
   var errors = req.validationErrors();
+
   if (!errors) {
 
     var widgets_settings_object = {
@@ -372,36 +390,57 @@ router.post("/muscle", async (req, res) => {
       modifiedAt: new Date()
     }
 
-    widgets_settings_object.bodyFat = {
-      start: req.body.start,
-      end: req.body.end
-    }
-
-    var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
+    var widgets_data = await widgets_settings_helper.get_all_widgets({
       userId: authUserId,
       widgetFor: "timeline"
     });
 
-    if (widgets_data && widgets_data.status === 1) {
-      returnObj.data.widgets = widgets_data.widgets
-      var body = await workout_progress_helper.graph_data_body_fat({
-        createdAt: {
+    if (widgets_data.status === 1) {
+      var muscle = widgets_data.widgets.muscle;
+      _.map(muscle, function (o) {
+        if (o.name == req.body.type) {
+          o.start = req.body.start;
+          o.end = req.body.end;
+        }
+      })
+
+      widgets_settings_object.muscle = muscle;
+
+      var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
+        userId: authUserId,
+        widgetFor: "timeline"
+      });
+
+      if (widgets_data && widgets_data.status === 1) {
+        logger.trace("User muscle widget saved   = ", returnObj);
+        returnObj.data.widgets = widgets_data.widgets;
+
+        let muscleObject = {};
+        let bodyMeasurment;
+        bodyMeasurment = await workout_progress_helper.user_body_progress({
+          userId: authUserId,
           logDate: {
             $gte: new Date(req.body.start),
             $lte: new Date(req.body.end)
-          },
-          userId: authUserId,
-        },
-      });
+          }
+        });
 
-      if (body.status === 1) {
-        returnObj.data.bodyFat = body.progress
+        if (bodyMeasurment.status === 1) {
+          try {
+            muscleObject[req.body.type] = bodyMeasurment.progress.data[req.body.type];
+          } catch (error) {
+            muscleObject[req.body.type] = null;
+          }
+        } else {
+          muscleObject[req.body.type] = null;
+        }
+
+        returnObj.data.muscle = muscleObject;
+        res.status(config.OK_STATUS).json(returnObj);
+      } else {
+        logger.error("Error occured while saving user muscle widgets = ", widgets_data);
+        res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
       }
-      logger.trace("user body fat widget saved   = ", returnObj);
-      res.status(config.OK_STATUS).json(returnObj);
-    } else {
-      logger.error("Error occured while saving user body fat widgets = ", widgets_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -427,7 +466,6 @@ router.post("/muscle", async (req, res) => {
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
   var schema = {
     privacy: {
       notEmpty: true,
@@ -448,7 +486,6 @@ router.post("/", async (req, res) => {
       user_post_obj.privacy = req.body.privacy;
     }
     user_post_obj.createdBy = authUserId;
-
     async.waterfall(
       [
         function (callback) {

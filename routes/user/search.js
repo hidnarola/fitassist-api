@@ -7,7 +7,7 @@ var logger = config.logger;
 var jwtDecode = require("jwt-decode");
 var moment = require("moment");
 
-user_helper = require("../../helpers/user_helper");
+var user_helper = require("../../helpers/user_helper");
 
 /**
  * @api {post} /user/search Search users
@@ -24,15 +24,20 @@ user_helper = require("../../helpers/user_helper");
 router.post("/", async (req, res) => {
   var name = req.body.name ? req.body.name : "";
   var re = new RegExp(req.body.name, "i");
-  value = { $regex: re };
+  value = {
+    $regex: re
+  };
 
   var projectObject = {
     $project: {
       fullName: {
-        $concat: [
-          { $ifNull: ["$firstName", ""] },
+        $concat: [{
+            $ifNull: ["$firstName", ""]
+          },
           " ",
-          { $ifNull: ["$lastName", ""] }
+          {
+            $ifNull: ["$lastName", ""]
+          }
         ]
       },
       firstName: 1,
@@ -45,17 +50,28 @@ router.post("/", async (req, res) => {
 
   var searchObject = {
     $match: {
-      $or: [
-        { firstName: value },
-        { lastName: value },
-        { username: value },
-        { fullName: value }
+      $or: [{
+          firstName: value
+        },
+        {
+          lastName: value
+        },
+        {
+          username: value
+        },
+        {
+          fullName: value
+        }
       ]
     }
   };
 
-  var start = { $skip: parseInt(req.body.start ? req.body.start : 0) };
-  var offset = { $limit: parseInt(req.body.offset ? req.body.offset : 10) };
+  var start = {
+    $skip: parseInt(req.body.start ? req.body.start : 0)
+  };
+  var offset = {
+    $limit: parseInt(req.body.offset ? req.body.offset : 10)
+  };
 
   var resp_data = await user_helper.search_users(
     projectObject,
