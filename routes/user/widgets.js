@@ -51,7 +51,7 @@ router.post("/:type", async (req, res) => {
     widgets_settings_object.muscle = req.body.muscle;
   }
 
-  var resp_data = await widgets_settings_helper.countWidgets({
+  var resp_data = await widgets_settings_helper.checkWidgets({
     userId: authUserId,
     widgetFor: type
   });

@@ -68,6 +68,7 @@ router.get("/widgets/:username", async (req, res) => {
 
   if (widgets.status === 1) {
     timeline.data.userWidgets = widgets.widgets;
+
     if (widgets.widgets.progressPhoto) {
       var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
         userId: authUserId,
@@ -79,6 +80,7 @@ router.get("/widgets/:username", async (req, res) => {
         timeline.data.progressPhoto = null;
       }
     }
+
     if (widgets.widgets.badges) {
       var badges = await badge_assign_helper.get_all_badges({
         userId: authUserId
@@ -93,6 +95,7 @@ router.get("/widgets/:username", async (req, res) => {
         timeline.data.badges = badges.badges;
       }
     }
+
     if (widgets.widgets.bodyFat) {
       var body = await workout_progress_helper.graph_data_body_fat({
         createdAt: {
@@ -107,6 +110,7 @@ router.get("/widgets/:username", async (req, res) => {
       if (body.status === 1) {
         timeline.data.bodyFat = body.progress;
       }
+
     }
 
     if (widgets.widgets.muscle) {
@@ -398,7 +402,7 @@ router.post("/muscle", async (req, res) => {
     if (widgets_data.status === 1) {
       var muscle = widgets_data.widgets.muscle;
       _.map(muscle, function (o) {
-        if (o.name == req.body.type) {
+        if (o.name === req.body.type) {
           o.start = req.body.start;
           o.end = req.body.end;
         }

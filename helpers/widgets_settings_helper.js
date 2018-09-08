@@ -32,12 +32,12 @@ widgets_settings_helper.get_all_widgets = async (condition = {}, project = {}) =
 };
 
 /*
- * countWidgets is used to count all widgets
+ * checkWidgets is used to count all widgets
  * @return  status 0 - If any internal error occured while fetching widgets data, with error
  *          status 1 - If widgets data found, with widgets object
  *          status 2 - If widgets not found, with appropriate message
  */
-widgets_settings_helper.countWidgets = async (condition) => {
+widgets_settings_helper.checkWidgets = async (condition) => {
   try {
     var widgets = await WidgetsSettings.count(condition);
     if (widgets != 0) {

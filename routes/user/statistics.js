@@ -234,10 +234,11 @@ router.post("/graph_data", async (req, res) => {
     status: 0,
     message: "no record found"
   }
-  var userData = await user_helper.get_user_by_id(authUserId);
-  userData = userData.user.username
+  var username = await user_helper.get_user_by_id(authUserId);
+  username = username.user.username;
+
   var resp_data = await friend_helper.get_friend_by_username({
-      username: userData
+      username: username
     },
     2
   );
