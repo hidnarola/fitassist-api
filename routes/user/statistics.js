@@ -284,7 +284,7 @@ router.post("/graph_data", async (req, res) => {
           $gte: new Date(start),
           $lte: new Date(end),
         }
-      }, activeField);
+      }, activeField, authUserId);
 
       friend_overview_data = await statistics_helper.graph_data({
         userId: {
@@ -295,7 +295,7 @@ router.post("/graph_data", async (req, res) => {
           $gte: new Date(start),
           $lte: new Date(end),
         }
-      }, activeField);
+      }, activeField, authUserId);
       _.map(friend_overview_data.graphData, function (o) {
         o.count = parseFloat((o.count / totalFriends).toFixed(2));
       });
@@ -306,7 +306,7 @@ router.post("/graph_data", async (req, res) => {
           $gte: new Date(start),
           $lte: new Date(end),
         }
-      }, activeField);
+      }, activeField, authUserId);
       _.map(global_overview_data.graphData, function (o) {
         o.count = parseFloat((o.count / totalGlobalUserCount).toFixed(2));
       });
@@ -315,28 +315,50 @@ router.post("/graph_data", async (req, res) => {
         condition.exerciseId = mongoose.Types.ObjectId(exerciseId);
       }
 
-      resp_data = await statistics_helper.graph_data(condition, activeField);
+      resp_data = await statistics_helper.graph_data(condition, activeField, authUserId);
       condition.userId = {
         $in: friendsIds
       }
 
-      friend_overview_data = await statistics_helper.graph_data(condition, activeField);
+      friend_overview_data = await statistics_helper.graph_data(condition, activeField, authUserId);
       _.map(friend_overview_data.graphData, function (o) {
         o.count = parseFloat((o.count / totalFriends).toFixed(2));
       });
 
       delete condition.userId;
-      global_overview_data = await statistics_helper.graph_data(condition, activeField);
+      global_overview_data = await statistics_helper.graph_data(condition, activeField, authUserId);
       _.map(global_overview_data.graphData, function (o) {
         o.count = parseFloat((o.count / totalGlobalUserCount).toFixed(2));
       });
     }
 
     if (resp_data.status == 1) {
+      _.map(global_overview_data.graphData, function (o) {
+        o.globalAvg = o.count;
+        delete o.count;
+        o.friendAvg = 0;
+        o.self = 0;
+
+        let tmp = _.findWhere(friend_overview_data.graphData, {
+          date: o.date
+        });
+        if (tmp) {
+          o.friendAvg = tmp.count
+        }
+
+        tmp = _.findWhere(resp_data.graphData, {
+          date: o.date
+        });
+        if (tmp) {
+          o.self = tmp.count
+        }
+      })
+
       delete resp_data.status;
       delete resp_data.message;
-      resp_data.friendGraphData = friend_overview_data.graphData;
-      resp_data.globalGraphData = global_overview_data.graphData;
+      resp_data.graphData = global_overview_data.graphData;
+      // resp_data.friendGraphData = friend_overview_data.graphData;
+      // resp_data.globalGraphData = global_overview_data.graphData;
       resp_data.start = start;
       resp_data.end = end;
       resp_data.subCategory = subCategory;

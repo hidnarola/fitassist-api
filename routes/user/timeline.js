@@ -35,6 +35,7 @@ router.get("/widgets/:username", async (req, res) => {
   var userId = await user_helper.get_user_by({
     username: req.params.username
   });
+
   try {
     var authUserId = userId.user.authUserId;
   } catch (error) {
@@ -55,6 +56,7 @@ router.get("/widgets/:username", async (req, res) => {
       muscle: null,
     }
   }
+
   //Widgets
   var widgets = await widgets_settings_helper.get_all_widgets({
     userId: authUserId,
@@ -110,7 +112,6 @@ router.get("/widgets/:username", async (req, res) => {
       if (body.status === 1) {
         timeline.data.bodyFat = body.progress;
       }
-
     }
 
     if (widgets.widgets.muscle) {

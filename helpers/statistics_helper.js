@@ -410,7 +410,7 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
  *          status 1 - If strength data found, with strength object
  *          status 2 - If strength not found, with appropriate message
  */
-statistics_helper.graph_data = async (condition = {}, activeField) => {
+statistics_helper.graph_data = async (condition = {}, activeField, userId) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
         $match: condition
@@ -458,14 +458,23 @@ statistics_helper.graph_data = async (condition = {}, activeField) => {
     ]);
 
     var measurement_unit_data = await user_settings_helper.get_setting({
-      userId: condition.userId
+      userId: userId
     });
-    if (measurement_unit_data.status === 1) {
-      var distanceUnit = measurement_unit_data.user_settings.distance;
-      var weightUnit = measurement_unit_data.user_settings.weight;
-      var speedUnit = distanceUnit === "km" ? "kmph" : "mph";
-    }
+    var distanceUnit;
+    var weightUnit;
+    var speedUnit;
     var graphData = [];
+
+    if (measurement_unit_data.status === 1) {
+      distanceUnit = measurement_unit_data.user_settings.distance;
+      weightUnit = measurement_unit_data.user_settings.weight;
+      speedUnit = distanceUnit === "km" ? "kmph" : "mph";
+    } else {
+      distanceUnit = "km";
+      weightUnit = "cm";
+      speedUnit = distanceUnit === "km" ? "kmph" : "mph";
+    }
+
     for (let w of user_workouts) {
       var tmp = {
         "metaData": {
