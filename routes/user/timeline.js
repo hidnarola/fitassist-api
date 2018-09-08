@@ -377,7 +377,7 @@ router.post("/muscle", async (req, res) => {
       notEmpty: true,
       errorMessage: "End date required"
     },
-    type: {
+    bodypart: {
       notEmpty: true,
       errorMessage: "Muscle type required"
     }
@@ -401,7 +401,7 @@ router.post("/muscle", async (req, res) => {
     if (widgets_data.status === 1) {
       var muscle = widgets_data.widgets.muscle;
       _.map(muscle, function (o) {
-        if (o.name === req.body.type) {
+        if (o.name === req.body.bodypart) {
           o.start = req.body.start;
           o.end = req.body.end;
         }
@@ -415,7 +415,7 @@ router.post("/muscle", async (req, res) => {
       });
 
       if (widgets_data && widgets_data.status === 1) {
-        returnObj.data.type = req.body.type;
+        returnObj.data.type = req.body.bodypart;
         logger.trace("User muscle widget saved   = ", returnObj);
         let muscleObject = {};
         let bodyMeasurment;
@@ -429,7 +429,7 @@ router.post("/muscle", async (req, res) => {
 
         if (bodyMeasurment.status === 1) {
           try {
-            returnObj.data.muscle = bodyMeasurment.progress.data[req.body.type];
+            returnObj.data.muscle = bodyMeasurment.progress.data[req.body.bodypart];
           } catch (error) {
             returnObj.data.muscle = null;
           }
