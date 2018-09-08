@@ -302,12 +302,10 @@ router.post("/body_fat", async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
-
     var widgets_settings_object = {
       userId: authUserId,
       modifiedAt: new Date()
     }
-
     widgets_settings_object.bodyFat = {
       start: req.body.start,
       end: req.body.end
