@@ -364,8 +364,8 @@ router.post("/muscle", async (req, res) => {
     status: 1,
     message: "Success",
     data: {
-      widgets: null,
-      muscle: null
+      type: null,
+      muscle: []
     }
   }
   var schema = {
@@ -415,9 +415,8 @@ router.post("/muscle", async (req, res) => {
       });
 
       if (widgets_data && widgets_data.status === 1) {
+        returnObj.data.type = req.body.type;
         logger.trace("User muscle widget saved   = ", returnObj);
-        returnObj.data.widgets = widgets_data.widgets;
-
         let muscleObject = {};
         let bodyMeasurment;
         bodyMeasurment = await workout_progress_helper.user_body_progress({
@@ -430,17 +429,17 @@ router.post("/muscle", async (req, res) => {
 
         if (bodyMeasurment.status === 1) {
           try {
-            muscleObject[req.body.type] = bodyMeasurment.progress.data[req.body.type];
+            returnObj.data.muscle = bodyMeasurment.progress.data[req.body.type];
           } catch (error) {
-            muscleObject[req.body.type] = null;
+            returnObj.data.muscle = null;
           }
         } else {
-          muscleObject[req.body.type] = null;
+          returnObj.data.muscle = null;
         }
-
-        returnObj.data.muscle = muscleObject;
+        // returnObj.data.muscle = muscleObject;
         res.status(config.OK_STATUS).json(returnObj);
       } else {
+        returnObj.
         logger.error("Error occured while saving user muscle widgets = ", widgets_data);
         res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
       }
