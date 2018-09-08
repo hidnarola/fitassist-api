@@ -572,7 +572,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 
 			var first = _.first(body_progress);
 			var last = _.last(body_progress);
-			var bodypartKeys = ["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "height"];
+			var bodypartKeys = ["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "height", "weight", "heartRate"];
 
 			_.each(bodypartKeys, async function (key) {
 				first[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, first[key]);

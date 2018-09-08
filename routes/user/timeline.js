@@ -364,7 +364,8 @@ router.post("/muscle", async (req, res) => {
     status: 1,
     message: "Success",
     data: {
-      type: null,
+      widgets: null,
+      bodypart: null,
       muscle: []
     }
   }
@@ -415,7 +416,7 @@ router.post("/muscle", async (req, res) => {
       });
 
       if (widgets_data && widgets_data.status === 1) {
-        returnObj.data.type = req.body.bodypart;
+        returnObj.data.bodypart = req.body.bodypart;
         returnObj.data.widgets = widgets_data.widgets;
         logger.trace("User muscle widget saved   = ", returnObj);
         let bodyMeasurment;
@@ -439,7 +440,7 @@ router.post("/muscle", async (req, res) => {
         // returnObj.data.muscle = muscleObject;
         res.status(config.OK_STATUS).json(returnObj);
       } else {
-        returnObj.
+        returnObj.wi
         logger.error("Error occured while saving user muscle widgets = ", widgets_data);
         res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
       }
