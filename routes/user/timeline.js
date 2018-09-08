@@ -180,7 +180,7 @@ router.get("/:post_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:username/:start?/:offset?", async (req, res) => {
-  logger.trace("Get all user's timeline API called");
+  logger.trace("Get user's timeline API called");
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var skip = req.params.start ? req.params.start : 0;
@@ -416,8 +416,8 @@ router.post("/muscle", async (req, res) => {
 
       if (widgets_data && widgets_data.status === 1) {
         returnObj.data.type = req.body.bodypart;
+        returnObj.data.widgets = widgets_data.widgets;
         logger.trace("User muscle widget saved   = ", returnObj);
-        let muscleObject = {};
         let bodyMeasurment;
         bodyMeasurment = await workout_progress_helper.user_body_progress({
           userId: authUserId,
