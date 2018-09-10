@@ -43,7 +43,11 @@ user_post_helper.count_post = async id => {
  *          status 1 - If user's post photos data found, with user's post photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
-user_post_helper.get_user_post_photos = async (username, skip, limit) => {
+user_post_helper.get_user_post_photos = async (username, skip, limit, sort = {
+  $sort: {
+    createdAt: -1
+  }
+}, ) => {
   try {
     var user_post_photos = await UserPost.aggregate([{
         $lookup: {
@@ -101,6 +105,7 @@ user_post_helper.get_user_post_photos = async (username, skip, limit) => {
           }
         }
       },
+      sort,
       skip,
       limit
     ]);

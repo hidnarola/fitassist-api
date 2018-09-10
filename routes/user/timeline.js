@@ -4,7 +4,6 @@ var fs = require("fs");
 var path = require("path");
 var async = require("async");
 var mongoose = require("mongoose");
-var moment = require("moment");
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
 var constant = require("../../constant");

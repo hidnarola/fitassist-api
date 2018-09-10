@@ -110,7 +110,7 @@ router.get("/", async (req, res) => {
           createdAt: -1
         }
       }, {
-        $limit: 5
+        $limit: 6
       });
       if (badges.status === 1) {
         dashboard.data.badges = badges.badges;

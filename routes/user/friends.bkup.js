@@ -18,7 +18,7 @@ var common_helper = require("../../helpers/common_helper");
 var socket = require("../../socket/socketServer");
 
 /**
- * @api {get} /:username?/:type?/:skip?/:limit?/:sort? Get by Username
+ * @api {get} /user/friend/:username/:type? Get by Username
  * @apiName Get by Username
  * @apiGroup  User Friends
  * @apiDescription Get friends by Username second parameter is used to get by status of friend 1 for pending friends and 2 for approved friend
@@ -35,15 +35,17 @@ var socket = require("../../socket/socketServer");
  *     ]
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:username?/:type?/:skip?/:limit?/:sort?", async (req, res) => {
+router.get("/:username?/:type?", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var friendStatus = parseInt(req.params.type ? req.params.type : 2);
-  var skip = parseInt(req.params.skip ? req.params.skip : 0);
-  var limit = parseInt(req.params.limit ? req.params.limit : 10);
-  var sort = parseInt(req.params.sort ? req.params.sort : -1);
-  var username = req.params.username;
 
+  var userdata = await friend_helper.find({
+    authUserId: authUserId
+  });
+
+  var username = userdata.friends.username;
+  username = req.params.username ? req.params.username : username;
   userdata = await friend_helper.find({
     username: username
   });
@@ -74,15 +76,7 @@ router.get("/:username?/:type?/:skip?/:limit?/:sort?", async (req, res) => {
   var resp_data = await friend_helper.get_friend_by_username({
       username: username
     },
-    friendStatus, {
-      $sort: {
-        createdAt: sort
-      }
-    }, {
-      $skip: skip
-    }, {
-      $limit: limit
-    },
+    friendStatus
   );
 
   if (resp_data.status == 0) {

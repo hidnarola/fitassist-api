@@ -27,12 +27,11 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
   var limit = parseInt(req.params.limit ? req.params.limit : 10);
 
   logger.trace("Get all user's progress_photo API called");
-  var resp_data = await user_progress_photos_helper.get_user_progress_photos_month_wise(
-    {
-      username: req.params.username
-    },
-    { $limit: limit }
-  );
+  var resp_data = await user_progress_photos_helper.get_user_progress_photos_month_wise({
+    username: req.params.username
+  }, {
+    $limit: limit
+  });
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching get all user progress photos = ",
@@ -61,18 +60,21 @@ router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
 
   var start = parseInt(req.params.start ? req.params.start : 0);
   var limit = parseInt(req.params.limit ? req.params.limit : 10);
-  var sort_by = Number(req.params.sort_by ? req.params.sort_by : -1);
+  var sort_by = parseInt(req.params.sort_by ? req.params.sort_by : -1);
 
   logger.trace("Get all user's progress_photo API called");
-  var resp_data = await user_progress_photos_helper.get_user_progress_photos(
-    {
-      username: req.params.username,
-      isDeleted: 0
-    },
-    { $skip: start },
-    { $limit: limit },
-    { $sort: { date: sort_by } }
-  );
+  var resp_data = await user_progress_photos_helper.get_user_progress_photos({
+    username: req.params.username,
+    isDeleted: 0
+  }, {
+    $skip: start
+  }, {
+    $limit: limit
+  }, {
+    $sort: {
+      date: sort_by
+    }
+  });
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching get all user progress photos = ",
@@ -89,9 +91,7 @@ router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
  * @api {get} /user/progress_photo/:user_photo_id Get by ID
  * @apiName Get by ID
  * @apiGroup User Progress Photo
- *
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {Array} user_progress_photo progress_photo's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -100,9 +100,10 @@ router.get("/:user_photo_id", async (req, res) => {
     "Get user progress photo by ID API called : ",
     req.params.user_photo_id
   );
-  var resp_data = await user_progress_photos_helper.get_user_progress_photo_by_id(
-    { _id: req.params.user_photo_id, isDeleted: 0 }
-  );
+  var resp_data = await user_progress_photos_helper.get_user_progress_photo_by_id({
+    _id: req.params.user_photo_id,
+    isDeleted: 0
+  });
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching user progress photo = ",
@@ -156,7 +157,7 @@ router.post("/", async (req, res) => {
       }
       extention = path.extname(file.name);
       filename = "user_progress_" + new Date().getTime() + extention;
-      file.mv(dir + "/" + filename, function(err) {
+      file.mv(dir + "/" + filename, function (err) {
         if (err) {
           logger.error("There was an issue in uploading image");
           res.send({
@@ -257,7 +258,7 @@ router.put("/", async (req, res) => {
       }
       extention = path.extname(file.name);
       filename = "user_progress_" + new Date().getTime() + extention;
-      file.mv(dir + "/" + filename, function(err) {
+      file.mv(dir + "/" + filename, function (err) {
         if (err) {
           logger.error("There was an issue in uploading image");
           res.send({
@@ -287,7 +288,7 @@ router.put("/", async (req, res) => {
       userId: authUserId
     });
     if (resp_data.status == 1) {
-      fs.unlink(resp_data.user_progress_photos[0].image, function(
+      fs.unlink(resp_data.user_progress_photos[0].image, function (
         err,
         Success
       ) {
@@ -325,10 +326,12 @@ router.delete("/:photo_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete user's progress photo API - Id = ", req.params.photo_id);
-  let nutrition_predata_data = await user_progress_photos_helper.delete_user_progress_photo(
-    { userId: authUserId, _id: req.params.photo_id },
-    { isDeleted: 1 }
-  );
+  let nutrition_predata_data = await user_progress_photos_helper.delete_user_progress_photo({
+    userId: authUserId,
+    _id: req.params.photo_id
+  }, {
+    isDeleted: 1
+  });
 
   if (nutrition_predata_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(nutrition_predata_data);

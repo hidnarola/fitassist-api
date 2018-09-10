@@ -75,7 +75,7 @@ friend_helper.get_friends = async id => {
  *          status 1 - If friends data found, with friends object
  *          status 2 - If friends not found, with appropriate message
  */
-friend_helper.get_friend_by_username = async (username, statusType, skip, limit, sort) => {
+friend_helper.get_friend_by_username = async (username, statusType) => {
   try {
     if (statusType == 2) {
       var friends = await Users.aggregate([{
@@ -227,26 +227,20 @@ friend_helper.get_friend_by_username = async (username, statusType, skip, limit,
             }
           }
         },
-        // {
-        //   $project: {
-        //     "user._id": 1,
-        //     "user.authUserId": 1,
-        //     "user.firstName": 1,
-        //     "user.avatar": 1,
-        //     "user.username": 1,
-        //     "user.lastName": 1,
-        //     "user.friendshipId": 1,
-        //     "user.totalFriends": 1,
-        //   }
-        // },
-        // sort,
-        // skip,
-        // limit
-      ]);
-      console.log('------------------------------------');
-      console.log('friends : ', friends);
-      console.log('------------------------------------');
+        {
+          $project: {
+            "user._id": 1,
+            "user.authUserId": 1,
+            "user.firstName": 1,
+            "user.avatar": 1,
+            "user.username": 1,
+            "user.lastName": 1,
+            "user.friendshipId": 1,
+            "user.totalFriends": 1,
+          }
+        },
 
+      ]);
     } else {
       var friends = await Users.aggregate([{
           $match: username
@@ -337,9 +331,6 @@ friend_helper.get_friend_by_username = async (username, statusType, skip, limit,
             "user.totalFriends": 1,
           }
         },
-        sort,
-        skip,
-        limit
       ]);
     }
 

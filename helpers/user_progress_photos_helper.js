@@ -16,8 +16,7 @@ user_progress_photo_helper.get_user_progress_photos = async (
   sort
 ) => {
   try {
-    var user_progress_photos = await UserProgressPhotos.aggregate([
-      {
+    var user_progress_photos = await UserProgressPhotos.aggregate([{
         $lookup: {
           from: "users",
           localField: "userId",
@@ -31,19 +30,35 @@ user_progress_photo_helper.get_user_progress_photos = async (
       {
         $group: {
           _id: "$_id",
-          description: { $first: "$description" },
-          status: { $first: "$status" },
-          isDeleted: { $first: "$isDeleted" },
-          userId: { $first: "$userId" },
-          date: { $first: "$date" },
-          image: { $first: "$image" },
-          username: { $first: "$username.username" }
+          description: {
+            $first: "$description"
+          },
+          status: {
+            $first: "$status"
+          },
+          isDeleted: {
+            $first: "$isDeleted"
+          },
+          userId: {
+            $first: "$userId"
+          },
+          date: {
+            $first: "$date"
+          },
+          image: {
+            $first: "$image"
+          },
+          username: {
+            $first: "$username.username"
+          }
         }
       },
-      { $match: search_obj },
+      {
+        $match: search_obj
+      },
+      sort,
       start,
       limit,
-      sort
     ]);
     if (user_progress_photos && user_progress_photos.length != 0) {
       return {
@@ -52,7 +67,10 @@ user_progress_photo_helper.get_user_progress_photos = async (
         user_progress_photos: user_progress_photos
       };
     } else {
-      return { status: 2, message: "No user progress photos available" };
+      return {
+        status: 2,
+        message: "No user progress photos available"
+      };
     }
   } catch (err) {
     return {
@@ -75,8 +93,7 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
   limit
 ) => {
   try {
-    var user_progress_photos = await Users.aggregate([
-      {
+    var user_progress_photos = await Users.aggregate([{
         $match: search_obj
       },
       {
@@ -97,7 +114,9 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
           // userId: 1,
           // description: 1,
           //  "year": { $year: "date" },
-          month: { $month: "$user_progress_photos.date" }
+          month: {
+            $month: "$user_progress_photos.date"
+          }
           // day: { $dayOfMonth: "$date" }
         }
       },
@@ -107,11 +126,21 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
             _id: "$_id",
             month: "$month"
           },
-          description: { $first: "$user_progress_photos.description" },
-          image: { $push: "$user_progress_photos.image" },
-          date: { $first: "$user_progress_photos.date" },
-          isDeleted: { $first: "$user_progress_photos.isDeleted" },
-          userId: { $first: "$user_progress_photos.userId" }
+          description: {
+            $first: "$user_progress_photos.description"
+          },
+          image: {
+            $push: "$user_progress_photos.image"
+          },
+          date: {
+            $first: "$user_progress_photos.date"
+          },
+          isDeleted: {
+            $first: "$user_progress_photos.isDeleted"
+          },
+          userId: {
+            $first: "$user_progress_photos.userId"
+          }
           // month:"$month",
         }
       },
@@ -121,7 +150,9 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
         }
       },
       {
-        $sort: { date: -1 }
+        $sort: {
+          date: -1
+        }
       },
       limit
     ]);
@@ -133,7 +164,10 @@ user_progress_photo_helper.get_user_progress_photos_month_wise = async (
         user_progress_photos: user_progress_photos
       };
     } else {
-      return { status: 2, message: "No user progress photos available" };
+      return {
+        status: 2,
+        message: "No user progress photos available"
+      };
     }
   } catch (err) {
     return {
@@ -161,7 +195,10 @@ user_progress_photo_helper.get_user_progress_photo_by_id = async id => {
         user_progress_photo: user_progress_photos
       };
     } else {
-      return { status: 2, message: "No user progress photos available" };
+      return {
+        status: 2,
+        message: "No user progress photos available"
+      };
     }
   } catch (err) {
     return {
@@ -180,16 +217,23 @@ user_progress_photo_helper.get_user_progress_photo_by_id = async id => {
  */
 user_progress_photo_helper.get_first_and_last_user_progress_photos = async id => {
   try {
-    var user_progress_photos = await UserProgressPhotos.aggregate([
-      {
+    var user_progress_photos = await UserProgressPhotos.aggregate([{
         $match: id
       },
-      { $sort: { date: 1 } },
+      {
+        $sort: {
+          date: 1
+        }
+      },
       {
         $group: {
           _id: "$userId",
-          beginning: { $first: "$image" },
-          current: { $last: "$image" }
+          beginning: {
+            $first: "$image"
+          },
+          current: {
+            $last: "$image"
+          }
         }
       }
     ]);
@@ -200,7 +244,10 @@ user_progress_photo_helper.get_first_and_last_user_progress_photos = async id =>
         user_progress_photos: user_progress_photos[0]
       };
     } else {
-      return { status: 2, message: "No user progress photos available" };
+      return {
+        status: 2,
+        message: "No user progress photos available"
+      };
     }
   } catch (err) {
     return {
@@ -248,13 +295,18 @@ user_progress_photo_helper.update_user_progress_photo = async (
   user_progress_photo_obj
 ) => {
   try {
-    let user_progress_photo = await UserProgressPhotos.findOneAndUpdate(
-      { userId: authUserId },
-      user_progress_photo_obj,
-      { new: true }
+    let user_progress_photo = await UserProgressPhotos.findOneAndUpdate({
+        userId: authUserId
+      },
+      user_progress_photo_obj, {
+        new: true
+      }
     );
     if (!user_progress_photo) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -288,7 +340,10 @@ user_progress_photo_helper.delete_user_progress_photo = async (
       user_progress_photo_obj
     );
     if (!user_progress_photo) {
-      return { status: 2, message: "Record has not deleted" };
+      return {
+        status: 2,
+        message: "Record has not deleted"
+      };
     } else {
       return {
         status: 1,
