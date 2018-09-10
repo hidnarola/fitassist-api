@@ -227,26 +227,32 @@ friend_helper.get_friend_by_username = async (username, statusType, skip, limit,
             }
           }
         },
-        // {
-        //   $project: {
-        //     "user._id": 1,
-        //     "user.authUserId": 1,
-        //     "user.firstName": 1,
-        //     "user.avatar": 1,
-        //     "user.username": 1,
-        //     "user.lastName": 1,
-        //     "user.friendshipId": 1,
-        //     "user.totalFriends": 1,
-        //   }
-        // },
-        // sort,
-        // skip,
-        // limit
+        {
+          $unwind: "$user"
+        },
+        skip,
+        limit,
+        {
+          $group: {
+            _id: "",
+            user: {
+              $addToSet: "$$ROOT.user"
+            }
+          }
+        },
+        {
+          $project: {
+            "user._id": 1,
+            "user.authUserId": 1,
+            "user.firstName": 1,
+            "user.avatar": 1,
+            "user.username": 1,
+            "user.lastName": 1,
+            "user.friendshipId": 1,
+            "user.totalFriends": 1,
+          }
+        }
       ]);
-      console.log('------------------------------------');
-      console.log('friends : ', friends);
-      console.log('------------------------------------');
-
     } else {
       var friends = await Users.aggregate([{
           $match: username
@@ -326,6 +332,19 @@ friend_helper.get_friend_by_username = async (username, statusType, skip, limit,
           }
         },
         {
+          $unwind: "$user"
+        },
+        skip,
+        limit,
+        {
+          $group: {
+            _id: "",
+            user: {
+              $addToSet: "$$ROOT.user"
+            }
+          }
+        },
+        {
           $project: {
             "user._id": 1,
             "user.authUserId": 1,
@@ -336,10 +355,7 @@ friend_helper.get_friend_by_username = async (username, statusType, skip, limit,
             "user.friendshipId": 1,
             "user.totalFriends": 1,
           }
-        },
-        sort,
-        skip,
-        limit
+        }
       ]);
     }
 

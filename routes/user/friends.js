@@ -207,28 +207,25 @@ router.put("/:request_id", async (req, res) => {
     status: 2,
     modifiedAt: new Date()
   };
-  var checkfrd = await friend_helper.checkFriend({
-    _id: mongoose.Types.ObjectId(req.params.request_id)
-  });
 
-  // if (checkfrd.status == 1 && checkfrd.friends[0].status == 2) {
-  //   return res
-  //     .status(config.OK_STATUS)
-  //     .json({ status: 0, message: "already friend" });
-  // }
   let friend_data = await friend_helper.approve_friend({
-      _id: req.params.request_id
+      _id: request_id
     },
     friend_obj
   );
-  if (friend_data.status === 0) {
-    logger.error("Error while approving friend request = ", friend_data);
-    return res.status(config.BAD_REQUEST).json({
-      friend_data
+  if (friend_data.status === 1) {
+    var user = socket.users.get(authUserId);
+    var socketIds = user ? user.socketIds : [];
+    var user_friends_count = await friend_helper.count_friends(authUserId);
+    socketIds.forEach(socketId => {
+      socket.io.to(socketId).emit("receive_user_friends_count", {
+        count: user_friends_count.count
+      });
     });
-  } else {
+
+
     var friend = await friend_helper.checkFriend({
-      _id: mongoose.Types.ObjectId(req.params.request_id)
+      _id: mongoose.Types.ObjectId(request_id)
     });
 
     notificationObj = {
@@ -276,8 +273,12 @@ router.put("/:request_id", async (req, res) => {
         friends: receiver_data_friends.friends.length
       }
     );
-
     return res.status(config.OK_STATUS).json(friend_data);
+  } else {
+    logger.error("Error while approving friend request = ", friend_data);
+    return res.status(config.BAD_REQUEST).json({
+      friend_data
+    });
   }
 });
 
@@ -294,9 +295,11 @@ router.put("/:request_id", async (req, res) => {
 router.delete("/:request_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Delete friend API - Id = ", req.params.request_id);
+  var request_id = req.params.request_id;
+
+  logger.trace("Delete friend API - Id = ", request_id);
   let friend_data = await friend_helper.reject_friend({
-    _id: req.params.request_id,
+    _id: request_id,
     $or: [{
       userId: authUserId
     }, {
