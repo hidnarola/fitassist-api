@@ -47,7 +47,6 @@ myIo.init = function (server) {
       var onlineFriends = [];
       user_friends.friends.forEach((element) => {
         var socketId = users.get(element.authUserId);
-
         if (socketId) {
           onlineFriends.push(element.authUserId);
           usersFriendsSocketIds = _.union(
