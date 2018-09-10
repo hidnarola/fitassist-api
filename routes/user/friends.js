@@ -227,6 +227,17 @@ router.put("/:request_id", async (req, res) => {
   );
   if (friend_data.status === 1) {
     res.status(config.OK_STATUS).json(friend_data);
+
+
+    var user = socket.users.get(authUserId);
+    var socketIds = user ? user.socketIds : [];
+    var user_friends_count = await friend_helper.count_friends(authUserId);
+    socketIds.forEach(socketId => {
+      socket.io.to(socketId).emit("receive_user_friends_count", {
+        count: user_friends_count.count
+      });
+    });
+
     notificationObj = {
       senderId: friend.friends.friendId,
       receiverId: friend.friends.userId,

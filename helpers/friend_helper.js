@@ -78,7 +78,7 @@ friend_helper.get_friends = async id => {
 friend_helper.get_friend_by_username = async (username, statusType, skip = false, limit = false, sort = false) => {
   try {
     if (statusType == 2) {
-      var friends = await Users.aggregate([{
+      let aggregate = [{
           $match: username
         },
         {
@@ -230,31 +230,34 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
         {
           $unwind: "$user"
         },
-        skip,
-        limit,
-        {
-          $group: {
-            _id: "",
-            user: {
-              $addToSet: "$$ROOT.user"
+      ];
+      if (skip && limit) {
+        aggregate.push(
+          skip,
+          limit, {
+            $group: {
+              _id: "",
+              user: {
+                $addToSet: "$$ROOT.user"
+              }
             }
-          }
-        },
-        {
-          $project: {
-            "user._id": 1,
-            "user.authUserId": 1,
-            "user.firstName": 1,
-            "user.avatar": 1,
-            "user.username": 1,
-            "user.lastName": 1,
-            "user.friendshipId": 1,
-            "user.totalFriends": 1,
-          }
+          })
+      }
+      aggregate.push({
+        $project: {
+          "user._id": 1,
+          "user.authUserId": 1,
+          "user.firstName": 1,
+          "user.avatar": 1,
+          "user.username": 1,
+          "user.lastName": 1,
+          "user.friendshipId": 1,
+          "user.totalFriends": 1,
         }
-      ]);
+      });
+      var friends = await Users.aggregate(aggregate);
     } else {
-      var friends = await Users.aggregate([{
+      let aggregate = [{
           $match: username
         },
         {
@@ -333,30 +336,33 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
         },
         {
           $unwind: "$user"
-        },
-        skip,
-        limit,
-        {
-          $group: {
-            _id: "",
-            user: {
-              $addToSet: "$$ROOT.user"
-            }
-          }
-        },
-        {
-          $project: {
-            "user._id": 1,
-            "user.authUserId": 1,
-            "user.firstName": 1,
-            "user.avatar": 1,
-            "user.username": 1,
-            "user.lastName": 1,
-            "user.friendshipId": 1,
-            "user.totalFriends": 1,
-          }
         }
-      ]);
+      ];
+      if (skip && limit) {
+        aggregate.push(
+          skip,
+          limit, {
+            $group: {
+              _id: "",
+              user: {
+                $addToSet: "$$ROOT.user"
+              }
+            }
+          })
+      }
+      aggregate.push.push({
+        $project: {
+          "user._id": 1,
+          "user.authUserId": 1,
+          "user.firstName": 1,
+          "user.avatar": 1,
+          "user.username": 1,
+          "user.lastName": 1,
+          "user.friendshipId": 1,
+          "user.totalFriends": 1,
+        }
+      })
+      var friends = await Users.aggregate(aggregate);
     }
 
     if (friends && friends.length > 0) {
