@@ -210,10 +210,9 @@ router.put("/:request_id", async (req, res) => {
   };
   var friend = await friend_helper.checkFriend({
     _id: mongoose.Types.ObjectId(req.params.request_id),
-    status: 2
   });
 
-  if (friend.status == 1) {
+  if (friend.status == 1 && friend.friends.status === 2) {
     return res
       .status(config.OK_STATUS)
       .json({
@@ -234,11 +233,18 @@ router.put("/:request_id", async (req, res) => {
       type: constant.NOTIFICATION_MESSAGES.FRIEND_REQUEST.TYPE,
       bodyMessage: constant.NOTIFICATION_MESSAGES.FRIEND_REQUEST.MESSAGE
     };
+    console.log('------------------------------------');
+    console.log('notificationObj : ', notificationObj);
+    console.log('------------------------------------');
 
-    await common_helper.send_notification(
+    var notification = await common_helper.send_notification(
       notificationObj,
       socket
     );
+    console.log('------------------------------------');
+    console.log('notification : ', notification);
+    console.log('------------------------------------');
+
 
     var receiver_data_friends = await friend_helper.total_count_friends({
       $or: [{

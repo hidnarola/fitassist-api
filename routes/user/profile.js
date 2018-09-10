@@ -13,7 +13,6 @@ var constant = require("../../constant");
 
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
-var user_primary_goals_helper = require("../../helpers/user_primary_goals_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
 
