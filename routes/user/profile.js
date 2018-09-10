@@ -76,7 +76,6 @@ router.get("/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var friendshipStatus = "";
-  var friendshipStatus = "";
   var friendshipId = "";
 
   var userdata = await friend_helper.find({
@@ -113,24 +112,18 @@ router.get("/:username", async (req, res) => {
         ]
       });
 
-      if (friend_data.friends.length == 1) {
+      if (friend_data.status == 1) {
         friendshipId = friend_data.friends._id;
         if (friend_data.friends.status == 1) {
           friend_data = await friend_helper.checkFriend({
             userId: authUserId,
             friendId: userAuthId
           });
-
-          if (friend_data.friends.length == 1) {
+          if (friend_data.status == 1) {
             friendshipStatus = "request_sent";
           } else {
             friendshipStatus = "request_received";
           }
-
-          friend_data = await friend_helper.checkFriend({
-            userId: authUserId,
-            friendId: userAuthId
-          });
         } else {
           friendshipStatus = "friend";
         }
