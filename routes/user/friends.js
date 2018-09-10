@@ -233,18 +233,10 @@ router.put("/:request_id", async (req, res) => {
       type: constant.NOTIFICATION_MESSAGES.FRIEND_REQUEST.TYPE,
       bodyMessage: constant.NOTIFICATION_MESSAGES.FRIEND_REQUEST.MESSAGE
     };
-    console.log('------------------------------------');
-    console.log('notificationObj : ', notificationObj);
-    console.log('------------------------------------');
-
     var notification = await common_helper.send_notification(
       notificationObj,
       socket
     );
-    console.log('------------------------------------');
-    console.log('notification : ', notification);
-    console.log('------------------------------------');
-
 
     var receiver_data_friends = await friend_helper.total_count_friends({
       $or: [{
