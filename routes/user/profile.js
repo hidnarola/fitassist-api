@@ -114,8 +114,8 @@ router.get("/:username", async (req, res) => {
       });
 
       if (friend_data.friends.length == 1) {
-        friendshipId = friend_data.friends[0]._id;
-        if (friend_data.friends[0].status == 1) {
+        friendshipId = friend_data.friends._id;
+        if (friend_data.friends.status == 1) {
           friend_data = await friend_helper.checkFriend({
             userId: authUserId,
             friendId: userAuthId

@@ -75,7 +75,7 @@ friend_helper.get_friends = async id => {
  *          status 1 - If friends data found, with friends object
  *          status 2 - If friends not found, with appropriate message
  */
-friend_helper.get_friend_by_username = async (username, statusType, skip, limit, sort) => {
+friend_helper.get_friend_by_username = async (username, statusType, skip = false, limit = false, sort = false) => {
   try {
     if (statusType == 2) {
       var friends = await Users.aggregate([{
@@ -573,6 +573,30 @@ friend_helper.count_friends = async id => {
 };
 
 /*
+ * total_count_friends is used to count all friends data
+ * 
+ * @return  status 0 - If any internal error occured while couting friends data, with error
+ *          status 1 - If friends data found, with friends object
+ *          status 2 - If friends not found, with appropriate message
+ */
+friend_helper.total_count_friends = async condititon => {
+  try {
+    var count = await Friends.count(condititon);
+    return {
+      status: 1,
+      message: `Total ${count} approved friends `,
+      count: count
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while couting approved friends",
+      error: err
+    };
+  }
+};
+
+/*
  * find is used to fetch all friends data
  * 
  * @return  status 0 - If any internal error occured while fetching friends data, with error
@@ -613,7 +637,7 @@ friend_helper.find = async id => {
  */
 friend_helper.checkFriend = async id => {
   try {
-    var friends = await Friends.find(id);
+    var friends = await Friends.findOne(id);
     if (friends) {
       return {
         status: 1,
