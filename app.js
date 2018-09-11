@@ -1,11 +1,8 @@
 var express = require("express");
 var path = require("path");
-var fs = require("fs");
-var favicon = require("serve-favicon");
 var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
-var moment = require("moment");
 
 var fileUpload = require("express-fileupload");
 var expressValidator = require("express-validator");
@@ -16,7 +13,6 @@ var numCPUs = require("os").cpus().length;
 
 /* config files */
 var config = require("./config");
-var dbConnect = require("./database/mongoDbConnection");
 var socket = require("./socket/socketServer");
 
 //helper
@@ -131,7 +127,6 @@ if (app.get("env") != "development") {
   serverpath = "http://167.99.90.169:3300/";
 }
 
-const BASE_URL = serverpath;
 
 // development error handler, will print stacktrace
 if (app.get("env") === "development") {
@@ -152,22 +147,6 @@ app.use(function (err, req, res, next) {
     error: {}
   });
 });
-
-// if (cluster.isMaster) {
-//   for (var i = 0; i < numCPUs; i++) {
-//     // Create a worker
-//     cluster.fork();
-//   }
-// } else {
-//   var server = app.listen((config.node_port || 3000), function () {
-//     //console.log('Listening on port ' + (config.node_port || 3000) + '...');
-//   });
-//   socket.socketStartUp(server);
-// }
-// cluster.on('exit', function (worker, code, signal) {
-//   console.log('Worker %d died with code/signal %s. Restarting worker...', worker.process.pid, signal || code);
-//   cluster.fork();
-// });
 
 var server = app.listen(config.node_port || 3000, function () {
   console.log('Server is running on :', (config.node_port || 3300));

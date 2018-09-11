@@ -152,8 +152,7 @@ myIo.init = function (server) {
     socket.on("get_channel_id", async function (data) {
       var resp_data = {};
       var user = users.get(data.userId);
-      var socketIds =
-        user && user.socketIds && user.socketIds.length ? user.socketIds : [];
+      var socketIds = user && user.socketIds && user.socketIds.length ? user.socketIds : [];
       try {
         resp_data = await chat_helper.get_channel_id(
           data.userId,
@@ -203,10 +202,7 @@ myIo.init = function (server) {
         );
 
         if (resp_data.status == 0) {
-          logger.error(
-            "Error occured while fetching chat messages = ",
-            resp_data
-          );
+          logger.error("Error occured while fetching chat messages = ", resp_data);
         } else {
           logger.trace("chat messages got successfully = ", resp_data);
         }
@@ -232,9 +228,7 @@ myIo.init = function (server) {
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
       var user = users.get(authUserId);
-      var socketIds =
-        user && user.socketIds && user.socketIds.length > 0 ?
-        user.socketIds : [];
+      var socketIds = user && user.socketIds && user.socketIds.length > 0 ? user.socketIds : [];
       var start = parseInt(data.start ? data.start : 0);
       var limit = parseInt(data.limit ? data.limit : 10);
       var condition = {
@@ -247,30 +241,21 @@ myIo.init = function (server) {
       };
 
       try {
-        resp_data = await chat_helper.get_conversation(
-          authUserId,
-          condition, {
-            $skip: start
-          }, {
-            $limit: limit
-          }
-        );
+        resp_data = await chat_helper.get_conversation(authUserId, condition, {
+          $skip: start
+        }, {
+          $limit: limit
+        });
 
         if (resp_data.status == 0) {
-          logger.error(
-            "Error occured while fetching chat messages = ",
-            resp_data
-          );
+          logger.error("Error occured while fetching chat messages = ", resp_data);
         } else {
           logger.trace("chat messages got successfully = ", resp_data);
         }
       } catch (error) {
         resp_data.message = "Internal server error! please try again later.";
         resp_data.status = 0;
-        logger.error(
-          "Error occured while fetching chat messages = ",
-          resp_data
-        );
+        logger.error("Error occured while fetching chat messages = ", resp_data);
       } finally {
         socketIds.forEach(socketId => {
           io.to(socketId).emit(
@@ -290,17 +275,12 @@ myIo.init = function (server) {
      */
     socket.on("send_new_message", async function (data) {
       var respObj = {};
-
       var decoded = jwtDecode(data.token);
       var authUserId = decoded.sub;
       var sender = users.get(authUserId);
-      var socketIdsForSender =
-        sender && sender.socketIds && sender.socketIds.length > 0 ?
-        sender.socketIds : [];
+      var socketIdsForSender = sender && sender.socketIds && sender.socketIds.length > 0 ? sender.socketIds : [];
       var reciever = users.get(data.friendId);
-      var socketIdsForReceiver =
-        reciever && reciever.socketIds && reciever.socketIds.length > 0 ?
-        reciever.socketIds : [];
+      var socketIdsForReceiver = reciever && reciever.socketIds && reciever.socketIds.length > 0 ? reciever.socketIds : [];
       var chat_data;
 
       try {
@@ -313,10 +293,7 @@ myIo.init = function (server) {
           userId: authUserId,
           message: data.message
         };
-        chat_data = await chat_helper.send_message(
-          conversations_obj,
-          conversations_replies_obj
-        );
+        chat_data = await chat_helper.send_message(conversations_obj, conversations_replies_obj);
 
         if (chat_data.status === 1) {
           var user = await user_helper.get_user_by_id(chat_data.channel.userId);
@@ -371,9 +348,7 @@ myIo.init = function (server) {
         message: "typing"
       };
       var friendId = users.get(data.friendId);
-      var socketIds =
-        friendId && friendId.socketIds && friendId.socketIds.length > 0 ?
-        friendId.socketIds : [];
+      var socketIds = friendId && friendId.socketIds && friendId.socketIds.length > 0 ? friendId.socketIds : [];
       respObj.channel = {
         _id: data.channelId,
         isTyping: true
@@ -396,9 +371,7 @@ myIo.init = function (server) {
         message: "no typing"
       };
       var friendId = users.get(data.friendId);
-      var socketIds =
-        friendId && friendId.socketIds && friendId.socketIds.length > 0 ?
-        friendId.socketIds : [];
+      var socketIds = friendId && friendId.socketIds && friendId.socketIds.length > 0 ? friendId.socketIds : [];
       respObj.channel = {
         _id: data.channelId,
         isTyping: false
@@ -416,11 +389,7 @@ myIo.init = function (server) {
      * @apiSuccess (Success 200) {String} flag flag
      */
     socket.on("mark_message_as_read", async function (data) {
-      var friendId = users.get(data.friendId);
-      var socketIds =
-        friendId && friendId.socketIds && friendId.socketIds.length > 0 ?
-        friendId.socketIds : [];
-      let chat_data = await chat_helper.mark_message_as_read({
+      await chat_helper.mark_message_as_read({
         userId: data.friendId,
         conversationId: data.channelId,
         isSeen: 0
@@ -448,9 +417,7 @@ myIo.init = function (server) {
         }
         socketToUsers.delete(socketId);
       }
-      console.log("Disconnect");
     });
-    console.log("Connected : ", socket.id);
   });
 
   myIo.io = io;

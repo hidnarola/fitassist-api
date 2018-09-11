@@ -107,7 +107,7 @@ router.post("/user_login", async (req, res) => {
                 config.REFRESH_TOKEN_SECRET_KEY, {}
               );
 
-              let update_resp = await user_helper.update_user_by_id(
+              await user_helper.update_user_by_id(
                 user_resp.user._id, {
                   refreshToken: refreshToken,
                   lastLoginDate: Date.now()
@@ -207,11 +207,7 @@ router.post("/admin_login", async (req, res) => {
     let user_resp = await admin_helper.get_admin_by_email(req.body.email);
     logger.trace("User checked resp = ", user_resp);
     if (user_resp.status === 0) {
-      logger.error(
-        "Error in finding user by email in user_login API. Err = ",
-        user_resp.err
-      );
-
+      logger.error("Error in finding user by email in user_login API. Err = ", user_resp.err);
       res.status(config.INTERNAL_SERVER_ERROR).json({
         status: 0,
         message: "Something went wrong while finding user",
@@ -219,7 +215,6 @@ router.post("/admin_login", async (req, res) => {
       });
     } else if (user_resp.status === 1) {
       logger.trace("User found. Executing next instruction");
-
       // Checking password
 
       common_helper.hashPassword.call({
@@ -244,7 +239,7 @@ router.post("/admin_login", async (req, res) => {
                 config.REFRESH_TOKEN_SECRET_KEY, {}
               );
 
-              let update_resp = await admin_helper.update_admin_by_id(
+              await admin_helper.update_admin_by_id(
                 user_resp.admin._id, {
                   refreshToken: refreshToken,
                   lastLoginDate: Date.now()
@@ -277,28 +272,24 @@ router.post("/admin_login", async (req, res) => {
               });
             } else {
               logger.trace("Admin account is not active");
-              res
-                .status(config.BAD_REQUEST)
-                .json({
-                  status: 0,
-                  message: "Account is not active"
-                });
+              res.status(config.BAD_REQUEST).json({
+                status: 0,
+                message: "Account is not active"
+              });
             }
           }
         }
       );
     } else {
       logger.info("Account doesn't exist.");
-      res
-        .status(config.BAD_REQUEST)
-        .json({
-          status: 0,
-          message: "Invalid email address"
-        });
+      res.status(config.BAD_REQUEST).json({
+        status: 0,
+        message: "Invalid email address"
+      });
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
       message: errors
     });
   }
@@ -436,7 +427,7 @@ router.put("/admin_change_password", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
       message: errors
     });
   }
@@ -505,7 +496,7 @@ router.post("/user_signup", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
       message: errors
     });
   }
@@ -635,7 +626,6 @@ router.get("/nutritional_label/:type", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     logger.trace("nutritional label got successfully = ", resp_data);
-
     res.status(config.OK_STATUS).json(resp_data);
   }
 });

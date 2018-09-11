@@ -1424,7 +1424,7 @@
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Array",
+            "type": "JSON",
             "optional": false,
             "field": "badge_category",
             "description": "<p>Array of badge_category document</p>"
@@ -2237,55 +2237,6 @@
     "groupTitle": "Body_Parts"
   },
   {
-    "type": "get",
-    "url": "/admin/bodypart/body_part_id",
-    "title": "Get by ID",
-    "name": "Body_Part___Body_Parts_by_ID",
-    "group": "Body_Parts",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "bodypart",
-            "description": "<p>JSON of Body part document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/bodyparts.js",
-    "groupTitle": "Body_Parts"
-  },
-  {
     "type": "delete",
     "url": "/admin/bodypart/:body_part_id",
     "title": "Delete",
@@ -2362,6 +2313,55 @@
             "optional": false,
             "field": "bodyparts",
             "description": "<p>Array of bodyparts document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
+    "groupTitle": "Body_Parts"
+  },
+  {
+    "type": "get",
+    "url": "/admin/bodypart/body_part_id",
+    "title": "Get by ID",
+    "name": "Get_by_ID",
+    "group": "Body_Parts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "bodypart",
+            "description": "<p>JSON of Body part document</p>"
           }
         ]
       }
@@ -4306,9 +4306,58 @@
   },
   {
     "type": "get",
+    "url": "/admin/exercise_type",
+    "title": "Get all",
+    "name": "Get_all",
+    "group": "Exercise_Type",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Array",
+            "optional": false,
+            "field": "exercise_types",
+            "description": "<p>Array of exercise_types's document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/exercise_types.js",
+    "groupTitle": "Exercise_Type"
+  },
+  {
+    "type": "get",
     "url": "/admin/exercise_type/exercise_type_id",
     "title": "Get by ID",
-    "name": "Get_Exercise_Type_by_ID",
+    "name": "Get_by_ID",
     "group": "Exercise_Type",
     "header": {
       "fields": {
@@ -4341,59 +4390,10 @@
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "Array",
+            "type": "JSON",
             "optional": false,
             "field": "exercise_type",
-            "description": "<p>Array of exercise_type document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/exercise_types.js",
-    "groupTitle": "Exercise_Type"
-  },
-  {
-    "type": "get",
-    "url": "/admin/exercise_type",
-    "title": "Get all",
-    "name": "Get_all",
-    "group": "Exercise_Type",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "exercise_types",
-            "description": "<p>Array of exercise_types's document</p>"
+            "description": "<p>JSON of exercise_type document</p>"
           }
         ]
       }
