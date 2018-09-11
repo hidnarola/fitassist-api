@@ -18,11 +18,11 @@ router.get("/", async (req, res) => {
   logger.trace("API - update admin profile called");
   logger.debug("req.body = ", req.userInfo);
   let admin = await admin_helper.get_admin_by_id(req.userInfo.id);
-  if (admin.status == 1) {
+  if (admin.status == 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(admin);
+  } else {
     delete admin.admin.password;
     res.status(config.OK_STATUS).json(admin);
-  } else {
-    res.status(config.INTERNAL_SERVER_ERROR).json(admin);
   }
 });
 
@@ -39,7 +39,6 @@ router.get("/", async (req, res) => {
  */
 router.put("/", async (req, res) => {
   logger.trace("API - update admin profile called");
-  logger.debug("req.body = ", req.body);
   var schema = {
     firstName: {
       notEmpty: true,
@@ -86,7 +85,6 @@ router.put("/", async (req, res) => {
       if (update_resp.status === 1) {
         delete update_resp.admin.password;
         res.status(config.OK_STATUS).json(update_resp);
-
       } else {
         res.status(config.INTERNAL_SERVER_ERROR).json({
           status: 2,

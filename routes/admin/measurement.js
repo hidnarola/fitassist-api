@@ -1,14 +1,7 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
-
 var router = express.Router();
-var jwtDecode = require("jwt-decode");
-
 var config = require("../../config");
 var logger = config.logger;
-
 var measurement_helper = require("../../helpers/measurement_helper");
 var common_helper = require("../../helpers/common_helper");
 
@@ -40,10 +33,8 @@ var common_helper = require("../../helpers/common_helper");
   ]
 }</code></pre>
  * @apiGroup Measurement
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
@@ -60,7 +51,9 @@ router.post("/filter", async (req, res) => {
   );
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.INTERNAL_SERVER_ERROR).json({
+      filtered_data
+    });
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
@@ -71,9 +64,7 @@ router.post("/filter", async (req, res) => {
  * @api {get} /admin/measurement Get all
  * @apiName Get all
  * @apiGroup Measurement
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {Array} measurements Array of body_measurement document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -209,13 +200,17 @@ router.post("/", async (req, res) => {
         "Error while inserting measurement data = ",
         measurement_data
       );
-      return res.status(config.BAD_REQUEST).json({ measurement_data });
+      return res.status(config.BAD_REQUEST).json({
+        measurement_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(measurement_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -283,13 +278,17 @@ router.put("/:measurement_id", async (req, res) => {
         "Error while updating measurement data = ",
         measurement_data
       );
-      return res.status(config.BAD_REQUEST).json({ measurement_data });
+      return res.status(config.BAD_REQUEST).json({
+        measurement_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(measurement_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

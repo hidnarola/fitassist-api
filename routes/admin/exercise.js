@@ -4,11 +4,9 @@ var path = require("path");
 var async = require("async");
 var mongoose = require("mongoose");
 var router = express.Router();
-
 var config = require("../../config");
 var constants = require("../../constant");
 var logger = config.logger;
-
 var exercise_helper = require("../../helpers/exercise_helper");
 var common_helper = require("../../helpers/common_helper");
 
@@ -39,7 +37,6 @@ var common_helper = require("../../helpers/common_helper");
 	]
 }</code></pre>
  * @apiGroup Exercise
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {Object} columnFilter columnFilter Object for filter data
@@ -54,9 +51,9 @@ var common_helper = require("../../helpers/common_helper");
 router.post("/filter", async (req, res) => {
   filter_object = common_helper.changeObject(req.body);
   let filtered_data = await exercise_helper.get_filtered_records(filter_object);
-  if (filtered_data.status === 0) {
+  if (filtered_data.status == 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({
+    return res.status(config.INTERNAL_SERVER_ERROR).json({
       filtered_data
     });
   } else {
@@ -75,12 +72,12 @@ router.post("/filter", async (req, res) => {
 router.get("/", async (req, res) => {
   logger.trace("Get all exercise API called");
   var resp_data = await exercise_helper.get_all_exercise();
-  if (resp_data.status == 1) {
-    logger.trace("Exercises got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  } else {
+  if (resp_data.status == 0) {
     logger.error("Error occured while fetching exercise = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Exercises got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
@@ -94,17 +91,16 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:exercise_id", async (req, res) => {
-  logger.trace("Get all exercise API called");
-  exercise_id = req.params.exercise_id;
+  logger.trace("Get all exercise API called : " + req.params.exercise_id);
   var resp_data = await exercise_helper.get_exercise_id({
-    _id: mongoose.Types.ObjectId(exercise_id)
+    _id: mongoose.Types.ObjectId(req.params.exercise_id)
   });
-  if (resp_data.status == 1) {
-    logger.trace("Exercises got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  } else {
+  if (resp_data.status == 0) {
     logger.error("Error occured while fetching exercise = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Exercises got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
@@ -138,7 +134,7 @@ router.post("/", async (req, res) => {
     },
     mainMuscleGroup: {
       notEmpty: true,
-      errorMessage: "Main Muscle Group is required"
+      errorMessage: "Main Muscle is required"
     },
     category: {
       notEmpty: true,
@@ -179,8 +175,6 @@ router.post("/", async (req, res) => {
   });
   req.checkBody(schema);
   var errors = req.validationErrors();
-
-
   if (!errors) {
     mainMuscleGroupData = mongoose.Types.ObjectId(req.body.mainMuscleGroup);
     detailedMuscleGroupData = [];
@@ -288,14 +282,14 @@ router.post("/", async (req, res) => {
         exercise_obj.images = file_path_array;
 
         let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
-        if (exercise_data.status === 1) {
-          logger.error("Successfully inserted exercise data = ", exercise_data);
-          res.status(config.OK_STATUS).json(exercise_data);
-        } else {
+        if (exercise_data.status == 0) {
           logger.error("Error while inserting exercise data = ", exercise_data);
-          res.status(config.BAD_REQUEST).json({
+          res.status(config.INTERNAL_SERVER_ERROR).json({
             exercise_data
           });
+        } else {
+          logger.error("Successfully inserted exercise data = ", exercise_data);
+          res.status(config.OK_STATUS).json(exercise_data);
         }
       }
     );
@@ -339,7 +333,7 @@ router.put("/:exercise_id", async (req, res) => {
     },
     mainMuscleGroup: {
       notEmpty: true,
-      errorMessage: "Main Muscle Group is required"
+      errorMessage: "Main Muscle is required"
     },
     category: {
       notEmpty: true,
@@ -347,7 +341,7 @@ router.put("/:exercise_id", async (req, res) => {
         options: [constants.EXERCISES_CATEGORIES],
         errorMessage: "Please select valid Category"
       },
-      errorMessage: "Category  is required"
+      errorMessage: "Category is required"
     },
     equipments: {
       notEmpty: true,
@@ -521,14 +515,14 @@ router.put("/:exercise_id", async (req, res) => {
           req.params.exercise_id,
           exercise_obj
         );
-        if (exercise_data.status === 1) {
-          logger.error("successfully updated exercise data = ", exercise_data);
-          res.status(config.OK_STATUS).json(exercise_data);
-        } else {
+        if (exercise_data.status === 0) {
           logger.error("Error while updating exercise data = ", exercise_data);
-          res.status(config.BAD_REQUEST).json({
+          res.status(config.INTERNAL_SERVER_ERROR).json({
             exercise_data
           });
+        } else {
+          logger.error("successfully updated exercise data = ", exercise_data);
+          res.status(config.OK_STATUS).json(exercise_data);
         }
       }
     );

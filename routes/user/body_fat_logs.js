@@ -1,19 +1,16 @@
 var express = require("express");
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
 var jwtDecode = require("jwt-decode");
 var moment = require("moment");
-
-
 var body_fat_helper = require("../../helpers/body_fat_helper");
 
 /**
  * @api {get} /user/body_fat_log Save
  * @apiName Save
  * @apiGroup  User Body Fat Logs
- * @apiHeader {String}  authorization User's unique access-key
+ * @apiHeader {String} authorization User's unique access-key
  * @apiSuccess (Success 200) {JSON} body_fat_logs JSON of body_fat_logs document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -22,6 +19,10 @@ router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var schema = {
+    logDate: {
+      notEmpty: true,
+      errorMessage: "logDate is required"
+    },
     site1: {
       notEmpty: true,
       errorMessage: "Site 1 is required"

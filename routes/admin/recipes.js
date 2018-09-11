@@ -1,13 +1,9 @@
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
-var async = require("async");
-
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
-
 var recipes_helper = require("../../helpers/recipes_helper");
 var common_helper = require("../../helpers/common_helper");
 
@@ -55,7 +51,9 @@ router.post("/filter", async (req, res) => {
   let filtered_data = await recipes_helper.get_filtered_records(filter_object);
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.BAD_REQUEST).json({
+      filtered_data
+    });
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
@@ -167,7 +165,7 @@ router.post("/", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "recipe_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -195,13 +193,17 @@ router.post("/", async (req, res) => {
     let recipe_data = await recipes_helper.insert_recipes(recipe_obj);
     if (recipe_data.status === 0) {
       logger.error("Error while inserting recipe data = ", recipe_data);
-      return res.status(config.BAD_REQUEST).json({ recipe_data });
+      return res.status(config.BAD_REQUEST).json({
+        recipe_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(recipe_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 /**
@@ -269,7 +271,7 @@ router.put("/:recipe_id", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "recipe_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -298,7 +300,7 @@ router.put("/:recipe_id", async (req, res) => {
         req.params.recipe_id
       );
       try {
-        fs.unlink(single_data.recipe.image, function() {});
+        fs.unlink(single_data.recipe.image, function () {});
       } catch (err) {}
     }
 
@@ -308,13 +310,17 @@ router.put("/:recipe_id", async (req, res) => {
     );
     if (recipe_data.status === 0) {
       logger.error("Error while updating recipe data = ", recipe_data);
-      return res.status(config.BAD_REQUEST).json({ recipe_data });
+      return res.status(config.BAD_REQUEST).json({
+        recipe_data
+      });
     } else {
       return res.status(config.OK_STATUS).json(recipe_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 /**

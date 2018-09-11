@@ -18,7 +18,6 @@ var badge_helper = require("../../helpers/badge_helper");
  */
 router.get("/:type", async (req, res) => {
   logger.trace("Get all user's badges API called");
-
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var resp_data = null;
@@ -49,25 +48,19 @@ router.get("/:type", async (req, res) => {
       });
     }
   } else {
-    logger.error(
-      "Invalid badge type = ",
-      req.params.type
-    );
+    logger.error("Invalid badge type = ", req.params.type);
     res.status(config.INTERNAL_SERVER_ERROR).json({
       status: 0,
       message: "Invalid badge type"
     });
   }
 
-  if (resp_data && resp_data.status === 1) {
+  if (resp_data && resp_data.status == 0) {
+    logger.error("Error occured while fetching user badges = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
     logger.trace("user badges found   = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
-  } else {
-    logger.error(
-      "Error occured while fetching user badges = ",
-      resp_data
-    );
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 

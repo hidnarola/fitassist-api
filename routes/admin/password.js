@@ -1,11 +1,7 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
 var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
-var jwt = require("jsonwebtoken");
 var bcrypt = require("bcrypt");
 var SALT_WORK_FACTOR = 10;
 var admin_helper = require('../../helpers/admin_helper');
@@ -22,7 +18,6 @@ var common_helper = require('../../helpers/common_helper');
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
-
   logger.trace("API - Admin change password  called");
   logger.debug("req.body = ", req.body);
   var resp = null;
@@ -41,8 +36,6 @@ router.put("/", async (req, res) => {
     min: 8,
     max: 32
   });
-
-
   var errors = req.validationErrors();
   if (!errors) {
     logger.trace("Valid request of admin change password");

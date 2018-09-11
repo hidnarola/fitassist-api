@@ -1,13 +1,9 @@
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
-var async = require("async");
-
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
-
 var user_helper = require("../../helpers/user_helper");
 var common_helper = require("../../helpers/common_helper");
 
@@ -122,9 +118,7 @@ router.put("/:authUserId", async (req, res) => {
     }
   };
 
-  req
-    .checkBody("email", "This email is already taken")
-    .isEmailAvailable(authUserId);
+  req.checkBody("email", "This email is already taken").isEmailAvailable(authUserId);
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -223,7 +217,6 @@ router.put("/:authUserId", async (req, res) => {
  * @api {delete} /admin/user/:authUserId Delete
  * @apiName Delete
  * @apiGroup Admin Side User
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -260,15 +253,15 @@ router.post("/checkemail", async (req, res) => {
   var resp_data = await user_helper.checkvalue({
     email: req.body.email
   });
-  if (resp_data.status == 1) {
-    logger.trace("check email Api is called = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  } else {
+  if (resp_data.status == 0) {
     logger.error(
       "Error occured while checking email uniqueness  = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("check email Api is called = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

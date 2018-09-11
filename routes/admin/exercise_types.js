@@ -36,7 +36,6 @@ var common_helper = require("../../helpers/common_helper");
 }</code></pre>
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * 
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
@@ -53,7 +52,9 @@ router.post("/filter", async (req, res) => {
   );
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.INTERNAL_SERVER_ERROR).json({
+      filtered_data
+    });
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
@@ -68,10 +69,10 @@ router.post("/filter", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-  logger.trace("Get all Exercise_types API called");
+  logger.trace("Get all Exercise types API called");
   var resp_data = await exercise_types_helper.get_all_exercise_types();
   if (resp_data.status == 0) {
-    logger.error("Error occured while fetching exercise_types = ", resp_data);
+    logger.error("Error occured while fetching exercise types = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     logger.trace("Exercise types got successfully = ", resp_data);
@@ -81,21 +82,21 @@ router.get("/", async (req, res) => {
 
 /**
  * @api {get} /admin/exercise_type/exercise_type_id Get by ID
- * @apiName Get Exercise Type by ID
+ * @apiName Get by ID
  * @apiGroup Exercise Type
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * * @apiParam {String} exercise_id ID of Exercise
-
- * @apiSuccess (Success 200) {Array} exercise_type Array of exercise_type document
+ * @apiParam {String} exercise_id ID of Exercise
+ * @apiSuccess (Success 200) {JSON} exercise_type JSON of exercise_type document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:exercise_type_id", async (req, res) => {
   exercise_type_id = req.params.exercise_type_id;
   logger.trace("Get all exercise_type API called");
+
   var resp_data = await exercise_types_helper.get_exercise_type_id(
     exercise_type_id
   );
+
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching exercise_type = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -109,13 +110,10 @@ router.get("/:exercise_type_id", async (req, res) => {
  * @api {post} /admin/exercise_type Add
  * @apiName Add
  * @apiGroup Exercise Type
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {String} name Name of Exercise_types
  * @apiParam {String} description Description of Exercise types
- *
  * @apiSuccess (Success 200) {JSON} exercise_type Exercise types details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -147,13 +145,17 @@ router.post("/", async (req, res) => {
         "Error while inserting Exercise type data = ",
         exercise_type_data
       );
-      res.status(config.BAD_REQUEST).json({ exercise_type_data });
+      res.status(config.BAD_REQUEST).json({
+        exercise_type_data
+      });
     } else {
       res.status(config.OK_STATUS).json(exercise_type_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -208,13 +210,17 @@ router.put("/:exercise_type_id", async (req, res) => {
         "Error while updating exercise_type_data = ",
         exercise_type_data
       );
-      res.status(config.BAD_REQUEST).json({ exercise_type_data });
+      res.status(config.BAD_REQUEST).json({
+        exercise_type_data
+      });
     } else {
       res.status(config.OK_STATUS).json(exercise_type_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

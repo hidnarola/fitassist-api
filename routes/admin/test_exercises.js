@@ -2,12 +2,9 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 var async = require("async");
-
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
-
 var test_exercise_helper = require("../../helpers/test_exercise_helper");
 var common_helper = require("../../helpers/common_helper");
 
@@ -115,6 +112,7 @@ router.get("/", async (req, res) => {
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
+
 /**
  * @api {get} /admin/test_exercise/test_exercise_id Get by ID
  * @apiName Get Test Exercises by ID
@@ -164,32 +162,35 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
-      errorMessage: "Name of test exercies is required"
+      errorMessage: "Name is required"
     },
     category: {
       notEmpty: true,
       isIn: {
-        options: [["strength", "flexibility", "posture", "cardio"]],
-        errorMessage:
-          "Category must be from strength, flexibility, posture or cardio"
+        options: [
+          ["strength", "flexibility", "posture", "cardio"]
+        ],
+        errorMessage: "Category must be from strength, flexibility, posture or cardio"
       },
       errorMessage: "category of test exercies is required"
     },
     subCategory: {
       notEmpty: true,
       isIn: {
-        options: [["upper_body", "side", "lower_body", "cardio"]],
-        errorMessage:
-          "Sub category must be from upper_body, side, lower_body or cardio"
+        options: [
+          ["upper_body", "side", "lower_body", "cardio"]
+        ],
+        errorMessage: "Sub category must be from upper_body, side, lower_body or cardio"
       },
       errorMessage: "sub Category of test exercies is required"
     },
     format: {
       notEmpty: true,
       isIn: {
-        options: [["max_rep", "multiselect", "a_or_b", "text_field"]],
-        errorMessage:
-          "format must be from max_rep, multiselect, text_field or a_or_b"
+        options: [
+          ["max_rep", "multiselect", "a_or_b", "text_field"]
+        ],
+        errorMessage: "format must be from max_rep, multiselect, text_field or a_or_b"
       },
       errorMessage: "format is required"
     }
@@ -203,10 +204,12 @@ router.post("/", async (req, res) => {
       name: req.body.name,
       category: req.body.category,
       subCategory: req.body.subCategory,
-      instructions: req.body.instructions,
       format: req.body.format
     };
 
+    if (req.body.instructions) {
+      test_exercise_obj.instructions = req.body.instructions;
+    }
     if (req.body.description) {
       test_exercise_obj.description = req.body.description;
     }
@@ -226,7 +229,7 @@ router.post("/", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "feature_image_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading feature Image");
           } else {
@@ -261,14 +264,14 @@ router.post("/", async (req, res) => {
           "Error while inserting test exercise  data = ",
           test_exercise_data
         );
-        return res.status(config.BAD_REQUEST).json(test_exercise_data);
+        return res.status(config.INTERNAL_SERVER_ERROR).json(test_exercise_data);
       } else {
         return res.status(config.OK_STATUS).json(test_exercise_data);
       }
     } else {
       async.waterfall(
         [
-          function(callback) {
+          function (callback) {
             //image upload
             if (req.files && req.files["images"]) {
               var file_path_array = [];
@@ -280,7 +283,7 @@ router.post("/", async (req, res) => {
               // assuming openFiles is an array of file names
               async.eachSeries(
                 files,
-                function(file, loop_callback) {
+                function (file, loop_callback) {
                   var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                   if (mimetype.indexOf(file.mimetype) != -1) {
                     if (!fs.existsSync(dir)) {
@@ -289,7 +292,7 @@ router.post("/", async (req, res) => {
                     extention = path.extname(file.name);
                     filename =
                       "test_exercise_" + new Date().getTime() + extention;
-                    file.mv(dir + "/" + filename, function(err) {
+                    file.mv(dir + "/" + filename, function (err) {
                       if (err) {
                         logger.error("There was an issue in uploading image");
                         loop_callback({
@@ -314,7 +317,7 @@ router.post("/", async (req, res) => {
                     });
                   }
                 },
-                function(err) {
+                function (err) {
                   // if any of the file processing produced an error, err would equal that error
                   if (err) {
                     res.status(err.status).json(err);
@@ -369,7 +372,9 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -400,32 +405,35 @@ router.put("/:test_exercise_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
-      errorMessage: "Name of test exercies is required"
+      errorMessage: "Name is required"
     },
     category: {
       notEmpty: true,
       isIn: {
-        options: [["strength", "flexibility", "posture", "cardio"]],
-        errorMessage:
-          "Category must be from strength, flexibility, posture or cardio"
+        options: [
+          ["strength", "flexibility", "posture", "cardio"]
+        ],
+        errorMessage: "Category must be from strength, flexibility, posture or cardio"
       },
       errorMessage: "category of test exercies is required"
     },
     subCategory: {
       notEmpty: true,
       isIn: {
-        options: [["upper_body", "side", "lower_body", "cardio"]],
-        errorMessage:
-          "Sub category must be from upper_body, side, lower_body or cardio"
+        options: [
+          ["upper_body", "side", "lower_body", "cardio"]
+        ],
+        errorMessage: "Sub category must be from upper_body, side, lower_body or cardio"
       },
       errorMessage: "subCategory of test exercies is required"
     },
     format: {
       notEmpty: true,
       isIn: {
-        options: [["max_rep", "multiselect", "a_or_b", "text_field"]],
-        errorMessage:
-          "format must be from max_rep, multiselect ,text_field or a_or_b"
+        options: [
+          ["max_rep", "multiselect", "a_or_b", "text_field"]
+        ],
+        errorMessage: "format must be from max_rep, multiselect ,text_field or a_or_b"
       },
       errorMessage: "format is required"
     }
@@ -438,12 +446,14 @@ router.put("/:test_exercise_id", async (req, res) => {
       name: req.body.name,
       category: req.body.category,
       subCategory: req.body.subCategory,
-      instructions: req.body.instructions,
       format: req.body.format,
       modifiedAt: new Date()
     };
     if (req.body.description) {
       test_exercise_obj.description = req.body.description;
+    }
+    if (req.body.instructions) {
+      test_exercise_obj.instructions = req.body.instructions;
     }
     if (req.body.textField) {
       test_exercise_obj.textField = req.body.textField;
@@ -461,27 +471,18 @@ router.put("/:test_exercise_id", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "feature_image_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading feature Image");
-            // res.send({
-            //   status: config.MEDIA_ERROR_STATUS,
-            //   err: "There was an issue in uploading image"
-            // });
           } else {
             logger.trace(
               "feature Image has been uploaded. Image name = ",
               filename
             );
-            //return res.send(200, "null");
           }
         });
       } else {
         logger.error("feature Image format is invalid");
-        // res.send({
-        //   status: config.VALIDATION_FAILURE_STATUS,
-        //   err: "Image format is invalid"
-        // });
       }
     }
     if (filename) {
@@ -515,19 +516,17 @@ router.put("/:test_exercise_id", async (req, res) => {
     } else {
       async.waterfall(
         [
-          function(callback) {
+          function (callback) {
             //image upload
             if (req.files && req.files["images"]) {
               var file_path_array = [];
               // var files = req.files['images'];
               var files = [].concat(req.files.images);
               var dir = "./uploads/test_exercise";
-              var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-
               // assuming openFiles is an array of file names
               async.eachSeries(
                 files,
-                function(file, loop_callback) {
+                function (file, loop_callback) {
                   var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                   if (mimetype.indexOf(file.mimetype) != -1) {
                     if (!fs.existsSync(dir)) {
@@ -536,7 +535,7 @@ router.put("/:test_exercise_id", async (req, res) => {
                     extention = path.extname(file.name);
                     filename =
                       "test_exercise_" + new Date().getTime() + extention;
-                    file.mv(dir + "/" + filename, function(err) {
+                    file.mv(dir + "/" + filename, function (err) {
                       if (err) {
                         logger.error("There was an issue in uploading image");
                         loop_callback({
@@ -561,7 +560,7 @@ router.put("/:test_exercise_id", async (req, res) => {
                     });
                   }
                 },
-                function(err) {
+                function (err) {
                   // if any of the file processing produced an error, err would equal that error
                   if (err) {
                     res.status(err.status).json(err);
@@ -589,7 +588,7 @@ router.put("/:test_exercise_id", async (req, res) => {
           });
           if (test_exercise_obj.featureImage != null) {
             try {
-              fs.unlink(resp_data.test_exercise.featureImage, function() {});
+              fs.unlink(resp_data.test_exercise.featureImage, function () {});
             } catch (err) {}
           }
           if (resp_data.status == 1) {
@@ -602,12 +601,11 @@ router.put("/:test_exercise_id", async (req, res) => {
               var titles = JSON.parse(req.body.title);
 
               if (req.body.a_b_updateImageIndex) {
-                var a_b_updateImageIndex = req.body.a_b_updateImageIndex
-                  ? JSON.parse(req.body.a_b_updateImageIndex)
-                  : [];
-                var a_b_updateImageIndexLength = a_b_updateImageIndex.length
-                  ? a_b_updateImageIndex.length
-                  : 0;
+                var a_b_updateImageIndex = req.body.a_b_updateImageIndex ?
+                  JSON.parse(req.body.a_b_updateImageIndex) : [];
+                var a_b_updateImageIndexLength = a_b_updateImageIndex.length ?
+                  a_b_updateImageIndex.length :
+                  0;
               }
               titles.forEach((title, index) => {
                 try {
@@ -633,18 +631,13 @@ router.put("/:test_exercise_id", async (req, res) => {
               });
             } else if (req.body.format == "multiselect") {
               var delete_multiselect_image_ids = req.body
-                .delete_multiselect_image_ids
-                ? JSON.parse(req.body.delete_multiselect_image_ids)
-                : [];
+                .delete_multiselect_image_ids ?
+                JSON.parse(req.body.delete_multiselect_image_ids) : [];
 
               oldData.forEach((save_data, index) => {
-                if (
-                  delete_multiselect_image_ids.indexOf(
-                    save_data._id.toString()
-                  ) >= 0
-                ) {
+                if (delete_multiselect_image_ids.indexOf(save_data._id.toString()) >= 0) {
                   try {
-                    fs.unlink(save_data.image, function() {});
+                    fs.unlink(save_data.image, function () {});
                   } catch (err) {}
                 } else {
                   data.push(save_data);
@@ -676,16 +669,10 @@ router.put("/:test_exercise_id", async (req, res) => {
               test_exercise_obj.multiselect = [];
             }
 
-            let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id(
-              test_exercise_id,
-              test_exercise_obj
-            );
+            let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id(test_exercise_id, test_exercise_obj);
             if (test_exercise_data.status === 0) {
-              logger.error(
-                "Error while updating test exercise  data = ",
-                test_exercise_data
-              );
-              return res.status(config.BAD_REQUEST).json(test_exercise_data);
+              logger.error("Error while updating test exercise  data = ", test_exercise_data);
+              return res.status(config.INTERNAL_SERVER_ERROR).json(test_exercise_data);
             } else {
               return res.status(config.OK_STATUS).json(test_exercise_data);
             }
@@ -695,7 +682,9 @@ router.put("/:test_exercise_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -703,7 +692,6 @@ router.put("/:test_exercise_id", async (req, res) => {
  * @api {delete} /admin/test_exercise/:test_exercise_id Delete
  * @apiName Delete
  * @apiGroup  Test Exercises
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -713,7 +701,6 @@ router.delete("/:test_exercise_id", async (req, res) => {
   let test_exercise_data = await test_exercise_helper.delete_test_exercise_by_id(
     req.params.test_exercise_id
   );
-
   if (test_exercise_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(test_exercise_data);
   } else {

@@ -57,7 +57,9 @@ router.post("/filter", async (req, res) => {
   );
   if (filtered_data.status === 0) {
     logger.error("Error while fetching searched data = ", filtered_data);
-    return res.status(config.BAD_REQUEST).json({ filtered_data });
+    return res.status(config.BAD_REQUEST).json({
+      filtered_data
+    });
   } else {
     return res.status(config.OK_STATUS).json(filtered_data);
   }
@@ -67,9 +69,7 @@ router.post("/filter", async (req, res) => {
  * @api {get} /admin/ingredient Get all
  * @apiName Get all
  * @apiGroup Ingredient
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {Array} ingredients Array of Ingredients document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -154,7 +154,7 @@ router.post("/", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "ingredient_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -188,13 +188,17 @@ router.post("/", async (req, res) => {
     );
     if (ingredient_data.status === 0) {
       logger.error("Error while inserting ingredient = ", ingredient_data);
-      res.status(config.BAD_REQUEST).json({ ingredient_data });
+      res.status(config.BAD_REQUEST).json({
+        ingredient_data
+      });
     } else {
       res.status(config.OK_STATUS).json(ingredient_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -243,7 +247,7 @@ router.put("/:ingredient_id", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "ingredient_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -272,7 +276,7 @@ router.put("/:ingredient_id", async (req, res) => {
         req.params.ingredient_id
       );
       try {
-        fs.unlink(resp_data.ingredient.image, function() {});
+        fs.unlink(resp_data.ingredient.image, function () {});
       } catch (err) {}
     }
 
@@ -284,13 +288,17 @@ router.put("/:ingredient_id", async (req, res) => {
     );
     if (ingredient_data.status === 0) {
       logger.error("Error while updating ingredient = ", ingredient_data);
-      res.status(config.BAD_REQUEST).json({ ingredient_data });
+      res.status(config.BAD_REQUEST).json({
+        ingredient_data
+      });
     } else {
       res.status(config.OK_STATUS).json(ingredient_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
