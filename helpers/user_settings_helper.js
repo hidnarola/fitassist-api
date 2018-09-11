@@ -3,13 +3,10 @@ var user_settings_helper = {};
 
 /*
  * get_setting is used to get user settings data 
- * 
  * @param   setting_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating user_settings, with error
  *          status  1 - If user_settings found successfully, with appropriate message
  *          status  2 - If user_settings not found, with appropriate message
- * 
  * @developed by "amc"
  */
 user_settings_helper.get_setting = async userId => {
@@ -39,13 +36,10 @@ user_settings_helper.get_setting = async userId => {
 };
 /*
  * insert_setting is used to insert user settings data 
- * 
  * @param   setting_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating user_settings, with error
  *          status  1 - If user_settings inserted successfully, with appropriate message
  *          status  2 - If user_settings not inserted, with appropriate message
- * 
  * @developed by "amc"
  */
 user_settings_helper.insert_setting = async setting_obj => {
@@ -54,7 +48,10 @@ user_settings_helper.insert_setting = async setting_obj => {
     user_settings = await user_settings_obj.save();
 
     if (!user_settings) {
-      return { status: 2, message: "Record has not added" };
+      return {
+        status: 2,
+        message: "Record has not added"
+      };
     } else {
       return {
         status: 1,
@@ -73,14 +70,11 @@ user_settings_helper.insert_setting = async setting_obj => {
 
 /*
  * save_settings is used to save user settings data based on userId
- * 
  * @param   userId         String  _id of user that need to be update
  * @param   setting_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating user_settings, with error
  *          status  1 - If user_settings updated successfully, with appropriate message
  *          status  2 - If user_settings not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 user_settings_helper.save_settings = async (userId, setting_obj) => {
@@ -92,7 +86,10 @@ user_settings_helper.save_settings = async (userId, setting_obj) => {
     });
 
     if (!user_settings) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,

@@ -1,10 +1,8 @@
 var express = require("express");
 var fs = require("fs");
-var path = require("path");
 var async = require("async");
 var jwtDecode = require("jwt-decode");
 var router = express.Router();
-var request = require("request-promise");
 
 var config = require("../../config");
 var logger = config.logger;
@@ -16,8 +14,6 @@ var friend_helper = require("../../helpers/friend_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
 
-var socket = require("../../socket/socketServer");
-
 /**
  * @api {get} /user/profile/preferences Get User Profile preferences
  * @apiName Get Profile preferences
@@ -28,7 +24,6 @@ var socket = require("../../socket/socketServer");
 router.get("/preferences", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
   var resp_data = await user_settings_helper.get_setting({
     userId: authUserId
   });
@@ -516,7 +511,7 @@ async function badgeAssign(authUserId) {
 
     var percentage = 0;
     for (const key of Object.keys(data)) {
-      if (data[key] != null) {
+      if (data[key]) {
         if (key == "gender") {
           percentage += 10;
         } else if (key == "dateOfBirth") {

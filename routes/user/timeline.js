@@ -19,6 +19,7 @@ var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
+var user_settings_helper = require("../../helpers/user_settings_helper");
 
 
 /**
@@ -209,6 +210,16 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
   };
 
   var checkFriend = await friend_helper.checkFriend(searchObject);
+  var getUserPrivacy = await user_settings_helper.get_setting({
+    userId: friendId
+  });
+
+  getUserPrivacy = {
+    postAccessibility: getUserPrivacy.user_settings.postAccessibility,
+    commentAccessibility: getUserPrivacy.user_settings.commentAccessibility,
+    messageAccessibility: getUserPrivacy.user_settings.messageAccessibility,
+    friendRequestAccessibility: getUserPrivacy.user_settings.friendRequestAccessibility,
+  }
 
   if (friendId == authUserId) {
     privacyArray = [1, 2, 3];
@@ -219,7 +230,9 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
   }
 
   var resp_data = await user_posts_helper.get_user_timeline({
-    // $or: [{ privacy: 1 }, { privacy: 2 }, { privacy: 3 }],
+    privacy: {
+      $in: privacyArray
+    },
     userId: friendId,
     isDeleted: 0
   }, {
@@ -229,6 +242,7 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
   });
 
   if (resp_data.status === 1) {
+    resp_data.timeline.privacyData = getUserPrivacy;
     logger.trace("user timeline got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {

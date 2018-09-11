@@ -254,10 +254,6 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
           "user.totalFriends": 1,
         }
       });
-      console.log('------------------------------------');
-      console.log('aggregate : ', aggregate);
-      console.log('------------------------------------');
-
       var friends = await Users.aggregate(aggregate);
     } else {
       let aggregate = [{
@@ -366,9 +362,6 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
       })
       var friends = await Users.aggregate(aggregate);
     }
-    console.log('------------------------------------');
-    console.log('friends : ', friends);
-    console.log('------------------------------------');
 
     if (friends && friends.length > 0) {
       _.each(friends[0].user, (friend, index) => {

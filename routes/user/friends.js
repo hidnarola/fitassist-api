@@ -18,7 +18,7 @@ var common_helper = require("../../helpers/common_helper");
 var socket = require("../../socket/socketServer");
 
 /**
- * @api {get} /:username?/:type?/:skip?/:limit?/:sort? Get by Username
+ * @api {get} /user/friend/:username?/:type?/:skip?/:limit?/:sort? Get by Username
  * @apiName Get by Username
  * @apiGroup  User Friends
  * @apiDescription Get friends by Username second parameter is used to get by status of friend 1 for pending friends and 2 for approved friend
@@ -44,7 +44,7 @@ router.get("/:username?/:type?/:skip?/:limit?/:sort?", async (req, res) => {
   var sort = parseInt(req.params.sort ? req.params.sort : -1);
   var username = req.params.username;
 
-  userdata = await friend_helper.find({
+  var userdata = await friend_helper.find({
     username: username
   });
 
@@ -299,9 +299,7 @@ router.put("/:request_id", async (req, res) => {
  * @api {delete} /user/friend/:request_id Delete request
  * @apiName Delete request
  * @apiGroup  User Friends
- *
  * @apiHeader {String}  authorization User's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

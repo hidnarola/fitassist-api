@@ -140,11 +140,11 @@ user_post_helper.get_user_post_photos = async (username, skip, limit, sort = {
  * photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
-user_post_helper.get_user_timeline_by_id = async user_auth_id => {
+user_post_helper.get_user_timeline_by_id = async condition => {
   try {
     //#region timeline old query
     var timeline = await UserTimeline.aggregate([{
-        $match: user_auth_id
+        $match: condition
       },
       {
         $lookup: {
@@ -413,14 +413,14 @@ user_post_helper.get_user_timeline_by_id = async user_auth_id => {
  *          status 2 - If user's post photos not found, with appropriate message
  */
 user_post_helper.get_user_timeline = async (
-  user_auth_id,
+  condition,
   skip = {},
   offset = {}
 ) => {
   try {
     //#region timeline old query
     var timeline = await UserTimeline.aggregate([{
-        $match: user_auth_id
+        $match: condition
       },
       {
         $sort: {

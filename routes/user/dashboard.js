@@ -18,6 +18,7 @@ var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
 var common_helper = require("../../helpers/common_helper");
+var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
 /**
  * @api {get} /user/dashboard Get User Dashboard
@@ -44,6 +45,8 @@ router.get("/", async (req, res) => {
       activityFeed: null,
       badges: null,
       bodyFat: null,
+      progressPhoto: null,
+      muscle: null,
       profileComplete: null,
     }
   }
@@ -56,7 +59,9 @@ router.get("/", async (req, res) => {
     "workout": 1,
     "bodyFat": 1,
     "activityFeed": 1,
-    "profileComplete": 1
+    "profileComplete": 1,
+    "progressPhoto": 1,
+    "muscle": 1,
   });
 
   if (widgets.status === 1) {
@@ -131,13 +136,44 @@ router.get("/", async (req, res) => {
         dashboard.data.bodyFat = body.progress;
       }
     }
+    if (widgets.widgets.progressPhoto) {
+      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
+        userId: authUserId,
+        isDeleted: 0
+      });
+      if (progressPhoto.status === 1) {
+        dashboard.data.progressPhoto = progressPhoto.user_progress_photos;
+      } else {
+        dashboard.data.progressPhoto = null;
+      }
+    }
+    if (widgets.widgets.muscle) {
+      var muscle = {};
+      var bodyMeasurment;
+      for (let x of widgets.widgets.muscle) {
+        bodyMeasurment = await workout_progress_helper.user_body_progress({
+          userId: authUserId,
+          logDate: {
+            $gte: new Date(x.start),
+            $lte: new Date(x.end)
+          }
+        });
+
+        if (bodyMeasurment.status === 1) {
+          muscle[x.name] = bodyMeasurment.progress.data[x.name];
+        } else {
+          muscle[x.name] = null;
+        }
+      }
+      dashboard.data.muscle = muscle;
+    }
   }
   var user_data = await user_helper.get_user_by_id(authUserId);
   if (user_data.status === 1) {
     var resp_data = user_data.user;
     var percentage = 0;
     for (const key of Object.keys(resp_data)) {
-      if (resp_data[key] != null) {
+      if (resp_data[key]) {
         if (key == "gender") {
           percentage += 10;
         } else if (key == "dateOfBirth") {
@@ -153,12 +189,18 @@ router.get("/", async (req, res) => {
         } else if (key == "lastName") {
           percentage += 10;
         } else if (key == "mobileNumber") {
+          console.log('in mobile');
+
           percentage += 10;
         } else if (key == "goal") {
           percentage += 10;
         }
       }
     }
+    console.log('------------------------------------');
+    console.log('percentage : ', percentage);
+    console.log('------------------------------------');
+
     dashboard.data.profileComplete = percentage;
   }
   return res.send(dashboard);
