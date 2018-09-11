@@ -242,7 +242,7 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
   });
 
   if (resp_data.status === 1) {
-    resp_data.timeline.privacyData = getUserPrivacy;
+    resp_data.privacy = getUserPrivacy;
     logger.trace("user timeline got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {

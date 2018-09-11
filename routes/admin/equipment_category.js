@@ -63,10 +63,8 @@ router.post("/filter", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-  logger.trace("Get all equipment_category API called");
-  var resp_data = await equipment_category_helper.get_all_equipment_category({
-    isDeleted: 0
-  });
+  logger.trace("Get all equipment category API called");
+  var resp_data = await equipment_category_helper.get_all_equipment_category();
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching equipment category = ",
@@ -111,13 +109,9 @@ router.post("/", async (req, res) => {
     let equipment_category_data = await equipment_category_helper.insert_equipment_category(
       equipment_category_obj
     );
-    if (equipment_category_data.status === 1) {
-      logger.trace(
-        "successfully inserted equipment category = ",
-        equipment_category_data
-      );
+
+    if (equipment_category_data.status === 0) {
       res.status(config.OK_STATUS).json(equipment_category_data);
-    } else {
       logger.error(
         "Error while inserting equipment category = ",
         equipment_category_data
@@ -125,6 +119,11 @@ router.post("/", async (req, res) => {
       res.status(config.BAD_REQUEST).json({
         equipment_category_data
       });
+    } else {
+      logger.trace(
+        "Successfully inserted equipment category = ",
+        equipment_category_data
+      );
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -174,20 +173,20 @@ router.put("/:equipment_category_id", async (req, res) => {
       req.params.equipment_category_id,
       equipment_category_obj
     );
-    if (equipment_category_data.status === 1) {
+    if (equipment_category_data.status === 0) {
       logger.error(
-        "Successfully updated equipment category = ",
-        equipment_category_data
-      );
-      res.status(config.OK_STATUS).json(equipment_category_data);
-    } else {
-      logger.error(
-        "Error while updating equipment_category = ",
+        "Error while updating equipment category = ",
         equipment_category_data
       );
       res.status(config.BAD_REQUEST).json({
         equipment_category_data
       });
+    } else {
+      logger.error(
+        "Successfully updated equipment category = ",
+        equipment_category_data
+      );
+      res.status(config.OK_STATUS).json(equipment_category_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -217,13 +216,7 @@ router.put("/undo/:equipment_category_id", async (req, res) => {
     }
   );
 
-  if (equipment_category_data.status === 1) {
-    logger.error(
-      "Successfully updated equipment category = ",
-      equipment_category_data
-    );
-    res.status(config.OK_STATUS).json(equipment_category_data);
-  } else {
+  if (equipment_category_data.status == 0) {
     logger.error(
       "Error while updating equipment_category = ",
       equipment_category_data
@@ -231,8 +224,15 @@ router.put("/undo/:equipment_category_id", async (req, res) => {
     res.status(config.BAD_REQUEST).json({
       equipment_category_data
     });
+  } else {
+    logger.error(
+      "Successfully updated equipment category = ",
+      equipment_category_data
+    );
+    res.status(config.OK_STATUS).json(equipment_category_data);
   }
 });
+
 /**
  * @api {delete} /admin/equipment_category/:equipment_category_id Delete
  * @apiName Delete
@@ -252,18 +252,18 @@ router.delete("/:equipment_category_id", async (req, res) => {
     }
   );
 
-  if (equipment_category_data.status === 1) {
-    logger.trace(
-      "successfully deleted equipment category API - Id = ",
-      req.params.equipment_category_id
-    );
-    res.status(config.OK_STATUS).json(equipment_category_data);
-  } else {
+  if (equipment_category_data.status == 0) {
     logger.error(
       "failed to delete equipment category API - Id = ",
       req.params.equipment_category_id
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(equipment_category_data);
+  } else {
+    logger.trace(
+      "successfully deleted equipment category API - Id = ",
+      req.params.equipment_category_id
+    );
+    res.status(config.OK_STATUS).json(equipment_category_data);
   }
 });
 

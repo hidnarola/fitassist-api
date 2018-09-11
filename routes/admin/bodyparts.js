@@ -1,18 +1,10 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
 var mongoose = require("mongoose");
-
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
-
 var body_part_helper = require("../../helpers/body_parts_helper");
 var common_helper = require("../../helpers/common_helper");
-
-
 
 /**
  * @api {post} /admin/bodyparts/filter Filter
@@ -85,16 +77,15 @@ router.get("/", async (req, res) => {
 
 /**
  * @api {get} /admin/bodypart/body_part_id Get by ID
- * @apiName Body Part - Body Parts by ID
+ * @apiName Get by ID
  * @apiGroup  Body Parts
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {JSON} bodypart JSON of Body part document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:body_part_id", async (req, res) => {
-  body_part_id = req.params.body_part_id;
   logger.trace("Get all Body part API called");
-  var resp_data = await body_part_helper.get_body_part_id(body_part_id);
+  var resp_data = await body_part_helper.get_body_part_id(req.params.body_part_id);
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching body part = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -114,15 +105,14 @@ router.get("/:body_part_id", async (req, res) => {
  * @apiSuccess (Success 200) {JSON} bodypart added Bodypart detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-
 router.post("/", async (req, res) => {
   var schema = {
     bodypart: {
       notEmpty: true,
-      errorMessage: "Body Part is required"
+      errorMessage: "Name is required"
     }
   };
-  req.checkBody('bodypart', 'Body Part should be between 3 to 50 characters').isLength({
+  req.checkBody('bodypart', 'Name should be between 3 to 50 characters').isLength({
     min: 3,
     max: 50
   });
@@ -135,14 +125,14 @@ router.post("/", async (req, res) => {
     };
 
     let body_part_data = await body_part_helper.insert_body_part(body_part_obj);
-    if (body_part_data.status === 1) {
-      logger.trace("Insert Body Part Successfully = ", req.params.body_part_id);
-      return res.status(config.OK_STATUS).json(body_part_data);
-    } else {
+    if (body_part_data.status == 0) {
       logger.error("Error while inserting bodypart data = ", body_part_data);
-      return res.status(config.BAD_REQUEST).json({
+      return res.status(config.INTERNAL_SERVER_ERROR).json({
         body_part_data
       });
+    } else {
+      logger.trace("Insert Body Part Successfully = ", req.params.body_part_id);
+      return res.status(config.OK_STATUS).json(body_part_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -162,14 +152,13 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:body_part_id", async (req, res) => {
-  body_part_id = req.params.body_part_id;
   var schema = {
     bodypart: {
       notEmpty: true,
-      errorMessage: "Body Part is required"
+      errorMessage: "Name is required"
     }
   };
-  req.checkBody('bodypart', 'Body Part should be between 3 to 50 characters').isLength({
+  req.checkBody('bodypart', 'Name should be between 3 to 50 characters').isLength({
     min: 3,
     max: 50
   });
@@ -183,17 +172,17 @@ router.put("/:body_part_id", async (req, res) => {
     };
 
     let body_part_data = await body_part_helper.update_bodypart_by_id(
-      body_part_id,
+      req.params.body_part_id,
       body_part_obj
     );
-    if (body_part_data.status === 1) {
-      logger.trace("Update Body Part Successfully = ", req.params.body_part_id);
-      return res.status(config.OK_STATUS).json(body_part_data);
-    } else {
-      logger.error("Error while updating bodypart data = ", body_part_data);
-      return res.status(config.BAD_REQUEST).json({
+    if (body_part_data.status == 0) {
+      logger.error("Error while updating Body Part data = ", body_part_data);
+      return res.status(config.INTERNAL_SERVER_ERROR).json({
         body_part_data
       });
+    } else {
+      logger.trace("Update Body Part Successfully = ", req.params.body_part_id);
+      return res.status(config.OK_STATUS).json(body_part_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -219,14 +208,14 @@ router.delete("/:body_part_id", async (req, res) => {
     }
   );
 
-  if (body_part_data.status === 1) {
-    body_part_data.message = "Body Part deleted"
-    logger.trace("Delete Body Part Successfully = ", req.params.body_part_id);
-    res.status(config.OK_STATUS).json(body_part_data);
-  } else {
+  if (body_part_data.status == 0) {
     logger.error("Failed to Delete Body Part = ", req.params.body_part_id);
     body_part_data.message = "Body Part not deleted"
     res.status(config.INTERNAL_SERVER_ERROR).json(body_part_data);
+  } else {
+    body_part_data.message = "Body Part deleted"
+    logger.trace("Delete Body Part Successfully = ", req.params.body_part_id);
+    res.status(config.OK_STATUS).json(body_part_data);
   }
 });
 
@@ -239,20 +228,20 @@ router.delete("/:body_part_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/undo/:body_part_id", async (req, res) => {
-  logger.trace("Delete Body Part API - Id = ", req.params.body_part_id);
+  logger.trace("Undo Body Part API - Id = ", req.params.body_part_id);
   let body_part_data = await body_part_helper.update_bodypart_by_id(
     mongoose.Types.ObjectId(req.params.body_part_id), {
       isDeleted: 0
     }
   );
-  if (body_part_data.status === 1) {
-    body_part_data.message = "Body Part recovered"
-    logger.trace("Undo Body Part Successfully = ", req.params.body_part_id);
-    res.status(config.OK_STATUS).json(body_part_data);
-  } else {
+  if (body_part_data.status == 0) {
     body_part_data.message = "Body Part not recovered"
     logger.trace("failed to Undo Body Part = ", req.params.body_part_id);
     res.status(config.INTERNAL_SERVER_ERROR).json(body_part_data);
+  } else {
+    body_part_data.message = "Body Part recovered"
+    logger.trace("Undo Body Part Successfully = ", req.params.body_part_id);
+    res.status(config.OK_STATUS).json(body_part_data);
   }
 });
 

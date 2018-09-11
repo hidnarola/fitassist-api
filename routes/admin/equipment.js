@@ -1,13 +1,10 @@
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
-
 var router = express.Router();
-
 var config = require("../../config");
 var mongoose = require("mongoose");
 var logger = config.logger;
-
 var equipment_helper = require("../../helpers/equipment_helper");
 var common_helper = require("../../helpers/common_helper");
 
@@ -77,12 +74,12 @@ router.post("/filter", async (req, res) => {
 router.get("/", async (req, res) => {
   logger.trace("Get all equipment API called");
   var resp_data = await equipment_helper.get_all_equipment();
-  if (resp_data.status === 1) {
-    logger.trace("Equipments got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  } else {
+  if (resp_data.status == 0) {
     logger.error("Error occured while fetching equipment = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Equipments got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
@@ -97,12 +94,12 @@ router.get("/", async (req, res) => {
 router.get("/:equipment_id", async (req, res) => {
   logger.trace("Get by equipment id API called: " + req.params.equipment_id);
   var resp_data = await equipment_helper.get_equipment_id(req.params.equipment_id);
-  if (resp_data.status === 1) {
-    logger.trace("Equipments got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  } else {
+  if (resp_data.status == 0) {
     logger.error("Error occured while fetching equipment = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    logger.trace("Equipments got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
@@ -195,14 +192,14 @@ router.post("/", async (req, res) => {
     //End image upload
 
     let equipment_data = await equipment_helper.insert_equipment(equipment_obj);
-    if (equipment_data.status === 1) {
-      logger.trace("successfully inserted equipment = ", equipment_data);
-      res.status(config.OK_STATUS).json(equipment_data);
-    } else {
+    if (equipment_data.status == 0) {
       logger.error("Error while inserting equipment = ", equipment_data);
-      res.status(config.BAD_REQUEST).json({
+      res.status(config.INTERNAL_SERVER_ERROR).json({
         equipment_data
       });
+    } else {
+      logger.trace("successfully inserted equipment = ", equipment_data);
+      res.status(config.OK_STATUS).json(equipment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -316,14 +313,14 @@ router.put("/:equipment_id", async (req, res) => {
       req.params.equipment_id,
       equipment_obj
     );
-    if (equipment_data.status === 1) {
-      logger.trace("equipment updated = ", equipment_data);
-      res.status(config.OK_STATUS).json(equipment_data);
-    } else {
+    if (equipment_data.status == 0) {
       logger.error("Error while updating equipment = ", equipment_data);
-      res.status(config.BAD_REQUEST).json({
+      res.status(config.INTERNAL_SERVER_ERROR).json({
         equipment_data
       });
+    } else {
+      logger.trace("equipment updated = ", equipment_data);
+      res.status(config.OK_STATUS).json(equipment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -349,12 +346,11 @@ router.delete("/:equipment_id", async (req, res) => {
     isDeleted: 1
   });
 
-  if (equipment_data.status === 1) {
-    logger.trace("Delete equipment successfully = ", req.params.equipment_id);
-    res.status(config.OK_STATUS).json(equipment_data);
-  } else {
+  if (equipment_data.status == 0) {} else {
     logger.error("failed to delete equipment = ", req.params.equipment_id);
     res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
+    logger.trace("Delete equipment successfully = ", req.params.equipment_id);
+    res.status(config.OK_STATUS).json(equipment_data);
   }
 });
 
@@ -375,13 +371,13 @@ router.get("/undo/:equipment_id", async (req, res) => {
     isDeleted: 0
   });
 
-  if (equipment_data.status === 1) {
+  if (equipment_data.status == 0) {
+    logger.error("Undo equipment failed ", req.params.equipment_id);
+    res.status(config.OK_STATUS).json(equipment_data);
+  } else {
     equipment_data.message = "Equipment recoved"
     logger.trace("Undo equipment successfully ", req.params.equipment_id);
     res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
-  } else {
-    logger.error("Undo equipment failed ", req.params.equipment_id);
-    res.status(config.OK_STATUS).json(equipment_data);
   }
 });
 

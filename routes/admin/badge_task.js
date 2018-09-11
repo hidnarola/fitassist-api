@@ -1,13 +1,7 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
-
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
-
 var badge_task_helper = require("../../helpers/badge_task_helper");
 var common_helper = require("../../helpers/common_helper");
 
@@ -77,11 +71,11 @@ router.post("/filter", async (req, res) => {
   let filtered_data = await badge_task_helper.get_filtered_records(
     filter_object
   );
-  if (filtered_data.status === 0) {
+  if (filtered_data.status != 0) {
+    return res.status(config.OK_STATUS).json(filtered_data);
+  } else {
     logger.error("Error while fetching searched data = ", filtered_data);
     return res.status(config.BAD_REQUEST).json(filtered_data);
-  } else {
-    return res.status(config.OK_STATUS).json(filtered_data);
   }
 });
 
@@ -148,7 +142,9 @@ router.post("/", async (req, res) => {
     unit: {
       notEmpty: true,
       isIn: {
-        options: [["kgs", "kms"]],
+        options: [
+          ["kgs", "kms"]
+        ],
         errorMessage: "Unit must be from kgs or kms"
       },
       errorMessage: "Unit is required"
@@ -175,7 +171,9 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -201,7 +199,9 @@ router.put("/:badge_task_id", async (req, res) => {
     unit: {
       notEmpty: true,
       isIn: {
-        options: [["kgs", "kms"]],
+        options: [
+          ["kgs", "kms"]
+        ],
         errorMessage: "Unit must be from kgs or kms"
       },
       errorMessage: "Unit is required"
@@ -230,7 +230,9 @@ router.put("/:badge_task_id", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

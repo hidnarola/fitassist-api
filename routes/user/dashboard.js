@@ -11,7 +11,6 @@ var _ = require("underscore");
 
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 var user_workouts_helper = require("../../helpers/user_workouts_helper");
-var user_timeline_helper = require("../../helpers/user_timeline_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var workout_progress_helper = require("../../helpers/workout_progress_helper");
 var user_posts_helper = require("../../helpers/user_posts_helper");
@@ -207,6 +206,111 @@ router.get("/", async (req, res) => {
 
 });
 
+/**
+ * @api {post} /user/dashboard/muscle Save
+ * @apiName Save Muscle
+ * @apiGroup User Dashboard
+ * @apiParam type type type of muscle
+ * @apiParam start start date
+ * @apiParam end end date
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiSuccess (Success 200) {JSON} widgets JSON of widgets_settings's document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/muscle", async (req, res) => {
+  logger.trace("Save user's body muscle widgets API called");
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var returnObj = {
+    status: 1,
+    message: "Success",
+    data: {
+      widgets: null,
+      bodypart: null,
+      muscle: []
+    }
+  }
+  var schema = {
+    start: {
+      notEmpty: true,
+      errorMessage: "Start date required"
+    },
+    end: {
+      notEmpty: true,
+      errorMessage: "End date required"
+    },
+    bodypart: {
+      notEmpty: true,
+      errorMessage: "Muscle type required"
+    }
+  }
+
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+
+  if (!errors) {
+    var widgets_settings_object = {
+      userId: authUserId,
+      modifiedAt: new Date()
+    }
+    var widgets_data = await widgets_settings_helper.get_all_widgets({
+      userId: authUserId,
+      widgetFor: "dashboard"
+    });
+
+    if (widgets_data.status === 1) {
+      var muscle = widgets_data.widgets.muscle;
+      _.map(muscle, function (o) {
+        if (o.name === req.body.bodypart) {
+          o.start = req.body.start;
+          o.end = req.body.end;
+        }
+      })
+
+      widgets_settings_object.muscle = muscle;
+
+      var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
+        userId: authUserId,
+        widgetFor: "dashboard"
+      });
+
+      if (widgets_data && widgets_data.status === 1) {
+        returnObj.data.bodypart = req.body.bodypart;
+        returnObj.data.widgets = widgets_data.widgets;
+        logger.trace("User muscle widget saved   = ", returnObj);
+        let bodyMeasurment;
+        bodyMeasurment = await workout_progress_helper.user_body_progress({
+          userId: authUserId,
+          logDate: {
+            $gte: new Date(req.body.start),
+            $lte: new Date(req.body.end)
+          }
+        });
+
+        if (bodyMeasurment.status === 1) {
+          try {
+            returnObj.data.muscle = bodyMeasurment.progress.data[req.body.bodypart];
+          } catch (error) {
+            returnObj.data.muscle = null;
+          }
+        } else {
+          returnObj.data.muscle = null;
+        }
+        // returnObj.data.muscle = muscleObject;
+        res.status(config.OK_STATUS).json(returnObj);
+      } else {
+        returnObj.wi
+        logger.error("Error occured while saving user muscle widgets = ", widgets_data);
+        res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
+      }
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
+  }
+});
 
 /**
  * @api {post} /user/dashboard/body_fat Save
@@ -324,58 +428,3 @@ router.post("/workout_complete", async (req, res) => {
 });
 
 module.exports = router;
-
-// if (widgets.widgets.mobility) {
-//   var flexibility = await workout_progress_helper.graph_data({
-//     createdAt: {
-//       createdAt: {
-//         $gte: new Date(start),
-//         $lte: new Date(end)
-//       },
-//       userId: authUserId,
-//     },
-//   }, "flexibility");
-//   data.mobility.flexibility = flexibility.progress;
-//   var posture = await workout_progress_helper.graph_data({
-//     createdAt: {
-//       createdAt: {
-//         $gte: new Date(start),
-//         $lte: new Date(end)
-//       },
-//       userId: authUserId,
-//     },
-//   }, "posture");
-//   data.mobility.posture = posture.progress;
-// }
-// if (widgets.widgets.muscle) {
-//   resp_data = await workout_progress_helper.user_body_progress({
-//     userId: authUserId,
-//     logDate: {
-//       $gte: new Date(start),
-//       $lte: new Date(end)
-//     }
-//   });
-// }
-// if (widgets.widgets.strength) {
-//   resp_data = await workout_progress_helper.get_progress_detail({
-//     createdAt: {
-//       createdAt: {
-//         $gte: new Date(start),
-//         $lte: new Date(end)
-//       },
-//       userId: authUserId,
-//     },
-//     category: category
-//   });
-// }
-// if (widgets.widgets.endurance) {
-//   resp_data = await workout_progress_helper.user_endurance_test({
-//     createdAt: {
-//       createdAt: {
-//         $gte: new Date(start),
-//         $lte: new Date(end)
-//       },
-//       userId: authUserId,
-//     },
-//   }, "cardio");
-// }

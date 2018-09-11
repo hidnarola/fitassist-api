@@ -1,7 +1,4 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
 var _ = require("underscore");
 var router = express.Router();
 var config = require("../../config");
@@ -87,9 +84,8 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:badge_id", async (req, res) => {
-  badge_id = req.params.badge_id;
-  logger.trace("Get all badge API called");
-  var resp_data = await badge_helper.get_badge_id(badge_id);
+  logger.trace("Get all badge API called ID: " + req.params.badge_id);
+  var resp_data = await badge_helper.get_badge_id(req.params.badge_id);
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching badge = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -432,7 +428,7 @@ router.get("/undo/:badge_id", async (req, res) => {
   logger.trace("undo badge API - Id = ", req.params.badge_id);
   let badge_data = await badge_helper.undo_badge_by_id(req.params.badge_id);
 
-  if (badge_data.status === 0) {
+  if (badge_data.status == 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(badge_data);
   } else {
     res.status(config.OK_STATUS).json(badge_data);
