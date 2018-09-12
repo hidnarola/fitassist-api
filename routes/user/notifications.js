@@ -15,7 +15,6 @@ var notification_helper = require("../../helpers/notification_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:type/:skip/:limit", async (req, res) => {
-  console.log('first');
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
