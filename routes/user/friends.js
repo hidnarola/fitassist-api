@@ -75,14 +75,14 @@ router.get("/:username?/:type?/:skip?/:limit?/:sort?", async (req, res) => {
       username: username
     },
     friendStatus, {
-      $sort: {
-        createdAt: sort
-      }
-    }, {
       $skip: skip
     }, {
       $limit: limit
-    },
+    }, {
+      $sort: {
+        createdAt: sort
+      }
+    }
   );
 
   if (resp_data.status == 0) {

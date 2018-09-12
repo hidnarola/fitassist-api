@@ -256,6 +256,7 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
       });
       var friends = await Users.aggregate(aggregate);
     } else {
+
       let aggregate = [{
           $match: username
         },
@@ -334,6 +335,7 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
           }
         }
       ];
+
       if (skip && limit) {
         aggregate.push({
             $unwind: "$user"
@@ -348,7 +350,7 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
             }
           })
       }
-      aggregate.push.push({
+      aggregate.push({
         $project: {
           "user._id": 1,
           "user.authUserId": 1,
@@ -359,21 +361,18 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
           "user.friendshipId": 1,
           "user.totalFriends": 1,
         }
-      })
+      });
       var friends = await Users.aggregate(aggregate);
     }
-
     if (friends && friends.length > 0) {
       _.each(friends[0].user, (friend, index) => {
         var total_friends = friend.totalFriends;
-
         var cnt = 0;
         _.each(total_friends, (frd, i) => {
           if (frd.status == 2) {
             cnt++;
           }
         });
-
         friend.friendsCount = cnt;
         delete friend.totalFriends;
       });

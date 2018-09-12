@@ -508,17 +508,12 @@ router.post("/user_signup", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/auth0_user_sync", async (req, res) => {
-  console.log('here 1');
 
   logger.trace("API - auth0_user_sync called");
   logger.debug("req.body = ", req.body);
 
 
   if (typeof req.headers["x-access-token"] !== "undefined") {
-    console.log('------------------------------------');
-    console.log('1 : ', 1);
-    console.log('------------------------------------');
-
     var options = {
       url: "https://fitassist.eu.auth0.com/userinfo",
       headers: {
@@ -528,18 +523,10 @@ router.get("/auth0_user_sync", async (req, res) => {
     try {
       var response = await request(options);
       response = JSON.parse(response);
-      console.log('------------------------------------');
-      console.log('response : ', response);
-      console.log('------------------------------------');
-
       if (response.email && typeof response.email !== "undefined") {
         let data = await user_helper.checkvalue({
           authUserId: response.sub
         });
-        console.log('------------------------------------');
-        console.log('11 data : ', data);
-        console.log('------------------------------------');
-
 
         if (data.count <= 0) {
           var user_obj = {
@@ -548,19 +535,10 @@ router.get("/auth0_user_sync", async (req, res) => {
             email: response.email,
             avatar: response.picture
           };
-          console.log('------------------------------------');
-          console.log('user_obj : ', user_obj);
-          console.log('------------------------------------');
-
           var username = response.email.split("@")[0];
           data = await user_helper.checkvalue({
             username: username
           });
-          console.log('------------------------------------');
-          console.log('data : ', data);
-          console.log('------------------------------------');
-
-
 
           if (data.count <= 0) {
             user_obj.username = username;
@@ -578,10 +556,6 @@ router.get("/auth0_user_sync", async (req, res) => {
             }
           }
 
-          console.log('------------------------------------');
-          console.log('user_obj : ', user_obj);
-          console.log('------------------------------------');
-
           var user_data = await user_helper.insert_user(user_obj);
           var exercise_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
           exercise_obj.userId = response.sub;
@@ -592,20 +566,18 @@ router.get("/auth0_user_sync", async (req, res) => {
           var user_nutritions_obj = {
             userId: response.sub
           };
-          var exercise_data = await exercise_preference_helper.insert_exercise_prefernece(
+          await exercise_preference_helper.insert_exercise_prefernece(
             exercise_obj
           );
-          var nutrition_data = await nutrition_preferences_helper.insert_nutrition_preference(
+          await nutrition_preferences_helper.insert_nutrition_preference(
             nutrition_obj
           );
-          var setting_data = await user_settings_helper.insert_setting(
+          await user_settings_helper.insert_setting(
             setting_obj
           );
-          var user_nutritions_data = await user_nutritions_helper.insert_user_nutritions(
+          await user_nutritions_helper.insert_user_nutritions(
             user_nutritions_obj
           );
-          console.log('here 2');
-
           res.status(config.OK_STATUS).json(user_data);
         } else {
           let data = await user_helper.get_user_by({

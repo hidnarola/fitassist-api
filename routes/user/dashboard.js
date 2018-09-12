@@ -188,18 +188,12 @@ router.get("/", async (req, res) => {
         } else if (key == "lastName") {
           percentage += 10;
         } else if (key == "mobileNumber") {
-          console.log('in mobile');
-
           percentage += 10;
         } else if (key == "goal") {
           percentage += 10;
         }
       }
     }
-    console.log('------------------------------------');
-    console.log('percentage : ', percentage);
-    console.log('------------------------------------');
-
     dashboard.data.profileComplete = percentage;
   }
   return res.send(dashboard);
