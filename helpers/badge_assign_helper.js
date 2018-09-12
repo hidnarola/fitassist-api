@@ -10,14 +10,15 @@ var user_recipe_helper = require("./user_recipe_helper");
 var user_workouts_helper = require("./user_workouts_helper");
 var socket = require("../socket/socketServer");
 var constant = require("../constant");
-
 var badges_assign_helper = {
 
 };
 
 /*
  * get_all_badges is used to fetch all badges data
- *
+ * @param condition condition of fetch record
+ * @param sort object of sorting data
+ * @param limit object of limit data
  * @return  status 0 - If any internal error occured while fetching badges data, with error
  *          status 1 - If badges data found, with badges object
  *          status 2 - If badges not found, with appropriate message

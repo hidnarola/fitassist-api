@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 var config = require("../config");
 var constant = require("../constant");
-var user = require("../models/users");
 var jwt = require("jsonwebtoken");
 var request = require("request-promise");
 var bcrypt = require("bcrypt");
@@ -12,12 +11,10 @@ var SALT_WORK_FACTOR = 10;
 var user_helper = require("./../helpers/user_helper");
 var common_helper = require("./../helpers/common_helper");
 var admin_helper = require("./../helpers/admin_helper");
-var measurement_helper = require("./../helpers/measurement_helper");
 var exercise_preference_helper = require("./../helpers/exercise_preference_helper");
 var nutrition_preferences_helper = require("./../helpers/nutrition_preferences_helper");
 var user_settings_helper = require("./../helpers/user_settings_helper");
 var user_nutritions_helper = require("./../helpers/user_nutritions_helper");
-
 var logger = config.logger;
 
 /* GET home page. */
@@ -511,10 +508,17 @@ router.post("/user_signup", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/auth0_user_sync", async (req, res) => {
+  console.log('here 1');
+
   logger.trace("API - auth0_user_sync called");
   logger.debug("req.body = ", req.body);
 
+
   if (typeof req.headers["x-access-token"] !== "undefined") {
+    console.log('------------------------------------');
+    console.log('1 : ', 1);
+    console.log('------------------------------------');
+
     var options = {
       url: "https://fitassist.eu.auth0.com/userinfo",
       headers: {
@@ -524,10 +528,18 @@ router.get("/auth0_user_sync", async (req, res) => {
     try {
       var response = await request(options);
       response = JSON.parse(response);
+      console.log('------------------------------------');
+      console.log('response : ', response);
+      console.log('------------------------------------');
+
       if (response.email && typeof response.email !== "undefined") {
         let data = await user_helper.checkvalue({
           authUserId: response.sub
         });
+        console.log('------------------------------------');
+        console.log('11 data : ', data);
+        console.log('------------------------------------');
+
 
         if (data.count <= 0) {
           var user_obj = {
@@ -536,11 +548,20 @@ router.get("/auth0_user_sync", async (req, res) => {
             email: response.email,
             avatar: response.picture
           };
+          console.log('------------------------------------');
+          console.log('user_obj : ', user_obj);
+          console.log('------------------------------------');
 
           var username = response.email.split("@")[0];
           data = await user_helper.checkvalue({
             username: username
           });
+          console.log('------------------------------------');
+          console.log('data : ', data);
+          console.log('------------------------------------');
+
+
+
           if (data.count <= 0) {
             user_obj.username = username;
           } else {
@@ -556,6 +577,10 @@ router.get("/auth0_user_sync", async (req, res) => {
               }
             }
           }
+
+          console.log('------------------------------------');
+          console.log('user_obj : ', user_obj);
+          console.log('------------------------------------');
 
           var user_data = await user_helper.insert_user(user_obj);
           var exercise_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
@@ -579,6 +604,7 @@ router.get("/auth0_user_sync", async (req, res) => {
           var user_nutritions_data = await user_nutritions_helper.insert_user_nutritions(
             user_nutritions_obj
           );
+          console.log('here 2');
 
           res.status(config.OK_STATUS).json(user_data);
         } else {

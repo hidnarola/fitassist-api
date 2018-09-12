@@ -14,6 +14,7 @@ var numCPUs = require("os").cpus().length;
 /* config files */
 var config = require("./config");
 var socket = require("./socket/socketServer");
+require("./database/mongoDbConnection");
 
 //helper
 

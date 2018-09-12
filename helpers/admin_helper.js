@@ -3,9 +3,7 @@ var admin_helper = {};
 
 /*
  * get_admin_by_id is used to fetch admin details by id
- * 
- * @params  admin_id     _id field of admin collection
- * 
+ * @params  admin_id _id field of admin collection
  * @return  status 0 - If any internal error occured while fetching admin data, with error
  *          status 1 - If admin data found, with admin object
  *          status 2 - If admin not found, with appropriate message
@@ -40,9 +38,7 @@ admin_helper.get_admin_by_id = async (admin_id) => {
 
 /*
  * get_admin_by_email is used to fetch single admin by email address
- * 
  * @param   email   Specify email address of admin
- * 
  * @return  status  0 - If any error occur in finding admin, with error
  *          status  1 - If Admin found, with found admin document
  *          status  2 - If Admin not found, with appropriate error message
@@ -75,7 +71,7 @@ admin_helper.get_admin_by_email = async (email) => {
 };
 
 /*
- * checkEmail is used to fetch single admin by email address
+ * checkEmail is used to check email existence
  * @param   condition   Specify condition condition of admin
  * @return  status  0 - If any error occur in finding admin, with error
  *          status  1 - If Admin found, with found admin document
@@ -112,7 +108,6 @@ admin_helper.checkEmail = async (condition) => {
  * update_admin_by_id is used to update admin data based on admin_id
  * @param   admin_id         String  _id of admin that need to be update
  * @param   admin_object     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating admin, with error
  *          status  1 - If Admin updated successfully, with appropriate message
  *          status  2 - If Admin not updated, with appropriate message

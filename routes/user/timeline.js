@@ -138,7 +138,34 @@ router.get("/widgets/:username", async (req, res) => {
   return res.send(timeline);
   //end Other data on timeline 
 });
+/**
+ * @api {get} /user/timeline/privacy/:username Get User Preference
+ * @apiName Get Preference
+ * @apiGroup  User Timeline
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {JSON} user_settings user preference in user_settings detail
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/privacy/:username", async (req, res) => {
+  var user = await user_helper.get_user_by({
+    username: req.params.username
+  });
 
+  var settings_data = await user_settings_helper.get_setting({
+    userId: user.user.authUserId
+  });
+
+  if (settings_data.status === 0) {
+    logger.error("Error while fetching setting  = ", settings_data);
+    return res.status(config.INTERNAL_SERVER_ERROR).json({
+      settings_data
+    });
+  } else {
+    return res.status(config.OK_STATUS).json(settings_data);
+  }
+
+});
 /**
  * @api {get} /user/timeline/:post_id Get by ID
  * @apiName Get by ID
