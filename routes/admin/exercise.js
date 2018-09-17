@@ -203,7 +203,7 @@ router.post("/", async (req, res) => {
       otherMuscleGroup: otherMuscleGroupData,
       detailedMuscleGroup: detailedMuscleGroupData,
       category: req.body.category,
-      mechanics: req.body.mechanics ? req.body.mechanics : null,
+      mechanics: req.body.mechanics ? req.body.mechanics : 'compound',
       equipments: equipmentsData,
       difficltyLevel: req.body.difficltyLevel,
       status: req.body.status,
@@ -578,11 +578,11 @@ router.delete("/:exercise_id", async (req, res) => {
   if (exercise_data.status === 1) {
     exercise_data.message = "Exercise deleted";
     logger.trace("Exercise deleted Successfully = ", req.params.exercise_id);
-    res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
+    res.status(config.OK_STATUS).json(exercise_data);
   } else {
     exercise_data.message = "Exercise could not deleted";
     logger.error("Exercise not deleted Successfully = ", req.params.exercise_id);
-    res.status(config.OK_STATUS).json(exercise_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
   }
 });
 

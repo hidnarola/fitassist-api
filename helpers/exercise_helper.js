@@ -335,6 +335,9 @@ exercise_helper.get_exercise_id = async (id, flag = 0) => {
           },
           difficltyLevel: {
             $first: "$difficltyLevel"
+          },
+          status: {
+            $first: "$status"
           }
         }
       }
@@ -545,6 +548,12 @@ exercise_helper.get_filtered_records = async filter_obj => {
           },
           difficltyLevel: {
             $first: "$difficltyLevel"
+          },
+          status: {
+            $first: "$status"
+          },
+          isDeleted: {
+            $first: "$isDeleted"
           }
         }
       },
