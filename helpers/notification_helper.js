@@ -9,17 +9,23 @@ var user_notifications_helper = {};
  *          status 1 - If notification data found, with notification object
  *          status 2 - If notification not found, with appropriate message
  */
-user_notifications_helper.get_notifications = async userId => {
+user_notifications_helper.get_notifications = async (userId, skip = false, limit = false) => {
   try {
-    var notifications = await UserNotifications.aggregate([{
-        $match: userId
-      },
-      {
-        $sort: {
-          _id: -1
-        }
+    var aggregate = [{
+      $match: userId
+    }, {
+      $sort: {
+        _id: -1
       }
-    ]);
+    }]
+
+    if (skip) {
+      aggregate.push(skip);
+    }
+    if (limit) {
+      aggregate.push(limit);
+    }
+    var notifications = await UserNotifications.aggregate(aggregate);
 
     if (notifications) {
       return {

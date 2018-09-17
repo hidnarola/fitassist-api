@@ -86,7 +86,6 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
       },
       skip,
       limit,
-
     ]);
 
     if (conversation) {

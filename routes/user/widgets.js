@@ -55,9 +55,6 @@ router.post("/:type", async (req, res) => {
     userId: authUserId,
     widgetFor: type
   });
-  console.log('------------------------------------');
-  console.log('resp_data : ', resp_data);
-  console.log('------------------------------------');
 
   if (resp_data.status === 1) {
     widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
