@@ -287,7 +287,7 @@ router.put("/", async (req, res) => {
     var resp_data = await user_progress_photos_helper.get_user_progress_photos({
       userId: authUserId
     });
-    if (resp_data.status == 1) {
+    if (resp_data.status === 1 && resp_data.user_progress_photos.length > 0) {
       fs.unlink(resp_data.user_progress_photos[0].image, function (
         err,
         Success

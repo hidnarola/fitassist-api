@@ -60,7 +60,7 @@ user_progress_photo_helper.get_user_progress_photos = async (
       start,
       limit,
     ]);
-    if (user_progress_photos && user_progress_photos.length != 0) {
+    if (user_progress_photos && user_progress_photos.length > 0) {
       return {
         status: 1,
         message: "User progress photos found",
@@ -68,8 +68,9 @@ user_progress_photo_helper.get_user_progress_photos = async (
       };
     } else {
       return {
-        status: 2,
-        message: "No user progress photos available"
+        status: 1,
+        message: "No user progress photos available",
+        user_progress_photos: []
       };
     }
   } catch (err) {

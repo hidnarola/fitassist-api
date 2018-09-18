@@ -383,7 +383,7 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
       };
     } else {
       return {
-        status: 2,
+        status: 1,
         message: "No friend available",
         friends: []
       };
