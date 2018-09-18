@@ -9,16 +9,21 @@ var user_notifications_helper = {};
  *          status 1 - If notification data found, with notification object
  *          status 2 - If notification not found, with appropriate message
  */
-user_notifications_helper.get_notifications = async (userId, skip = false, limit = false) => {
+user_notifications_helper.get_notifications = async (userId, skip = false, limit = false, sort = false) => {
   try {
     var aggregate = [{
       $match: userId
-    }, {
-      $sort: {
-        _id: -1
-      }
-    }]
+    }];
 
+    if (sort) {
+      aggregate.push(sort);
+    } else{
+      aggregate.push({
+        $sort: {
+          _id: -1
+        }
+      });  
+    }
     if (skip) {
       aggregate.push(skip);
     }
@@ -35,8 +40,9 @@ user_notifications_helper.get_notifications = async (userId, skip = false, limit
       };
     } else {
       return {
-        status: 2,
-        message: "No notifications available"
+        status: 1,
+        message: "No notifications available",
+        notifications: []
       };
     }
   } catch (err) {
