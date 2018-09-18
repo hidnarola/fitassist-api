@@ -10,48 +10,48 @@ var user_notifications_helper = {};
  *          status 2 - If notification not found, with appropriate message
  */
 user_notifications_helper.get_notifications = async (userId, skip = false, limit = false, sort = false) => {
-  try {
-    var aggregate = [{
-      $match: userId
-    }];
-
-    if (sort) {
-      aggregate.push(sort);
-    } else{
-      aggregate.push({
-        $sort: {
-          _id: -1
+    try {
+        var aggregate = [{
+                $match: userId
+            }];
+        
+        if (sort) {
+            aggregate.push(sort);
+        } else {
+            aggregate.push({
+                $sort: {
+                    _id: -1
+                }
+            });  
         }
-      });  
-    }
-    if (skip) {
-      aggregate.push(skip);
-    }
-    if (limit) {
-      aggregate.push(limit);
-    }
-    var notifications = await UserNotifications.aggregate(aggregate);
-
-    if (notifications) {
-      return {
-        status: 1,
-        message: "notifications found",
-        notifications: notifications
-      };
-    } else {
-      return {
-        status: 1,
-        message: "No notifications available",
-        notifications: []
-      };
-    }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding notifications",
-      error: err
-    };
-  }
+        if (skip) {
+            aggregate.push(skip);
+        }
+        if (limit) {
+            aggregate.push(limit);
+        }
+        var notifications = await UserNotifications.aggregate(aggregate);
+        
+        if (notifications) {
+            return {
+                status: 1,
+                message: "notifications found",
+                notifications: notifications
+            };
+        } else {
+            return {
+                status: 1,
+                message: "No notifications available",
+                notifications: []
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while finding notifications",
+            error: err
+        };
+}
 };
 
 /*
@@ -62,20 +62,20 @@ user_notifications_helper.get_notifications = async (userId, skip = false, limit
  *          status 2 - If notification not count, with appropriate message
  */
 user_notifications_helper.get_notifications_count = async userId => {
-  try {
-    var count = await UserNotifications.find(userId).count();
-    return {
-      status: 1,
-      message: "notifications found",
-      count: count
-    };
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding notifications",
-      error: err
-    };
-  }
+    try {
+        var count = await UserNotifications.find(userId).count();
+        return {
+            status: 1,
+            message: "notifications found",
+            count: count
+        };
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while finding notifications",
+            error: err
+        };
+    }
 };
 
 /*
@@ -89,47 +89,47 @@ user_notifications_helper.get_notifications_count = async userId => {
  * @developed by "amc"
  */
 user_notifications_helper.add_notifications = async (
-  notificationObj,
-  socket,
-  type = ""
-) => {
-  var authUserId = "";
-  let notification_data;
-  try {
-    if (type != "") {
-      notification_data = await UserNotifications.insertMany(notificationObj);
-      authUserId = notificationObj[0].receiver.authUserId;
-    } else {
-      let notification = new UserNotifications(notificationObj);
-      notification_data = await notification.save();
-      authUserId = notificationObj.receiver.authUserId;
-    }
-
-    var user_notifications_count = await user_notifications_helper.get_notifications_count({
-      "receiver.authUserId": authUserId,
-      isSeen: 0
-    });
-    var user = socket.users.get(authUserId);
-    if (user) {
-      var socketIds = user.socketIds;
-      socketIds.forEach(socketId => {
-        socket.io.to(socketId).emit("receive_user_notification_count", {
-          count: user_notifications_count.count
+        notificationObj,
+        socket,
+        type = ""
+        ) => {
+    var authUserId = "";
+    let notification_data;
+    try {
+        if (type != "") {
+            notification_data = await UserNotifications.insertMany(notificationObj);
+            authUserId = notificationObj[0].receiver.authUserId;
+        } else {
+            let notification = new UserNotifications(notificationObj);
+            notification_data = await notification.save();
+            authUserId = notificationObj.receiver.authUserId;
+        }
+        
+        var user_notifications_count = await user_notifications_helper.get_notifications_count({
+            "receiver.authUserId": authUserId,
+            isSeen: 0
         });
-      });
-    }
-    return {
-      status: 1,
-      message: "notification sent",
-      notification: notification_data
-    };
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while sending notification",
-      error: err
-    };
-  }
+        var user = socket.users.get(authUserId);
+        if (user) {
+            var socketIds = user.socketIds;
+            socketIds.forEach(socketId => {
+                socket.io.to(socketId).emit("receive_user_notification_count", {
+                    count: user_notifications_count.count
+                });
+            });
+        }
+        return {
+            status: 1,
+            message: "notification sent",
+            notification: notification_data
+        };
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while sending notification",
+            error: err
+        };
+}
 };
 
 /*
@@ -144,26 +144,26 @@ user_notifications_helper.add_notifications = async (
  * @developed by "amc"
  */
 user_notifications_helper.notification_seen = async (id, updateObject) => {
-  try {
-    let resp = await UserNotifications.updateMany(id, updateObject);
-    if (!resp) {
-      return {
-        status: 2,
-        message: "notification not found"
-      };
-    } else {
-      return {
-        status: 1,
-        message: "notification marked as read"
-      };
+    try {
+        let resp = await UserNotifications.updateMany(id, updateObject);
+        if (!resp) {
+            return {
+                status: 2,
+                message: "notification not found"
+            };
+        } else {
+            return {
+                status: 1,
+                message: "notification marked as read"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while marking as read notification",
+            error: err
+        };
     }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while marking as read notification",
-      error: err
-    };
-  }
 };
 
 module.exports = user_notifications_helper;
