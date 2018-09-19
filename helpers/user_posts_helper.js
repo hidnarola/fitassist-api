@@ -1,6 +1,7 @@
 var UserPost = require("./../models/user_posts");
 var UserPostsImages = require("./../models/user_posts_images");
 var UserTimeline = require("./../models/user_timeline");
+var user_progress_photos_helper = require("./user_progress_photos_helper");
 var _ = require("underscore");
 var user_post_helper = {};
 
@@ -793,12 +794,12 @@ user_post_helper.insert_user_post_image = async user_post_photo_obj => {
  *          status 2 - If user's post photos not updated, with appropriate message
  */
 user_post_helper.update_user_post_photo = async (
-  authUserId,
+  condition,
   user_post_photo_obj
 ) => {
   try {
     let user_post_photo = await UserPostsImages.findOneAndUpdate(
-      authUserId,
+      condition,
       user_post_photo_obj, {
         new: true
       }
@@ -852,6 +853,70 @@ user_post_helper.delete_user_post_photo = async (id, user_post_photo_obj) => {
     return {
       status: 0,
       message: "Error occured while deleting user post photo",
+      error: err
+    };
+  }
+};
+/*
+ * delete_user_post_photo is used to delete user's post photos
+ * 
+ * @return  status 0 - If any internal error occured while update user's post photos data, with error
+ *          status 1 - If user's post photos data updated, with user's post photos object
+ *          status 2 - If user's post photos not updated, with appropriate message
+ */
+user_post_helper.delete_user_timeline_post = async (id, updateObj) => {
+  try {
+    let timeline_data = await UserTimeline.findOne(id);
+    var progressPhotoId = timeline_data.progressPhotoId;
+    var postPhotoId = timeline_data.postPhotoId;
+
+    if (progressPhotoId) {
+      let user_progress_photo = await user_progress_photos_helper.delete_user_progress_photo({
+        _id: progressPhotoId
+      }, {
+        updateObj
+      }, {
+        new: true
+      });
+    }
+    if (postPhotoId) {
+      await UserPostsImages.findOneAndUpdate({
+          postId: postPhotoId
+        },
+        updateObj, {
+          new: true
+        }
+      );
+      await UserPost.findOneAndUpdate({
+          _id: postPhotoId
+        },
+        updateObj, {
+          new: true
+        }
+      );
+    }
+
+    let timeline = await UserTimeline.findOneAndUpdate(
+      id,
+      updateObj, {
+        new: true
+      }
+    );
+    if (!timeline) {
+      return {
+        status: 2,
+        message: "Record has not deleted"
+      };
+    } else {
+      return {
+        status: 1,
+        message: "Record has been deleted"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while deleting user timeline",
       error: err
     };
   }

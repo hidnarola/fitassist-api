@@ -732,9 +732,7 @@ statistics_helper.get_overview_single_data = async (condition = {}, date = null)
       };
     } else {
       return {
-        status: 1,
-        message: "Success",
-        statistics: []
+        status: 2
       };
     }
   } catch (err) {

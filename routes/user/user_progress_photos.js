@@ -222,103 +222,10 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /user/progress_photo/ Update
- * @apiName Update
- * @apiGroup User Progress Photo
- *
- * @apiHeader {String}  Content-Type application/json
- * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {File} image User's Progress Image
- * @apiParam {String} description Description of progress
- * @apiSuccess (Success 200) {JSON} user_progress_photo user_progress_photo details
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.put("/", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-
-  var user_progress_photo_obj = {
-    userId: authUserId,
-    modifiedAt: new Date()
-  };
-  if (req.body.description) {
-    user_progress_photo_obj.description = req.body.description;
-  }
-
-  //image upload
-  var filename;
-  if (req.files && req.files["image"]) {
-    var file = req.files["image"];
-    var dir = "./uploads/user_progress";
-    var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-
-    if (mimetype.indexOf(file.mimetype) != -1) {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-      }
-      extention = path.extname(file.name);
-      filename = "user_progress_" + new Date().getTime() + extention;
-      file.mv(dir + "/" + filename, function (err) {
-        if (err) {
-          logger.error("There was an issue in uploading image");
-          res.send({
-            status: config.MEDIA_ERROR_STATUS,
-            err: "There was an issue in uploading image"
-          });
-        } else {
-          logger.trace("image has been uploaded. Image name = ", filename);
-
-          //return res.send(200, "null");
-        }
-      });
-    } else {
-      logger.error("Image format is invalid");
-      res.send({
-        status: config.VALIDATION_FAILURE_STATUS,
-        err: "Image format is invalid"
-      });
-    }
-  } else {
-    logger.info("Image not available to upload. Executing next instruction");
-    //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-  }
-  if (filename) {
-    user_progress_photo_obj.image = "uploads/user_progress/" + filename;
-    var resp_data = await user_progress_photos_helper.get_user_progress_photos({
-      userId: authUserId
-    });
-    if (resp_data.status === 1 && resp_data.user_progress_photos.length > 0) {
-      fs.unlink(resp_data.user_progress_photos[0].image, function (
-        err,
-        Success
-      ) {
-        if (err) throw err;
-      });
-    }
-  }
-
-  let user_progress_photo_data = await user_progress_photos_helper.update_user_progress_photo(
-    authUserId,
-    user_progress_photo_obj
-  );
-  if (user_progress_photo_data.status === 0) {
-    logger.error(
-      "Error while inserting user progress photo = ",
-      user_progress_photo_data
-    );
-    res.status(config.BAD_REQUEST).json(user_progress_photo_data);
-  } else {
-    res.status(config.OK_STATUS).json(user_progress_photo_data);
-  }
-});
-
-/**
  * @api {delete} /user/progress_photo/:photo_id Delete
  * @apiName Delete
  * @apiGroup User Progress Photo
- *
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

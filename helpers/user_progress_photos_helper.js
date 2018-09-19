@@ -292,13 +292,11 @@ user_progress_photo_helper.insert_user_progress_photo = async user_progress_phot
  *          status 2 - If user's progress photos not updated, with appropriate message
  */
 user_progress_photo_helper.update_user_progress_photo = async (
-  authUserId,
+  condition,
   user_progress_photo_obj
 ) => {
   try {
-    let user_progress_photo = await UserProgressPhotos.findOneAndUpdate({
-        userId: authUserId
-      },
+    let user_progress_photo = await UserProgressPhotos.findOneAndUpdate(condition,
       user_progress_photo_obj, {
         new: true
       }

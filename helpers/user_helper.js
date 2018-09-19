@@ -212,6 +212,43 @@ user_helper.insert_user = async user_object => {
 };
 
 /*
+ * update_user is used to update user data based on user_id
+ * 
+ * @param   user_id         String  _id of user that need to be update
+ * @param   user_obj     JSON    object consist of all property that need to update
+ * 
+ * @return  status  0 - If any error occur in updating user, with error
+ *          status  1 - If User updated successfully, with appropriate message
+ *          status  2 - If User not updated, with appropriate message
+ * 
+ * @developed by "amc"
+ */
+user_helper.update_user = async (condition, user_obj) => {
+  try {
+    let user = await User.findOneAndUpdate(condition, user_obj, {
+      new: true
+    }).lean();
+    if (!user) {
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
+    } else {
+      return {
+        status: 1,
+        message: "Record has been updated",
+        user: user
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user",
+      error: err
+    };
+  }
+};
+/*
  * update_user_by_id is used to update user data based on user_id
  * 
  * @param   user_id         String  _id of user that need to be update

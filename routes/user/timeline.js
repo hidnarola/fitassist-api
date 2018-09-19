@@ -449,7 +449,6 @@ router.post("/muscle", async (req, res) => {
       })
 
       widgets_settings_object.muscle = muscle;
-
       var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
         userId: authUserId,
         widgetFor: "timeline"
@@ -699,20 +698,18 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * @api {put} /user/timeline/:photo_id Update
+ * @api {put} /user/timeline/:timelineId Update
  * @apiName Update
  * @apiGroup User Timeline
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- * @apiParam {File} image User's  Image
- * @apiParam {String} createdBy created User Id of user
- * @apiParam {String} description Description of Image
- * @apiParam {Number} privacy privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
- * @apiParam {Number} status status of Image <br><code>1 for Active<br>2 for Inactive</code>
+ * @apiParam {String} [description] Description of Image
+ * @apiParam {Number} [privacy] privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
+ * @apiParam {Number} [status] status of Image <br><code>1 for Active<br>2 for Inactive</code>
  * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.put("/:photo_id", async (req, res) => {
+router.put("/:timelineId", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
@@ -730,8 +727,8 @@ router.put("/:photo_id", async (req, res) => {
     user_post_obj.status = req.body.status;
   }
 
-  resp_data = await user_posts_helper.update_user_post_photo({
-      _id: req.params.photo_id,
+  resp_data = await user_timeline_helper.update_user_timeline_by_id({
+      _id: req.params.timelineId,
       userId: authUserId
     },
     user_post_obj
@@ -747,23 +744,27 @@ router.put("/:photo_id", async (req, res) => {
 });
 
 /**
- * @api {delete} /user/timeline/:photo_id Delete
+ * @api {delete} /user/timeline/:timelineId Delete
  * @apiName Delete
  * @apiGroup User Timeline
  * @apiHeader {String}  authorization user's unique access-key
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/:photo_id", async (req, res) => {
+router.delete("/:timelineId", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete user's post photo API - Id = ", req.params.photo_id);
-  let user_post_data = await user_posts_helper.delete_user_post_photo({
+  let user_post_data = await user_posts_helper.delete_user_timeline_post({
     userId: authUserId,
-    _id: req.params.photo_id
+    _id: req.params.timelineId
   }, {
     isDeleted: 1
   });
+  console.log('------------------------------------');
+  console.log('user_post_data : ', user_post_data);
+  console.log('------------------------------------');
+
 
   if (user_post_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(user_post_data);
@@ -771,5 +772,6 @@ router.delete("/:photo_id", async (req, res) => {
     res.status(config.OK_STATUS).json(user_post_data);
   }
 });
+
 
 module.exports = router;

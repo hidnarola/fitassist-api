@@ -10,7 +10,9 @@ var user_timeline_helper = {};
  */
 user_timeline_helper.get_user_timeline_by_user_id = async id => {
   try {
-    var user_timeline = await UserTimeline.aggregate([{ $match: id }]);
+    var user_timeline = await UserTimeline.aggregate([{
+      $match: id
+    }]);
     if (user_timeline && user_timeline.length > 0) {
       return {
         status: 1,
@@ -18,7 +20,10 @@ user_timeline_helper.get_user_timeline_by_user_id = async id => {
         user_timeline: user_timeline[0]
       };
     } else {
-      return { status: 2, message: "user timeline not available" };
+      return {
+        status: 2,
+        message: "user timeline not available"
+      };
     }
   } catch (err) {
     return {
@@ -60,7 +65,7 @@ user_timeline_helper.insert_timeline_data = async user_timeline_object => {
 /*
  * update_user_timeline_by_userid is used to update user_timeline data based on timeline ID
  * 
- * @param   timelineId         String  _id of timeline that need to be update
+ * @param   condition         String  _id of timeline that need to be update
  * @param   timelineObj     JSON    object consist of all property that need to update
  * 
  * @return  status  0 - If any error occur in updating timeline, with error
@@ -70,17 +75,18 @@ user_timeline_helper.insert_timeline_data = async user_timeline_object => {
  * @developed by "amc"
  */
 user_timeline_helper.update_user_timeline_by_id = async (
-  authUserId,
+  condition,
   user_timeline_object
 ) => {
   try {
-    let user_timeline = await UserTimeline.findOneAndUpdate(
-      { userId: authUserId },
-      user_timeline_object,
-      { new: true }
-    );
+    let user_timeline = await UserTimeline.findOneAndUpdate(condition, user_timeline_object, {
+      new: true
+    });
     if (!user_timeline) {
-      return { status: 2, message: "timeline has not updated" };
+      return {
+        status: 2,
+        message: "timeline has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -114,13 +120,18 @@ user_timeline_helper.delete_user_timeline_by_id = async (
   user_timeline_object
 ) => {
   try {
-    let user_timeline = await UserTimeline.findOneAndUpdate(
-      { userId: authUserId },
-      user_timeline_object,
-      { new: true }
+    let user_timeline = await UserTimeline.findOneAndUpdate({
+        userId: authUserId
+      },
+      user_timeline_object, {
+        new: true
+      }
     );
     if (!user_timeline) {
-      return { status: 2, message: "timeline has not deleted" };
+      return {
+        status: 2,
+        message: "timeline has not deleted"
+      };
     } else {
       return {
         status: 1,

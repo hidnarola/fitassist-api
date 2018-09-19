@@ -525,7 +525,7 @@ router.get("/auth0_user_sync", async (req, res) => {
       response = JSON.parse(response);
       if (response.email && typeof response.email !== "undefined") {
         let data = await user_helper.checkvalue({
-          authUserId: response.sub
+          email: response.email
         });
 
         if (data.count <= 0) {
@@ -580,9 +580,22 @@ router.get("/auth0_user_sync", async (req, res) => {
           );
           res.status(config.OK_STATUS).json(user_data);
         } else {
+          let tmp = await user_helper.update_user({
+            email: response.email
+          }, {
+            authUserId: response.sub
+          });
+          console.log('------------------------------------');
+          console.log('tmp : ', tmp);
+          console.log('------------------------------------');
+
           let data = await user_helper.get_user_by({
             authUserId: response.sub
           });
+          console.log('------------------------------------');
+          console.log('data : ', data);
+          console.log('------------------------------------');
+
           res.status(config.OK_STATUS).json(data);
         }
       } else {

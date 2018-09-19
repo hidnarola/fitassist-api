@@ -1,14 +1,9 @@
 var express = require("express");
-var _ = require("underscore");
 var router = express.Router();
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
-var mongoose = require("mongoose")
-
 var logger = config.logger;
-
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
-var badge_helper = require("../../helpers/badge_helper");
 
 /**
  * @api {post} /user/widgets/:type Save

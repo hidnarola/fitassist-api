@@ -110,18 +110,16 @@ router.post("/", async (req, res) => {
       equipment_category_obj
     );
 
-    if (equipment_category_data.status === 0) {
-      res.status(config.OK_STATUS).json(equipment_category_data);
-      logger.error(
-        "Error while inserting equipment category = ",
-        equipment_category_data
-      );
-      res.status(config.BAD_REQUEST).json({
-        equipment_category_data
-      });
-    } else {
+    if (equipment_category_data.status === 1) {
       logger.trace(
         "Successfully inserted equipment category = ",
+        equipment_category_data
+      );
+      res.status(config.OK_STATUS).json(equipment_category_data);
+    } else {
+      res.status(config.BAD_REQUEST).json(equipment_category_data);
+      logger.error(
+        "Error while inserting equipment category = ",
         equipment_category_data
       );
     }
