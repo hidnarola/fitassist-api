@@ -119,6 +119,13 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 2 to 100 chars long',
+        options: {
+          min: 2,
+          max: 100
+        }
+      },
       errorMessage: "Name is required"
     },
     task: {
@@ -178,6 +185,10 @@ router.post("/", async (req, res) => {
       errorMessage: "Duration is required"
     };
   }
+  req.checkBody('point', 'Point must be an integer greater than 0').isInt({
+    gt: 0
+  });
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 

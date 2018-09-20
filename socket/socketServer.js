@@ -21,8 +21,6 @@ myIo.init = function (server) {
 		 * @apiGroup  Sokets
 		 */
 		socket.on("join", async function (token) {
-			console.log('connected:> ', socket.id);
-
 			var decoded = jwtDecode(token);
 			var authUserId = decoded.sub;
 			var user = users.get(authUserId);
@@ -36,40 +34,8 @@ myIo.init = function (server) {
 				};
 				users.set(authUserId, obj);
 			}
-			var userdata = await user_helper.get_user_by_id(authUserId);
-			var username = userdata.user.username;
-
 			socketToUsers.set(socket.id, authUserId);
-			var user_friends = await friend_helper.get_friend_by_username({
-					username: username
-				},
-				2
-			);
-			var usersFriendsSocketIds = [];
-			var onlineFriends = [];
-			user_friends.friends.forEach((element) => {
-				var socketId = users.get(element.authUserId);
-				if (socketId) {
-					onlineFriends.push(element.authUserId);
-					usersFriendsSocketIds = _.union(
-						usersFriendsSocketIds,
-						socketId.socketIds
-					);
-				}
-			});
-
-			io.to(socket.id).emit("receive_user_friends_count", {
-				onlinePerson: {
-					authUserId: authUserId
-				}
-			});
-			usersFriendsSocketIds.forEach(socketId => {
-				io.to(socketId).emit("receive_user_friends_count", {
-					onlinePerson: {
-						authUserId: authUserId
-					}
-				});
-			});
+			await broadcastOnlineOfflineFlagToFriends(authUserId, true);
 		});
 
 		/**
@@ -212,6 +178,7 @@ myIo.init = function (server) {
 				});
 			}
 		});
+
 		/**
 		 * @api {socket on} request_logged_user_friends  Get user's friends
 		 * @apiName  Get user's friends
@@ -221,11 +188,6 @@ myIo.init = function (server) {
 		 */
 		socket.on("request_logged_user_friends", async function (data) {
 			var resp_data = {};
-			var data = {
-				token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1EWkZRek0xTlRNM1JFUkRRVEkxTVRZMFFqTkJSRVJCTmpFMlJFSTFNRVV5UVRRNU9ETkZOZyJ9.eyJpc3MiOiJodHRwczovL2ZpdGFzc2lzdC5ldS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWFlNzA1Y2QxNzY4OGI3NTNkZjdiZTE3IiwiYXVkIjpbImh0dHBzOi8vZml0YXNzaXN0LmV1LmF1dGgwLmNvbS9hcGkvdjIvIiwiaHR0cHM6Ly9maXRhc3Npc3QuZXUuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTUzNzQyMzA0NywiZXhwIjoxNTM3NDMwMjQ3LCJhenAiOiJZc09kVGlVZmlYMXZwVW9kWHNUNkRraDd3YU9TanpTSCIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwifQ.NWNaL2PmZowbUSLTWrJR37rbGdiD7kdEXGNgCbomdp-yLuzBHo14NHXWm9ihLJR9JcAXS6qvTCw7uiebl2jHOErdfKMMlFU-m3v2gxRMCCOKKtTyHX9awK6mtwNEOgi3OQR6UBMhShkjV-TrIuIou9cNAzof98-3lcSqEPcBB2wVEyKze1865aL-fM9iFt90msW653nFhA4mof-LV3WMPuUYf9spb9t2jaMmRwf2wftHRmCOW3IwYr85avOvSHu4_nLHx47g5mLUVwqs9NI0ysG7vhCKzLq3a36rRkS7iWefWeIRc_OQ8lYht_dqh1ei1lzIFTMUUnDGmOKLyfGyAA",
-				start: 0,
-				limit: 10
-			}
 			var decoded = jwtDecode(data.token);
 			var authUserId = decoded.sub;
 			var user = users.get(authUserId);
@@ -451,7 +413,7 @@ myIo.init = function (server) {
 		 * @apiGroup  Sokets
 		 * @apiSuccess (Success 200) {String} flag flag
 		 */
-		socket.on("disconnect", function () {
+		socket.on("disconnect", async function () {
 			var socketId = this.id;
 			var socketToUser = socketToUsers.get(socketId);
 			if (socketToUser) {
@@ -462,6 +424,12 @@ myIo.init = function (server) {
 						user.socketIds.splice(index, 1);
 					}
 				}
+				if (user.socketIds.length <= 0) {
+					await broadcastOnlineOfflineFlagToFriends(socketToUser, false);
+				} else {
+					console.log('in ' + user.socketIds.length + ' tab use is still online');
+				}
+
 				socketToUsers.delete(socketId);
 			}
 		});
@@ -471,4 +439,38 @@ myIo.init = function (server) {
 	myIo.users = users;
 	myIo.socketToUser = socketToUsers;
 };
+
+async function broadcastOnlineOfflineFlagToFriends(authUserId, flag) {
+	var userdata = await user_helper.get_user_by_id(authUserId);
+	var user_friends = await friend_helper.get_friend_by_username({
+			username: userdata.user.username
+		},
+		2
+	);
+	var usersFriendsSocketIds = [];
+	var onlineFriends = [];
+	user_friends.friends.forEach((element) => {
+		var socketId = users.get(element.authUserId);
+		if (socketId) {
+			usersFriendsSocketIds = _.union(
+				usersFriendsSocketIds,
+				socketId.socketIds
+			);
+		}
+	});
+	if (flag) {
+		console.log(`${authUserId} is Online`);
+	} else {
+		console.log(`${authUserId} is Offline`);
+	}
+
+	usersFriendsSocketIds.forEach(socketId => {
+		io.to(socketId).emit("receive_online_friend_status", {
+			onlinePerson: {
+				isOnline: flag,
+				authUserId: authUserId
+			}
+		});
+	});
+}
 module.exports = myIo;

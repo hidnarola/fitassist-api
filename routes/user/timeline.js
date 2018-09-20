@@ -761,11 +761,6 @@ router.delete("/:timelineId", async (req, res) => {
   }, {
     isDeleted: 1
   });
-  console.log('------------------------------------');
-  console.log('user_post_data : ', user_post_data);
-  console.log('------------------------------------');
-
-
   if (user_post_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(user_post_data);
   } else {

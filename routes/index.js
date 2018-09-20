@@ -585,16 +585,12 @@ router.get("/auth0_user_sync", async (req, res) => {
           }, {
             authUserId: response.sub
           });
-          console.log('------------------------------------');
-          console.log('tmp : ', tmp);
-          console.log('------------------------------------');
+
 
           let data = await user_helper.get_user_by({
             authUserId: response.sub
           });
-          console.log('------------------------------------');
-          console.log('data : ', data);
-          console.log('------------------------------------');
+
 
           res.status(config.OK_STATUS).json(data);
         }
