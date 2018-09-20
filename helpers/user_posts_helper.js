@@ -605,7 +605,7 @@ user_post_helper.get_user_timeline = async (
             }
           },
           privacy: {
-            $first: "$user_posts.privacy"
+            $first: "$privacy"
           },
           createdAt: {
             $first: "$createdAt"

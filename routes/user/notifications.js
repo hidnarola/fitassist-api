@@ -23,7 +23,15 @@ router.get("/all/:skip?/:limit?/:sort?", async (req, res) => {
   var skip = parseInt(req.params.skip ? req.params.skip : 0);
   var limit = parseInt(req.params.limit ? req.params.limit : 10);
   var sort = parseInt(req.params.sort ? req.params.sort : -1);
-  var resp_data = await notification_helper.get_notifications(obj, {$skip : skip}, {$limit : limit}, {$sort:{ _id : sort }});
+  var resp_data = await notification_helper.get_notifications(obj, {
+    $skip: skip
+  }, {
+    $limit: limit
+  }, {
+    $sort: {
+      _id: sort
+    }
+  });
 
   if (resp_data.status === 0) {
     logger.error("Error occured while fetching notifications = ", resp_data);
@@ -43,11 +51,11 @@ router.get("/all/:skip?/:limit?/:sort?", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:type/:skip?/:limit?", async (req, res) => {
-
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var obj = {
-    "receiver.authUserId": authUserId
+    "receiver.authUserId": authUserId,
+    isSeen: 1
   };
 
   if (typeof req.params.type !== "undefined") {
@@ -71,6 +79,7 @@ router.get("/:type/:skip?/:limit?", async (req, res) => {
   }
 
 });
+
 /**
  * @api {put} /user/notification Mark as read
  * @apiName Mark as read

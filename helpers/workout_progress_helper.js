@@ -15,29 +15,25 @@ var workout_progress_helper = {};
 workout_progress_helper.graph_data_body_data = async (condition = {}, type = "flexibility") => {
 	try {
 		var progress = await Measurement.aggregate([{
-				$match: condition.createdAt
-			},
-			{
-				$group: {
-					_id: "$logDate",
-					data: {
-						$addToSet: "$$ROOT"
-					}
-				}
-			},
-			{
-				$project: {
-					_id: 0,
-					date: "$_id",
-					data: 1
-				}
-			},
-			{
-				$sort: {
-					date: 1
+			$match: condition.createdAt
+		}, {
+			$group: {
+				_id: "$logDate",
+				data: {
+					$addToSet: "$$ROOT"
 				}
 			}
-		]);
+		}, {
+			$project: {
+				_id: 0,
+				date: "$_id",
+				data: 1
+			}
+		}, {
+			$sort: {
+				date: 1
+			}
+		}]);
 
 		if (progress && progress.length > 0) {
 			_.each(progress, function (o) {

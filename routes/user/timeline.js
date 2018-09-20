@@ -727,19 +727,19 @@ router.put("/:timelineId", async (req, res) => {
     user_post_obj.status = req.body.status;
   }
 
-  resp_data = await user_timeline_helper.update_user_timeline_by_id({
+  var resp_data = await user_timeline_helper.update_user_timeline_by_id({
       _id: req.params.timelineId,
       userId: authUserId
     },
     user_post_obj
   );
-  if (resp_data.status === 0) {
+  if (resp_data.status === 1) {
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
     logger.error("Error while updating user post image = ", resp_data);
     res.status(config.BAD_REQUEST).json({
       resp_data
     });
-  } else {
-    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

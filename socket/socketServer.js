@@ -21,6 +21,8 @@ myIo.init = function (server) {
 		 * @apiGroup  Sokets
 		 */
 		socket.on("join", async function (token) {
+			console.log('connected:> ', socket.id);
+
 			var decoded = jwtDecode(token);
 			var authUserId = decoded.sub;
 			var user = users.get(authUserId);
@@ -207,6 +209,56 @@ myIo.init = function (server) {
 			} finally {
 				socketIds.forEach(socketId => {
 					io.to(socketId).emit("receive_users_conversation_channel", resp_data);
+				});
+			}
+		});
+		/**
+		 * @api {socket on} request_logged_user_friends  Get user's friends
+		 * @apiName  Get user's friends
+		 * @apiGroup  Sokets
+		 * @apiParam {JSON} friends Data of user
+		 * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
+		 */
+		socket.on("request_logged_user_friends", async function (data) {
+			var resp_data = {};
+			var data = {
+				token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1EWkZRek0xTlRNM1JFUkRRVEkxTVRZMFFqTkJSRVJCTmpFMlJFSTFNRVV5UVRRNU9ETkZOZyJ9.eyJpc3MiOiJodHRwczovL2ZpdGFzc2lzdC5ldS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWFlNzA1Y2QxNzY4OGI3NTNkZjdiZTE3IiwiYXVkIjpbImh0dHBzOi8vZml0YXNzaXN0LmV1LmF1dGgwLmNvbS9hcGkvdjIvIiwiaHR0cHM6Ly9maXRhc3Npc3QuZXUuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTUzNzQyMzA0NywiZXhwIjoxNTM3NDMwMjQ3LCJhenAiOiJZc09kVGlVZmlYMXZwVW9kWHNUNkRraDd3YU9TanpTSCIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwifQ.NWNaL2PmZowbUSLTWrJR37rbGdiD7kdEXGNgCbomdp-yLuzBHo14NHXWm9ihLJR9JcAXS6qvTCw7uiebl2jHOErdfKMMlFU-m3v2gxRMCCOKKtTyHX9awK6mtwNEOgi3OQR6UBMhShkjV-TrIuIou9cNAzof98-3lcSqEPcBB2wVEyKze1865aL-fM9iFt90msW653nFhA4mof-LV3WMPuUYf9spb9t2jaMmRwf2wftHRmCOW3IwYr85avOvSHu4_nLHx47g5mLUVwqs9NI0ysG7vhCKzLq3a36rRkS7iWefWeIRc_OQ8lYht_dqh1ei1lzIFTMUUnDGmOKLyfGyAA",
+				start: 0,
+				limit: 10
+			}
+			var decoded = jwtDecode(data.token);
+			var authUserId = decoded.sub;
+			var user = users.get(authUserId);
+			var socketIds = user && user.socketIds && user.socketIds.length ? user.socketIds : [];
+			var skip = parseInt(data.start ? data.start : 0);
+			var limit = parseInt(data.limit ? data.limit : 10);
+			var userData = await user_helper.get_user_by_id(authUserId);
+
+			try {
+				var resp_data = await friend_helper.get_friend_by_username({
+					username: userData.user.username
+				}, 2, {
+					$skip: skip
+				}, {
+					$limit: limit
+				});
+				_.map(resp_data.friends, function (friend) {
+					var user = users.get(friend.authUserId);
+					friend.isOnline = false;
+					if (user) {
+						friend.isOnline = true;
+					}
+				})
+				if (resp_data.status == 0) {
+					logger.error("Error occured while fetching friend = ", resp_data);
+				} else {
+					logger.trace("friend got successfully = ", resp_data);
+				}
+			} catch (error) {
+
+			} finally {
+				socketIds.forEach(socketId => {
+					io.to(socketId).emit("receive_logged_user_friends", resp_data);
 				});
 			}
 		});

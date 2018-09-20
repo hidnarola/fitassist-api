@@ -3,7 +3,6 @@ var user_timeline_helper = {};
 
 /*
  * get_user_timeline_by_user_id is used to fetch user_timeline by user ID
- * 
  * @return  status 0 - If any internal error occured while fetching user_timeline data, with error
  *          status 1 - If user_timeline data found, with user_timeline object
  *          status 2 - If user_timeline data not found, with appropriate message
@@ -36,12 +35,9 @@ user_timeline_helper.get_user_timeline_by_user_id = async id => {
 
 /*
  * insert_timeline is used to insert into user_timeline
- * 
- * @param   preference_object     JSON object consist of all property that need to insert in collection
- * 
+ * @param   preference_object JSON object consist of all property that need to insert in collection
  * @return  status  0 - If any error occur in inserting preference, with error
  *          status  1 - If timeline inserted, with inserted timeline document and appropriate message
- * 
  * @developed by "amc"
  */
 user_timeline_helper.insert_timeline_data = async user_timeline_object => {
@@ -64,14 +60,11 @@ user_timeline_helper.insert_timeline_data = async user_timeline_object => {
 
 /*
  * update_user_timeline_by_userid is used to update user_timeline data based on timeline ID
- * 
- * @param   condition         String  _id of timeline that need to be update
- * @param   timelineObj     JSON    object consist of all property that need to update
- * 
+ * @param   condition String  _id of timeline that need to be update
+ * @param   timelineObj JSON    object consist of all property that need to update
  * @return  status  0 - If any error occur in updating timeline, with error
  *          status  1 - If timeline updated successfully, with appropriate message
  *          status  2 - If timeline not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 user_timeline_helper.update_user_timeline_by_id = async (
@@ -105,14 +98,11 @@ user_timeline_helper.update_user_timeline_by_id = async (
 
 /*
  * delete_user_timeline_by_userid is used to delete user_timeline data based on timeline ID
- * 
- * @param   timelineId         String  _id of timeline that need to be delete
- * @param   timelineObj     JSON    object consist of all property that need to delete
- * 
+ * @param   timelineId String  _id of timeline that need to be delete
+ * @param   timelineObj JSON object consist of all property that need to delete
  * @return  status  0 - If any error occur in updating timeline, with error
  *          status  1 - If timeline deleted successfully, with appropriate message
  *          status  2 - If timeline not deleted, with appropriate message
- * 
  * @developed by "amc"
  */
 user_timeline_helper.delete_user_timeline_by_id = async (
