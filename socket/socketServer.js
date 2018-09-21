@@ -36,6 +36,7 @@ myIo.init = function (server) {
 			}
 			socketToUsers.set(socket.id, authUserId);
 			await broadcastOnlineOfflineFlagToFriends(authUserId, true);
+			console.log('called after broadcast');
 		});
 
 		/**
@@ -406,7 +407,34 @@ myIo.init = function (server) {
 				isSeen: 1
 			});
 		});
+		/**
+		 * @api {socket on} request_make_user_offline Make user offline
+		 * @apiName Make user offline 
+		 * @apiGroup  Sokets
+		 */
+		socket.on("request_make_user_offline", async function () {
+			var socketId = this.id;
+			console.log('------------------------------------');
+			console.log('socketId : ', socketId);
+			console.log('------------------------------------');
 
+			var socketToUser = socketToUsers.get(socketId);
+			if (socketToUser) {
+				var user = users.get(socketToUser);
+				if (user) {
+					var index = user.socketIds.indexOf(socketId);
+					if (index >= 0) {
+						user.socketIds.splice(index, 1);
+					}
+				}
+				if (user.socketIds.length <= 0) {
+					await broadcastOnlineOfflineFlagToFriends(socketToUser, false);
+				} else {
+					console.log(socketToUser + 'is Online in ' + user.socketIds.length + ' tab ');
+				}
+				socketToUsers.delete(socketId);
+			}
+		});
 		/**
 		 * @api {socket on} disconnect Disconnect Socket
 		 * @apiName Disconnect Socket
@@ -429,7 +457,6 @@ myIo.init = function (server) {
 				} else {
 					console.log('in ' + user.socketIds.length + ' tab use is still online');
 				}
-
 				socketToUsers.delete(socketId);
 			}
 		});
@@ -448,7 +475,6 @@ async function broadcastOnlineOfflineFlagToFriends(authUserId, flag) {
 		2
 	);
 	var usersFriendsSocketIds = [];
-	var onlineFriends = [];
 	user_friends.friends.forEach((element) => {
 		var socketId = users.get(element.authUserId);
 		if (socketId) {
@@ -466,10 +492,8 @@ async function broadcastOnlineOfflineFlagToFriends(authUserId, flag) {
 
 	usersFriendsSocketIds.forEach(socketId => {
 		io.to(socketId).emit("receive_online_friend_status", {
-			onlinePerson: {
-				isOnline: flag,
-				authUserId: authUserId
-			}
+			isOnline: flag,
+			authUserId: authUserId
 		});
 	});
 }

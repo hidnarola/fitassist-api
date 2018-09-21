@@ -130,6 +130,13 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 100
+        }
+      },
       errorMessage: "Name is required"
     },
     mainMuscleGroup: {
@@ -169,10 +176,7 @@ router.post("/", async (req, res) => {
     }
   }
 
-  req.checkBody('name', 'Name should be between 3 to 100 characters').isLength({
-    min: 3,
-    max: 100
-  });
+
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
@@ -329,6 +333,13 @@ router.put("/:exercise_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 100
+        }
+      },
       errorMessage: "Name is required"
     },
     mainMuscleGroup: {
@@ -366,10 +377,7 @@ router.put("/:exercise_id", async (req, res) => {
       errorMessage: "Sub Category is required"
     }
   }
-  req.checkBody('name', 'Name should be between 3 to 100 characters').isLength({
-    min: 3,
-    max: 100
-  });
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 

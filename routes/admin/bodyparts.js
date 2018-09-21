@@ -109,13 +109,17 @@ router.post("/", async (req, res) => {
   var schema = {
     bodypart: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "Name is required"
     }
   };
-  req.checkBody('bodypart', 'Name should be between 3 to 50 characters').isLength({
-    min: 3,
-    max: 50
-  });
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
@@ -155,13 +159,17 @@ router.put("/:body_part_id", async (req, res) => {
   var schema = {
     bodypart: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "Name is required"
     }
   };
-  req.checkBody('bodypart', 'Name should be between 3 to 50 characters').isLength({
-    min: 3,
-    max: 50
-  });
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 

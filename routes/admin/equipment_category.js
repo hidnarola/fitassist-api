@@ -92,13 +92,17 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "Name is required"
     }
   };
-  req.checkBody('name', 'Name should be between 3 to 50 characters').isLength({
-    min: 3,
-    max: 50
-  });
+
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
@@ -146,14 +150,18 @@ router.put("/:equipment_category_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "Name is required"
     }
   };
 
-  req.checkBody('name', 'Name should be between 3 to 50 characters').isLength({
-    min: 3,
-    max: 50
-  });
+
 
   req.checkBody(schema);
   var errors = req.validationErrors();

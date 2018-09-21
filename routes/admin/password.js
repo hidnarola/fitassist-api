@@ -24,18 +24,29 @@ router.put("/", async (req, res) => {
   var schema = {
     password: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Password should be between 8 to 32 characters',
+        options: {
+          min: 8,
+          max: 32
+        }
+      },
       errorMessage: "Old Password is required."
     },
     newPassword: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'New Password should be between 8 to 32 characters',
+        options: {
+          min: 8,
+          max: 32
+        }
+      },
       errorMessage: "New Password is required."
     }
   };
   req.checkBody(schema);
-  req.checkBody('password', 'Password field should be between 8 to 32 characters').isLength({
-    min: 8,
-    max: 32
-  });
+
   var errors = req.validationErrors();
   if (!errors) {
     logger.trace("Valid request of admin change password");
