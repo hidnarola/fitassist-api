@@ -15,12 +15,20 @@ var socketToUsers = new Map();
 myIo.init = function (server) {
 	io.attach(server);
 	io.on("connection", function (socket) {
+		console.log('------------------------------------');
+		console.log('on connection socket.id : ', socket.id);
+		console.log('------------------------------------');
+
 		/**
 		 * @api {socket on} join  Join user to socket
 		 * @apiName Join user to socket
 		 * @apiGroup  Sokets
 		 */
 		socket.on("join", async function (token) {
+			console.log('------------------------------------');
+			console.log('on join socket.id : ', socket.id);
+			console.log('------------------------------------');
+
 			var decoded = jwtDecode(token);
 			var authUserId = decoded.sub;
 			var user = users.get(authUserId);
@@ -36,7 +44,6 @@ myIo.init = function (server) {
 			}
 			socketToUsers.set(socket.id, authUserId);
 			await broadcastOnlineOfflineFlagToFriends(authUserId, true);
-			console.log('called after broadcast');
 		});
 
 		/**
@@ -188,11 +195,28 @@ myIo.init = function (server) {
 		 * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
 		 */
 		socket.on("request_logged_user_friends", async function (data) {
+			console.log('I am in');
+
 			var resp_data = {};
 			var decoded = jwtDecode(data.token);
 			var authUserId = decoded.sub;
+			console.log('------------------------------------');
+			console.log('decoded : ', decoded);
+			console.log('------------------------------------');
+
 			var user = users.get(authUserId);
+			console.log('------------------------------------');
+			console.log('user : ', user);
+			console.log('------------------------------------');
+			console.log('------------------------------------');
+			console.log('users : ', users);
+			console.log('------------------------------------');
+
 			var socketIds = user && user.socketIds && user.socketIds.length ? user.socketIds : [];
+			console.log('------------------------------------');
+			console.log('socketIds : ', socketIds);
+			console.log('------------------------------------');
+
 			var skip = parseInt(data.start ? data.start : 0);
 			var limit = parseInt(data.limit ? data.limit : 10);
 			var userData = await user_helper.get_user_by_id(authUserId);
@@ -221,6 +245,15 @@ myIo.init = function (server) {
 
 			} finally {
 				socketIds.forEach(socketId => {
+					console.log('emited');
+					console.log('------------------------------------');
+					console.log('socketId : ', socketId);
+					console.log('------------------------------------');
+
+					// console.log('------------------------------------');
+					// console.log('resp_data : ', resp_data);
+					// console.log('------------------------------------');
+
 					io.to(socketId).emit("receive_logged_user_friends", resp_data);
 				});
 			}
@@ -234,6 +267,8 @@ myIo.init = function (server) {
 		 * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
 		 */
 		socket.on("get_user_conversation_by_channel", async function (data) {
+			console.log('here');
+
 			var resp_data = {};
 			var decoded = jwtDecode(data.token);
 			var authUserId = decoded.sub;
@@ -413,6 +448,8 @@ myIo.init = function (server) {
 		 * @apiGroup  Sokets
 		 */
 		socket.on("request_make_user_offline", async function () {
+			console.log('I am in request_make_user_offline');
+
 			var socketId = this.id;
 			console.log('------------------------------------');
 			console.log('socketId : ', socketId);
@@ -489,12 +526,12 @@ async function broadcastOnlineOfflineFlagToFriends(authUserId, flag) {
 	} else {
 		console.log(`${authUserId} is Offline`);
 	}
-
 	usersFriendsSocketIds.forEach(socketId => {
 		io.to(socketId).emit("receive_online_friend_status", {
 			isOnline: flag,
 			authUserId: authUserId
 		});
 	});
+
 }
 module.exports = myIo;
