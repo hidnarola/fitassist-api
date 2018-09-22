@@ -131,7 +131,7 @@ router.post("/", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 50 characters',
+        errorMessage: 'Name should be between 3 to 100 characters',
         options: {
           min: 3,
           max: 100
@@ -334,7 +334,7 @@ router.put("/:exercise_id", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 50 characters',
+        errorMessage: 'Name should be between 3 to 100 characters',
         options: {
           min: 3,
           max: 100

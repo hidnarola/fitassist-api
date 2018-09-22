@@ -1,11 +1,8 @@
 var express = require('express');
 var router = express.Router();
-
 var config = require('../../config');
 var logger = config.logger;
-
 var exercise_types_helper = require('../../helpers/exercise_types_helper');
-
 
 /**
  * @api {get} /user/exercise_type Get all

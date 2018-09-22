@@ -85,7 +85,6 @@ router.get("/", async (req, res) => {
  * @api {get} /admin/measurement/:measurement_by_id Get by ID
  * @apiName Get by ID
  * @apiGroup Measurement
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} measurement Array of body_measurement document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -113,7 +112,6 @@ router.get("/:measurement_by_id", async (req, res) => {
  * @api {get} /admin/measurement/userid/:user_id Get by User ID
  * @apiName Get by User ID
  * @apiGroup Measurement
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiSuccess (Success 200) {Array} measurements Array of body_measurement document
  * @apiError (Error 4xx) {String} message Validation or error message.
@@ -141,7 +139,6 @@ router.get("/userid/:user_id", async (req, res) => {
  * @api {post} /admin/measurement Add
  * @apiName Add
  * @apiGroup Measurement
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {Date} logDate logDate of bodymesurement
@@ -156,7 +153,6 @@ router.get("/userid/:user_id", async (req, res) => {
  * @apiParam {Number} [calf] calf of bodymesurement
  * @apiParam {Number} [weight] weight of bodymesurement
  * @apiParam {Number} [height] height of bodymesurement
- *
  * @apiSuccess (Success 200) {JSON} measurement Measurement details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -233,7 +229,6 @@ router.post("/", async (req, res) => {
  * @apiParam {Number} [calf] calf of bodymesurement
  * @apiParam {Number} [weight] weight of bodymesurement
  * @apiParam {Number} [height] height of bodymesurement
- *
  * @apiSuccess (Success 200) {Array}  measurement of body_measurement document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

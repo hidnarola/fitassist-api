@@ -160,9 +160,6 @@ router.put("/:equipment_category_id", async (req, res) => {
       errorMessage: "Name is required"
     }
   };
-
-
-
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {

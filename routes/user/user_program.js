@@ -72,8 +72,7 @@ router.get("/:program_id", async (req, res) => {
   var program_id = mongoose.Types.ObjectId(req.params.program_id);
 
   logger.trace("Get all user programs API called ID:" + program_id);
-  var resp_data = await user_program_helper.get_user_programs_in_details(
-    {
+  var resp_data = await user_program_helper.get_user_programs_in_details({
       _id: program_id
     },
     true
@@ -96,21 +95,7 @@ router.get("/:program_id", async (req, res) => {
     };
     var data = resp_data.program[0];
     var programDetails = data.programDetails;
-    var workouts = data.workouts;
-
-    // programDetails = programDetails.map(async ex => {
-    //   if (workouts && workouts.length > 0) {
-    //     var filteredExercises = _.filter(workouts, w => {
-    //       return w.userWorkoutsProgramId.toString() === ex._id.toString();
-    //     });
-    //     if (filteredExercises && filteredExercises.length > 0) {
-    //       ex.exercises = filteredExercises;
-    //     }
-    //   }
-    //   return ex;
-    // });
-    // programDetails = await Promise.all(programDetails);
-    programDetails = _.sortBy(programDetails, function(pd) {
+    programDetails = _.sortBy(programDetails, function (pd) {
       return pd.day;
     });
     returnObject.program.workouts = programDetails;
@@ -140,41 +125,6 @@ router.get("/workout/:workout_id", async (req, res) => {
   });
 
   if (resp_data.status == 1) {
-    // var returnObject = {
-    //   status: resp_data.status,
-    //   message: resp_data.message,
-    //   program: {
-    //     programDetails: {
-    //       _id: resp_data.program[0]._id,
-    //       name: resp_data.program[0].name,
-    //       description: resp_data.program[0].description,
-    //       userId: resp_data.program[0].userId,
-    //       type: resp_data.program[0].type
-    //     },
-    //     workouts: []
-    //   }
-    // };
-    // var data = resp_data.program[0];
-    // var programDetails = data.programDetails;
-    // var workouts = data.workouts;
-
-    // programDetails = programDetails.map(async ex => {
-    //   if (workouts && workouts.length > 0) {
-    //     var filteredExercises = _.filter(workouts, w => {
-    //       return w.userWorkoutsProgramId.toString() === ex._id.toString();
-    //     });
-    //     if (filteredExercises && filteredExercises.length > 0) {
-    //       ex.exercises = filteredExercises;
-    //     }
-    //   }
-    //   return ex;
-    // });
-    // programDetails = await Promise.all(programDetails);
-    // programDetails = _.sortBy(programDetails, function(pd) {
-    //   return pd.day;
-    // });
-    // returnObject.program.workouts = programDetails;
-
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
@@ -197,21 +147,45 @@ router.get("/workout/:workout_id", async (req, res) => {
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var programObj = {
-    name: req.body.name,
-    description: req.body.description,
-    userId: authUserId,
-    type: req.body.type
+  var schema = {
+    name: {
+      notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 0 to 100 characters',
+        options: {
+          min: 0,
+          max: 100
+        }
+      },
+      errorMessage: "Name is required",
+    }
   };
-  logger.trace("Add user programs  API called");
-  var resp_data = await user_program_helper.add_program(programObj);
-  if (resp_data.status == 0) {
-    logger.error("Error occured while adding user programs = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+
+  if (!errors) {
+    var programObj = {
+      name: req.body.name,
+      description: req.body.description,
+      userId: authUserId,
+      type: req.body.type
+    };
+    logger.trace("Add user programs  API called");
+    var resp_data = await user_program_helper.add_program(programObj);
+    if (resp_data.status == 0) {
+      logger.error("Error occured while adding user programs = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      logger.trace("user programs added successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    }
   } else {
-    logger.trace("user programs added successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
+
 });
 
 /**
@@ -261,7 +235,9 @@ router.post("/day", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -487,9 +463,10 @@ router.post("/workout", async (req, res) => {
       totalExerciseIds.forEach((id, index) => {
         totalExerciseIds[index] = mongoose.Types.ObjectId(id);
       });
-      var exercise_data = await exercise_helper.get_exercise_id(
-        {
-          _id: { $in: totalExerciseIds }
+      var exercise_data = await exercise_helper.get_exercise_id({
+          _id: {
+            $in: totalExerciseIds
+          }
         },
         1
       );
@@ -549,11 +526,9 @@ router.post("/workout", async (req, res) => {
         insertObj
       );
 
-      var returnObject = await user_program_helper.get_all_program_workouts_group_by(
-        {
-          _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
-        }
-      );
+      var returnObject = await user_program_helper.get_all_program_workouts_group_by({
+        _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
+      });
 
       if (workout_day.status == 1) {
         res.status(config.OK_STATUS).json(returnObject);
@@ -563,7 +538,9 @@ router.post("/workout", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -826,9 +803,10 @@ router.put("/workout", async (req, res) => {
       totalExerciseIds.forEach((id, index) => {
         totalExerciseIds[index] = mongoose.Types.ObjectId(id);
       });
-      var exercise_data = await exercise_helper.get_exercise_id(
-        {
-          _id: { $in: totalExerciseIds }
+      var exercise_data = await exercise_helper.get_exercise_id({
+          _id: {
+            $in: totalExerciseIds
+          }
         },
         1
       );
@@ -888,11 +866,9 @@ router.put("/workout", async (req, res) => {
         insertObj
       );
 
-      var returnObject = await user_program_helper.get_all_program_workouts_group_by(
-        {
-          _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
-        }
-      );
+      var returnObject = await user_program_helper.get_all_program_workouts_group_by({
+        _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
+      });
 
       if (workout_day.status == 1) {
         res.status(config.OK_STATUS).json(returnObject);
@@ -902,7 +878,9 @@ router.put("/workout", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -1054,11 +1032,9 @@ router.post("/delete", async (req, res) => {
   );
 
   if (workout_data.status == 1) {
-    var resp_data = await user_program_helper.get_all_program_workouts_group_by(
-      {
-        _id: parentId
-      }
-    );
+    var resp_data = await user_program_helper.get_all_program_workouts_group_by({
+      _id: parentId
+    });
 
     resp_data.message = "Exercises Deleted";
 
@@ -1098,8 +1074,7 @@ router.post("/delete/exercise", async (req, res) => {
     subChildIds
   );
   if (workout_data.status === 1) {
-    var workout_day = await user_program_helper.get_all_program_workouts_group_by(
-      {
+    var workout_day = await user_program_helper.get_all_program_workouts_group_by({
         _id: mongoose.Types.ObjectId(parentId)
       },
       true

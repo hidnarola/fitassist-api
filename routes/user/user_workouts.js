@@ -3,20 +3,16 @@ var fs = require("fs");
 var path = require("path");
 var async = require("async");
 var jwtDecode = require("jwt-decode");
-
 var router = express.Router();
 var mongoose = require("mongoose");
 var moment = require("moment");
 var _ = require("underscore");
 var constant = require("../../constant");
-
 var config = require("../../config");
 var logger = config.logger;
-
 var user_workout_helper = require("../../helpers/user_workouts_helper");
 var exercise_helper = require("../../helpers/exercise_helper");
 var common_helper = require("../../helpers/common_helper");
-var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_program_helper = require("../../helpers/user_program_helper");
 var exercise_measurements_helper = require("../../helpers/exercise_measurements_helper");
 var body_parts_helper = require("../../helpers/body_parts_helper");
@@ -216,6 +212,13 @@ router.post("/day", async (req, res) => {
 	var schema = {
 		title: {
 			notEmpty: true,
+			isLength: {
+				errorMessage: 'Title should be between 0 to 50 characters',
+				options: {
+					min: 0,
+					max: 50
+				}
+			},
 			errorMessage: "Title is required"
 		}
 	};
@@ -1235,6 +1238,13 @@ router.put("/:workout_id", async (req, res) => {
 	var schema = {
 		title: {
 			notEmpty: true,
+			isLength: {
+				errorMessage: 'Site1 should be between 0 to 50 characters',
+				options: {
+					min: 0,
+					max: 50
+				}
+			},
 			errorMessage: "title is required"
 		}
 	};

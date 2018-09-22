@@ -201,9 +201,6 @@ router.post("/", async (req, res) => {
 router.put("/:request_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var request_id = req.params.request_id;
-
-
   var friend_obj = {
     status: 2,
     modifiedAt: new Date()

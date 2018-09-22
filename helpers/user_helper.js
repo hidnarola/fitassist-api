@@ -4,7 +4,6 @@ var user_helper = {};
 
 /*
  * get_all_users is used to fetch all users data
- * 
  * @return  status 0 - If any internal error occured while fetching users data, with error
  *          status 1 - If users data found, with users object
  *          status 2 - If users not found, with appropriate message
@@ -34,8 +33,30 @@ user_helper.get_all_users = async () => {
 };
 
 /*
+ * count_users is used to count all users 
+ * @return  status 0 - If any internal error occured while counting users , with error
+ *          status 1 - If users  found, with users count number
+ *          status 2 - If users not found, with appropriate message
+ */
+user_helper.count_users = async (condition = {}) => {
+  try {
+    var count = await User.count(condition);
+    return {
+      status: 1,
+      message: "users counted",
+      count
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while counting users",
+      error: err
+    };
+  }
+};
+
+/*
  * search_users is used to fetch all users data by search
- * 
  * @return  status 0 - If any internal error occured while fetching users data, 
  * with error
  *          status 1 - If users data found, with users object
@@ -119,9 +140,7 @@ user_helper.search_users = async (
 };
 /*
  * get_user_by_id is used to fetch user details by user id
- * 
  * @params  user_id     _id field of user collection
- * 
  * @return  status 0 - If any internal error occured while fetching user data, with error
  *          status 1 - If user data found, with user object
  *          status 2 - If user not found, with appropriate message
@@ -213,10 +232,8 @@ user_helper.insert_user = async user_object => {
 
 /*
  * update_user is used to update user data based on user_id
- * 
  * @param   user_id         String  _id of user that need to be update
  * @param   user_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating user, with error
  *          status  1 - If User updated successfully, with appropriate message
  *          status  2 - If User not updated, with appropriate message
@@ -250,10 +267,8 @@ user_helper.update_user = async (condition, user_obj) => {
 };
 /*
  * update_user_by_id is used to update user data based on user_id
- * 
  * @param   user_id         String  _id of user that need to be update
  * @param   user_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating user, with error
  *          status  1 - If User updated successfully, with appropriate message
  *          status  2 - If User not updated, with appropriate message
@@ -290,14 +305,11 @@ user_helper.update_user_by_id = async (user_id, user_obj) => {
 
 /*
  * delete_user_by_id is used to delete user data based on user_id
- * 
  * @param   user_id         String  _id of user that need to be update
  * @param   user_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating user, with error
  *          status  1 - If User updated successfully, with appropriate message
  *          status  2 - If User not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 user_helper.delete_user_by_id = async (user_id, user_obj) => {
@@ -327,7 +339,6 @@ user_helper.delete_user_by_id = async (user_id, user_obj) => {
 
 /*
  * get_filtered_records is used to fetch all filtered data
- * 
  * @return  status 0 - If any internal error occured while fetching filtered data, with error
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message
@@ -380,9 +391,7 @@ user_helper.get_filtered_records = async filter_obj => {
 
 /*
  * checkvalue is used to check value uniqueness
- * 
  * @params  value     value  
- * 
  * @return  status 0 - If any internal error occured while checking uniqueness value, with error
  *          status 1 - If value unique, with value
  *          status 2 - If value unique not found, with appropriate message

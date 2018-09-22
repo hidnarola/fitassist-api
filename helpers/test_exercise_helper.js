@@ -4,7 +4,6 @@ var test_exercise_helper = {};
 
 /*
  * get_test_exercises is used to fetch all test_exercises data
- * 
  * @return  status 0 - If any internal error occured while fetching test_exercises data, with error
  *          status 1 - If test_exercises data found, with test_exercises object
  *          status 2 - If test_exercises not found, with appropriate message
@@ -21,8 +20,33 @@ test_exercise_helper.get_test_exercises = async () => {
         test_exercises: test_exercises
       };
     } else {
-      return { status: 2, message: "No test exercises available" };
+      return {
+        status: 2,
+        message: "No test exercises available"
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding test exercises",
+      error: err
+    };
+  }
+};
+/*
+ * count_test_exercises is used to count all test_exercises data
+ * @return  status 0 - If any internal error occured while counting test_exercises data, with error
+ *          status 1 - If test_exercises data found, with test_exercises object
+ *          status 2 - If test_exercises not found, with appropriate message
+ */
+test_exercise_helper.count_test_exercises = async (condition = {}) => {
+  try {
+    var count = await TestExercies.count(condition);
+    return {
+      status: 1,
+      message: "test exercises counted",
+      count
+    };
   } catch (err) {
     return {
       status: 0,
@@ -34,7 +58,6 @@ test_exercise_helper.get_test_exercises = async () => {
 
 /*
  * get_all_test_exercises is used to fetch all test_exercises data
- * 
  * @return  status 0 - If any internal error occured while fetching test_exercises data, with error
  *          status 1 - If test_exercises data found, with test_exercises object
  *          status 2 - If test_exercises not found, with appropriate message
@@ -60,7 +83,10 @@ test_exercise_helper.get_all_test_exercises = async () => {
         test_exercises: test_exercises
       };
     } else {
-      return { status: 2, message: "No test exercises available" };
+      return {
+        status: 2,
+        message: "No test exercises available"
+      };
     }
   } catch (err) {
     return {
@@ -73,7 +99,6 @@ test_exercise_helper.get_all_test_exercises = async () => {
 
 /*
  * get_test_exerice_id is used to fetch test_exercise by ID
- * 
  * @return  status 0 - If any internal error occured while fetching test_exercise data, with error
  *          status 1 - If test_exercise data found, with test_exercise object
  *          status 2 - If test_exercise data not found, with appropriate message
@@ -88,7 +113,10 @@ test_exercise_helper.get_test_exercise_id = async id => {
         test_exercise: test_exercise
       };
     } else {
-      return { status: 2, message: "No test exercise available" };
+      return {
+        status: 2,
+        message: "No test exercise available"
+      };
     }
   } catch (err) {
     return {
@@ -101,12 +129,9 @@ test_exercise_helper.get_test_exercise_id = async id => {
 
 /*
  * insert_test_exericse is used to insert into test_exercise collection
- * 
  * @param   test_exericse     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting test_exercise, with error
  *          status  1 - If test_exercise inserted, with inserted test_exercise document and appropriate message
- * 
  * @developed by "amc"
  */
 test_exercise_helper.insert_test_exercise = async test_exercise_obj => {
@@ -129,14 +154,11 @@ test_exercise_helper.insert_test_exercise = async test_exercise_obj => {
 
 /*
  * update_test_exercise_by_id is used to update test_exercise data based on test_exercise_id
- * 
  * @param   test_exercise_id         String  _id of test_exercise that need to be update
  * @param   test_exercise_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating test_exercise, with error
  *          status  1 - If test_exercise updated successfully, with appropriate message
  *          status  2 - If test_exercise not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 test_exercise_helper.update_test_exercise_by_id = async (
@@ -144,13 +166,18 @@ test_exercise_helper.update_test_exercise_by_id = async (
   test_exercise_obj
 ) => {
   try {
-    let test_exercise = await TestExercies.findOneAndUpdate(
-      { _id: test_exercise_id },
-      test_exercise_obj,
-      { new: true }
+    let test_exercise = await TestExercies.findOneAndUpdate({
+        _id: test_exercise_id
+      },
+      test_exercise_obj, {
+        new: true
+      }
     );
     if (!test_exercise) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -169,24 +196,28 @@ test_exercise_helper.update_test_exercise_by_id = async (
 
 /*
  * delete_test_exercise_by_id is used to delete test_exercise from database
- * 
  * @param   test_exercise_id String  _id of test_exercise that need to be delete
- * 
  * @return  status  0 - If any error occur in deletion of test_exercise, with error
  *          status  1 - If test_exercise deleted successfully, with appropriate message
- * 
  * @developed by "amc"
  */
 test_exercise_helper.delete_test_exercise_by_id = async test_exercise_id => {
   try {
-    let resp = await TestExercies.findOneAndUpdate(
-      { _id: test_exercise_id },
-      { isDeleted: 1 }
-    );
+    let resp = await TestExercies.findOneAndUpdate({
+      _id: test_exercise_id
+    }, {
+      isDeleted: 1
+    });
     if (!resp) {
-      return { status: 2, message: "test exercise not found" };
+      return {
+        status: 2,
+        message: "test exercise not found"
+      };
     } else {
-      return { status: 1, message: "test exercise deleted" };
+      return {
+        status: 1,
+        message: "test exercise deleted"
+      };
     }
   } catch (err) {
     return {
@@ -199,7 +230,6 @@ test_exercise_helper.delete_test_exercise_by_id = async test_exercise_id => {
 
 /*
  * get_filtered_records is used to fetch all filtered data
- * 
  * @return  status 0 - If any internal error occured while fetching filtered data, with error
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message
@@ -207,18 +237,21 @@ test_exercise_helper.delete_test_exercise_by_id = async test_exercise_id => {
 test_exercise_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await TestExercies.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
-    var filtered_data = await TestExercies.aggregate([
-      {
+    var searched_record_count = await TestExercies.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
+    var filtered_data = await TestExercies.aggregate([{
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
+      {
+        $sort: filter_obj.columnSort
+      }
     ]);
 
     if (filtered_data) {
@@ -232,7 +265,10 @@ test_exercise_helper.get_filtered_records = async filter_obj => {
         filtered_test_exercises: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {

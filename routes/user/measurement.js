@@ -1,16 +1,11 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
 var async = require("async");
 var moment = require("moment");
 var jwtDecode = require("jwt-decode");
-
 var router = express.Router();
-
 var config = require("../../config");
 var constant = require("../../constant");
 var logger = config.logger;
-
 var measurement_helper = require("../../helpers/measurement_helper");
 var common_helper = require("../../helpers/common_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");

@@ -137,6 +137,13 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "Name of Task is required"
     },
     unit: {
@@ -194,6 +201,13 @@ router.put("/:badge_task_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "Name of Task is required"
     },
     unit: {

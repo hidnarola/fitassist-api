@@ -37,10 +37,8 @@ var common_helper = require("../../helpers/common_helper");
   ]
 }</code></pre>
  * @apiGroup Ingredient
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {Object} columnFilter columnFilter Object for filter data
  * @apiParam {Object} columnSort columnSort Object for Sorting Data
  * @apiParam {Object} columnFilterEqual columnFilterEqual Object for select box
@@ -89,10 +87,8 @@ router.get("/", async (req, res) => {
  * @api {get} /admin/ingredient/ingredient_id Get by ID
  * @apiName  - Get Ingredient by ID
  * @apiGroup Ingredient
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- * * @apiParam {String} ingredient_id ID of Ingredient
-
+ * @apiParam {String} ingredient_id ID of Ingredient
  * @apiSuccess (Success 200) {JSON} ingredient Object of Ingredient document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -113,7 +109,6 @@ router.get("/:ingredient_id", async (req, res) => {
  * @api {post} /admin/ingredient Add
  * @apiName Add
  * @apiGroup Ingredient
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of Ingredient
@@ -127,6 +122,13 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "Name of ingredient is required"
     }
   };
@@ -206,7 +208,6 @@ router.post("/", async (req, res) => {
  * @api {put} /admin/ingredient/:ingredient_id Update
  * @apiName Update
  * @apiGroup Ingredient
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} name name of Ingredient
@@ -220,6 +221,13 @@ router.put("/:ingredient_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "Name of ingredient is required"
     }
   };
@@ -306,9 +314,7 @@ router.put("/:ingredient_id", async (req, res) => {
  * @api {delete} /admin/ingredient/:ingredient_id Delete
  * @apiName Delete
  * @apiGroup Ingredient
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

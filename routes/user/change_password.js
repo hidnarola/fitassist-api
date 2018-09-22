@@ -27,6 +27,13 @@ router.put("/", async (req, res) => {
     var schema = {
         newPassword: {
             notEmpty: true,
+            isLength: {
+                errorMessage: 'New Password should be between 8 to 50 characters',
+                options: {
+                    min: 0,
+                    max: 50
+                }
+            },
             errorMessage: "New password is required"
         }
     };

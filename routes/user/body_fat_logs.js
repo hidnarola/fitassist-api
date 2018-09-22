@@ -25,18 +25,46 @@ router.post("/", async (req, res) => {
     },
     site1: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Site1 should be between 0 to 200 characters',
+        options: {
+          min: 0,
+          max: 200
+        }
+      },
       errorMessage: "Site 1 is required"
     },
     site2: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Site2 should be between 0 to 200 characters',
+        options: {
+          min: 0,
+          max: 200
+        }
+      },
       errorMessage: "Site 2 is required"
     },
     site3: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Site3 should be between 0 to 200 characters',
+        options: {
+          min: 0,
+          max: 200
+        }
+      },
       errorMessage: "Site 3 is required"
     },
     age: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Age should be between 18 to 100 characters',
+        options: {
+          min: 18,
+          max: 100
+        }
+      },
       errorMessage: "Age is required"
     },
     bodyFatPer: {

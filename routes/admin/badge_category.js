@@ -122,6 +122,13 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "badge name is required"
     }
   };
@@ -167,6 +174,13 @@ router.put("/:badge_category_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 50 characters',
+        options: {
+          min: 3,
+          max: 50
+        }
+      },
       errorMessage: "badge name is required"
     }
   };

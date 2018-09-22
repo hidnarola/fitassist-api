@@ -123,6 +123,13 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 2 to 50 characters',
+        options: {
+          min: 2,
+          max: 50
+        }
+      },
       errorMessage: "name of recipe is required"
     },
     recipeType: {
@@ -230,6 +237,13 @@ router.put("/:recipe_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'First Name should be between 2 to 50 characters',
+        options: {
+          min: 2,
+          max: 50
+        }
+      },
       errorMessage: "name of recipe is required"
     },
     recipeType: {

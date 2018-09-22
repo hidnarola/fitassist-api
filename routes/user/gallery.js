@@ -276,15 +276,12 @@ router.post("/", async (req, res) => {
  * @api {put} /user/gallery/:photo_id Update
  * @apiName Update
  * @apiGroup User Gallery
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiParam {File} image User's  Image
  * @apiParam {String} description Description of Image
  * @apiParam {Number} privacy privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code>
  * @apiParam {Number} status status of Image <br><code>1 for Active<br>2 for Inactive</code>
- *
  * @apiSuccess (Success 200) {JSON} user_post_photo user_post_photo details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

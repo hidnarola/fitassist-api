@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
 var nutrition_helper = require("../../helpers/nutrition_helper");
@@ -29,9 +28,7 @@ router.get("/", async (req, res) => {
  * @api {get} /admin/nutrition/:nutrition_id Get by ID
  * @apiName Get by ID
  * @apiGroup Nutrition
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {Object} nutrition nutrition's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -53,13 +50,10 @@ router.get("/:nutrition_id", async (req, res) => {
  * @api {post} /admin/nutrition Add
  * @apiName Add
  * @apiGroup Nutrition
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {String} name Name of nutrition
  * @apiParam {String} [description] Description of nutrition
- *
  * @apiSuccess (Success 200) {JSON} nutrition Nutrition details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -100,13 +94,10 @@ router.post("/", async (req, res) => {
  * @api {put} /admin/nutrition/:nutrition_id Update
  * @apiName Update
  * @apiGroup Nutrition
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {String} name Nutrition name
  * @apiParam {String} description Nutrition descruption
- *
  * @apiSuccess (Success 200) {JSON} nutrition Nutrition details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -187,9 +178,7 @@ router.put("/:nutrition_id", async (req, res) => {
  * @api {delete} /admin/nutrition/:nutrition_id Delete
  * @apiName Delete
  * @apiGroup Nutrition
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

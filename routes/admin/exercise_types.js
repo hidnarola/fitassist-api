@@ -121,6 +121,13 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 100 characters',
+        options: {
+          min: 3,
+          max: 100
+        }
+      },
       errorMessage: "Name is required"
     },
     description: {
@@ -163,14 +170,11 @@ router.post("/", async (req, res) => {
  * @api {put} /admin/exercise_type/:exercise_type_id Update
  * @apiName Update
  * @apiGroup Exercise Type
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiParam {String} name Exercise type name
  * @apiParam {String} description Exercise type description
  * @apiParam {Boolean} status status of Exercise type
- *
  * @apiSuccess (Success 200) {JSON} exercise_type Exercise Type details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -178,6 +182,13 @@ router.put("/:exercise_type_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Name should be between 3 to 100 characters',
+        options: {
+          min: 3,
+          max: 100
+        }
+      },
       errorMessage: "Name is required"
     },
     description: {
@@ -228,9 +239,7 @@ router.put("/:exercise_type_id", async (req, res) => {
  * @api {delete} /admin/exercise_type/:exercise_type_id Delete
  * @apiName Delete
  * @apiGroup Exercise Type
- *
  * @apiHeader {String}  x-access-token Admin's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

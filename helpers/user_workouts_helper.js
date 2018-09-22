@@ -119,6 +119,29 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
     };
   }
 };
+/*
+ * count_all_workouts is used to count all user exercises data
+ * @params condition condition of count records.
+ * @return  status 0 - If any internal error occured while counting user exercises data, with error
+ *          status 1 - If user exercises data found, with user exercises object
+ *          status 2 - If user exercises not found, with appropriate message
+ */
+user_workouts_helper.count_all_workouts = async (condition = {}) => {
+  try {
+    var count = await UserWorkouts.count(condition);
+    return {
+      status: 1,
+      message: "Workouts counted",
+      count
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while counting user workouts",
+      error: err
+    };
+  }
+};
 
 /*
  * get_first_workout_by_date is used to fetch first user exercises data

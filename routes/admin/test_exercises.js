@@ -162,6 +162,13 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'First Name should be between 2 to 100 characters',
+        options: {
+          min: 2,
+          max: 100
+        }
+      },
       errorMessage: "Name is required"
     },
     category: {
@@ -405,6 +412,13 @@ router.put("/:test_exercise_id", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'First Name should be between 2 to 100 characters',
+        options: {
+          min: 2,
+          max: 100
+        }
+      },
       errorMessage: "Name is required"
     },
     category: {

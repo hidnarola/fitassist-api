@@ -42,14 +42,35 @@ router.put("/", async (req, res) => {
   var schema = {
     firstName: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'First Name should be between 2 to 50 characters',
+        options: {
+          min: 2,
+          max: 50
+        }
+      },
       errorMessage: "First name is required."
     },
     lastName: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Last Name should be between 2 to 50 characters',
+        options: {
+          min: 2,
+          max: 50
+        }
+      },
       errorMessage: "Last name is required."
     },
     email: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'Email should be between 2 to 30 characters',
+        options: {
+          min: 2,
+          max: 30
+        }
+      },
       errorMessage: "Email address is required",
       isEmail: {
         errorMessage: "Please enter valid email address"

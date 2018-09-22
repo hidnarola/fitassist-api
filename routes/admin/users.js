@@ -6,6 +6,7 @@ var config = require("../../config");
 var logger = config.logger;
 var user_helper = require("../../helpers/user_helper");
 var common_helper = require("../../helpers/common_helper");
+var user_settings_helper = require("../../helpers/user_settings_helper");
 
 /**
  * @api {post} /admin/user/filter User Filter
@@ -67,10 +68,22 @@ router.get("/:authUserId", async (req, res) => {
   authUserId = req.params.authUserId;
   logger.trace("Get user by id API called");
   var resp_data = await user_helper.get_user_by_id(authUserId);
-  if (resp_data.status == 0) {
+
+  if (resp_data.status === 0) {
     logger.error("Error occured while fetching user = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
+    var user_settings = await user_settings_helper.get_setting({
+      userId: authUserId
+    }, {
+      "bodyMeasurement": 1,
+      "weight": 1,
+      "distance": 1,
+    });
+    resp_data.user_preferences = null;
+    if (user_settings.status === 1) {
+      resp_data.user_preferences = user_settings.user_settings;
+    }
     logger.trace("user got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
@@ -83,7 +96,6 @@ router.get("/:authUserId", async (req, res) => {
  * @apiHeader {String}  x-access-token Admin's unique access-key
  * @apiParam {String} firstName First name of user
  * @apiParam {String} lastName Last name of user
- * @apiParam {String} email Email address
  * @apiParam {Number} [mobileNumber] mobileNumber
  * @apiParam {Enum} gender gender | <code>Possible Values ('male', 'female', 'transgender')</code>
  * @apiParam {Date} [dateOfBirth] Date of Birth
@@ -103,6 +115,13 @@ router.put("/:authUserId", async (req, res) => {
   var schema = {
     firstName: {
       notEmpty: true,
+      isLength: {
+        errorMessage: 'First Name should be between 2 to 50 characters',
+        options: {
+          min: 2,
+          max: 50
+        }
+      },
       errorMessage: "First name is required"
     },
     status: {
@@ -126,7 +145,6 @@ router.put("/:authUserId", async (req, res) => {
   if (!errors) {
     var user_obj = {
       firstName: req.body.firstName,
-      lastName: req.body.lastName,
       email: req.body.email,
       gender: req.body.gender,
       aboutMe: req.body.aboutMe,
@@ -135,6 +153,9 @@ router.put("/:authUserId", async (req, res) => {
 
     if (req.body.mobileNumber) {
       user_obj.mobileNumber = req.body.mobileNumber;
+    }
+    if (req.body.lastName) {
+      user_obj.lastName = req.body.lastName;
     }
     if (req.body.height) {
       user_obj.height = req.body.height;

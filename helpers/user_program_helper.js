@@ -3,6 +3,7 @@ var userWorkoutsProgram = require("./../models/user_workouts_program");
 var userWorkoutExercisesProgram = require("./../models/user_workout_exercises_program");
 var user_program_helper = {};
 var _ = require("underscore");
+
 /*
  * get_user_programs_in_details is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
@@ -12,8 +13,7 @@ var _ = require("underscore");
  */
 user_program_helper.get_user_programs_in_details = async condition => {
   try {
-    var user_program = await UserPrograms.aggregate([
-      {
+    var user_program = await UserPrograms.aggregate([{
         $match: condition
       },
       {
@@ -47,10 +47,18 @@ user_program_helper.get_user_programs_in_details = async condition => {
       {
         $group: {
           _id: "$_id",
-          name: { $first: "$name" },
-          description: { $first: "$description" },
-          userId: { $first: "$userId" },
-          type: { $first: "$type" },
+          name: {
+            $first: "$name"
+          },
+          description: {
+            $first: "$description"
+          },
+          userId: {
+            $first: "$userId"
+          },
+          type: {
+            $first: "$type"
+          },
           programDetails: {
             $addToSet: "$user_workouts_program"
           },
@@ -68,7 +76,10 @@ user_program_helper.get_user_programs_in_details = async condition => {
         program: user_program
       };
     } else {
-      return { status: 2, message: "No user program available" };
+      return {
+        status: 2,
+        message: "No user program available"
+      };
     }
   } catch (err) {
     return {
@@ -78,6 +89,32 @@ user_program_helper.get_user_programs_in_details = async condition => {
     };
   }
 };
+
+/*
+ * count_total_programs is used to count all user program data
+ * @params condition condition of count .
+ * @return  status 0 - If any internal error occured while counting user program data, with error
+ *          status 1 - If user program data found, with user program object
+ *          status 2 - If user program not found, with appropriate message
+ */
+user_program_helper.count_total_programs = async (condition = {}) => {
+  try {
+    var count = await UserPrograms.count(condition);
+    return {
+      status: 1,
+      message: "user program counted",
+      count
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user program",
+      error: err
+    };
+  }
+};
+
+
 /*
  * get_user_programs_in_details_for_assign is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
@@ -87,8 +124,7 @@ user_program_helper.get_user_programs_in_details = async condition => {
  */
 user_program_helper.get_user_programs_in_details_for_assign = async condition => {
   try {
-    var user_program = await UserPrograms.aggregate([
-      {
+    var user_program = await UserPrograms.aggregate([{
         $match: condition
       },
       {
@@ -116,7 +152,10 @@ user_program_helper.get_user_programs_in_details_for_assign = async condition =>
         programs: user_program
       };
     } else {
-      return { status: 2, message: "No user program available" };
+      return {
+        status: 2,
+        message: "No user program available"
+      };
     }
   } catch (err) {
     return {
@@ -144,7 +183,10 @@ user_program_helper.get_user_programs_data = async condition => {
         program: user_program
       };
     } else {
-      return { status: 2, message: "No user program available" };
+      return {
+        status: 2,
+        message: "No user program available"
+      };
     }
   } catch (err) {
     return {
@@ -166,8 +208,7 @@ user_program_helper.get_all_program_workouts_group_by = async (
   condition = {}
 ) => {
   try {
-    var user_workouts = await userWorkoutsProgram.aggregate([
-      {
+    var user_workouts = await userWorkoutsProgram.aggregate([{
         $match: condition
       },
       {
@@ -187,15 +228,33 @@ user_program_helper.get_all_program_workouts_group_by = async (
       {
         $group: {
           _id: "$exercises.type",
-          userWorkoutsId: { $first: "$_id" },
-          type: { $first: "$exercises.type" },
-          exercises: { $addToSet: "$exercises" },
-          dayType: { $first: "$type" },
-          title: { $first: "$title" },
-          description: { $first: "$description" },
-          userId: { $first: "$userId" },
-          day: { $first: "$day" },
-          sequence: { $first: "$sequence" }
+          userWorkoutsId: {
+            $first: "$_id"
+          },
+          type: {
+            $first: "$exercises.type"
+          },
+          exercises: {
+            $addToSet: "$exercises"
+          },
+          dayType: {
+            $first: "$type"
+          },
+          title: {
+            $first: "$title"
+          },
+          description: {
+            $first: "$description"
+          },
+          userId: {
+            $first: "$userId"
+          },
+          day: {
+            $first: "$day"
+          },
+          sequence: {
+            $first: "$sequence"
+          }
         }
       },
       {
@@ -245,7 +304,10 @@ user_program_helper.get_all_program_workouts_group_by = async (
         workouts: returnObj
       };
     } else {
-      return { status: 2, message: "No user workouts available" };
+      return {
+        status: 2,
+        message: "No user workouts available"
+      };
     }
   } catch (err) {
     return {
@@ -268,8 +330,7 @@ user_program_helper.get_user_programs = async (
   single = false
 ) => {
   try {
-    var user_program = await UserPrograms.aggregate([
-      {
+    var user_program = await UserPrograms.aggregate([{
         $match: condition
       },
       {
@@ -303,12 +364,24 @@ user_program_helper.get_user_programs = async (
       {
         $group: {
           _id: "$_id",
-          name: { $first: "$name" },
-          description: { $first: "$description" },
-          userId: { $first: "$userId" },
-          type: { $first: "$type" },
-          totalDays: { $addToSet: "$userWorkoutsProgramId" },
-          totalWorkouts: { $addToSet: "$programId" }
+          name: {
+            $first: "$name"
+          },
+          description: {
+            $first: "$description"
+          },
+          userId: {
+            $first: "$userId"
+          },
+          type: {
+            $first: "$type"
+          },
+          totalDays: {
+            $addToSet: "$userWorkoutsProgramId"
+          },
+          totalWorkouts: {
+            $addToSet: "$programId"
+          }
         }
       },
       {
@@ -318,7 +391,9 @@ user_program_helper.get_user_programs = async (
           description: 1,
           userId: 1,
           type: 1,
-          totalWorkouts: { $size: "$totalWorkouts" }
+          totalWorkouts: {
+            $size: "$totalWorkouts"
+          }
         }
       }
     ]);
@@ -338,7 +413,10 @@ user_program_helper.get_user_programs = async (
         };
       }
     } else {
-      return { status: 2, message: "No user program available" };
+      return {
+        status: 2,
+        message: "No user program available"
+      };
     }
   } catch (err) {
     return {
@@ -358,7 +436,9 @@ user_program_helper.get_user_programs = async (
  */
 user_program_helper.get_user_program_by_id = async id => {
   try {
-    var user_programs = await UserPrograms.findOne({ _id: id });
+    var user_programs = await UserPrograms.findOne({
+      _id: id
+    });
     if (user_programs) {
       return {
         status: 1,
@@ -366,7 +446,10 @@ user_program_helper.get_user_program_by_id = async id => {
         program: user_programs
       };
     } else {
-      return { status: 2, message: "No User program available" };
+      return {
+        status: 2,
+        message: "No User program available"
+      };
     }
   } catch (err) {
     return {
@@ -475,10 +558,12 @@ user_program_helper.update_program_workouts = async (
   childCollectionObject
 ) => {
   try {
-    user_workout_exercises_program = await userWorkoutExercisesProgram.findOneAndUpdate(
-      { _id: id },
-      childCollectionObject,
-      { new: true }
+    user_workout_exercises_program = await userWorkoutExercisesProgram.findOneAndUpdate({
+        _id: id
+      },
+      childCollectionObject, {
+        new: true
+      }
     );
 
     if (user_workout_exercises_program) {
@@ -539,10 +624,12 @@ user_program_helper.assign_program = async programObj => {
  */
 user_program_helper.update_user_program_by_day_id = async (id, programObj) => {
   try {
-    var user_program_data = await userWorkoutsProgram.findOneAndUpdate(
-      { _id: id },
-      programObj,
-      { new: true }
+    var user_program_data = await userWorkoutsProgram.findOneAndUpdate({
+        _id: id
+      },
+      programObj, {
+        new: true
+      }
     );
     if (user_program_data) {
       return {
@@ -575,10 +662,12 @@ user_program_helper.update_user_program_by_day_id = async (id, programObj) => {
  */
 user_program_helper.update_user_program_by_id = async (id, programObj) => {
   try {
-    var user_program_data = await UserPrograms.findOneAndUpdate(
-      { _id: id },
-      programObj,
-      { new: true }
+    var user_program_data = await UserPrograms.findOneAndUpdate({
+        _id: id
+      },
+      programObj, {
+        new: true
+      }
     );
     return {
       status: 1,
@@ -603,9 +692,10 @@ user_program_helper.update_user_program_by_id = async (id, programObj) => {
  */
 user_program_helper.delete_user_program = async user_program_id => {
   try {
-    let programId = await userWorkoutsProgram.aggregate([
-      {
-        $match: { programId: user_program_id }
+    let programId = await userWorkoutsProgram.aggregate([{
+        $match: {
+          programId: user_program_id
+        }
       },
       {
         $project: {
@@ -616,11 +706,15 @@ user_program_helper.delete_user_program = async user_program_id => {
     var ids = _.pluck(programId, "_id");
 
     let programExercise = await userWorkoutExercisesProgram.remove({
-      userWorkoutsProgramId: { $in: ids }
+      userWorkoutsProgramId: {
+        $in: ids
+      }
     });
 
     let programDays = await userWorkoutsProgram.remove({
-      _id: { $in: ids }
+      _id: {
+        $in: ids
+      }
     });
 
     let program = await UserPrograms.remove({
@@ -628,9 +722,15 @@ user_program_helper.delete_user_program = async user_program_id => {
     });
 
     if (program && program.n > 0) {
-      return { status: 1, message: "User program deleted" };
+      return {
+        status: 1,
+        message: "User program deleted"
+      };
     } else {
-      return { status: 0, message: "User program not deleted" };
+      return {
+        status: 0,
+        message: "User program not deleted"
+      };
     }
   } catch (err) {
     return {
@@ -651,14 +751,21 @@ user_program_helper.delete_user_program = async user_program_id => {
 user_program_helper.delete_user_program_exercise = async exercise_ids => {
   try {
     let programExercise = await userWorkoutExercisesProgram.remove({
-      userWorkoutsProgramId: { $in: exercise_ids }
+      userWorkoutsProgramId: {
+        $in: exercise_ids
+      }
     });
 
     let programDays = await userWorkoutsProgram.remove({
-      _id: { $in: exercise_ids }
+      _id: {
+        $in: exercise_ids
+      }
     });
     if (programDays) {
-      return { status: 1, message: "User program's exercises deleted" };
+      return {
+        status: 1,
+        message: "User program's exercises deleted"
+      };
     } else {
       return {
         status: 0,
@@ -693,10 +800,16 @@ user_program_helper.copy_exercise_by_id = async (
   var insertWorkoutLogArray = [];
   try {
     var day_data = await userWorkoutsProgram
-      .findOne(
-        { _id: exerciseId },
-        { _id: 0, type: 1, title: 1, description: 1, userId: 1, programId: 1 }
-      )
+      .findOne({
+        _id: exerciseId
+      }, {
+        _id: 0,
+        type: 1,
+        title: 1,
+        description: 1,
+        userId: 1,
+        programId: 1
+      })
       .lean();
 
     day_data.day = day;
@@ -705,12 +818,11 @@ user_program_helper.copy_exercise_by_id = async (
     var workout_day = await user_workouts.save();
 
     var exercise_data = await userWorkoutExercisesProgram
-      .find(
-        {
-          userWorkoutsProgramId: exerciseId
-        },
-        { _id: 0 }
-      )
+      .find({
+        userWorkoutsProgramId: exerciseId
+      }, {
+        _id: 0
+      })
       .lean();
 
     exercise_data.forEach(ex => {
@@ -756,13 +868,21 @@ user_program_helper.copy_exercise_by_id = async (
 user_program_helper.delete_user_workouts_by_exercise_ids = async exerciseIds => {
   try {
     let user_workouts_data = await userWorkoutExercisesProgram.remove({
-      _id: { $in: exerciseIds }
+      _id: {
+        $in: exerciseIds
+      }
     });
 
     if (user_workouts_data) {
-      return { status: 1, message: "User program workouts deleted" };
+      return {
+        status: 1,
+        message: "User program workouts deleted"
+      };
     } else {
-      return { status: 2, message: "User program workouts not deleted" };
+      return {
+        status: 2,
+        message: "User program workouts not deleted"
+      };
     }
   } catch (err) {
     return {
@@ -785,11 +905,19 @@ user_program_helper.delete_user_workouts_exercise = async (
   subChildIds
 ) => {
   try {
-    let user_workouts_exercise = await userWorkoutExercisesProgram.update(
-      { _id: childId },
-      { $pull: { exercises: { _id: { $in: subChildIds } } } },
-      { new: true }
-    );
+    let user_workouts_exercise = await userWorkoutExercisesProgram.update({
+      _id: childId
+    }, {
+      $pull: {
+        exercises: {
+          _id: {
+            $in: subChildIds
+          }
+        }
+      }
+    }, {
+      new: true
+    });
 
     let exercise = await userWorkoutExercisesProgram.findOne({
       _id: childId
@@ -800,7 +928,10 @@ user_program_helper.delete_user_workouts_exercise = async (
         _id: childId
       });
     }
-    return { status: 1, message: "User workouts exercise deleted" };
+    return {
+      status: 1,
+      message: "User workouts exercise deleted"
+    };
   } catch (err) {
     return {
       status: 0,

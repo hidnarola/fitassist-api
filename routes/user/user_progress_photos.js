@@ -4,9 +4,7 @@ var fs = require("fs");
 var path = require("path");
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
-
 var logger = config.logger;
-
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
 
@@ -16,7 +14,6 @@ var user_timeline_helper = require("../../helpers/user_timeline_helper");
  * @apiGroup User Progress Photo
  * @apiDescription  limit is use to limit the records. default is : 10
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {Array} user_progress_photos Array of user's progress_photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -50,7 +47,6 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
  * @apiGroup User Progress Photo
  * @apiDescription  username: user's username, start use for skip record. default is 0, limit is use to limit the records. default is : 10
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {Array} user_progress_photos Array of user's progress_photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
@@ -120,14 +116,11 @@ router.get("/:user_photo_id", async (req, res) => {
  * @api {post} /user/progress_photo Add
  * @apiName Add
  * @apiGroup User Progress Photo
- *
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiParam {File} image User's Progress Image
  * @apiParam {String} description Description of progress
  * @apiParam {Date} date date of progress photo
- *
  * @apiSuccess (Success 200) {JSON} user_progress_photo user_progress_photo details
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

@@ -1,13 +1,9 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
 var async = require("async");
 var mongoose = require("mongoose");
 var jwtDecode = require("jwt-decode");
-
 var router = express.Router();
 var constant = require("../../constant");
-
 var config = require("../../config");
 var logger = config.logger;
 
@@ -56,7 +52,9 @@ router.post("/", async (req, res) => {
 
       if (like_data.status === 0) {
         logger.error("Error while disliking post data = ", like_data);
-        return res.status(config.BAD_REQUEST).json({ like_data });
+        return res.status(config.BAD_REQUEST).json({
+          like_data
+        });
       } else {
         var resp_data = await user_posts_helper.get_user_timeline_by_id({
           _id: mongoose.Types.ObjectId(req.body.postId),
@@ -80,7 +78,9 @@ router.post("/", async (req, res) => {
       let like_data = await like_comment_helper.insert_like(like_obj);
       if (like_data.status === 0) {
         logger.error("Error while inserting post data = ", like_data);
-        return res.status(config.BAD_REQUEST).json({ like_data });
+        return res.status(config.BAD_REQUEST).json({
+          like_data
+        });
       } else {
         var resp_data = await user_posts_helper.get_user_timeline_by_id({
           _id: mongoose.Types.ObjectId(req.body.postId),
@@ -126,7 +126,9 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

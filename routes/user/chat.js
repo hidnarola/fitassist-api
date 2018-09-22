@@ -26,9 +26,11 @@ router.get("/messages/:start?/:limit?/", async (req, res) => {
   var limit = parseInt(req.params.limit ? req.params.limit : 10);
 
   var resp_data = await chat_helper.get_messages(
-    authUserId,
-    { $skip: start },
-    { $limit: limit }
+    authUserId, {
+      $skip: start
+    }, {
+      $limit: limit
+    }
   );
 
   if (resp_data.status == 0) {
@@ -61,9 +63,11 @@ router.get("/:channel_id/:start?/:limit?/", async (req, res) => {
 
   var resp_data = await chat_helper.get_conversation(
     authUserId,
-    channel_id,
-    { $skip: start },
-    { $limit: limit }
+    channel_id, {
+      $skip: start
+    }, {
+      $limit: limit
+    }
   );
 
   if (resp_data.status == 0) {
@@ -123,15 +127,24 @@ router.post("/", async (req, res) => {
   var timestamp = req.body.timestamp;
   var respObj = {};
   var schema = {
-    friendId: { notEmpty: true, errorMessage: "friend Id is required" },
-    message: { notEmpty: true, errorMessage: "message is required " }
+    friendId: {
+      notEmpty: true,
+      errorMessage: "friend Id is required"
+    },
+    message: {
+      notEmpty: true,
+      errorMessage: "message is required "
+    }
   };
 
   req.checkBody(schema);
   var errors = req.validationErrors();
 
   if (!errors) {
-    var conversations_obj = { userId: authUserId, friendId: req.body.friendId };
+    var conversations_obj = {
+      userId: authUserId,
+      friendId: req.body.friendId
+    };
     var conversations_replies_obj = {
       userId: authUserId,
       message: req.body.message
@@ -149,8 +162,7 @@ router.post("/", async (req, res) => {
         isSeen: chat_data.channel.isSeen,
         message: chat_data.channel.message,
         createdAt: chat_data.channel.createdAt,
-        fullName:
-          user.user.firstName +
+        fullName: user.user.firstName +
           (user.user.lastName ? ` ${user.user.lastName}` : ""),
         authUserId: user.user.authUserId,
         username: user.user.username,
@@ -163,11 +175,15 @@ router.post("/", async (req, res) => {
       return res.status(config.OK_STATUS).json(respObj);
     } else {
       logger.error("Error while sending message = ", chat_data);
-      return res.status(config.BAD_REQUEST).json({ chat_data });
+      return res.status(config.BAD_REQUEST).json({
+        chat_data
+      });
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -182,25 +198,23 @@ router.post("/", async (req, res) => {
 router.delete("/:username", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var user = await user_helper.get_user_by({ username: req.params.username });
+  var user = await user_helper.get_user_by({
+    username: req.params.username
+  });
   logger.trace("Delete conversation of user. Id is = ", user.user.authUserId);
-  let chat_data = await chat_helper.delete_chat_message_by_user_id(
-    {
-      $or: [
-        {
-          userId: authUserId,
-          friendId: user.user.authUserId
-        },
-        {
-          friendId: authUserId,
-          userId: user.user.authUserId
-        }
-      ]
-    },
-    {
-      isDeleted: 1
-    }
-  );
+  let chat_data = await chat_helper.delete_chat_message_by_user_id({
+    $or: [{
+        userId: authUserId,
+        friendId: user.user.authUserId
+      },
+      {
+        friendId: authUserId,
+        userId: user.user.authUserId
+      }
+    ]
+  }, {
+    isDeleted: 1
+  });
 
   if (chat_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(chat_data);
@@ -220,18 +234,17 @@ router.delete("/:username", async (req, res) => {
 router.delete("/:username/:message_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var user = await user_helper.get_user_by({ username: req.params.username });
+  var user = await user_helper.get_user_by({
+    username: req.params.username
+  });
   logger.trace("Delete conversation of user. Id is = ", user.user.authUserId);
-  let chat_data = await chat_helper.delete_chat_message_by_user_id(
-    {
-      userId: authUserId,
-      friendId: user.user.authUserId,
-      _id: req.params.message_id
-    },
-    {
-      isDeleted: 1
-    }
-  );
+  let chat_data = await chat_helper.delete_chat_message_by_user_id({
+    userId: authUserId,
+    friendId: user.user.authUserId,
+    _id: req.params.message_id
+  }, {
+    isDeleted: 1
+  });
 
   if (chat_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(chat_data);

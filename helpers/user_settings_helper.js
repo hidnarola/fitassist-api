@@ -9,9 +9,9 @@ var user_settings_helper = {};
  *          status  2 - If user_settings not found, with appropriate message
  * @developed by "amc"
  */
-user_settings_helper.get_setting = async userId => {
+user_settings_helper.get_setting = async (userId, project = {}) => {
   try {
-    let user_settings_data = await UserSettings.findOne(userId);
+    let user_settings_data = await UserSettings.findOne(userId, project);
 
     if (user_settings_data) {
       return {

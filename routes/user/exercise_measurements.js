@@ -1,16 +1,8 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
 var jwtDecode = require("jwt-decode");
-
 var router = express.Router();
-var mongoose = require("mongoose");
-var constant = require("../../constant");
-
 var config = require("../../config");
 var logger = config.logger;
-
 var exercise_measurements_helper = require("../../helpers/exercise_measurements_helper");
 
 /**
@@ -57,7 +49,6 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-
   var exercise_measurements_obj = req.body.data;
   // var exercise_measurements_obj = {
   //   workoutType: req.body.workoutType,
@@ -77,7 +68,9 @@ router.post("/", async (req, res) => {
     return res.status(config.OK_STATUS).json(resp_data);
   } else {
     logger.error("Error while inserting exercise_measurements = ", resp_data);
-    return res.status(config.BAD_REQUEST).json({ resp_data });
+    return res.status(config.BAD_REQUEST).json({
+      resp_data
+    });
   }
 });
 

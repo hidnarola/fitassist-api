@@ -1,9 +1,7 @@
 var express = require("express");
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
-
 var exercise_helper = require("../../helpers/exercise_helper");
 
 /**
@@ -16,15 +14,12 @@ var exercise_helper = require("../../helpers/exercise_helper");
  */
 router.get("/names", async (req, res) => {
   logger.trace("Get all Exercise of name API called");
-  var resp_data = await exercise_helper.get_all_exercise(
-    {},
-    {
-      _id: 1,
-      name: 1,
-      category: 1,
-      subCategory: 1
-    }
-  );
+  var resp_data = await exercise_helper.get_all_exercise({}, {
+    _id: 1,
+    name: 1,
+    category: 1,
+    subCategory: 1
+  });
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching exercise = ", resp_data);

@@ -3,12 +3,10 @@ var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
 var jwtDecode = require("jwt-decode");
-
 var jwtDecode = require("jwt-decode");
 var moment = require("moment");
 var mongoose = require("mongoose");
 var _ = require("underscore");
-
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 var user_workouts_helper = require("../../helpers/user_workouts_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");

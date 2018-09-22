@@ -1,22 +1,15 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-
 var router = express.Router();
-
 var config = require("../../config");
 var logger = config.logger;
 var jwtDecode = require("jwt-decode");
 var user_equipment_helper = require("../../helpers/user_equipment_helper");
-var equipment_helper = require("../../helpers/equipment_helper");
 
 /**
  * @api {get} /user/equipment Get User's all Equipment
  * @apiName Get all User's Equipment
  * @apiGroup User Equipment
- *
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {JSON} equipments Array of equipments document.
  * <pre><code>Response Data: <br>{<br>
     "status": 1,<br>
@@ -45,20 +38,17 @@ router.get("/", async (req, res) => {
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user equipments = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } 
-  else if(resp_data.status == 2)
-    {
-      user_equipment_obj.equipments.user_equipments = [];
-    }
-    else{
-      user_equipment_obj.equipments.user_equipments = resp_data.user_equipments.equipmentIds;
-    }
-    var all_equipments_data = await user_equipment_helper.get_all_equipment();
-    user_equipment_obj.equipments.all_equipments =
-      all_equipments_data.equipments;
-    logger.trace("user equipments got successfully = ", user_equipment_obj);
-    res.status(config.OK_STATUS).json(user_equipment_obj);
-  
+  } else if (resp_data.status == 2) {
+    user_equipment_obj.equipments.user_equipments = [];
+  } else {
+    user_equipment_obj.equipments.user_equipments = resp_data.user_equipments.equipmentIds;
+  }
+  var all_equipments_data = await user_equipment_helper.get_all_equipment();
+  user_equipment_obj.equipments.all_equipments =
+    all_equipments_data.equipments;
+  logger.trace("user equipments got successfully = ", user_equipment_obj);
+  res.status(config.OK_STATUS).json(user_equipment_obj);
+
 });
 
 
@@ -93,7 +83,9 @@ router.post("/", async (req, res) => {
         "Error while inserting user equipments = ",
         user_equipment_data
       );
-      res.status(config.BAD_REQUEST).json({ user_equipment_data });
+      res.status(config.BAD_REQUEST).json({
+        user_equipment_data
+      });
     } else {
       res.status(config.OK_STATUS).json(user_equipment_data);
     }
@@ -107,7 +99,9 @@ router.post("/", async (req, res) => {
         "Error while inserting user equipments = ",
         user_equipment_data
       );
-      res.status(config.BAD_REQUEST).json({ user_equipment_data });
+      res.status(config.BAD_REQUEST).json({
+        user_equipment_data
+      });
     } else {
       res.status(config.OK_STATUS).json(user_equipment_data);
     }
