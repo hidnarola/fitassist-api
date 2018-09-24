@@ -117,14 +117,15 @@ router.put("/change_block_status", async (req, res) => {
   if (!errors) {
     var authUserId = req.body.authUserId;
     var status = req.body.status;
-    var resp_data = await sync_user_data_to_auth(authUserId, {
+    sync_user_data_to_auth(authUserId, {
       blocked: status
+    }).then(function (response) {
+      res.status(config.OK_STATUS).json(response);
+    }).catch(function (error) {
+      res.status(config.BAD_REQUEST).json({
+        message: error
+      });
     });
-    console.log('------------------------------------');
-    console.log('block user API response : ', resp_data);
-    console.log('------------------------------------');
-
-    res.status(config.OK_STATUS).json(resp_data);
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.VALIDATION_FAILURE_STATUS).json({
@@ -252,13 +253,9 @@ router.put("/:authUserId", async (req, res) => {
     }
     if (filename) {
       user_obj.avatar = config.BASE_URL + "uploads/user/" + filename;
-      var image_data = await sync_user_data_to_auth(authUserId, {
+      sync_user_data_to_auth(authUserId, {
         picture: user_obj.avatar
-      });
-      console.log('------------------------------------');
-      console.log('image_data update in auth : ', image_data);
-      console.log('------------------------------------');
-
+      }).then(function (response) {}).catch(function (error) {});
       resp_data = await user_helper.get_user_by_id(authUserId);
       try {
         fs.unlink(resp_data.user.avatar, function () {});
@@ -276,11 +273,15 @@ router.put("/:authUserId", async (req, res) => {
       if (req.body.status === 1) {
         status = true;
       }
-      var resp_data = await sync_user_data_to_auth(authUserId, {
+      sync_user_data_to_auth(authUserId, {
         blocked: status
+      }).then(function (response) {
+        res.status(config.OK_STATUS).json(response);
+      }).catch(function (error) {
+        res.status(config.BAD_REQUEST).json({
+          message: error
+        });
       });
-
-      return res.status(config.OK_STATUS).json(user_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -342,9 +343,7 @@ router.post("/checkemail", async (req, res) => {
   }
 });
 
-
-async function sync_user_data_to_auth(authUserId, body) {
-  body.connection = 'Username-Password-Authentication'
+function sync_user_data_to_auth(authUserId, bodyContent) {
   var options = {
     method: 'POST',
     url: config.AUTH_TOKEN_URL,
@@ -359,29 +358,33 @@ async function sync_user_data_to_auth(authUserId, body) {
     },
     json: true
   };
+  var myPro = new Promise(function (resolve, reject) {
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+      bodyContent.connection = 'Username-Password-Authentication'
+      if (body) {
+        var options = {
+          method: 'PATCH',
+          url: config.AUTH_USER_API_URL + authUserId,
+          headers: {
+            'content-type': 'application/json',
+            "Authorization": 'Bearer ' + body.access_token
+          },
+          body: bodyContent,
+          json: true
+        };
 
-  request(options, function (error, response, body) {
-    if (error) throw new Error(error);
-    if (body) {
-      var options = {
-        method: 'PATCH',
-        url: config.AUTH_USER_API_URL + authUserId,
-        headers: {
-          'content-type': 'application/json',
-          "Authorization": 'Bearer ' + body.access_token
-        },
-        body: body,
-        json: true
-      };
-
-      request(options, function (error, response, body) {
-        if (error) throw new Error(error);
-        logger.trace("User Updated successfully");
-        return {
-          user: body
-        }
-      });
-    }
+        request(options, function (error, response, body) {
+          if (error) {
+            reject(error)
+          } else {
+            resolve(body);
+          }
+        });
+      }
+    })
   });
-}
+  return myPro;
+};
+
 module.exports = router;
