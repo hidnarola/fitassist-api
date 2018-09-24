@@ -54,11 +54,16 @@ router.post("/", async (req, res) => {
   var completedExercises = await user_workouts_helper.count_all_workouts({
     isCompleted: 1
   });
+
   if (completedExercises.status === 1) {
     returnObject.completedExercises = completedExercises.count;
   }
 
-  return res.status(config.OK_STATUS).send(returnObject)
+  return res.status(config.OK_STATUS).send({
+    status: 1,
+    message: "Dashboard record found",
+    data: returnObject
+  })
 });
 
 

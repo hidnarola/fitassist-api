@@ -116,13 +116,21 @@ router.put("/change_block_status", async (req, res) => {
   var errors = req.validationErrors();
   if (!errors) {
     var authUserId = req.body.authUserId;
-    var status = req.body.status;
+    var status = (req.body.status && req.body.status === 1) ? true : false;
     common_helper.sync_user_data_to_auth(authUserId, {
       blocked: status
-    }).then(function (response) {
-      res.status(config.OK_STATUS).json(response);
+    }).then(async function (response) {
+      let user_data = await user_helper.update_user_by_id(authUserId, {
+        status: req.body.status
+      });
+      res.status(config.OK_STATUS).json({
+        status: 1,
+        message: "Record updated successfully",
+        user: response
+      });
     }).catch(function (error) {
       res.status(config.BAD_REQUEST).json({
+        status: 0,
         message: error
       });
     });
