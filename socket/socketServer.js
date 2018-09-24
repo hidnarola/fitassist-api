@@ -17,7 +17,7 @@ myIo.init = function (server) {
 	io.on("connection", function (socket) {
 
 		/**
-		 * @api {socket on} join  Join user to socket
+		 * @api {socket on} join Join user to socket
 		 * @apiName Join user to socket
 		 * @apiGroup  Sokets
 		 */

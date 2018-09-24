@@ -127,17 +127,8 @@ router.put("/:authUserId", async (req, res) => {
     status: {
       notEmpty: true,
       errorMessage: "Status is required"
-    },
-    email: {
-      notEmpty: true,
-      errorMessage: "Email address is required",
-      isEmail: {
-        errorMessage: "Please enter valid email address"
-      }
     }
   };
-
-  req.checkBody("email", "This email is already taken").isEmailAvailable(authUserId);
 
   req.checkBody(schema);
   var errors = req.validationErrors();

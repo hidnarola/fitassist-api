@@ -63,10 +63,14 @@ router.post("/", async (req, res) => {
         "Error while fetching shopping cart data = ",
         shopping_cart_data
       );
-      return res.status(config.BAD_REQUEST).json({ shopping_cart_data });
+      return res.status(config.BAD_REQUEST).json({
+        shopping_cart_data
+      });
     } else if (shopping_cart_data.status === 2) {
       logger.error("no shopping cart data found= ", shopping_cart_data);
-      return res.status(config.OK_STATUS).json({ shopping_cart_data });
+      return res.status(config.OK_STATUS).json({
+        shopping_cart_data
+      });
     } else {
       data = shopping_cart_data.todays_meal;
 
@@ -95,7 +99,9 @@ router.post("/", async (req, res) => {
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({ message: errors });
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

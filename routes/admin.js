@@ -20,6 +20,7 @@ var test_exercises = require("./admin/test_exercises");
 var password = require("./admin/password");
 var profile = require("./admin/profile");
 var dashboard = require("./admin/dashboard");
+var flag_on_post = require("./admin/flag_on_post");
 
 router.use("/nutrition", auth, authorization, nutrition);
 router.use("/equipment_category", auth, authorization, equipment_category);
@@ -39,6 +40,7 @@ router.use("/test_exercise", auth, authorization, test_exercises);
 router.use("/change_password", auth, authorization, password);
 router.use("/profile", auth, authorization, profile);
 router.use("/dashboard", auth, authorization, dashboard);
+router.use("/flag_on_post", auth, authorization, flag_on_post);
 
 
 module.exports = router;
