@@ -1,6 +1,7 @@
 var express = require("express");
 var fs = require("fs");
 var path = require("path");
+var request = require("request");
 var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
@@ -86,6 +87,83 @@ router.get("/:authUserId", async (req, res) => {
     }
     logger.trace("user got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
+
+/**
+ * @api {put} /admin/user/change_block_status  Block/Unblock User
+ * @apiName Block/Unblock User
+ * @apiGroup  User Block/Unblock User
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiParam {String}  authUserId user auth Id
+ * @apiParam {String}  status user block status<code>true|false</code>
+ * @apiSuccess (Success 200) {JSON} user updated user detail
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/change_block_status", async (req, res) => {
+  var schema = {
+    authUserId: {
+      notEmpty: true,
+      errorMessage: "AuthUserId is required"
+    },
+    status: {
+      notEmpty: true,
+      errorMessage: "Status is required"
+    }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    var authUserId = req.body.authUserId;
+    var status = req.body.status;
+    var options = {
+      method: 'POST',
+      url: config.AUTH_TOKEN_URL,
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: {
+        grant_type: config.GRANT_TYPE,
+        client_id: config.CLIENT_ID,
+        client_secret: config.CLIENT_SECRET,
+        audience: config.AUDIENCE
+      },
+      json: true
+    };
+
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+      if (body) {
+        var options = {
+          method: 'PATCH',
+          url: config.AUTH_USER_API_URL + authUserId,
+          headers: {
+            'content-type': 'application/json',
+            "Authorization": 'Bearer ' + body.access_token
+          },
+          body: {
+            blocked: status,
+            connection: 'Username-Password-Authentication'
+          },
+          json: true
+        };
+
+        request(options, function (error, response, body) {
+          if (error) throw new Error(error);
+          logger.trace("User blocked successfully");
+          res.status(config.OK_STATUS).json({
+            user: body
+          });
+        });
+      }
+    });
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 

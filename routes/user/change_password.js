@@ -10,14 +10,13 @@ var logger = config.logger;
 
 
 /**
- * @api {put} /user/post/comment/:comment_id  Update
- * @apiName Update
- * @apiGroup  User Post Comment
+ * @api {put} /user/change_password  Change Password
+ * @apiName Change Password
+ * @apiGroup  User Change Password
  * @apiHeader {String}  Content-Type application/json
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String} comment comment of post
- * @apiParam {String} postId postId of post
- * @apiSuccess (Success 200) {JSON} timeline updated comment detail
+ * @apiParam {String} newPassword newPassword of user
+ * @apiSuccess (Success 200) {JSON} user updated user detail
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 
@@ -75,7 +74,9 @@ router.put("/", async (req, res) => {
                 request(options, function (error, response, body) {
                     if (error) throw new Error(error);
                     logger.trace("password changed successfully");
-                    res.status(config.OK_STATUS).json(body);
+                    res.status(config.OK_STATUS).json({
+                        user: body
+                    });
                 });
             }
         });
