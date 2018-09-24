@@ -457,4 +457,49 @@ common_helper.assign_badges = async (authUserId) => {
   );
   //badge assign end
 }
+
+
+common_helper.sync_user_data_to_auth = async (authUserId, bodyContent) => {
+  var options = {
+    method: 'POST',
+    url: config.AUTH_TOKEN_URL,
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: {
+      grant_type: config.GRANT_TYPE,
+      client_id: config.CLIENT_ID,
+      client_secret: config.CLIENT_SECRET,
+      audience: config.AUDIENCE
+    },
+    json: true
+  };
+  var myPro = new Promise(function (resolve, reject) {
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+      bodyContent.connection = 'Username-Password-Authentication'
+      if (body) {
+        var options = {
+          method: 'PATCH',
+          url: config.AUTH_USER_API_URL + authUserId,
+          headers: {
+            'content-type': 'application/json',
+            "Authorization": 'Bearer ' + body.access_token
+          },
+          body: bodyContent,
+          json: true
+        };
+
+        request(options, function (error, response, body) {
+          if (error) {
+            reject(error)
+          } else {
+            resolve(body);
+          }
+        });
+      }
+    })
+  });
+  return myPro;
+};
 module.exports = common_helper;

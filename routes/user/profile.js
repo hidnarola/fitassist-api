@@ -13,6 +13,7 @@ var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
+var common_helper = require("../../helpers/common_helper");
 
 /**
  * @api {get} /user/profile/preferences Get User Profile preferences
@@ -345,6 +346,9 @@ router.put("/photo", async (req, res) => {
     if (user_data.status === 1) {
       logger.info("Updated user profile", user_data);
       res.status(config.OK_STATUS).json(user_data);
+      common_helper.sync_user_data_to_auth(authUserId, {
+        picture: user_obj.avatar
+      }).then(function (response) {}).catch(function (error) {});
       var badges = await badgeAssign(authUserId);
     } else {
       logger.error("Error while updating user avatar = ", user_data);

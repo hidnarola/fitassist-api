@@ -117,7 +117,7 @@ router.put("/change_block_status", async (req, res) => {
   if (!errors) {
     var authUserId = req.body.authUserId;
     var status = req.body.status;
-    sync_user_data_to_auth(authUserId, {
+    common_helper.sync_user_data_to_auth(authUserId, {
       blocked: status
     }).then(function (response) {
       res.status(config.OK_STATUS).json(response);
@@ -253,7 +253,7 @@ router.put("/:authUserId", async (req, res) => {
     }
     if (filename) {
       user_obj.avatar = config.BASE_URL + "uploads/user/" + filename;
-      sync_user_data_to_auth(authUserId, {
+      common_helper.sync_user_data_to_auth(authUserId, {
         picture: user_obj.avatar
       }).then(function (response) {}).catch(function (error) {});
       resp_data = await user_helper.get_user_by_id(authUserId);
@@ -273,7 +273,7 @@ router.put("/:authUserId", async (req, res) => {
       if (req.body.status === 1) {
         status = true;
       }
-      sync_user_data_to_auth(authUserId, {
+      common_helper.sync_user_data_to_auth(authUserId, {
         blocked: status
       }).then(function (response) {
         res.status(config.OK_STATUS).json(response);
@@ -342,49 +342,5 @@ router.post("/checkemail", async (req, res) => {
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
-
-function sync_user_data_to_auth(authUserId, bodyContent) {
-  var options = {
-    method: 'POST',
-    url: config.AUTH_TOKEN_URL,
-    headers: {
-      'content-type': 'application/json'
-    },
-    body: {
-      grant_type: config.GRANT_TYPE,
-      client_id: config.CLIENT_ID,
-      client_secret: config.CLIENT_SECRET,
-      audience: config.AUDIENCE
-    },
-    json: true
-  };
-  var myPro = new Promise(function (resolve, reject) {
-    request(options, function (error, response, body) {
-      if (error) throw new Error(error);
-      bodyContent.connection = 'Username-Password-Authentication'
-      if (body) {
-        var options = {
-          method: 'PATCH',
-          url: config.AUTH_USER_API_URL + authUserId,
-          headers: {
-            'content-type': 'application/json',
-            "Authorization": 'Bearer ' + body.access_token
-          },
-          body: bodyContent,
-          json: true
-        };
-
-        request(options, function (error, response, body) {
-          if (error) {
-            reject(error)
-          } else {
-            resolve(body);
-          }
-        });
-      }
-    })
-  });
-  return myPro;
-};
 
 module.exports = router;
