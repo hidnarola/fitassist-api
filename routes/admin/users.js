@@ -90,7 +90,6 @@ router.get("/:authUserId", async (req, res) => {
   }
 });
 
-
 /**
  * @api {put} /admin/user/change_block_status  Block/Unblock User
  * @apiName Block/Unblock User
@@ -118,47 +117,14 @@ router.put("/change_block_status", async (req, res) => {
   if (!errors) {
     var authUserId = req.body.authUserId;
     var status = req.body.status;
-    var options = {
-      method: 'POST',
-      url: config.AUTH_TOKEN_URL,
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: {
-        grant_type: config.GRANT_TYPE,
-        client_id: config.CLIENT_ID,
-        client_secret: config.CLIENT_SECRET,
-        audience: config.AUDIENCE
-      },
-      json: true
-    };
-
-    request(options, function (error, response, body) {
-      if (error) throw new Error(error);
-      if (body) {
-        var options = {
-          method: 'PATCH',
-          url: config.AUTH_USER_API_URL + authUserId,
-          headers: {
-            'content-type': 'application/json',
-            "Authorization": 'Bearer ' + body.access_token
-          },
-          body: {
-            blocked: status,
-            connection: 'Username-Password-Authentication'
-          },
-          json: true
-        };
-
-        request(options, function (error, response, body) {
-          if (error) throw new Error(error);
-          logger.trace("User blocked successfully");
-          res.status(config.OK_STATUS).json({
-            user: body
-          });
-        });
-      }
+    var resp_data = await sync_user_data_to_auth(authUserId, {
+      blocked: status
     });
+    console.log('------------------------------------');
+    console.log('block user API response : ', resp_data);
+    console.log('------------------------------------');
+
+    res.status(config.OK_STATUS).json(resp_data);
   } else {
     logger.error("Validation Error = ", errors);
     res.status(config.VALIDATION_FAILURE_STATUS).json({
@@ -202,6 +168,10 @@ router.put("/:authUserId", async (req, res) => {
       },
       errorMessage: "First name is required"
     },
+    mobileNumber: {
+      notEmpty: true,
+      errorMessage: "Mobile Number is required"
+    },
     status: {
       notEmpty: true,
       errorMessage: "Status is required"
@@ -214,17 +184,16 @@ router.put("/:authUserId", async (req, res) => {
   if (!errors) {
     var user_obj = {
       firstName: req.body.firstName,
-      email: req.body.email,
-      gender: req.body.gender,
-      aboutMe: req.body.aboutMe,
+      mobileNumber: req.body.mobileNumber,
+      status: req.body.status,
       modifiedAt: new Date()
     };
 
-    if (req.body.mobileNumber) {
-      user_obj.mobileNumber = req.body.mobileNumber;
-    }
     if (req.body.lastName) {
       user_obj.lastName = req.body.lastName;
+    }
+    if (req.body.dateOfBirth) {
+      user_obj.dateOfBirth = req.body.dateOfBirth;
     }
     if (req.body.height) {
       user_obj.height = req.body.height;
@@ -232,14 +201,17 @@ router.put("/:authUserId", async (req, res) => {
     if (req.body.weight) {
       user_obj.weight = req.body.weight;
     }
-    if (req.body.dateOfBirth) {
-      user_obj.dateOfBirth = req.body.dateOfBirth;
+    if (req.body.gender) {
+      user_obj.gender = req.body.gender;
     }
-    if (req.body.goals) {
-      user_obj.goals = req.body.goals;
+    if (req.body.workoutLocation) {
+      user_obj.workoutLocation = req.body.workoutLocation;
     }
-    if (req.body.status) {
-      user_obj.status = req.body.status;
+    if (req.body.goal) {
+      user_obj.goal = req.body.goal;
+    }
+    if (req.body.aboutMe) {
+      user_obj.aboutMe = req.body.aboutMe;
     }
 
     //image upload
@@ -255,7 +227,7 @@ router.put("/:authUserId", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "user_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function (err) {
+        file.mv(dir + "/" + filename, async function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -279,7 +251,14 @@ router.put("/:authUserId", async (req, res) => {
       //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
     }
     if (filename) {
-      user_obj.avatar = "uploads/user/" + filename;
+      user_obj.avatar = config.BASE_URL + "uploads/user/" + filename;
+      var image_data = await sync_user_data_to_auth(authUserId, {
+        picture: user_obj.avatar
+      });
+      console.log('------------------------------------');
+      console.log('image_data update in auth : ', image_data);
+      console.log('------------------------------------');
+
       resp_data = await user_helper.get_user_by_id(authUserId);
       try {
         fs.unlink(resp_data.user.avatar, function () {});
@@ -293,6 +272,14 @@ router.put("/:authUserId", async (req, res) => {
         user_data
       });
     } else {
+      var status = false;
+      if (req.body.status === 1) {
+        status = true;
+      }
+      var resp_data = await sync_user_data_to_auth(authUserId, {
+        blocked: status
+      });
+
       return res.status(config.OK_STATUS).json(user_data);
     }
   } else {
@@ -355,4 +342,46 @@ router.post("/checkemail", async (req, res) => {
   }
 });
 
+
+async function sync_user_data_to_auth(authUserId, body) {
+  body.connection = 'Username-Password-Authentication'
+  var options = {
+    method: 'POST',
+    url: config.AUTH_TOKEN_URL,
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: {
+      grant_type: config.GRANT_TYPE,
+      client_id: config.CLIENT_ID,
+      client_secret: config.CLIENT_SECRET,
+      audience: config.AUDIENCE
+    },
+    json: true
+  };
+
+  request(options, function (error, response, body) {
+    if (error) throw new Error(error);
+    if (body) {
+      var options = {
+        method: 'PATCH',
+        url: config.AUTH_USER_API_URL + authUserId,
+        headers: {
+          'content-type': 'application/json',
+          "Authorization": 'Bearer ' + body.access_token
+        },
+        body: body,
+        json: true
+      };
+
+      request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+        logger.trace("User Updated successfully");
+        return {
+          user: body
+        }
+      });
+    }
+  });
+}
 module.exports = router;
