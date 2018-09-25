@@ -1,12 +1,6 @@
 var express = require("express");
 var router = express.Router();
-
 var config = require("../../config");
-var constant = require("../../constant");
-var logger = config.logger;
-var jwtDecode = require("jwt-decode");
-var moment = require("moment");
-
 var user_helper = require("../../helpers/user_helper");
 
 /**
@@ -22,7 +16,6 @@ var user_helper = require("../../helpers/user_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
-  var name = req.body.name ? req.body.name : "";
   var re = new RegExp(req.body.name, "i");
   value = {
     $regex: re

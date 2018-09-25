@@ -60,11 +60,11 @@ exercise_helper.count_exercises = async (condition = {}) => {
  *          status 1 - If exercise data found, with exercise object
  *          status 2 - If exercise not found, with appropriate message
  */
-exercise_helper.get_all_exercise_for_user = async () => {
+exercise_helper.get_all_exercise_for_user = async (condition = {}) => {
   try {
-    var exercise = await Exercise.aggregate([
-      // { $unwind: "$otherMuscleGroup" },
-      // { $unwind: "$detailedMuscleGroup" },
+    var exercise = await Exercise.aggregate([{
+        $match: condition
+      },
       {
         $unwind: {
           path: "$otherMuscleGroup",

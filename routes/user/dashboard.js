@@ -256,13 +256,6 @@ router.post("/", async (req, res) => {
   var authUserId = decoded.sub;
   var startdate = moment(req.body.today).startOf('day').utc();
   var enddate = moment(req.body.today).endOf('day').utc();
-  console.log('------------------------------------');
-  console.log('startdate : ', startdate);
-  console.log('------------------------------------');
-  console.log('------------------------------------');
-  console.log('enddate : ', enddate);
-  console.log('------------------------------------');
-
   var dashboard = {
     status: 1,
     message: "Success",

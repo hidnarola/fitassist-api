@@ -357,8 +357,6 @@ router.post("/graph_data", async (req, res) => {
       delete resp_data.status;
       delete resp_data.message;
       resp_data.graphData = global_overview_data.graphData;
-      // resp_data.friendGraphData = friend_overview_data.graphData;
-      // resp_data.globalGraphData = global_overview_data.graphData;
       resp_data.start = start;
       resp_data.end = end;
       resp_data.subCategory = subCategory;

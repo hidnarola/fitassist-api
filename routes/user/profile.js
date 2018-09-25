@@ -159,8 +159,7 @@ router.get("/:username", async (req, res) => {
  * @apiParam {Number} [weight] weight
  * @apiParam {Enum} [gender] gender | Possible Values ('male', 'female', 'transgender')
  * @apiParam {Date} [dateOfBirth] Date of Birth
- * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'improve_mobility', 'lose_fat',
- * 'gain_strength', 'gain_power', 'increase_endurance')
+ * @apiParam {Enum-Array} [goals] goals | Possible Values ('gain_muscle', 'improve_mobility', 'lose_fat','gain_strength', 'gain_power', 'increase_endurance')
  * @apiParam {String} [aboutMe] aboutMe
  * @apiParam {String} [workoutLocation] workoutLocation
  * @apiParam {Boolean} [status] status of profile
@@ -170,42 +169,71 @@ router.get("/:username", async (req, res) => {
 router.put("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var schema = {
+    mobileNumber: {
+      notEmpty: true,
+      errorMessage: "Mobile number is required"
+    },
+    gender: {
+      notEmpty: true,
+      isIn: {
+        options: ['male', 'female'],
+        errorMessage: "Gender is invalid"
+      },
+      errorMessage: "Gender is required"
+    },
+  };
+  req.checkBody('firstName').trim().notEmpty().withMessage('First name is required.').isLength({
+    min: 2,
+    max: 20
+  }).withMessage('First name should be between 2 to 20 chars');
 
-  var user_obj = {};
-  if (req.body.firstName) {
-    user_obj.firstName = req.body.firstName;
-  }
-  if (req.body.lastName) {
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    var user_obj = {};
+    if (req.body.firstName) {
+      user_obj.firstName = req.body.firstName;
+    }
     user_obj.lastName = req.body.lastName;
-  }
-  if (req.body.mobileNumber) {
-    user_obj.mobileNumber = req.body.mobileNumber;
-  }
-  if (req.body.gender) {
-    user_obj.gender = req.body.gender;
-  }
-  if (req.body.dateOfBirth) {
-    user_obj.dateOfBirth = req.body.dateOfBirth;
-  }
-  if (req.body.height) {
-    user_obj.height = req.body.height;
-  }
-  if (req.body.weight) {
-    user_obj.weight = req.body.weight;
-  }
-  if (req.body.aboutMe) {
-    user_obj.aboutMe = req.body.aboutMe;
-  }
-  if (req.body.workoutLocation) {
-    user_obj.workoutLocation = req.body.workoutLocation;
-  }
-  user_obj.modifiedAt = new Date();
+    if (req.body.mobileNumber) {
+      user_obj.mobileNumber = req.body.mobileNumber;
+    }
+    if (req.body.gender) {
+      user_obj.gender = req.body.gender;
+    }
+    if (req.body.dateOfBirth) {
+      user_obj.dateOfBirth = req.body.dateOfBirth;
+    }
+    if (req.body.height) {
+      user_obj.height = req.body.height;
+    }
+    if (req.body.weight) {
+      user_obj.weight = req.body.weight;
+    }
+    if (req.body.aboutMe) {
+      user_obj.aboutMe = req.body.aboutMe;
+    }
+    if (req.body.workoutLocation) {
+      user_obj.workoutLocation = req.body.workoutLocation;
+    }
+    user_obj.modifiedAt = new Date();
 
-  let user = await user_helper.get_user_by_id(authUserId);
+    let user = await user_helper.get_user_by_id(authUserId);
 
-  if (user.status == 1) {
-    if (user.user.goal) {
-      if (user.user.goal.name != req.body.goal) {
+    if (user.status == 1) {
+      if (user.user.goal) {
+        if (user.user.goal.name != req.body.goal) {
+          if (req.body.goal) {
+            user_obj.goal = {
+              name: req.body.goal,
+              start: 0
+            };
+          } else {
+            user_obj.goal = null;
+          }
+        }
+      } else {
         if (req.body.goal) {
           user_obj.goal = {
             name: req.body.goal,
@@ -215,32 +243,28 @@ router.put("/", async (req, res) => {
           user_obj.goal = null;
         }
       }
-    } else {
-      if (req.body.goal) {
-        user_obj.goal = {
-          name: req.body.goal,
-          start: 0
-        };
-      } else {
-        user_obj.goal = null;
-      }
     }
-  }
 
-  let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
+    let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
 
-  if (user_data.status === 1) {
-    res.status(config.OK_STATUS).json(user_data);
-    var badges = await badgeAssign(authUserId);
-  } else if (user_data.status === 2) {
-    logger.error("Error while updating user data = ", user_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json({
-      user_data
-    });
+    if (user_data.status === 1) {
+      res.status(config.OK_STATUS).json(user_data);
+      await badgeAssign(authUserId);
+    } else if (user_data.status === 2) {
+      logger.error("Error while updating user data = ", user_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json({
+        user_data
+      });
+    } else {
+      logger.error("Error while updating user data = ", user_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json({
+        user_data
+      });
+    }
   } else {
-    logger.error("Error while updating user data = ", user_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json({
-      user_data
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
     });
   }
 });

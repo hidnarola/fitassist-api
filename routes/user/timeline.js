@@ -151,20 +151,21 @@ router.get("/privacy/:username", async (req, res) => {
   var user = await user_helper.get_user_by({
     username: req.params.username
   });
-
-  var settings_data = await user_settings_helper.get_setting({
-    userId: user.user.authUserId
-  });
-
-  if (settings_data.status === 0) {
-    logger.error("Error while fetching setting  = ", settings_data);
-    return res.status(config.INTERNAL_SERVER_ERROR).json({
-      settings_data
+  if (user.status === 1) {
+    var settings_data = await user_settings_helper.get_setting({
+      userId: user.user.authUserId
     });
+    if (settings_data.status === 0) {
+      logger.error("Error while fetching setting  = ", settings_data);
+      return res.status(config.INTERNAL_SERVER_ERROR).json({
+        settings_data
+      });
+    } else {
+      return res.status(config.OK_STATUS).json(settings_data);
+    }
   } else {
-    return res.status(config.OK_STATUS).json(settings_data);
+    return res.status(config.BAD_REQUEST).json(user);
   }
-
 });
 /**
  * @api {get} /user/timeline/:post_id Get by ID
@@ -175,10 +176,7 @@ router.get("/privacy/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:post_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
   var _id = req.params.post_id;
-
   logger.trace("Get all user's timeline API called");
 
   var resp_data = await user_posts_helper.get_user_timeline_by_id({
@@ -216,68 +214,74 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
   var user = await user_helper.get_user_by({
     username: req.params.username
   });
-  var friendId = user.user.authUserId;
+  if (user.status === 1) {
+    var friendId = user.user.authUserId;
+    var searchObject = {
+      $or: [{
+          $and: [{
+            userId: authUserId
+          }, {
+            friendId: friendId
+          }]
+        },
+        {
+          $and: [{
+            userId: friendId
+          }, {
+            friendId: authUserId
+          }]
+        }
+      ]
+    };
 
-  var searchObject = {
-    $or: [{
-        $and: [{
-          userId: authUserId
-        }, {
-          friendId: friendId
-        }]
+    var checkFriend = await friend_helper.checkFriend(searchObject);
+    if (friendId == authUserId) {
+      privacyArray = [1, 2, 3];
+    } else if (checkFriend.status == 1) {
+      privacyArray = [2, 3];
+    } else {
+      privacyArray = [3];
+    }
+
+    var resp_data = await user_posts_helper.get_user_timeline({
+      privacy: {
+        $in: privacyArray
       },
-      {
-        $and: [{
-          userId: friendId
-        }, {
-          friendId: authUserId
-        }]
+      userId: friendId,
+      isDeleted: 0
+    }, {
+      $skip: parseInt(skip)
+    }, {
+      $limit: parseInt(limit)
+    });
+
+    if (resp_data.status === 1) {
+      var getUserPrivacy = await user_settings_helper.get_setting({
+        userId: friendId
+      });
+
+      if (getUserPrivacy.status === 1) {
+        getUserPrivacy = {
+          postAccessibility: getUserPrivacy.user_settings.postAccessibility,
+          commentAccessibility: getUserPrivacy.user_settings.commentAccessibility,
+          messageAccessibility: getUserPrivacy.user_settings.messageAccessibility,
+          friendRequestAccessibility: getUserPrivacy.user_settings.friendRequestAccessibility,
+        }
+      } else {
+        getUserPrivacy = null;
       }
-    ]
-  };
-
-  var checkFriend = await friend_helper.checkFriend(searchObject);
-  var getUserPrivacy = await user_settings_helper.get_setting({
-    userId: friendId
-  });
-
-  getUserPrivacy = {
-    postAccessibility: getUserPrivacy.user_settings.postAccessibility,
-    commentAccessibility: getUserPrivacy.user_settings.commentAccessibility,
-    messageAccessibility: getUserPrivacy.user_settings.messageAccessibility,
-    friendRequestAccessibility: getUserPrivacy.user_settings.friendRequestAccessibility,
-  }
-
-  if (friendId == authUserId) {
-    privacyArray = [1, 2, 3];
-  } else if (checkFriend.status == 1) {
-    privacyArray = [2, 3];
+      resp_data.privacy = getUserPrivacy;
+      logger.trace("user timeline got successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    } else {
+      logger.error(
+        "Error occured while fetching get all user timeline = ",
+        resp_data
+      );
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    }
   } else {
-    privacyArray = [3];
-  }
-
-  var resp_data = await user_posts_helper.get_user_timeline({
-    privacy: {
-      $in: privacyArray
-    },
-    userId: friendId,
-    isDeleted: 0
-  }, {
-    $skip: parseInt(skip)
-  }, {
-    $limit: parseInt(limit)
-  });
-
-  if (resp_data.status === 1) {
-    resp_data.privacy = getUserPrivacy;
-    logger.trace("user timeline got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  } else {
-    logger.error(
-      "Error occured while fetching get all user timeline = ",
-      resp_data
-    );
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    return res.status(config.BAD_REQUEST).json(user);
   }
 });
 

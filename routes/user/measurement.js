@@ -126,47 +126,47 @@ router.post("/", async (req, res) => {
     },
     neck: {
       notEmpty: true,
-      errorMessage: "neck is required"
+      errorMessage: "Neck is required"
     },
     shoulders: {
       notEmpty: true,
-      errorMessage: "shoulders is required"
+      errorMessage: "Shoulders is required"
     },
     chest: {
       notEmpty: true,
-      errorMessage: "chest is required"
+      errorMessage: "Chest is required"
     },
     upperArm: {
       notEmpty: true,
-      errorMessage: "upperArm is required"
+      errorMessage: "UpperArm is required"
     },
     waist: {
       notEmpty: true,
-      errorMessage: "waist is required"
+      errorMessage: "Waist is required"
     },
     forearm: {
       notEmpty: true,
-      errorMessage: "forearm is required"
+      errorMessage: "Forearm is required"
     },
     hips: {
       notEmpty: true,
-      errorMessage: "hips is required"
+      errorMessage: "Hips is required"
     },
     thigh: {
       notEmpty: true,
-      errorMessage: "thigh is required"
+      errorMessage: "Thigh is required"
     },
     calf: {
       notEmpty: true,
-      errorMessage: "calf is required"
+      errorMessage: "Calf is required"
     },
     weight: {
       notEmpty: true,
-      errorMessage: "weight is required"
+      errorMessage: "Weight is required"
     },
     height: {
       notEmpty: true,
-      errorMessage: "height is required"
+      errorMessage: "Height is required"
     },
     heartRate: {
       notEmpty: true,

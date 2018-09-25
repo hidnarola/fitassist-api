@@ -387,9 +387,7 @@ router.put("/:photo_id", async (req, res) => {
  * @api {delete} /user/gallery/:photo_id Delete
  * @apiName Delete
  * @apiGroup User Gallery
- *
  * @apiHeader {String}  authorization user's unique access-key
- *
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */

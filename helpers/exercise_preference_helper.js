@@ -10,56 +10,9 @@ var exercise_preference_helper = {};
  */
 exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
   try {
-    var exercise_preference = await Exercise_preference.aggregate([
-      // { $unwind: "$excludeExercise" },
-      // { $unwind: "$excludeExerciseType" },
-      // { $unwind: "$existingInjuries" },
-      // {
-      //   $lookup: {
-      //     from: "exercise",
-      //     localField: "excludeExercise",
-      //     foreignField: "_id",
-      //     as: "excludeExercise"
-      //   }
-      // },
-      // {$unwind:"$excludeExercise"},
-      // {
-      //   $lookup: {
-      //     from: "exercise_types",
-      //     localField: "excludeExerciseType",
-      //     foreignField: "_id",
-      //     as: "excludeExerciseType"
-      //   }
-      // },
-      // {
-      //   $unwind: "$excludeExerciseType"
-      // },
-      // {
-      //   $lookup: {
-      //     from: "bodyparts",
-      //     localField: "existingInjuries",
-      //     foreignField: "_id",
-      //     as: "existingInjuries"
-      //   }
-      // },
-      // {
-      //   $unwind: "$existingInjuries"
-      // },
-      // {
-      //   $group: {
-      //     _id: "$_id",
-      //     workoutIntensity:{ $first: "$workoutIntensity" },
-      //     exerciseExperience:{ $first: "$exerciseExperience" },
-      //     excludeExercise:{ $addToSet: {"_id":"$excludeExercise._id","name":"$excludeExercise.name"}},
-      //     excludeExerciseType:{ $addToSet: {"_id":"$excludeExerciseType._id","name":"$excludeExerciseType.name"} },
-      //     existingInjuries:{ $addToSet: {"_id":"$existingInjuries._id","bodypart":"$existingInjuries.bodypart"} },
-      //     workoutscheduletype: { $first: "$workoutscheduletype" },
-      //     userId: { $first: "$userId" },
-      //     timeSchedule: { $first: "$timeSchedule" },
-      //   }
-      // },
-      { $match: id }
-    ]);
+    var exercise_preference = await Exercise_preference.aggregate([{
+      $match: id
+    }]);
     if (exercise_preference && exercise_preference.length > 0) {
       return {
         status: 1,
@@ -67,7 +20,10 @@ exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
         exercise_preference: exercise_preference[0]
       };
     } else {
-      return { status: 2, message: "exercise_preference not available" };
+      return {
+        status: 2,
+        message: "exercise_preference not available"
+      };
     }
   } catch (err) {
     return {
@@ -80,12 +36,9 @@ exercise_preference_helper.get_exercise_preference_by_user_id = async id => {
 
 /*
  * insert_prefernece is used to insert into exercise preference
- * 
  * @param   preference_object     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting preference, with error
  *          status  1 - If prefernece inserted, with inserted prefernece document and appropriate message
- * 
  * @developed by "amc"
  */
 exercise_preference_helper.insert_exercise_prefernece = async exercise_preference_object => {
@@ -108,14 +61,11 @@ exercise_preference_helper.insert_exercise_prefernece = async exercise_preferenc
 
 /*
  * update_exercise_preference_by_userid is used to update exercise_preference data based on exercise_preference_id
- * 
  * @param   exercise_preference_id         String  _id of nutrition that need to be update
  * @param   exercise_preference_object     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating nutrition preference, with error
  *          status  1 - If exercise_preference pr updated successfully, with appropriate message
  *          status  2 - If exercise_preference not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 exercise_preference_helper.update_exercise_preference_by_userid = async (
@@ -123,13 +73,18 @@ exercise_preference_helper.update_exercise_preference_by_userid = async (
   exercise_preference_object
 ) => {
   try {
-    let exercise_preference = await Exercise_preference.findOneAndUpdate(
-      { userId: authUserId },
-      exercise_preference_object,
-      { new: true }
+    let exercise_preference = await Exercise_preference.findOneAndUpdate({
+        userId: authUserId
+      },
+      exercise_preference_object, {
+        new: true
+      }
     );
     if (!exercise_preference) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,

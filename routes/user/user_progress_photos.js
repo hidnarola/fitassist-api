@@ -18,11 +18,7 @@ var user_timeline_helper = require("../../helpers/user_timeline_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-
   var limit = parseInt(req.params.limit ? req.params.limit : 10);
-
   logger.trace("Get all user's progress_photo API called");
   var resp_data = await user_progress_photos_helper.get_user_progress_photos_month_wise({
     username: req.params.username

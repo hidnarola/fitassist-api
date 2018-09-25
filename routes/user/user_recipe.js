@@ -27,9 +27,9 @@ router.get("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Get all user recipes API called : ");
-  var resp_data = await nutrition_preferences_helper.get_all_nutrition_preferences(
-    { userId: authUserId }
-  );
+  var resp_data = await nutrition_preferences_helper.get_all_nutrition_preferences({
+    userId: authUserId
+  });
 
   if (resp_data.status == 0) {
     logger.error(
@@ -47,8 +47,7 @@ router.get("/", async (req, res) => {
 
       recipe_search_object._id = user._id;
       recipe_search_object.dietRestrictionLabels = user.dietRestrictionLabels;
-      recipe_search_object.healthRestrictionLabels =
-        user.healthRestrictionLabels;
+      recipe_search_object.healthRestrictionLabels = user.healthRestrictionLabels;
       recipe_search_object.excludeIngredients = user.excludeIngredients;
       recipe_search_object.maxRecipeTime = user.maxRecipeTime;
       recipe_search_object.nutritionTargets = user.nutritionTargets;
@@ -122,11 +121,9 @@ router.get("/", async (req, res) => {
           let recipes_data = repos.hits;
           let user_meal = {
             breakfast: recipes_data[Math.floor(Math.random() * 100 + 1)].recipe,
-            pre_lunch_snacks:
-              recipes_data[Math.floor(Math.random() * 100 + 1)].recipe,
+            pre_lunch_snacks: recipes_data[Math.floor(Math.random() * 100 + 1)].recipe,
             lunch: recipes_data[Math.floor(Math.random() * 100 + 1)].recipe,
-            after_lunch_snacks:
-              recipes_data[Math.floor(Math.random() * 100 + 1)].recipe,
+            after_lunch_snacks: recipes_data[Math.floor(Math.random() * 100 + 1)].recipe,
             dinner: recipes_data[Math.floor(Math.random() * 100 + 1)].recipe
           };
           var keys = Object.keys(user_meal);
@@ -159,14 +156,16 @@ router.get("/", async (req, res) => {
 
           if (recipe_data.status === 0) {
             logger.error("Error while inserting user recipe = ", recipe_data);
-            return res.status(config.BAD_REQUEST).json({ recipe_data });
+            return res.status(config.BAD_REQUEST).json({
+              recipe_data
+            });
           } else {
             return res.status(config.OK_STATUS).json(recipe_data);
           }
 
           //   return res.send({"single_user_recipe_meal":single_user_recipe_meal});
         })
-        .catch(function(err) {
+        .catch(function (err) {
           console.log("ERROR", err);
         });
     });
@@ -264,15 +263,12 @@ router.put("/", async (req, res) => {
     delete user_nutritions.user_nutrients[0]._id;
     var nutrition_obj = user_nutritions.user_nutrients[0];
 
-    var nutrition_data = await user_nutritions_helper.get_user_nutritions_by_id(
-      {
-        userId: authUserId
-      }
-    );
+    var nutrition_data = await user_nutritions_helper.get_user_nutritions_by_id({
+      userId: authUserId
+    });
 
     if (nutrition_data.status == 1) {
-      var nutrition_data = await user_nutritions_helper.update_user_nutritions(
-        {
+      var nutrition_data = await user_nutritions_helper.update_user_nutritions({
           userId: authUserId
         },
         nutrition_obj
