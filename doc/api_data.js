@@ -1,6 +1,62 @@
 define({ "api": [
   {
     "type": "get",
+    "url": "/admin/flag_on_post",
+    "title": "Get all Flags",
+    "name": "Get_all_Flags",
+    "group": "Admin_Post_Flag",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>admin's unique x-access-token</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "flags",
+            "description": "<p>detail of flag on post</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/flag_on_post.js",
+    "groupTitle": "Admin_Post_Flag"
+  },
+  {
+    "type": "get",
     "url": "/admin/:admin_id",
     "title": "Admin Get by ID",
     "name": "Admin_Admin_Get_by_ID",
@@ -346,13 +402,6 @@ define({ "api": [
             "optional": false,
             "field": "lastName",
             "description": "<p>Last name of user</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "email",
-            "description": "<p>Email address</p>"
           },
           {
             "group": "Parameter",
@@ -1973,104 +2022,6 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/admin/bodyparts/filter",
-    "title": "Filter",
-    "name": "Filter",
-    "description": "<p>Request Object :<pre><code>{ pageSize: 10, page: 0, columnFilter: [ { id: &quot;firstName&quot;, value: &quot;mi&quot; } ], columnSort: [ { id: &quot;firstName&quot;, value: true } ], columnFilterEqual: [ { id: &quot;email&quot;, value: &quot;amc@narola.email&quot; } ] }</code></pre></p>",
-    "group": "BodyPart",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "x-access-token",
-            "description": "<p>Admin's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnFilter",
-            "description": "<p>columnFilter Object for filter data</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnSort",
-            "description": "<p>columnSort Object for Sorting Data</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "columnFilterEqual",
-            "description": "<p>columnFilterEqual Object for select box</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "pageSize",
-            "description": "<p>pageSize</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "page",
-            "description": "<p>page number</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "filtered_bodypart",
-            "description": "<p>filtered details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/bodyparts.js",
-    "groupTitle": "BodyPart"
-  },
-  {
-    "type": "post",
     "url": "/admin/equipment_category/filter",
     "title": "Filter",
     "name": "Filter",
@@ -2165,6 +2116,104 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/admin/equipment_category.js",
+    "groupTitle": "BodyPart"
+  },
+  {
+    "type": "post",
+    "url": "/admin/bodyparts/filter",
+    "title": "Filter",
+    "name": "Filter",
+    "description": "<p>Request Object :<pre><code>{ pageSize: 10, page: 0, columnFilter: [ { id: &quot;firstName&quot;, value: &quot;mi&quot; } ], columnSort: [ { id: &quot;firstName&quot;, value: true } ], columnFilterEqual: [ { id: &quot;email&quot;, value: &quot;amc@narola.email&quot; } ] }</code></pre></p>",
+    "group": "BodyPart",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilter",
+            "description": "<p>columnFilter Object for filter data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnSort",
+            "description": "<p>columnSort Object for Sorting Data</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "columnFilterEqual",
+            "description": "<p>columnFilterEqual Object for select box</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>pageSize</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>page number</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "filtered_bodypart",
+            "description": "<p>filtered details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/bodyparts.js",
     "groupTitle": "BodyPart"
   },
   {
@@ -2496,75 +2545,6 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/admin/change_password",
-    "title": "Admin Change Password",
-    "name": "Admin_Change_Password",
-    "group": "Change_Password_API",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "email",
-            "description": "<p>Email</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "password",
-            "description": "<p>Password</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user",
-            "description": "<p>Admin user object.</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/admin/password.js",
-    "groupTitle": "Change_Password_API"
-  },
-  {
-    "type": "put",
     "url": "/admin_change_password",
     "title": "Admin Change Password",
     "name": "Admin_Change_Password",
@@ -2633,6 +2613,75 @@ define({ "api": [
     "groupTitle": "Change_Password_API"
   },
   {
+    "type": "put",
+    "url": "/admin/change_password",
+    "title": "Admin Change Password",
+    "name": "Admin_Change_Password",
+    "group": "Change_Password_API",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user",
+            "description": "<p>Admin user object.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/password.js",
+    "groupTitle": "Change_Password_API"
+  },
+  {
     "type": "get",
     "url": "/nutrition/",
     "title": "Get all",
@@ -2680,6 +2729,62 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/index.js",
     "groupTitle": "Common_Nutrition"
+  },
+  {
+    "type": "post",
+    "url": "/admin/dashboard",
+    "title": "Dashboard",
+    "name": "Dashboard",
+    "group": "Dashboard",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "dashboard",
+            "description": "<p>dashboard detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/dashboard.js",
+    "groupTitle": "Dashboard"
   },
   {
     "type": "post",
@@ -6621,6 +6726,42 @@ define({ "api": [
   },
   {
     "type": "socket on",
+    "url": "request_logged_user_friends",
+    "title": "Get user's friends",
+    "name": "Get_user_s_friends",
+    "group": "Sokets",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "JSON",
+            "optional": false,
+            "field": "friends",
+            "description": "<p>Data of user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "resp_data",
+            "description": "<p>resp_data of channel</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
     "url": "user_friends_count",
     "title": "Get user's friends count",
     "name": "Get_user_s_friends_count",
@@ -6657,7 +6798,7 @@ define({ "api": [
   },
   {
     "type": "socket on",
-    "url": "send_new_message",
+    "url": "get_user_conversation_by_channel",
     "title": "Get user's messages by channel ID",
     "name": "Get_user_s_messages_by_channel_ID",
     "group": "Sokets",
@@ -6693,7 +6834,7 @@ define({ "api": [
   },
   {
     "type": "socket on",
-    "url": "get_user_conversation_by_channel",
+    "url": "send_new_message",
     "title": "Get user's messages by channel ID",
     "name": "Get_user_s_messages_by_channel_ID",
     "group": "Sokets",
@@ -6840,6 +6981,16 @@ define({ "api": [
     "url": "join",
     "title": "Join user to socket",
     "name": "Join_user_to_socket",
+    "group": "Sokets",
+    "version": "0.0.0",
+    "filename": "socket/socketServer.js",
+    "groupTitle": "Sokets"
+  },
+  {
+    "type": "socket on",
+    "url": "request_make_user_offline",
+    "title": "Make user offline",
+    "name": "Make_user_offline",
     "group": "Sokets",
     "version": "0.0.0",
     "filename": "socket/socketServer.js",
@@ -7294,6 +7445,55 @@ define({ "api": [
             "optional": false,
             "field": "test_exercises",
             "description": "<p>Array of test_exercises document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/test_exercises.js",
+    "groupTitle": "Test_Exercises"
+  },
+  {
+    "type": "put",
+    "url": "/admin/test_exercise/undo/:test_exercise_id",
+    "title": "Undo",
+    "name": "Undo",
+    "group": "Test_Exercises",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "test_exercise",
+            "description": "<p>test exercise detail</p>"
           }
         ]
       }
@@ -7943,6 +8143,82 @@ define({ "api": [
     "groupTitle": "User_Badges"
   },
   {
+    "type": "put",
+    "url": "/admin/user/change_block_status",
+    "title": "Block/Unblock User",
+    "name": "Block_Unblock_User",
+    "group": "User_Block_Unblock_User",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Admin's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "authUserId",
+            "description": "<p>user auth Id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>user block status<code>true|false</code></p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user",
+            "description": "<p>updated user detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/admin/users.js",
+    "groupTitle": "User_Block_Unblock_User"
+  },
+  {
     "type": "get",
     "url": "/user/body_fat_log",
     "title": "Save",
@@ -8039,6 +8315,75 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "routes/user/bodyparts.js",
     "groupTitle": "User_Body_Parts"
+  },
+  {
+    "type": "put",
+    "url": "/user/change_password",
+    "title": "Change Password",
+    "name": "Change_Password",
+    "group": "User_Change_Password",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "newPassword",
+            "description": "<p>newPassword of user</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user",
+            "description": "<p>updated user detail</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/change_password.js",
+    "groupTitle": "User_Change_Password"
   },
   {
     "type": "delete",
@@ -8376,6 +8721,20 @@ define({ "api": [
             "optional": false,
             "field": "authorization",
             "description": "<p>User's unique access-key</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "start",
+            "description": "<p>start date</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "end",
+            "description": "<p>end date</p>"
           }
         ]
       }
@@ -9145,62 +9504,6 @@ define({ "api": [
     "groupTitle": "User_Friends"
   },
   {
-    "type": "put",
-    "url": "/user/friend/:request_id",
-    "title": "Approve request",
-    "name": "Approve_request",
-    "group": "User_Friends",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "friend",
-            "description": "<p>approved friend detail</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/friends.bkup.js",
-    "groupTitle": "User_Friends"
-  },
-  {
     "type": "delete",
     "url": "/user/friend/:request_id",
     "title": "Delete request",
@@ -9247,55 +9550,6 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/user/friends.js",
-    "groupTitle": "User_Friends"
-  },
-  {
-    "type": "delete",
-    "url": "/user/friend/:request_id",
-    "title": "Delete request",
-    "name": "Delete_request",
-    "group": "User_Friends",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Success message</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/friends.bkup.js",
     "groupTitle": "User_Friends"
   },
   {
@@ -9353,132 +9607,6 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/user/friends.js",
-    "groupTitle": "User_Friends"
-  },
-  {
-    "type": "get",
-    "url": "/user/friend/:username/:type?",
-    "title": "Get by Username",
-    "name": "Get_by_Username",
-    "group": "User_Friends",
-    "description": "<p>Get friends by Username second parameter is used to get by status of friend 1 for pending friends and 2 for approved friend</p>",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "Array",
-            "optional": false,
-            "field": "friend",
-            "description": "<p>Array of friends document</p>"
-          }
-        ]
-      }
-    },
-    "examples": [
-      {
-        "title": "Response",
-        "content": "\"self\": 1,\n\"isFriend\": 0,\n\"status\": 1,\n\"message\": \" found\",\n\"friends\": [\n    {\n    }\n  ]",
-        "type": "json"
-      }
-    ],
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/friends.bkup.js",
-    "groupTitle": "User_Friends"
-  },
-  {
-    "type": "post",
-    "url": "/user/friend",
-    "title": "Send request",
-    "name": "Send_request",
-    "group": "User_Friends",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "friendId",
-            "description": "<p>Id of friend</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "friend",
-            "description": "<p>request sent in friends detail</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/friends.bkup.js",
     "groupTitle": "User_Friends"
   },
   {
@@ -10204,10 +10332,10 @@ define({ "api": [
     "groupTitle": "User_Notification"
   },
   {
-    "type": "put",
-    "url": "/user/users_nutritions/:notification_id",
-    "title": "Make Notification as Read",
-    "name": "Make_Notification_as_Read",
+    "type": "get",
+    "url": "/user/notification/all/:skip?/:limit?/:sort?",
+    "title": "Get all Notification",
+    "name": "Get_Notification",
     "group": "User_Notification",
     "header": {
       "fields": {
@@ -10227,10 +10355,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
-            "field": "message",
-            "description": "<p>Success message</p>"
+            "field": "notifications",
+            "description": "<p>Array of notifications document</p>"
           }
         ]
       }
@@ -10249,7 +10377,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/users_nutritions.js",
+    "filename": "routes/user/notifications.js",
     "groupTitle": "User_Notification"
   },
   {
@@ -10299,6 +10427,55 @@ define({ "api": [
     },
     "version": "0.0.0",
     "filename": "routes/user/notifications.js",
+    "groupTitle": "User_Notification"
+  },
+  {
+    "type": "put",
+    "url": "/user/users_nutritions/:notification_id",
+    "title": "Make Notification as Read",
+    "name": "Make_Notification_as_Read",
+    "group": "User_Notification",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/users_nutritions.js",
     "groupTitle": "User_Notification"
   },
   {
@@ -11110,6 +11287,82 @@ define({ "api": [
     "groupTitle": "User_Post_Comment"
   },
   {
+    "type": "post",
+    "url": "/user/flag_on_post",
+    "title": "Send",
+    "name": "Send",
+    "group": "User_Post_Flag",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>type of flag</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "comment",
+            "description": "<p>comment on flag</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "flag",
+            "description": "<p>detail of flag on post</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/flag_on_post.js",
+    "groupTitle": "User_Post_Flag"
+  },
+  {
     "type": "get",
     "url": "/user/primary_goal/",
     "title": "Get Goal",
@@ -11653,55 +11906,6 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/user/user_program/names",
-    "title": "Get user's program",
-    "name": "Get_user_s_program",
-    "group": "User_Program",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_programs",
-            "description": "<p>JSON of user_programs document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_program.js",
-    "groupTitle": "User_Program"
-  },
-  {
-    "type": "get",
     "url": "/user/user_program/",
     "title": "Get user's program",
     "name": "Get_user_s_program",
@@ -11727,6 +11931,55 @@ define({ "api": [
             "type": "JSON",
             "optional": false,
             "field": "programs",
+            "description": "<p>JSON of user_programs document</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_program.js",
+    "groupTitle": "User_Program"
+  },
+  {
+    "type": "get",
+    "url": "/user/user_program/names",
+    "title": "Get user's program",
+    "name": "Get_user_s_program",
+    "group": "User_Program",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_programs",
             "description": "<p>JSON of user_programs document</p>"
           }
         ]
@@ -12246,82 +12499,6 @@ define({ "api": [
             "optional": false,
             "field": "user_progress_photo",
             "description": "<p>progress_photo's document</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_progress_photos.js",
-    "groupTitle": "User_Progress_Photo"
-  },
-  {
-    "type": "put",
-    "url": "/user/progress_photo/",
-    "title": "Update",
-    "name": "Update",
-    "group": "User_Progress_Photo",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>user's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "File",
-            "optional": false,
-            "field": "image",
-            "description": "<p>User's Progress Image</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "description",
-            "description": "<p>Description of progress</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_progress_photo",
-            "description": "<p>user_progress_photo details</p>"
           }
         ]
       }
@@ -12873,117 +13050,6 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/settings",
-    "title": "Save User Preference",
-    "name": "Save_Preference",
-    "group": "User_Settings",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "distance",
-            "description": "<p>distance unit of user. <code>Enum : [&quot;km&quot;, &quot;mile&quot;]</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "weight",
-            "description": "<p>weight unit of user. <code>Enum : [&quot;kg&quot;, &quot;lb&quot;]</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "bodyMeasurement",
-            "description": "<p>body measurement unit of user. <code>Enum : [&quot;cm&quot;, &quot;inch&quot;]</code></p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "postAccessibility",
-            "description": "<p>post accessibility of user.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "commentAccessibility",
-            "description": "<p>comment accessibility of user.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "messageAccessibility",
-            "description": "<p>message accessibility of user.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "friendRequestAccessibility",
-            "description": "<p>friend request accessibility of user.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "user_settings",
-            "description": "<p>user preference in user_settings detail</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_settings.js",
-    "groupTitle": "User_Settings"
-  },
-  {
-    "type": "post",
     "url": "/user/statistics/graph_data",
     "title": "Get Graph Data",
     "name": "Get_Graph_Data",
@@ -13034,7 +13100,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/statistics",
+    "url": "/user/statistics/single",
     "title": "Get",
     "name": "Get_statistics_data_for_strength_and_cardio",
     "group": "User_Statistics",
@@ -13084,7 +13150,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/user/statistics/single",
+    "url": "/user/statistics",
     "title": "Get",
     "name": "Get_statistics_data_for_strength_and_cardio",
     "group": "User_Statistics",
@@ -13387,7 +13453,7 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/user/timeline/:photo_id",
+    "url": "/user/timeline/:timelineId",
     "title": "Delete",
     "name": "Delete",
     "group": "User_Timeline",
@@ -13413,6 +13479,62 @@ define({ "api": [
             "optional": false,
             "field": "message",
             "description": "<p>Success message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/timeline.js",
+    "groupTitle": "User_Timeline"
+  },
+  {
+    "type": "get",
+    "url": "/user/timeline/privacy/:username",
+    "title": "Get User Preference",
+    "name": "Get_Preference",
+    "group": "User_Timeline",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "user_settings",
+            "description": "<p>user preference in user_settings detail</p>"
           }
         ]
       }
@@ -13779,7 +13901,7 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/user/timeline/:photo_id",
+    "url": "/user/timeline/:timelineId",
     "title": "Update",
     "name": "Update",
     "group": "User_Timeline",
@@ -13808,36 +13930,22 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "File",
-            "optional": false,
-            "field": "image",
-            "description": "<p>User's  Image</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "String",
-            "optional": false,
-            "field": "createdBy",
-            "description": "<p>created User Id of user</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
+            "optional": true,
             "field": "description",
             "description": "<p>Description of Image</p>"
           },
           {
             "group": "Parameter",
             "type": "Number",
-            "optional": false,
+            "optional": true,
             "field": "privacy",
             "description": "<p>privacy of Image <br><code>1 for OnlyMe<br>2 for Friends<br>3 for Public</code></p>"
           },
           {
             "group": "Parameter",
             "type": "Number",
-            "optional": false,
+            "optional": true,
             "field": "status",
             "description": "<p>status of Image <br><code>1 for Active<br>2 for Inactive</code></p>"
           }
@@ -14630,8 +14738,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "workouts",
-            "description": "<p>workouts data of program</p>"
+            "field": "message",
+            "description": "<p>Success message</p>"
           }
         ]
       }
@@ -14650,7 +14758,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/user/user_program.js",
+    "filename": "routes/user/user_workouts.js",
     "groupTitle": "User_Workouts"
   },
   {
@@ -14706,8 +14814,57 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "workouts",
+            "description": "<p>workouts data of program</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
             "field": "message",
-            "description": "<p>Success message</p>"
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_program.js",
+    "groupTitle": "User_Workouts"
+  },
+  {
+    "type": "get",
+    "url": "/user/user_workouts/:workout_id",
+    "title": "Get User Workouts",
+    "name": "Get_User_Workouts",
+    "group": "User_Workouts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "workouts",
+            "description": "<p>JSON of user_workouts</p>"
           }
         ]
       }
@@ -14757,55 +14914,6 @@ define({ "api": [
             "optional": false,
             "field": "date",
             "description": "<p>Date of user's workout program</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "workouts",
-            "description": "<p>JSON of user_workouts</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_workouts.js",
-    "groupTitle": "User_Workouts"
-  },
-  {
-    "type": "get",
-    "url": "/user/user_workouts/:workout_id",
-    "title": "Get User Workouts",
-    "name": "Get_User_Workouts",
-    "group": "User_Workouts",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
           }
         ]
       }
@@ -15098,96 +15206,6 @@ define({ "api": [
   },
   {
     "type": "put",
-    "url": "/user/user_workouts/workout",
-    "title": "Update User Workouts",
-    "name": "Update_User_Workouts",
-    "group": "User_Workouts",
-    "header": {
-      "fields": {
-        "Header": [
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "Content-Type",
-            "description": "<p>application/json</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "authorization",
-            "description": "<p>User's unique access-key</p>"
-          }
-        ]
-      }
-    },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "type",
-            "description": "<p>type of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "subType",
-            "description": "<p>subType of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "userWorkoutsId",
-            "description": "<p>userWorkoutsId of workout</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Array",
-            "optional": false,
-            "field": "exercises",
-            "description": "<p>exercises of workout</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "JSON",
-            "optional": false,
-            "field": "workout",
-            "description": "<p>workout details</p>"
-          }
-        ]
-      }
-    },
-    "error": {
-      "fields": {
-        "Error 4xx": [
-          {
-            "group": "Error 4xx",
-            "type": "String",
-            "optional": false,
-            "field": "message",
-            "description": "<p>Validation or error message.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "routes/user/user_workouts.js",
-    "groupTitle": "User_Workouts"
-  },
-  {
-    "type": "put",
     "url": "/user/user_workouts/:workout_id",
     "title": "Update User Workouts",
     "name": "Update_User_Workouts",
@@ -15279,6 +15297,96 @@ define({ "api": [
   {
     "type": "post",
     "url": "/user/user_workouts/exercises",
+    "title": "Update User Workouts",
+    "name": "Update_User_Workouts",
+    "group": "User_Workouts",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>application/json</p>"
+          },
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "authorization",
+            "description": "<p>User's unique access-key</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "type",
+            "description": "<p>type of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "subType",
+            "description": "<p>subType of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "userWorkoutsId",
+            "description": "<p>userWorkoutsId of workout</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Array",
+            "optional": false,
+            "field": "exercises",
+            "description": "<p>exercises of workout</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSON",
+            "optional": false,
+            "field": "workout",
+            "description": "<p>workout details</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Validation or error message.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/user/user_workouts.js",
+    "groupTitle": "User_Workouts"
+  },
+  {
+    "type": "put",
+    "url": "/user/user_workouts/workout",
     "title": "Update User Workouts",
     "name": "Update_User_Workouts",
     "group": "User_Workouts",

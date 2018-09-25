@@ -17,186 +17,7 @@ var friend_helper = require("../../helpers/friend_helper");
 var common_helper = require("../../helpers/common_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
-/**
- * @api {get} /user/dashboard Get User Dashboard
- * @apiName Get User Dashboard
- * @apiGroup User Dashboard
- * @apiHeader {String}  authorization User's unique access-key
- * @apiSuccess (Success 200) {JSON} dashboard
- * @apiError (Error 4xx) {String} message Validation or error message.
- */
-router.get("/", async (req, res) => {
-  logger.trace("Get all user dashboard API called : ");
 
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var startdate = moment().startOf('day').utc();
-  var enddate = moment().endOf('day').utc();
-
-  var dashboard = {
-    status: 1,
-    message: "Success",
-    data: {
-      userWidgets: null,
-      workouts: null,
-      activityFeed: null,
-      badges: null,
-      bodyFat: null,
-      progressPhoto: null,
-      muscle: null,
-      profileComplete: null,
-    }
-  }
-  //Widgets
-  var widgets = await widgets_settings_helper.get_all_widgets({
-    userId: authUserId,
-    widgetFor: "dashboard"
-  }, {
-    "badges": 1,
-    "workout": 1,
-    "bodyFat": 1,
-    "activityFeed": 1,
-    "profileComplete": 1,
-    "progressPhoto": 1,
-    "muscle": 1,
-  });
-
-  if (widgets.status === 1) {
-    dashboard.data.userWidgets = widgets.widgets;
-    if (widgets.widgets.workout) {
-      var workout = await user_workouts_helper.get_workouts_by_date({
-        userId: authUserId,
-        date: {
-          $gte: new Date(startdate),
-          $lte: new Date(enddate)
-        }
-      });
-      if (workout.status === 1) {
-        dashboard.data.workouts = workout.workouts_list;
-      } else {
-        dashboard.data.workouts = [];
-      }
-    }
-    if (widgets.widgets.activityFeed) {
-      var userdata = await friend_helper.find({
-        authUserId: authUserId
-      });
-      var username = userdata.friends.username;
-      var resp_data = await friend_helper.get_friend_by_username({
-          username: username
-        },
-        2
-      );
-      var friendsIds = _.pluck(resp_data.friends, 'authUserId');
-      var activityFeed = await user_posts_helper.get_user_timeline({
-        userId: {
-          $in: friendsIds
-        },
-        isDeleted: 0
-      }, {
-        $skip: 0
-      }, {
-        $limit: 5
-      });
-      if (activityFeed.status === 1) {
-        dashboard.data.activityFeed = activityFeed.timeline;
-      } else {
-        dashboard.data.activityFeed = [];
-      }
-    }
-    if (widgets.widgets.badges) {
-      var badges = await badge_assign_helper.get_all_badges({
-        userId: authUserId
-      }, {
-        $sort: {
-          createdAt: -1
-        }
-      }, {
-        $limit: 6
-      });
-      if (badges.status === 1) {
-        dashboard.data.badges = badges.badges;
-      }
-    }
-    if (widgets.widgets.bodyFat) {
-      var body = await workout_progress_helper.graph_data_body_fat({
-        createdAt: {
-          logDate: {
-            $gte: new Date(widgets.widgets.bodyFat.start),
-            $lte: new Date(widgets.widgets.bodyFat.end)
-          },
-          userId: authUserId,
-        },
-      });
-
-      if (body.status === 1) {
-        dashboard.data.bodyFat = body.progress;
-      }
-    }
-    if (widgets.widgets.progressPhoto) {
-      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
-        userId: authUserId,
-        isDeleted: 0
-      });
-      if (progressPhoto.status === 1) {
-        dashboard.data.progressPhoto = progressPhoto.user_progress_photos;
-      } else {
-        dashboard.data.progressPhoto = null;
-      }
-    }
-    if (widgets.widgets.muscle) {
-      var muscle = {};
-      var bodyMeasurment;
-      for (let x of widgets.widgets.muscle) {
-        bodyMeasurment = await workout_progress_helper.user_body_progress({
-          userId: authUserId,
-          logDate: {
-            $gte: new Date(x.start),
-            $lte: new Date(x.end)
-          }
-        });
-
-        if (bodyMeasurment.status === 1) {
-          muscle[x.name] = bodyMeasurment.progress.data[x.name];
-        } else {
-          muscle[x.name] = null;
-        }
-      }
-      dashboard.data.muscle = muscle;
-    }
-  }
-  var user_data = await user_helper.get_user_by_id(authUserId);
-  if (user_data.status === 1) {
-    var resp_data = user_data.user;
-    var percentage = 0;
-    for (const key of Object.keys(resp_data)) {
-      if (resp_data[key]) {
-        if (key == "gender") {
-          percentage += 10;
-        } else if (key == "dateOfBirth") {
-          percentage += 15;
-        } else if (key == "height") {
-          percentage += 10;
-        } else if (key == "weight") {
-          percentage += 10;
-        } else if (key == "avatar") {
-          percentage += 15;
-        } else if (key == "aboutMe") {
-          percentage += 10;
-        } else if (key == "lastName") {
-          percentage += 10;
-        } else if (key == "mobileNumber") {
-          percentage += 10;
-        } else if (key == "goal") {
-          percentage += 10;
-        }
-      }
-    }
-    dashboard.data.profileComplete = percentage;
-  }
-  return res.send(dashboard);
-
-});
 
 /**
  * @api {post} /user/dashboard/muscle Save
@@ -417,6 +238,194 @@ router.post("/workout_complete", async (req, res) => {
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }
+});
+
+/**
+ * @api {post} /user/dashboard Get User Dashboard
+ * @apiName Get User Dashboard
+ * @apiGroup User Dashboard
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiHeader {String}  today today date
+ * @apiSuccess (Success 200) {JSON} dashboard
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/", async (req, res) => {
+  logger.trace("Get all user dashboard API called : ");
+
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var startdate = moment(req.body.today).startOf('day').utc();
+  var enddate = moment(req.body.today).endOf('day').utc();
+  console.log('------------------------------------');
+  console.log('startdate : ', startdate);
+  console.log('------------------------------------');
+  console.log('------------------------------------');
+  console.log('enddate : ', enddate);
+  console.log('------------------------------------');
+
+  var dashboard = {
+    status: 1,
+    message: "Success",
+    data: {
+      userWidgets: null,
+      workouts: null,
+      activityFeed: null,
+      badges: null,
+      bodyFat: null,
+      progressPhoto: null,
+      muscle: null,
+      profileComplete: null,
+    }
+  }
+  //Widgets
+  var widgets = await widgets_settings_helper.get_all_widgets({
+    userId: authUserId,
+    widgetFor: "dashboard"
+  }, {
+    "badges": 1,
+    "workout": 1,
+    "bodyFat": 1,
+    "activityFeed": 1,
+    "profileComplete": 1,
+    "progressPhoto": 1,
+    "muscle": 1,
+  });
+
+  if (widgets.status === 1) {
+    dashboard.data.userWidgets = widgets.widgets;
+    if (widgets.widgets.workout) {
+      var workout = await user_workouts_helper.get_workouts_by_date({
+        userId: authUserId,
+        date: {
+          $gte: new Date(startdate),
+          $lte: new Date(enddate)
+        }
+      });
+      if (workout.status === 1) {
+        dashboard.data.workouts = workout.workouts_list;
+      } else {
+        dashboard.data.workouts = [];
+      }
+    }
+    if (widgets.widgets.activityFeed) {
+      var userdata = await friend_helper.find({
+        authUserId: authUserId
+      });
+      var username = userdata.friends.username;
+      var resp_data = await friend_helper.get_friend_by_username({
+          username: username
+        },
+        2
+      );
+      var friendsIds = _.pluck(resp_data.friends, 'authUserId');
+      var activityFeed = await user_posts_helper.get_user_timeline({
+        userId: {
+          $in: friendsIds
+        },
+        isDeleted: 0
+      }, {
+        $skip: 0
+      }, {
+        $limit: 5
+      });
+      if (activityFeed.status === 1) {
+        dashboard.data.activityFeed = activityFeed.timeline;
+      } else {
+        dashboard.data.activityFeed = [];
+      }
+    }
+    if (widgets.widgets.badges) {
+      var badges = await badge_assign_helper.get_all_badges({
+        userId: authUserId
+      }, {
+        $sort: {
+          createdAt: -1
+        }
+      }, {
+        $limit: 6
+      });
+      if (badges.status === 1) {
+        dashboard.data.badges = badges.badges;
+      }
+    }
+    if (widgets.widgets.bodyFat) {
+      var body = await workout_progress_helper.graph_data_body_fat({
+        createdAt: {
+          logDate: {
+            $gte: new Date(widgets.widgets.bodyFat.start),
+            $lte: new Date(widgets.widgets.bodyFat.end)
+          },
+          userId: authUserId,
+        },
+      });
+
+      if (body.status === 1) {
+        dashboard.data.bodyFat = body.progress;
+      }
+    }
+    if (widgets.widgets.progressPhoto) {
+      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
+        userId: authUserId,
+        isDeleted: 0
+      });
+      if (progressPhoto.status === 1) {
+        dashboard.data.progressPhoto = progressPhoto.user_progress_photos;
+      } else {
+        dashboard.data.progressPhoto = null;
+      }
+    }
+    if (widgets.widgets.muscle) {
+      var muscle = {};
+      var bodyMeasurment;
+      for (let x of widgets.widgets.muscle) {
+        bodyMeasurment = await workout_progress_helper.user_body_progress({
+          userId: authUserId,
+          logDate: {
+            $gte: new Date(x.start),
+            $lte: new Date(x.end)
+          }
+        });
+
+        if (bodyMeasurment.status === 1) {
+          muscle[x.name] = bodyMeasurment.progress.data[x.name];
+        } else {
+          muscle[x.name] = null;
+        }
+      }
+      dashboard.data.muscle = muscle;
+    }
+  }
+  var user_data = await user_helper.get_user_by_id(authUserId);
+  if (user_data.status === 1) {
+    var resp_data = user_data.user;
+    var percentage = 0;
+    for (const key of Object.keys(resp_data)) {
+      if (resp_data[key]) {
+        if (key == "gender") {
+          percentage += 10;
+        } else if (key == "dateOfBirth") {
+          percentage += 15;
+        } else if (key == "height") {
+          percentage += 10;
+        } else if (key == "weight") {
+          percentage += 10;
+        } else if (key == "avatar") {
+          percentage += 15;
+        } else if (key == "aboutMe") {
+          percentage += 10;
+        } else if (key == "lastName") {
+          percentage += 10;
+        } else if (key == "mobileNumber") {
+          percentage += 10;
+        } else if (key == "goal") {
+          percentage += 10;
+        }
+      }
+    }
+    dashboard.data.profileComplete = percentage;
+  }
+  return res.send(dashboard);
+
 });
 
 module.exports = router;
