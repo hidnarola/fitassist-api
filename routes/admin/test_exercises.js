@@ -179,7 +179,7 @@ router.post("/", async (req, res) => {
         ],
         errorMessage: "Category must be from strength, flexibility, posture or cardio"
       },
-      errorMessage: "category of test exercies is required"
+      errorMessage: "Category of test exercies is required"
     },
     subCategory: {
       notEmpty: true,
@@ -187,9 +187,9 @@ router.post("/", async (req, res) => {
         options: [
           ["upper_body", "side", "lower_body", "cardio"]
         ],
-        errorMessage: "Sub category must be from upper_body, side, lower_body or cardio"
+        errorMessage: "Sub category must be from Upper body, Side, Lower body or Cardio"
       },
-      errorMessage: "sub Category of test exercies is required"
+      errorMessage: "Sub Category of test exercies is required"
     },
     format: {
       notEmpty: true,
@@ -197,9 +197,9 @@ router.post("/", async (req, res) => {
         options: [
           ["max_rep", "multiselect", "a_or_b", "text_field"]
         ],
-        errorMessage: "format must be from max_rep, multiselect, text_field or a_or_b"
+        errorMessage: "Format must be from (Max Rep), (Multiselect), (Text field), (A or B)"
       },
-      errorMessage: "format is required"
+      errorMessage: "Format is required"
     }
   };
 
@@ -258,9 +258,6 @@ router.post("/", async (req, res) => {
     if (req.body.format == "max_rep") {
       if (req.body.max_rep) {
         test_exercise_obj.max_rep = JSON.parse(req.body.max_rep);
-      }
-      if (req.body.title) {
-        test_exercise_obj.title = JSON.parse(req.body.title);
       }
 
       let test_exercise_data = await test_exercise_helper.insert_test_exercise(
@@ -386,6 +383,30 @@ router.post("/", async (req, res) => {
 });
 
 /**
+ * @api {put} /admin/test_exercise/undo/:test_exercise_id Undo
+ * @apiName Undo
+ * @apiGroup  Test Exercises
+ * @apiHeader {String}  x-access-token Admin's unique access-key
+ * @apiSuccess (Success 200) {String} test_exercise test exercise detail
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/undo/:test_exercise_id", async (req, res) => {
+  logger.trace("Undo test exercises API - Id = ", req.body.test_exercise_id);
+  let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id({
+    _id: req.params.test_exercise_id
+  }, {
+    isDeleted: 0
+  });
+  if (test_exercise_data.status === 1) {
+    test_exercise_data.message = "Record recovered";
+    res.status(config.OK_STATUS).json(test_exercise_data);
+  } else {
+    test_exercise_data.message = "Could not recover record";
+    res.status(config.INTERNAL_SERVER_ERROR).json(test_exercise_data);
+  }
+});
+
+/**
  * @api {put} /admin/test_exercise  Update
  * @apiName Update
  * @apiGroup  Test Exercises
@@ -429,7 +450,7 @@ router.put("/:test_exercise_id", async (req, res) => {
         ],
         errorMessage: "Category must be from strength, flexibility, posture or cardio"
       },
-      errorMessage: "category of test exercies is required"
+      errorMessage: "Category of test exercies is required"
     },
     subCategory: {
       notEmpty: true,
@@ -437,9 +458,9 @@ router.put("/:test_exercise_id", async (req, res) => {
         options: [
           ["upper_body", "side", "lower_body", "cardio"]
         ],
-        errorMessage: "Sub category must be from upper_body, side, lower_body or cardio"
+        errorMessage: "Sub category must be from Upper body, Side, Lower body or Cardio"
       },
-      errorMessage: "subCategory of test exercies is required"
+      errorMessage: "Sub Category of test exercies is required"
     },
     format: {
       notEmpty: true,
@@ -447,9 +468,9 @@ router.put("/:test_exercise_id", async (req, res) => {
         options: [
           ["max_rep", "multiselect", "a_or_b", "text_field"]
         ],
-        errorMessage: "format must be from max_rep, multiselect ,text_field or a_or_b"
+        errorMessage: "Format must be from (Max Rep), (Multiselect), (Text field), (A or B)"
       },
-      errorMessage: "format is required"
+      errorMessage: "Format is required"
     }
   };
   req.checkBody(schema);
@@ -594,9 +615,7 @@ router.put("/:test_exercise_id", async (req, res) => {
         async (err, file_path_array) => {
           //End image upload
           var data = [];
-          var obj = {};
           var oldData = {};
-
           var resp_data = await test_exercise_helper.get_test_exercise_id({
             _id: test_exercise_id
           });
@@ -702,6 +721,7 @@ router.put("/:test_exercise_id", async (req, res) => {
   }
 });
 
+
 /**
  * @api {delete} /admin/test_exercise/:test_exercise_id Delete
  * @apiName Delete
@@ -711,15 +731,22 @@ router.put("/:test_exercise_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.delete("/:test_exercise_id", async (req, res) => {
-  logger.trace("Delete test_exercises API - Id = ", req.body.test_exercise_id);
-  let test_exercise_data = await test_exercise_helper.delete_test_exercise_by_id(
-    req.params.test_exercise_id
-  );
-  if (test_exercise_data.status === 0) {
-    res.status(config.INTERNAL_SERVER_ERROR).json(test_exercise_data);
-  } else {
+  logger.trace("Delete test exercises API - Id = ", req.body.test_exercise_id);
+  let test_exercise_data = await test_exercise_helper.update_test_exercise_by_id({
+    _id: req.params.test_exercise_id
+  }, {
+    isDeleted: 1
+  });
+  if (test_exercise_data.status === 1) {
+    test_exercise_data.message = "Record has been deleted";
+    logger.trace("Delete test exercises Id = ", req.body.test_exercise_id);
     res.status(config.OK_STATUS).json(test_exercise_data);
+  } else {
+    logger.error("Could not delete test exercises Id = ", req.body.test_exercise_id);
+    res.status(config.INTERNAL_SERVER_ERROR).json(test_exercise_data);
   }
 });
+
+
 
 module.exports = router;

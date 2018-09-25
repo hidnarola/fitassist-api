@@ -110,13 +110,13 @@ router.post("/", async (req, res) => {
     bodypart: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 50 characters',
+        errorMessage: 'Body Part should be between 3 to 50 characters',
         options: {
           min: 3,
           max: 50
         }
       },
-      errorMessage: "Name is required"
+      errorMessage: "Body Part is required"
     }
   };
 
@@ -160,13 +160,13 @@ router.put("/:body_part_id", async (req, res) => {
     bodypart: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 50 characters',
+        errorMessage: 'Body Part should be between 3 to 50 characters',
         options: {
           min: 3,
           max: 50
         }
       },
-      errorMessage: "Name is required"
+      errorMessage: "Body Part is required"
     }
   };
 

@@ -38,10 +38,12 @@ router.post("/today", async (req, res) => {
   end.format();
 
 
-  logger.trace("Get all test_exercises API called");
-  var resp_data = await test_exercise_helper.get_all_test_exercises();
+  logger.trace("Get all test exercises API called");
+  var resp_data = await test_exercise_helper.get_all_test_exercises({
+    isDeleted: 0
+  });
   if (resp_data.status == 0) {
-    logger.error("Error occured while fetching  test_exercises = ", resp_data);
+    logger.error("Error occured while fetching  test exercises = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
     var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id({

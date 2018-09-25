@@ -31,109 +31,76 @@ router.post("/", async (req, res) => {
     totalUsers: null,
     topUsers: null
   };
-  var last2StepData;
+  var prevData;
+  var newData;
   var tmp;
-  var perChange;
   var current = await moment(req.body.end).endOf('day').utc(0);
   var start = await moment(req.body.start).startOf('day').utc(0);
-  var days = current.diff(start, 'days');
+  var days = current.diff(start, 'days') + 1;
   var previousStart = await moment(start).subtract(days, "day");
-  var totalUsers = await user_helper.count_users({
+
+  newData = await user_helper.count_users({
     createdAt: {
       $gte: start,
       $lte: current
     }
   });
-
-  last2StepData = await user_helper.count_users({
+  prevData = await user_helper.count_users({
     createdAt: {
       $gte: previousStart,
       $lte: start
     }
   });
 
-  tmp = (totalUsers.count - last2StepData.count);
-  perChange = parseFloat(((tmp / totalUsers.count) * 100).toFixed(2));
+  returnObject = await perChange(returnObject, "totalUsers", newData, prevData, days);
 
-  if (totalUsers.status === 1) {
-    returnObject.totalUsers = {
-      total: totalUsers.count,
-      perChange,
-      days
-    };
-  }
-
-  var totalExercises = await exercise_helper.count_exercises({
+  var newData = await exercise_helper.count_exercises({
     createdAt: {
       $gte: start,
       $lte: current
     }
   });
-  last2StepData = await exercise_helper.count_exercises({
+  prevData = await exercise_helper.count_exercises({
     createdAt: {
       $gte: previousStart,
       $lte: start
     }
   });
 
-  tmp = (totalExercises.count - last2StepData.count);
-  perChange = parseFloat(((tmp / totalExercises.count) * 100).toFixed(2));
-  if (totalExercises.status === 1) {
-    returnObject.totalExercises = {
-      total: totalExercises.count,
-      perChange,
-      days
-    };
-  }
+  returnObject = await perChange(returnObject, "totalExercises", newData, prevData, days);
 
-  var totalFitnessTest = await test_exercise_helper.count_test_exercises({
+  var newData = await test_exercise_helper.count_test_exercises({
     createdAt: {
       $gte: start,
       $lte: current
     }
   });
 
-  last2StepData = await test_exercise_helper.count_test_exercises({
+  prevData = await test_exercise_helper.count_test_exercises({
     createdAt: {
       $gte: previousStart,
       $lte: start
     }
   });
 
-  tmp = (totalFitnessTest.count - last2StepData.count);
-  perChange = parseFloat(((tmp / totalFitnessTest.count) * 100).toFixed(2));
-  if (totalFitnessTest.status === 1) {
-    returnObject.totalFitnessTest = {
-      total: totalFitnessTest.count,
-      perChange,
-      days
-    };
-  }
+  returnObject = await perChange(returnObject, "totalFitnessTest", newData, prevData, days);
 
-  var totalProgram = await user_program_helper.count_total_programs({
+  var newData = await user_program_helper.count_total_programs({
     createdAt: {
       $gte: start,
       $lte: current
     }
   });
-  last2StepData = await user_program_helper.count_total_programs({
+  prevData = await user_program_helper.count_total_programs({
     createdAt: {
       $gte: previousStart,
       $lte: start
     }
   });
 
-  tmp = (totalProgram.count - last2StepData.count);
-  perChange = parseFloat(((tmp / totalProgram.count) * 100).toFixed(2));
-  if (totalProgram.status === 1) {
-    returnObject.totalProgram = {
-      total: totalProgram.count,
-      perChange,
-      days
-    };
-  }
+  returnObject = await perChange(returnObject, "totalProgram", newData, prevData, days);
 
-  var completedExercises = await user_workouts_helper.count_all_workouts({
+  var newData = await user_workouts_helper.count_all_workouts({
     createdAt: {
       $gte: start,
       $lte: current
@@ -141,7 +108,7 @@ router.post("/", async (req, res) => {
     isCompleted: 1
   });
 
-  last2StepData = await user_workouts_helper.count_all_workouts({
+  prevData = await user_workouts_helper.count_all_workouts({
     createdAt: {
       $gte: previousStart,
       $lte: start
@@ -149,23 +116,34 @@ router.post("/", async (req, res) => {
     isCompleted: 1
   });
 
-  tmp = (completedExercises.count - last2StepData.count);
-  perChange = parseFloat(((tmp / completedExercises.count) * 100).toFixed(2));
+  returnObject = await perChange(returnObject, "completedExercises", newData, prevData, days);
 
-  if (completedExercises.status === 1) {
-    returnObject.completedExercises = {
-      total: completedExercises.count,
-      perChange,
-      days
-    };
-  }
   return res.status(config.OK_STATUS).send({
     status: 1,
     message: "Dashboard record found",
     data: returnObject
   });
-
 });
 
+async function perChange(returnObject, key, newData, prevData, days) {
+  let tmp = 0;
+  let perChange = 100;
+  if (newData.status === 1) {
+    if (prevData.count <= newData.count) {
+      tmp = (newData.count - prevData.count);
+    } else {
+      tmp = (prevData.count - newData.count);
+    }
+    if (prevData.count != 0) {
+      perChange = parseFloat(((tmp / prevData.count) * 100).toFixed(2));
+    }
+    returnObject[key] = {
+      total: newData.count,
+      perChange,
+      days
+    }
+  }
+  return returnObject;
+}
 
 module.exports = router;

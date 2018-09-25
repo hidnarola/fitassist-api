@@ -120,9 +120,9 @@ router.post("/", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 2 to 100 chars long',
+        errorMessage: 'Name should be between 3 to 100 chars long',
         options: {
-          min: 2,
+          min: 3,
           max: 100
         }
       },
@@ -148,7 +148,7 @@ router.post("/", async (req, res) => {
             constant.BADGES_TYPE.NUTRITIONS
           )
         ],
-        errorMessage: "Invalid task"
+        errorMessage: "Task is invalid"
       },
       errorMessage: "Task is required"
     },
@@ -162,6 +162,12 @@ router.post("/", async (req, res) => {
     },
     value: {
       notEmpty: true,
+      isInt: {
+        errorMessage: 'Target should be greater than 0',
+        options: {
+          gt: 0
+        }
+      },
       errorMessage: "Target is required"
     },
     point: {
@@ -284,9 +290,9 @@ router.put("/:badge_id", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 2 to 100 chars long',
+        errorMessage: 'Name should be between 3 to 100 chars long',
         options: {
-          min: 2,
+          min: 3,
           max: 100
         }
       },
@@ -312,7 +318,7 @@ router.put("/:badge_id", async (req, res) => {
             constant.BADGES_TYPE.NUTRITIONS
           )
         ],
-        errorMessage: "Invalid task"
+        errorMessage: "Task is invalid"
       },
       errorMessage: "Task is required"
     },
@@ -326,6 +332,12 @@ router.put("/:badge_id", async (req, res) => {
     },
     value: {
       notEmpty: true,
+      isInt: {
+        errorMessage: 'Target should be greater than 0',
+        options: {
+          gt: 0
+        }
+      },
       errorMessage: "Target is required"
     },
     point: {

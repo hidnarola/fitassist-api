@@ -62,9 +62,9 @@ test_exercise_helper.count_test_exercises = async (condition = {}) => {
  *          status 1 - If test_exercises data found, with test_exercises object
  *          status 2 - If test_exercises not found, with appropriate message
  */
-test_exercise_helper.get_all_test_exercises = async () => {
+test_exercise_helper.get_all_test_exercises = async (condition = {}) => {
   try {
-    var test_exercises = await TestExercies.find({});
+    var test_exercises = await TestExercies.find(condition);
     if (test_exercises) {
       test_exercises = _.groupBy(test_exercises, category => {
         return category.category;
@@ -195,40 +195,6 @@ test_exercise_helper.update_test_exercise_by_id = async (
 };
 
 /*
- * delete_test_exercise_by_id is used to delete test_exercise from database
- * @param   test_exercise_id String  _id of test_exercise that need to be delete
- * @return  status  0 - If any error occur in deletion of test_exercise, with error
- *          status  1 - If test_exercise deleted successfully, with appropriate message
- * @developed by "amc"
- */
-test_exercise_helper.delete_test_exercise_by_id = async test_exercise_id => {
-  try {
-    let resp = await TestExercies.findOneAndUpdate({
-      _id: test_exercise_id
-    }, {
-      isDeleted: 1
-    });
-    if (!resp) {
-      return {
-        status: 2,
-        message: "test exercise not found"
-      };
-    } else {
-      return {
-        status: 1,
-        message: "test exercise deleted"
-      };
-    }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while deleting test exercise",
-      error: err
-    };
-  }
-};
-
-/*
  * get_filtered_records is used to fetch all filtered data
  * @return  status 0 - If any internal error occured while fetching filtered data, with error
  *          status 1 - If filtered data found, with filtered object
@@ -278,4 +244,5 @@ test_exercise_helper.get_filtered_records = async filter_obj => {
     };
   }
 };
+
 module.exports = test_exercise_helper;

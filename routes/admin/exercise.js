@@ -131,10 +131,10 @@ router.post("/", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 100 characters',
+        errorMessage: 'Name should be between 3 to 150 characters',
         options: {
           min: 3,
-          max: 100
+          max: 150
         }
       },
       errorMessage: "Name is required"
@@ -329,15 +329,18 @@ router.post("/", async (req, res) => {
  */
 router.put("/:exercise_id", async (req, res) => {
   var exercise_id = mongoose.Types.ObjectId(req.params.exercise_id);
+  console.log('------------------------------------');
+  console.log('req.params.exercise_id : ', req.params.exercise_id);
+  console.log('------------------------------------');
 
   var schema = {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 100 characters',
+        errorMessage: 'Name should be between 3 to 150 characters',
         options: {
           min: 3,
-          max: 100
+          max: 150
         }
       },
       errorMessage: "Name is required"
@@ -391,6 +394,7 @@ router.put("/:exercise_id", async (req, res) => {
       modifiedAt: new Date()
     };
 
+
     if (req.body.equipments) {
       let equipmentsData = [];
       JSON.parse(req.body.equipments).forEach(element => {
@@ -428,35 +432,38 @@ router.put("/:exercise_id", async (req, res) => {
     if (req.body.tips) {
       exercise_obj.tips = JSON.parse(req.body.tips);
     }
+    console.log('------------------------------------');
+    console.log('exercise_obj : ', exercise_obj);
+    console.log('------------------------------------');
 
-    var resp_data = await exercise_helper.get_exercise_id({
-      _id: exercise_id
-    });
-    new_img_path_list = resp_data.exercise.images;
+    // var resp_data = await exercise_helper.get_exercise_id({
+    //   _id: exercise_id
+    // });
+    // new_img_path_list = resp_data.exercise.images;
 
     async.waterfall(
       [
+        // function (callback) {
+        //   // if (
+        //   //   req.body.delete_images &&
+        //   //   typeof JSON.parse(req.body.delete_images) === "object"
+        //   // ) {
+        //   //   delete_image = [].concat(JSON.parse(req.body.delete_images));
+        //   //   delete_image.forEach(element => {
+        //   //     var index = new_img_path_list.indexOf(element);
+
+        //   //     if (index > -1) {
+        //   //       fs.unlink(element, function () {});
+
+        //   //       new_img_path_list.splice(index, 1);
+        //   //     }
+        //   //   });
+        //   // }
+        //   // callback(null, new_img_path_list);
+        // },
         function (callback) {
-          if (
-            req.body.delete_images &&
-            typeof JSON.parse(req.body.delete_images) === "object"
-          ) {
-            delete_image = [].concat(JSON.parse(req.body.delete_images));
-            delete_image.forEach(element => {
-              var index = new_img_path_list.indexOf(element);
-
-              if (index > -1) {
-                fs.unlink(element, function () {});
-
-                new_img_path_list.splice(index, 1);
-              }
-            });
-          }
-          callback(null, new_img_path_list);
-        },
-        function (new_img_path_list, callback) {
           //image upload
-          var file_path_array = new_img_path_list;
+          var file_path_array = [];
           if (req.files && req.files["images"] && req.files != null) {
             var files = [].concat(req.files.images);
 
@@ -518,11 +525,18 @@ router.put("/:exercise_id", async (req, res) => {
       async (err, file_path_array) => {
         //End image upload
         exercise_obj.images = file_path_array;
+        console.log('------------------------------------');
+        console.log('exercise_obj : ', exercise_obj);
+        console.log('------------------------------------');
 
         let exercise_data = await exercise_helper.update_exercise_by_id(
           req.params.exercise_id,
           exercise_obj
         );
+        console.log('------------------------------------');
+        console.log('exercise_data : ', exercise_data);
+        console.log('------------------------------------');
+
         if (exercise_data.status === 0) {
           logger.error("Error while updating exercise data = ", exercise_data);
           res.status(config.INTERNAL_SERVER_ERROR).json({

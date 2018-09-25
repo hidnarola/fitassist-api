@@ -130,10 +130,6 @@ router.post("/", async (req, res) => {
       },
       errorMessage: "Name is required"
     },
-    description: {
-      notEmpty: true,
-      errorMessage: "Description is required"
-    },
     category_id: {
       notEmpty: true,
       errorMessage: "Category is required"
@@ -150,10 +146,12 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var equipment_obj = {
       name: req.body.name,
-      description: req.body.description ? req.body.description : null,
       category_id: req.body.category_id,
       status: req.body.status
     };
+    if (req.body.description) {
+      equipment_obj.description = req.body.description;
+    }
     //image upload
     var filename;
     if (req.files && req.files["equipment_img"]) {
@@ -240,10 +238,6 @@ router.put("/:equipment_id", async (req, res) => {
       },
       errorMessage: "Name is required"
     },
-    description: {
-      notEmpty: true,
-      errorMessage: "Description is required"
-    },
     category_id: {
       notEmpty: true,
       errorMessage: "Category is required"
@@ -263,7 +257,6 @@ router.put("/:equipment_id", async (req, res) => {
       status: req.body.status,
       modifiedAt: new Date()
     };
-
     if (req.body.description) {
       equipment_obj.description = req.body.description;
     }
@@ -311,7 +304,9 @@ router.put("/:equipment_id", async (req, res) => {
       );
       try {
         fs.unlink(resp_data.equipment.image, function (err, Success) {
-          if (err) logger.error("Image could not deleted = ", resp_data.equipment.image);
+          if (err) {
+            logger.error("Image could not deleted = ", resp_data.equipment.image, err);
+          }
         });
       } catch (error) {}
       equipment_obj.image = "uploads/equipment/" + filename;

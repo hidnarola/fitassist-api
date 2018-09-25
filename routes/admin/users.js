@@ -164,7 +164,6 @@ router.put("/change_block_status", async (req, res) => {
  */
 router.put("/:authUserId", async (req, res) => {
   authUserId = req.params.authUserId;
-
   var schema = {
     firstName: {
       notEmpty: true,
@@ -205,10 +204,22 @@ router.put("/:authUserId", async (req, res) => {
       user_obj.dateOfBirth = req.body.dateOfBirth;
     }
     if (req.body.height) {
-      user_obj.height = req.body.height;
+      if (req.body.heightUnit) {
+        var height = await common_helper.unit_converter(req.body.height, req.body.heightUnit);
+      }
+      console.log('------------------------------------');
+      console.log('height : ', height);
+      console.log('------------------------------------');
+      user_obj.height = height.baseValue;
     }
     if (req.body.weight) {
-      user_obj.weight = req.body.weight;
+      if (req.body.weightUnit) {
+        var weight = await common_helper.unit_converter(req.body.weight, req.body.weightUnit);
+      }
+      console.log('------------------------------------');
+      console.log('weight : ', weight);
+      console.log('------------------------------------');
+      user_obj.weight = weight.baseValue;
     }
     if (req.body.gender) {
       user_obj.gender = req.body.gender;
@@ -222,6 +233,9 @@ router.put("/:authUserId", async (req, res) => {
     if (req.body.aboutMe) {
       user_obj.aboutMe = req.body.aboutMe;
     }
+    console.log('------------------------------------');
+    console.log('user_obj : ', user_obj);
+    console.log('------------------------------------');
 
     //image upload
     var filename;
@@ -277,6 +291,7 @@ router.put("/:authUserId", async (req, res) => {
         user_data
       });
     } else {
+      res.status(config.OK_STATUS).json(user_data);
       var status = false;
       if (req.body.status === 1) {
         status = true;
@@ -284,7 +299,7 @@ router.put("/:authUserId", async (req, res) => {
       common_helper.sync_user_data_to_auth(authUserId, {
         blocked: status
       }).then(function (response) {
-        res.status(config.OK_STATUS).json(response);
+        res.status(config.OK_STATUS).json(user_data);
       }).catch(function (error) {
         res.status(config.BAD_REQUEST).json({
           message: error
