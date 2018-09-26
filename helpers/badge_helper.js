@@ -4,88 +4,90 @@ var badge_helper = {};
 
 /*
  * get_badges is used to fetch all badges data
- * 
  * @return  status 0 - If any internal error occured while fetching badges data, with error
  *          status 1 - If badges data found, with badges object
  *          status 2 - If badges not found, with appropriate message
  */
 badge_helper.get_badges_group_by = async (condition = {}) => {
-  //try {
-
-  // var badges = await Badges.find().lean();
-  var badges = await Badges.aggregate([{
-      $match: {
-        isDeleted: 0,
-        status: 1
-      }
-    },
-    {
-      $group: {
-        _id: "$category",
-        category: {
-          $first: "$category"
-        },
-        badges: {
-          $addToSet: "$$ROOT"
+  try {
+    var badges = await Badges.aggregate([{
+        $match: {
+          // isDeleted: 0,
+          // status: 1
+          $and: [{
+              isDeleted: 0
+            },
+            {
+              status: 1
+            }
+          ]
         }
-      }
-    },
-    {
-      $lookup: {
-        from: "badges_assign",
-        localField: "badges._id",
-        foreignField: "badgeId",
-        as: "badgeDetail"
-      }
-    },
+      },
+      {
+        $group: {
+          _id: "$category",
+          category: {
+            $first: "$category"
+          },
+          badges: {
+            $addToSet: "$$ROOT"
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "badges_assign",
+          localField: "badges._id",
+          foreignField: "badgeId",
+          as: "badgeDetail"
+        }
+      },
 
-  ]);
+    ]);
 
-  var retunArray = [];
-  _.each(badges, badge => {
-    var subArray = [];
-    _.each(badge.badges, b => {
-      var obj = Object.assign({}, b);
-      var result = _.find(badge.badgeDetail, function (o) {
-        return o.badgeId.toString() === obj._id.toString();
+    var retunArray = [];
+    _.each(badges, badge => {
+      var subArray = [];
+      _.each(badge.badges, b => {
+        var obj = Object.assign({}, b);
+        var result = _.find(badge.badgeDetail, function (o) {
+          return o.badgeId.toString() === obj._id.toString();
+        });
+        if (result) {
+          obj.isCompleted = 1;
+          obj.completedDate = result.createdAt;
+        } else {
+          obj.isCompleted = 0;
+          obj.completedDate = null;
+        }
+        subArray.push(obj);
       });
-      if (result) {
-        obj.isCompleted = 1;
-        obj.completedDate = result.createdAt;
-      } else {
-        obj.isCompleted = 0;
-        obj.completedDate = null;
-      }
-      subArray.push(obj);
+      badge.badges = subArray;
+      retunArray.push(badge);
     });
-    badge.badges = subArray;
-    retunArray.push(badge);
-  });
 
-  if (badges) {
+    if (badges) {
+      return {
+        status: 1,
+        message: "badges found",
+        badges: retunArray
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No badge available"
+      };
+    }
+  } catch (err) {
     return {
-      status: 1,
-      message: "badges found",
-      badges: retunArray
-    };
-  } else {
-    return {
-      status: 2,
-      message: "No badge available"
+      status: 0,
+      message: "Error occured while finding badge",
+      error: err
     };
   }
-  //} 
-  // catch (err) {
-  //   return {
-  //     status: 0,
-  //     message: "Error occured while finding badge",
-  //     error: err
-  //   };
-  // }
 };
 /*
  * get_badges is used to fetch all badges data
- * 
  * @return  status 0 - If any internal error occured while fetching badges data, with error
  *          status 1 - If badges data found, with badges object
  *          status 2 - If badges not found, with appropriate message
@@ -116,7 +118,6 @@ badge_helper.get_badges = async (condition = {}) => {
 
 /*
  * get_badge_id is used to fetch badge by ID
- * 
  * @return  status 0 - If any internal error occured while fetching badge data, with error
  *          status 1 - If badge data found, with badge object
  *          status 2 - If badge data not found, with appropriate message
@@ -149,12 +150,9 @@ badge_helper.get_badge_id = async id => {
 
 /*
  * insert_badge is used to insert into badge collection
- * 
  * @param   badge_obj     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting badge, with error
  *          status  1 - If badge inserted, with inserted badge document and appropriate message
- * 
  * @developed by "amc"
  */
 badge_helper.insert_badge = async badge_obj => {
@@ -177,14 +175,11 @@ badge_helper.insert_badge = async badge_obj => {
 
 /*
  * update_badge_by_id is used to update badge data based on badge_id
- * 
  * @param   badge_id         String  _id of badge that need to be update
  * @param   badge_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating badge, with error
  *          status  1 - If badge updated successfully, with appropriate message
  *          status  2 - If badge not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 badge_helper.update_badge_by_id = async (badge_id, badge_obj) => {
@@ -217,12 +212,9 @@ badge_helper.update_badge_by_id = async (badge_id, badge_obj) => {
 
 /*
  * delete_badge_by_id is used to delete badge from database
- * 
  * @param   badge_id String  _id of badge that need to be delete
- * 
  * @return  status  0 - If any error occur in deletion of badge, with error
  *          status  1 - If badge deleted successfully, with appropriate message
- * 
  * @developed by "amc"
  */
 badge_helper.delete_badge_by_id = async badge_id => {
@@ -254,12 +246,9 @@ badge_helper.delete_badge_by_id = async badge_id => {
 
 /*
  * undo_badge_by_id is used to undo badge from database
- * 
  * @param   badge_id String  _id of badge that need to be undo
- * 
  * @return  status  0 - If any error occur in undo of badge, with error
  *          status  1 - If badge undo successfully, with appropriate message
- * 
  * @developed by "amc"
  */
 badge_helper.undo_badge_by_id = async badge_id => {
@@ -290,7 +279,6 @@ badge_helper.undo_badge_by_id = async badge_id => {
 };
 /*
  * get_filtered_records is used to fetch all filtered data
- * 
  * @return  status 0 - If any internal error occured while fetching filtered data, with error
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message

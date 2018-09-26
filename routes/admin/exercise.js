@@ -329,10 +329,6 @@ router.post("/", async (req, res) => {
  */
 router.put("/:exercise_id", async (req, res) => {
   var exercise_id = mongoose.Types.ObjectId(req.params.exercise_id);
-  console.log('------------------------------------');
-  console.log('req.params.exercise_id : ', req.params.exercise_id);
-  console.log('------------------------------------');
-
   var schema = {
     name: {
       notEmpty: true,
@@ -432,10 +428,6 @@ router.put("/:exercise_id", async (req, res) => {
     if (req.body.tips) {
       exercise_obj.tips = JSON.parse(req.body.tips);
     }
-    console.log('------------------------------------');
-    console.log('exercise_obj : ', exercise_obj);
-    console.log('------------------------------------');
-
     // var resp_data = await exercise_helper.get_exercise_id({
     //   _id: exercise_id
     // });
@@ -464,6 +456,7 @@ router.put("/:exercise_id", async (req, res) => {
         function (callback) {
           //image upload
           var file_path_array = [];
+
           if (req.files && req.files["images"] && req.files != null) {
             var files = [].concat(req.files.images);
 
@@ -524,18 +517,14 @@ router.put("/:exercise_id", async (req, res) => {
       ],
       async (err, file_path_array) => {
         //End image upload
-        exercise_obj.images = file_path_array;
-        console.log('------------------------------------');
-        console.log('exercise_obj : ', exercise_obj);
-        console.log('------------------------------------');
+        if (file_path_array.length !== 0) {
+          exercise_obj.images = file_path_array;
+        }
 
         let exercise_data = await exercise_helper.update_exercise_by_id(
           req.params.exercise_id,
           exercise_obj
         );
-        console.log('------------------------------------');
-        console.log('exercise_data : ', exercise_data);
-        console.log('------------------------------------');
 
         if (exercise_data.status === 0) {
           logger.error("Error while updating exercise data = ", exercise_data);

@@ -205,11 +205,23 @@ router.put("/", async (req, res) => {
     if (req.body.dateOfBirth) {
       user_obj.dateOfBirth = req.body.dateOfBirth;
     }
+    // if (req.body.height) {
+    //   user_obj.height = req.body.height;
+    // }
+    // if (req.body.weight) {
+    //   user_obj.weight = req.body.weight;
+    // }
     if (req.body.height) {
-      user_obj.height = req.body.height;
+      if (req.body.heightUnit) {
+        var height = await common_helper.unit_converter(req.body.height, req.body.heightUnit);
+      }
+      user_obj.height = height.baseValue;
     }
     if (req.body.weight) {
-      user_obj.weight = req.body.weight;
+      if (req.body.weightUnit) {
+        var weight = await common_helper.unit_converter(req.body.weight, req.body.weightUnit);
+      }
+      user_obj.weight = weight.baseValue;
     }
     if (req.body.aboutMe) {
       user_obj.aboutMe = req.body.aboutMe;
@@ -285,20 +297,20 @@ router.put("/update_aboutme", async (req, res) => {
   var authUserId = decoded.sub;
 
   var schema = {
-    height: {
-      notEmpty: true,
-      errorMessage: "height is required",
-      isDecimal: {
-        errorMessage: "Please enter numeric value"
-      }
-    },
-    weight: {
-      notEmpty: true,
-      errorMessage: "weight is required",
-      isDecimal: {
-        errorMessage: "Please enter numeric value"
-      }
-    }
+    // height: {
+    //   notEmpty: false,
+    //   errorMessage: "height is required",
+    //   isDecimal: {
+    //     errorMessage: "Please enter numeric value"
+    //   }
+    // },
+    // weight: {
+    //   notEmpty: false,
+    //   errorMessage: "weight is required",
+    //   isDecimal: {
+    //     errorMessage: "Please enter numeric value"
+    //   }
+    // }
   };
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -308,11 +320,25 @@ router.put("/update_aboutme", async (req, res) => {
     if (req.body.aboutMe) {
       user_profile_obj.aboutMe = req.body.aboutMe;
     }
-    if (req.body.weight) {
-      user_profile_obj.weight = req.body.weight;
-    }
+    // if (req.body.weight) {
+    //   user_profile_obj.weight = req.body.weight;
+    // }
+    // if (req.body.height) {
+    //   user_profile_obj.height = req.body.height;
+    // }
+    user_profile_obj.height = 0;
+    user_profile_obj.weight = 0;
     if (req.body.height) {
-      user_profile_obj.height = req.body.height;
+      if (req.body.heightUnit) {
+        var height = await common_helper.unit_converter(req.body.height, req.body.heightUnit);
+      }
+      user_profile_obj.height = height.baseValue;
+    }
+    if (req.body.weight) {
+      if (req.body.weightUnit) {
+        var weight = await common_helper.unit_converter(req.body.weight, req.body.weightUnit);
+      }
+      user_profile_obj.weight = weight.baseValue;
     }
 
     let user_data = await user_helper.update_user_by_id(

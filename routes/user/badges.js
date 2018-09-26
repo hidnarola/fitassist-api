@@ -43,8 +43,15 @@ router.get("/:type", async (req, res) => {
         _id: {
           $nin: completedBadgesIds
         },
-        status: 1,
-        isDeleted: 0
+        // status: 1,
+        // isDeleted: 0
+        $and: [{
+            isDeleted: 0
+          },
+          {
+            status: 1
+          }
+        ]
       });
     }
   } else {

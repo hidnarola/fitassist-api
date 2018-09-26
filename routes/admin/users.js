@@ -207,18 +207,12 @@ router.put("/:authUserId", async (req, res) => {
       if (req.body.heightUnit) {
         var height = await common_helper.unit_converter(req.body.height, req.body.heightUnit);
       }
-      console.log('------------------------------------');
-      console.log('height : ', height);
-      console.log('------------------------------------');
       user_obj.height = height.baseValue;
     }
     if (req.body.weight) {
       if (req.body.weightUnit) {
         var weight = await common_helper.unit_converter(req.body.weight, req.body.weightUnit);
       }
-      console.log('------------------------------------');
-      console.log('weight : ', weight);
-      console.log('------------------------------------');
       user_obj.weight = weight.baseValue;
     }
     if (req.body.gender) {
@@ -233,9 +227,6 @@ router.put("/:authUserId", async (req, res) => {
     if (req.body.aboutMe) {
       user_obj.aboutMe = req.body.aboutMe;
     }
-    console.log('------------------------------------');
-    console.log('user_obj : ', user_obj);
-    console.log('------------------------------------');
 
     //image upload
     var filename;

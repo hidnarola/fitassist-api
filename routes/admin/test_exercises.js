@@ -471,6 +471,10 @@ router.put("/:test_exercise_id", async (req, res) => {
         errorMessage: "Format must be from (Max Rep), (Multiselect), (Text field), (A or B)"
       },
       errorMessage: "Format is required"
+    },
+    status: {
+      notEmpty: true,
+      errorMessage: "Status is required"
     }
   };
   req.checkBody(schema);
@@ -482,6 +486,7 @@ router.put("/:test_exercise_id", async (req, res) => {
       category: req.body.category,
       subCategory: req.body.subCategory,
       format: req.body.format,
+      status: req.body.status,
       modifiedAt: new Date()
     };
     if (req.body.description) {

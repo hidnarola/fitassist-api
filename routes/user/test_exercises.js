@@ -40,8 +40,15 @@ router.post("/today", async (req, res) => {
 
   logger.trace("Get all test exercises API called");
   var resp_data = await test_exercise_helper.get_all_test_exercises({
-    isDeleted: 0
+    $and: [{
+        isDeleted: 0
+      },
+      {
+        status: 1
+      }
+    ]
   });
+
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching  test exercises = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
