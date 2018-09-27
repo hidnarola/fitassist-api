@@ -176,10 +176,6 @@ router.put("/:authUserId", async (req, res) => {
       },
       errorMessage: "First name is required"
     },
-    mobileNumber: {
-      notEmpty: true,
-      errorMessage: "Mobile Number is required"
-    },
     status: {
       notEmpty: true,
       errorMessage: "Status is required"
