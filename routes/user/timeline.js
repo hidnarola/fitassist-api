@@ -176,6 +176,8 @@ router.get("/privacy/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:post_id", async (req, res) => {
+  console.log('here');
+
   var _id = req.params.post_id;
   logger.trace("Get all user's timeline API called");
 

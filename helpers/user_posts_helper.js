@@ -134,11 +134,8 @@ user_post_helper.get_user_post_photos = async (username, skip, limit, sort = {
 
 /*
  * get_user_timeline_by_id is used to fetch all user's timeline data
- * 
- * @return  status 0 - If any internal error occured while fetching user's post
- * photos data, with error
- *          status 1 - If user's post photos data found, with user's post 
- * photos object
+ * @return  status 0 - If any internal error occured while fetching user's post photos data, with error
+ *          status 1 - If user's post photos data found, with user's post photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
 user_post_helper.get_user_timeline_by_id = async condition => {
@@ -356,34 +353,28 @@ user_post_helper.get_user_timeline_by_id = async condition => {
       }
     ]);
 
-    _.each(timeline, t => {
-      var likes = [];
-      var comments = [];
-      var tmp = [];
-      _.each(t.likes, like => {
-        if (Object.keys(like).length > 0) {
-          likes.push(like);
-        }
-      });
+    if (timeline && timeline.length != 0) {
+      _.each(timeline, t => {
+        var likes = [];
+        var comments = [];
+        _.each(t.likes, like => {
+          if (Object.keys(like).length > 0) {
+            likes.push(like);
+          }
+        });
 
-      _.each(t.comments, comment => {
-        if (Object.keys(comment).length > 0) {
-          comments.push(comment);
-        }
+        _.each(t.comments, comment => {
+          if (Object.keys(comment).length > 0) {
+            comments.push(comment);
+          }
+        });
+        t.likes = likes;
       });
-      tmp = _.sortBy(comments, function (o) {
-        return o.create_date;
-      });
-      t.likes = likes;
-      t.comments = tmp;
-    });
+      // var tmp = _.sortBy(timeline[0].comments, function (o) {
+      //   return o.createdAt;
+      // });
 
-    if (timeline || timeline.length != 0) {
-      var tmp = _.sortBy(timeline[0].comments, function (o) {
-        return o.create_date;
-      });
-
-      timeline[0].comments = tmp;
+      // // timeline[0].comments = tmp;
 
       return {
         status: 1,
@@ -406,12 +397,9 @@ user_post_helper.get_user_timeline_by_id = async condition => {
 };
 /*
  * get_user_timeline is used to fetch all user's timeline data
- * 
- * @return  status 0 - If any internal error occured while fetching user's post
- * photos data, with error
- *          status 1 - If user's post photos data found, with user's post 
- * photos object
- *          status 2 - If user's post photos not found, with appropriate message
+ * @return  status 0 - If any internal error occured while fetching user's post photos data, with error 
+ *        status 1 - If user's post photos data found, with user's post  
+ *        status 2 - If user's post photos not found, with appropriate message
  */
 user_post_helper.get_user_timeline = async (
   condition,
