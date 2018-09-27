@@ -103,6 +103,9 @@ router.post("/", async (req, res) => {
       errorMessage: "privacy is required"
     }
   };
+  galleryImages = typeof req.files['images'] !== "undefined" ? req.files['images'][0].filename : '';
+  req.checkBody('images', 'Invalid Image format').isImage(galleryImages);
+
   req.checkBody(schema);
   var errors = req.validationErrors();
 
@@ -266,7 +269,7 @@ router.post("/", async (req, res) => {
     );
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.BAD_REQUEST).json({
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
       message: errors
     });
   }

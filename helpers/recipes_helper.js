@@ -157,9 +157,9 @@ recipe_helper.get_filtered_records = async filter_obj => {
       {
         $match: filter_object.columnFilter
       },
+      { $sort: filter_obj.columnSort },
       { $skip: skip },
       { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
     ]);
 
     if (filtered_data) {

@@ -12,12 +12,23 @@ badge_category_helper.get_badge_categories = async () => {
     try {
         var badge_categories = await BadgeCategory.find();
         if (badge_categories) {
-            return { "status": 1, "message": "badge_categories found", "badge_categories": badge_categories };
+            return {
+                "status": 1,
+                "message": "badge_categories found",
+                "badge_categories": badge_categories
+            };
         } else {
-            return { "status": 2, "message": "No badge_categories available" };
+            return {
+                "status": 2,
+                "message": "No badge_categories available"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding badge_categories", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while finding badge_categories",
+            "error": err
+        }
     }
 }
 
@@ -30,14 +41,27 @@ badge_category_helper.get_badge_categories = async () => {
  */
 badge_category_helper.get_badge_category_id = async (id) => {
     try {
-        var badge_category = await BadgeCategory.findOne({_id:id});
+        var badge_category = await BadgeCategory.findOne({
+            _id: id
+        });
         if (badge_category) {
-            return { "status": 1, "message": "badge_category found", "badge_category": badge_category };
+            return {
+                "status": 1,
+                "message": "badge_category found",
+                "badge_category": badge_category
+            };
         } else {
-            return { "status": 2, "message": "No badge_category available" };
+            return {
+                "status": 2,
+                "message": "No badge_category available"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding badge_category ", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while finding badge_category ",
+            "error": err
+        }
     }
 }
 
@@ -55,9 +79,17 @@ badge_category_helper.insert_badge_category_part = async (badge_category_obj) =>
     let badge_category = new BadgeCategory(badge_category_obj);
     try {
         let badge_category_data = await badge_category.save();
-        return { "status": 1, "message": "badge_category inserted", "badge_category": badge_category_data };
+        return {
+            "status": 1,
+            "message": "badge_category inserted",
+            "badge_category": badge_category_data
+        };
     } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting badge_category", "error": err };
+        return {
+            "status": 0,
+            "message": "Error occured while inserting badge_category",
+            "error": err
+        };
     }
 };
 
@@ -75,14 +107,29 @@ badge_category_helper.insert_badge_category_part = async (badge_category_obj) =>
  */
 badge_category_helper.update_badge_category_by_id = async (badge_category_id, badge_category_obj) => {
     try {
-        let badge_category = await BadgeCategory.findOneAndUpdate({ _id: badge_category_id }, badge_category_obj, { new: true });
+        let badge_category = await BadgeCategory.findOneAndUpdate({
+            _id: badge_category_id
+        }, badge_category_obj, {
+            new: true
+        });
         if (!badge_category) {
-            return { "status": 2, "message": "Record has not updated" };
+            return {
+                "status": 2,
+                "message": "Record has not updated"
+            };
         } else {
-            return { "status": 1, "message": "Record has been updated", "badge_category": badge_category };
+            return {
+                "status": 1,
+                "message": "Record has been updated",
+                "badge_category": badge_category
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while updating badge_category", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while updating badge_category",
+            "error": err
+        }
     }
 };
 
@@ -98,14 +145,28 @@ badge_category_helper.update_badge_category_by_id = async (badge_category_id, ba
  */
 badge_category_helper.delete_badge_category_by_id = async (badge_category_id) => {
     try {
-        let resp = await BadgeCategory.findOneAndUpdate({ _id: badge_category_id }, {isDeleted:1});
+        let resp = await BadgeCategory.findOneAndUpdate({
+            _id: badge_category_id
+        }, {
+            isDeleted: 1
+        });
         if (!resp) {
-            return { "status": 2, "message": "badge category not found" };
+            return {
+                "status": 2,
+                "message": "badge category not found"
+            };
         } else {
-            return { "status": 1, "message": "badge category deleted" };
+            return {
+                "status": 1,
+                "message": "badge category deleted"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting badge category", "error": err };
+        return {
+            "status": 0,
+            "message": "Error occured while deleting badge category",
+            "error": err
+        };
     }
 }
 
@@ -119,40 +180,46 @@ badge_category_helper.delete_badge_category_by_id = async (badge_category_id) =>
 badge_category_helper.get_filtered_records = async filter_obj => {
     skip = filter_obj.pageSize * filter_obj.page;
     try {
-      var searched_record_count = await BadgeCategory.aggregate([
-        {
-          $match: filter_object.columnFilter
+        var searched_record_count = await BadgeCategory.aggregate([{
+            $match: filter_object.columnFilter
+        }]);
+        var filtered_data = await BadgeCategory.aggregate([{
+                $match: filter_object.columnFilter
+            },
+            {
+                $sort: filter_obj.columnSort
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: filter_object.pageSize
+            },
+        ]);
+
+
+        if (filtered_data) {
+            return {
+                status: 1,
+                message: "filtered data is found",
+                count: searched_record_count.length,
+                filtered_total_pages: Math.ceil(
+                    searched_record_count.length / filter_obj.pageSize
+                ),
+                filtered_badge_categories: filtered_data
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No filtered data available"
+            };
         }
-      ]);
-      var filtered_data = await BadgeCategory.aggregate([
-        {
-          $match: filter_object.columnFilter
-        },      
-        { $skip: skip },
-        { $limit: filter_object.pageSize },
-        { $sort: filter_obj.columnSort }
-      ]);
-  
-  
-      if (filtered_data) {
-        return {
-          status: 1,
-          message: "filtered data is found",
-          count: searched_record_count.length,
-          filtered_total_pages: Math.ceil(
-            searched_record_count.length / filter_obj.pageSize
-          ),
-          filtered_badge_categories: filtered_data
-        };
-      } else {
-        return { status: 2, message: "No filtered data available" };
-      }
     } catch (err) {
-      return {
-        status: 0,
-        message: "Error occured while filtering data",
-        error: err
-      };
+        return {
+            status: 0,
+            message: "Error occured while filtering data",
+            error: err
+        };
     }
-  };  
+};
 module.exports = badge_category_helper;

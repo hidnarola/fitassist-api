@@ -15,12 +15,23 @@ exercise_types_helper.get_all_exercise_types = async () => {
     try {
         var exercise_types = await Exercise_types.find();
         if (exercise_types) {
-            return { "status": 1, "message": "Exercise Types found", "exercise_types": exercise_types };
+            return {
+                "status": 1,
+                "message": "Exercise Types found",
+                "exercise_types": exercise_types
+            };
         } else {
-            return { "status": 2, "message": "No Exercise Types available" };
+            return {
+                "status": 2,
+                "message": "No Exercise Types available"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding Exercise Types", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while finding Exercise Types",
+            "error": err
+        }
     }
 }
 
@@ -35,14 +46,27 @@ exercise_types_helper.get_all_exercise_types = async () => {
  */
 exercise_types_helper.get_exercise_type_id = async (id) => {
     try {
-        var exercise_type = await Exercise_types.findOne({_id:id});
+        var exercise_type = await Exercise_types.findOne({
+            _id: id
+        });
         if (exercise_type) {
-            return { "status": 1, "message": "Exercise type  found", "exercise_type": exercise_type };
+            return {
+                "status": 1,
+                "message": "Exercise type  found",
+                "exercise_type": exercise_type
+            };
         } else {
-            return { "status": 2, "message": "No Exercise Types available" };
+            return {
+                "status": 2,
+                "message": "No Exercise Types available"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while finding Exercise Types", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while finding Exercise Types",
+            "error": err
+        }
     }
 }
 
@@ -60,9 +84,17 @@ exercise_types_helper.insert_exercise_type = async (exercise_types_object) => {
     let Exercise_type = new Exercise_types(exercise_types_object);
     try {
         let exercise_types_data = await Exercise_type.save();
-        return { "status": 1, "message": "Exercise Types inserted", "Exercise_types": exercise_types_data };
+        return {
+            "status": 1,
+            "message": "Exercise Types inserted",
+            "Exercise_types": exercise_types_data
+        };
     } catch (err) {
-        return { "status": 0, "message": "Error occured while inserting Exercise Types", "error": err };
+        return {
+            "status": 0,
+            "message": "Error occured while inserting Exercise Types",
+            "error": err
+        };
     }
 };
 
@@ -80,14 +112,29 @@ exercise_types_helper.insert_exercise_type = async (exercise_types_object) => {
  */
 exercise_types_helper.update_exercise_type_by_id = async (exercise_type_id, exercise_types_object) => {
     try {
-        let exercise_type = await Exercise_types.findOneAndUpdate({ _id: exercise_type_id }, exercise_types_object, { new: true });
+        let exercise_type = await Exercise_types.findOneAndUpdate({
+            _id: exercise_type_id
+        }, exercise_types_object, {
+            new: true
+        });
         if (!exercise_type) {
-            return { "status": 2, "message": "Record has not updated" };
+            return {
+                "status": 2,
+                "message": "Record has not updated"
+            };
         } else {
-            return { "status": 1, "message": "Record has been updated", "exercise_type": exercise_type };
+            return {
+                "status": 1,
+                "message": "Record has been updated",
+                "exercise_type": exercise_type
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while updating Exercise Types", "error": err }
+        return {
+            "status": 0,
+            "message": "Error occured while updating Exercise Types",
+            "error": err
+        }
     }
 };
 
@@ -103,14 +150,26 @@ exercise_types_helper.update_exercise_type_by_id = async (exercise_type_id, exer
  */
 exercise_types_helper.delete_exercise_type_by_id = async (exercise_type_id) => {
     try {
-        let resp = await Exercise_types.findOneAndRemove({ _id: exercise_type_id });
+        let resp = await Exercise_types.findOneAndRemove({
+            _id: exercise_type_id
+        });
         if (!resp) {
-            return { "status": 2, "message": "Exercise type not found" };
+            return {
+                "status": 2,
+                "message": "Exercise type not found"
+            };
         } else {
-            return { "status": 1, "message": "Exercise type deleted" };
+            return {
+                "status": 1,
+                "message": "Exercise type deleted"
+            };
         }
     } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting exercise type", "error": err };
+        return {
+            "status": 0,
+            "message": "Error occured while deleting exercise type",
+            "error": err
+        };
     }
 }
 
@@ -124,43 +183,49 @@ exercise_types_helper.delete_exercise_type_by_id = async (exercise_type_id) => {
  *          status 2 - If filtered not found, with appropriate message
  */
 exercise_types_helper.get_filtered_records = async filter_obj => {
-  
+
     skip = filter_obj.pageSize * filter_obj.page;
     try {
-      var searched_record_count = await Exercise_types.aggregate([
-        {
-          $match: filter_object.columnFilter
+        var searched_record_count = await Exercise_types.aggregate([{
+            $match: filter_object.columnFilter
+        }]);
+
+        var filtered_data = await Exercise_types.aggregate([{
+                $match: filter_object.columnFilter
+            },
+            {
+                $sort: filter_obj.columnSort
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: filter_object.pageSize
+            },
+        ]);
+
+        if (filtered_data) {
+            return {
+                status: 1,
+                message: "filtered data is found",
+                count: searched_record_count.length,
+                filtered_total_pages: Math.ceil(
+                    searched_record_count.length / filter_obj.pageSize
+                ),
+                filtered_exercise_types: filtered_data
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No filtered data available"
+            };
         }
-      ]);
-  
-      var filtered_data = await Exercise_types.aggregate([
-        {
-          $match: filter_object.columnFilter
-        },
-        { $skip: skip },
-        { $limit: filter_object.pageSize },
-        { $sort: filter_obj.columnSort }
-      ]);
-  
-      if (filtered_data) {
-        return {
-          status: 1,
-          message: "filtered data is found",
-          count: searched_record_count.length,
-          filtered_total_pages: Math.ceil(
-            searched_record_count.length / filter_obj.pageSize
-          ),
-          filtered_exercise_types: filtered_data
-        };
-      } else {
-        return { status: 2, message: "No filtered data available" };
-      }
     } catch (err) {
-      return {
-        status: 0,
-        message: "Error occured while filtering data",
-        error: err
-      };
+        return {
+            status: 0,
+            message: "Error occured while filtering data",
+            error: err
+        };
     }
-  };
+};
 module.exports = exercise_types_helper;

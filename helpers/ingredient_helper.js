@@ -18,7 +18,10 @@ ingredients_helper.get_all_ingredients = async () => {
         ingredients: ingredients
       };
     } else {
-      return { status: 2, message: "No ingredients available" };
+      return {
+        status: 2,
+        message: "No ingredients available"
+      };
     }
   } catch (err) {
     return {
@@ -38,11 +41,20 @@ ingredients_helper.get_all_ingredients = async () => {
  */
 ingredients_helper.get_ingredient_id = async id => {
   try {
-    var ingredient = await Ingredients.findOne({ _id: id });
+    var ingredient = await Ingredients.findOne({
+      _id: id
+    });
     if (ingredient) {
-      return { status: 1, message: "ingredient found", ingredient: ingredient };
+      return {
+        status: 1,
+        message: "ingredient found",
+        ingredient: ingredient
+      };
     } else {
-      return { status: 2, message: "No ingredient available" };
+      return {
+        status: 2,
+        message: "No ingredient available"
+      };
     }
   } catch (err) {
     return {
@@ -98,13 +110,18 @@ ingredients_helper.update_ingredient = async (
   ingredient_obj
 ) => {
   try {
-    let ingredient = await Ingredients.findOneAndUpdate(
-      { _id: ingredient_id },
-      ingredient_obj,
-      { new: true }
+    let ingredient = await Ingredients.findOneAndUpdate({
+        _id: ingredient_id
+      },
+      ingredient_obj, {
+        new: true
+      }
     );
     if (!ingredient) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -132,20 +149,31 @@ ingredients_helper.update_ingredient = async (
  * @developed by "amc"
  */
 ingredients_helper.delete_ingredient_by_id = async ingredient_id => {
-    try {
-        var ingredient_obj = 
-    {
-        "isDelete": 1,            
+  try {
+    var ingredient_obj = {
+      "isDelete": 1,
     };
-        let ingredient = await Ingredients.findOneAndUpdate({ _id: ingredient_id }, ingredient_obj);
-        if (!ingredient) {
-            return { "status": 2, "message": "Record has not Deleted" };
-        } else {
-            return { "status": 1, "message": "Record has been Deleted"};
-        }
-    } catch (err) {
-        return { "status": 0, "message": "Error occured while deleting user", "error": err }
+    let ingredient = await Ingredients.findOneAndUpdate({
+      _id: ingredient_id
+    }, ingredient_obj);
+    if (!ingredient) {
+      return {
+        "status": 2,
+        "message": "Record has not Deleted"
+      };
+    } else {
+      return {
+        "status": 1,
+        "message": "Record has been Deleted"
+      };
     }
+  } catch (err) {
+    return {
+      "status": 0,
+      "message": "Error occured while deleting user",
+      "error": err
+    }
+  }
 };
 
 /*
@@ -159,19 +187,22 @@ ingredients_helper.get_filtered_records = async filter_obj => {
 
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await Ingredients.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
+    var searched_record_count = await Ingredients.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
 
-    var filtered_data = await Ingredients.aggregate([
-      {
+    var filtered_data = await Ingredients.aggregate([{
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $sort: filter_obj.columnSort
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
     ]);
 
     if (filtered_data) {
@@ -185,7 +216,10 @@ ingredients_helper.get_filtered_records = async filter_obj => {
         filtered_ingredients: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {

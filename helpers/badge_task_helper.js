@@ -18,7 +18,10 @@ badge_task_helper.get_badge_tasks = async () => {
         badge_tasks: badge_tasks
       };
     } else {
-      return { status: 2, message: "No badge_tasks available" };
+      return {
+        status: 2,
+        message: "No badge_tasks available"
+      };
     }
   } catch (err) {
     return {
@@ -38,11 +41,20 @@ badge_task_helper.get_badge_tasks = async () => {
  */
 badge_task_helper.get_badge_task_id = async id => {
   try {
-    var badge_task = await BadgeTask.findOne({ _id: id });
+    var badge_task = await BadgeTask.findOne({
+      _id: id
+    });
     if (badge_task) {
-      return { status: 1, message: "badge_task found", badge_task: badge_task };
+      return {
+        status: 1,
+        message: "badge_task found",
+        badge_task: badge_task
+      };
     } else {
-      return { status: 2, message: "No badge_task available" };
+      return {
+        status: 2,
+        message: "No badge_task available"
+      };
     }
   } catch (err) {
     return {
@@ -98,13 +110,18 @@ badge_task_helper.update_badge_task_by_id = async (
   badge_task_obj
 ) => {
   try {
-    let badge_task = await BadgeTask.findOneAndUpdate(
-      { _id: badge_task_id },
-      badge_task_obj,
-      { new: true }
+    let badge_task = await BadgeTask.findOneAndUpdate({
+        _id: badge_task_id
+      },
+      badge_task_obj, {
+        new: true
+      }
     );
     if (!badge_task) {
-      return { status: 2, message: "Record has not updated" };
+      return {
+        status: 2,
+        message: "Record has not updated"
+      };
     } else {
       return {
         status: 1,
@@ -133,14 +150,21 @@ badge_task_helper.update_badge_task_by_id = async (
  */
 badge_task_helper.delete_badge_task_by_id = async badge_task_id => {
   try {
-    let resp = await BadgeTask.findOneAndUpdate(
-      { _id: badge_task_id },
-      { isDeleted: 1 }
-    );
+    let resp = await BadgeTask.findOneAndUpdate({
+      _id: badge_task_id
+    }, {
+      isDeleted: 1
+    });
     if (!resp) {
-      return { status: 2, message: "badge task not found" };
+      return {
+        status: 2,
+        message: "badge task not found"
+      };
     } else {
-      return { status: 1, message: "badge task deleted" };
+      return {
+        status: 1,
+        message: "badge task deleted"
+      };
     }
   } catch (err) {
     return {
@@ -161,18 +185,21 @@ badge_task_helper.delete_badge_task_by_id = async badge_task_id => {
 badge_task_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await BadgeTask.aggregate([
-      {
-        $match: filter_object.columnFilter
-      }
-    ]);
-    var filtered_data = await BadgeTask.aggregate([
-      {
+    var searched_record_count = await BadgeTask.aggregate([{
+      $match: filter_object.columnFilter
+    }]);
+    var filtered_data = await BadgeTask.aggregate([{
         $match: filter_object.columnFilter
       },
-      { $skip: skip },
-      { $limit: filter_object.pageSize },
-      { $sort: filter_obj.columnSort }
+      {
+        $sort: filter_obj.columnSort
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: filter_object.pageSize
+      },
     ]);
 
     if (filtered_data) {
@@ -186,7 +213,10 @@ badge_task_helper.get_filtered_records = async filter_obj => {
         filtered_badge_tasks: filtered_data
       };
     } else {
-      return { status: 2, message: "No filtered data available" };
+      return {
+        status: 2,
+        message: "No filtered data available"
+      };
     }
   } catch (err) {
     return {

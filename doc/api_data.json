@@ -7914,7 +7914,7 @@
             "type": "Enum-Array",
             "optional": true,
             "field": "goals",
-            "description": "<p>goals | Possible Values ('gain_muscle', 'improve_mobility', 'lose_fat', 'gain_strength', 'gain_power', 'increase_endurance')</p>"
+            "description": "<p>goals | Possible Values ('gain_muscle', 'improve_mobility', 'lose_fat','gain_strength', 'gain_power', 'increase_endurance')</p>"
           },
           {
             "group": "Parameter",
@@ -8707,7 +8707,7 @@
     "groupTitle": "User_Chat"
   },
   {
-    "type": "get",
+    "type": "post",
     "url": "/user/dashboard",
     "title": "Get User Dashboard",
     "name": "Get_User_Dashboard",
@@ -8726,15 +8726,8 @@
             "group": "Header",
             "type": "String",
             "optional": false,
-            "field": "start",
-            "description": "<p>start date</p>"
-          },
-          {
-            "group": "Header",
-            "type": "String",
-            "optional": false,
-            "field": "end",
-            "description": "<p>end date</p>"
+            "field": "today",
+            "description": "<p>today date</p>"
           }
         ]
       }
