@@ -197,50 +197,54 @@ router.get("/workout/:workout_id", async (req, res) => {
 });
 
 /**
- * @api {post} /user/user_program Add user's program
- * @apiName Add user's program
+ * @api {post} /user/user_program/workouts_list_by_program_day List of all workout by Date
+ * @apiName List of all workout by Date
  * @apiGroup  User Program
  * @apiHeader {String}  authorization User's unique access-key
- * @apiParam {String}  name name of program
- * @apiParam {String}  description description of program
- * @apiParam {Enum}  type type of program creator | Possible Values<code>Enum : ['admin','user'] </code>
- * @apiSuccess (Success 200) {JSON} program JSON of user_programs document
+ * @apiSuccess (Success 200) {JSON} workouts_list Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.post("/", async (req, res) => {
+router.post("/workouts_list_by_program_day", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+
   var schema = {
-    name: {
+    programId: {
       notEmpty: true,
-      isLength: {
-        errorMessage: "Name should be between 0 to 100 characters",
-        options: {
-          min: 0,
-          max: 100
-        }
-      },
-      errorMessage: "Name is required"
+      errorMessage: "Program Id is required"
+    },
+    day: {
+      notEmpty: true,
+      errorMessage: "Day is required"
     }
   };
+
   req.checkBody(schema);
   var errors = req.validationErrors();
-
   if (!errors) {
-    var programObj = {
-      name: req.body.name,
-      description: req.body.description,
-      userId: authUserId,
-      type: req.body.type
-    };
-    logger.trace("Add user programs  API called");
-    var resp_data = await user_program_helper.add_program(programObj);
-    if (resp_data.status == 0) {
-      logger.error("Error occured while adding user programs = ", resp_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    var related_date_data = await user_program_helper.get_user_programs_data(
+      {
+        userId: authUserId,
+        programId: mongoose.Types.ObjectId(req.body.programId),
+        day: req.body.day
+      },
+      {
+        _id: 1,
+        programId: 1,
+        title: 1,
+        description: 1,
+        day: 1,
+        userId: 1
+      }
+    );
+
+    if (related_date_data.status === 1) {
+      related_date_data.message = "Workout list found";
+      related_date_data.workouts_list = related_date_data.program;
+      delete related_date_data.program;
+      res.status(config.OK_STATUS).json(related_date_data);
     } else {
-      logger.trace("user programs added successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(related_date_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -642,6 +646,59 @@ router.post("/copy", async (req, res) => {
   }
 });
 
+/**
+ * @api {post} /user/user_program Add user's program
+ * @apiName Add user's program
+ * @apiGroup  User Program
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String}  name name of program
+ * @apiParam {String}  description description of program
+ * @apiParam {Enum}  type type of program creator | Possible Values<code>Enum : ['admin','user'] </code>
+ * @apiSuccess (Success 200) {JSON} program JSON of user_programs document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var schema = {
+    name: {
+      notEmpty: true,
+      isLength: {
+        errorMessage: "Name should be between 0 to 100 characters",
+        options: {
+          min: 0,
+          max: 100
+        }
+      },
+      errorMessage: "Name is required"
+    }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+
+  if (!errors) {
+    var programObj = {
+      name: req.body.name,
+      description: req.body.description,
+      userId: authUserId,
+      type: req.body.type
+    };
+    logger.trace("Add user programs  API called");
+    var resp_data = await user_program_helper.add_program(programObj);
+    if (resp_data.status == 0) {
+      logger.error("Error occured while adding user programs = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      logger.trace("user programs added successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    }
+  } else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
+  }
+});
 /**
  * @api {put} /user/user_program/workout/:workout_day_id Update user's program's exercises
  * @apiName Update user's program's exercises
