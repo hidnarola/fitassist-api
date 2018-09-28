@@ -197,6 +197,54 @@ router.get("/workout/:workout_id", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/user_program/workout_delete Delete User workout
+ * @apiName Delete User workout
+ * @apiGroup  User Program
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {Array}  exerciseIds exercises IDs
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/workout_delete", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var exerciseIds = req.body.exerciseIds;
+  exerciseIds.forEach((id, index) => {
+    exerciseIds[index] = mongoose.Types.ObjectId(id);
+  });
+  logger.trace("Delete workout API - Ids = ", exerciseIds);
+  let workout_data = await user_program_helper.delete_user_program_exercise(
+    exerciseIds
+  );
+
+  var related_date_data = await user_program_helper.get_user_programs_data(
+    {
+      userId: authUserId,
+      programId: mongoose.Types.ObjectId(req.body.programId),
+      day: req.body.day
+    },
+    {
+      _id: 1,
+      programId: 1,
+      title: 1,
+      description: 1,
+      day: 1,
+      userId: 1
+    }
+  );
+  workout_data.workouts_list = related_date_data.program
+    ? related_date_data.program
+    : [];
+
+  if (workout_data.status === 1) {
+    res.status(config.OK_STATUS).json(workout_data);
+  } else {
+    res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
+  }
+});
+
+/**
  * @api {post} /user/user_program/workouts_list_by_program_day List of all workout by Date
  * @apiName List of all workout by Date
  * @apiGroup  User Program

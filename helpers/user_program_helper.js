@@ -768,7 +768,7 @@ user_program_helper.delete_user_program = async user_program_id => {
  */
 user_program_helper.delete_user_program_exercise = async exercise_ids => {
   try {
-    let programExercise = await userWorkoutExercisesProgram.remove({
+    await userWorkoutExercisesProgram.remove({
       userWorkoutsProgramId: {
         $in: exercise_ids
       }
