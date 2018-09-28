@@ -781,6 +781,7 @@ router.put("/reorder_exercises", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
+
 /**
  * @api {put} /user/user_program/workout/:workout_day_id Update user's program's exercises
  * @apiName Update user's program's exercises
