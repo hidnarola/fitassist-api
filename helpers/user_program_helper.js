@@ -90,7 +90,6 @@ user_program_helper.get_user_programs_in_details = async condition => {
     };
   }
 };
-
 /*
  * count_total_programs is used to count all user program data
  * @params condition condition of count .
@@ -114,7 +113,6 @@ user_program_helper.count_total_programs = async (condition = {}) => {
     };
   }
 };
-
 /*
  * get_user_programs_in_details_for_assign is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
@@ -200,7 +198,6 @@ user_program_helper.get_user_programs_data = async (
     };
   }
 };
-
 /*
  * get_all_program_workouts_group_by is used to fetch all user exercises data
  * @params condition condition of aggregate pipeline.
@@ -327,7 +324,6 @@ user_program_helper.get_all_program_workouts_group_by = async (
     };
   }
 };
-
 /*
  * get_user_programs is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
@@ -437,7 +433,6 @@ user_program_helper.get_user_programs = async (
     };
   }
 };
-
 /*
  * get_user_program_by_id is used to fetch User program by ID
  * @params id id of user_programs
@@ -470,7 +465,6 @@ user_program_helper.get_user_program_by_id = async id => {
     };
   }
 };
-
 /*
  * add_workouts_program is used to insert into add_workouts_program collection
  * @param   user_program_obj     JSON object consist of all property that need to insert in collection
@@ -519,7 +513,6 @@ user_program_helper.add_program = async programObj => {
     };
   }
 };
-
 /*
  * insert_program_workouts is used to insert into user_programs collection
  * @param   masterCollectionObject     JSON object consist of all property that need to insert in to master collection
@@ -553,7 +546,6 @@ user_program_helper.insert_program_workouts = async childCollectionObject => {
     };
   }
 };
-
 /*
  * update_program_workouts is used to update user program workouts data based on user program workouts id
  * @param   id         String  _id of user program workouts that need to be update
@@ -600,7 +592,6 @@ user_program_helper.update_program_workouts = async (
     };
   }
 };
-
 /*
  * assign_program is used to assign program 
  * @param   user_program_obj     JSON object consist of all property that need to insert in collection
@@ -625,7 +616,6 @@ user_program_helper.assign_program = async programObj => {
     };
   }
 };
-
 /*
  * update_user_program_by_day_id is used to update user program day based on user program day id
  * @param   id         String  _id of user_program that need to be update
@@ -699,7 +689,6 @@ user_program_helper.update_user_program_by_id = async (id, programObj) => {
     };
   }
 };
-
 /*
  * delete_user_program is used to delete user_program from database
  * @param   user_program_id String  _id of user_program that need to be delete
@@ -758,7 +747,6 @@ user_program_helper.delete_user_program = async user_program_id => {
     };
   }
 };
-
 /*
  * delete_user_program_exercise is used to delete user_program's exercise from database
  * @param   exercise_ids String  _ids of user_program days that need to be delete
@@ -881,7 +869,6 @@ user_program_helper.copy_exercise_by_id = async (
     };
   }
 };
-
 /*
  * delete_user_workouts_by_exercise_ids is used to delete user_workouts from database
  * @param   exerciseIds String  _id of user_workouts that need to be delete
@@ -916,7 +903,6 @@ user_program_helper.delete_user_workouts_by_exercise_ids = async exerciseIds => 
     };
   }
 };
-
 /*
  * delete_user_workouts_exercise is used to delete user_workouts exercise from database
  * @param   exerciseId String  _id of user_workouts exercise that need to be delete
@@ -968,5 +954,44 @@ user_program_helper.delete_user_workouts_exercise = async (
     };
   }
 };
-
+/*
+ * reorder_exercises is used to reorder user workouts data based on user workouts sequence
+ * @param   condition         Object  condition of user_workouts that need to be order
+ * @return  status  0 - If any error occur in updating user_workouts, with error
+ *          status  1 - If user_workouts completed successfully, with appropriate message
+ *          status  2 - If user_workouts not completed, with appropriate message 
+ * @developed by "amc"
+ */
+user_program_helper.reorder_exercises = async reorderArray => {
+  try {
+    var condition = {};
+    var updateObj = {};
+    for (let x of reorderArray) {
+      condition = {
+        _id: mongoose.Types.ObjectId(x.id)
+      };
+      updateObj = {
+        sequence: x.sequence
+      };
+      await userWorkoutExercisesProgram.findByIdAndUpdate(
+        condition,
+        updateObj,
+        {
+          new: true
+        }
+      );
+    }
+    return {
+      status: 1,
+      message: "Program Workout exercise sequence updated"
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message:
+        "Error occured while updating user proggram workouts exercise updated",
+      error: err
+    };
+  }
+};
 module.exports = user_program_helper;

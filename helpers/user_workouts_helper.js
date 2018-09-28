@@ -17,7 +17,8 @@ user_workouts_helper.get_workouts_for_calendar = async (
   single = false
 ) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([{
+    var user_workouts = await UserWorkouts.aggregate([
+      {
         $match: condition
       },
       {
@@ -62,9 +63,11 @@ user_workouts_helper.get_workouts_for_calendar = async (
  */
 user_workouts_helper.get_all_workouts = async (condition, single = false) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([{
-      $match: condition
-    }]);
+    var user_workouts = await UserWorkouts.aggregate([
+      {
+        $match: condition
+      }
+    ]);
     // var user_workouts = await UserWorkouts.aggregate([
     //   {
     //     $match: condition
@@ -89,9 +92,9 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
 
     if (user_workouts) {
       var message =
-        user_workouts.length > 0 ?
-        "user workouts found" :
-        "user workouts not found";
+        user_workouts.length > 0
+          ? "user workouts found"
+          : "user workouts not found";
       user_workouts = user_workouts;
       if (single) {
         if (user_workouts.length > 0) {
@@ -158,8 +161,10 @@ user_workouts_helper.get_first_workout_by_date = async (condition = {}) => {
 
     return {
       status: 1,
-      message: user_workouts && user_workouts._id ?
-        "User's First workout of date found" : "User's First workout of date not found",
+      message:
+        user_workouts && user_workouts._id
+          ? "User's First workout of date found"
+          : "User's First workout of date not found",
       workout_id: user_workouts && user_workouts._id ? user_workouts._id : null
     };
   } catch (err) {
@@ -180,7 +185,8 @@ user_workouts_helper.get_first_workout_by_date = async (condition = {}) => {
  */
 user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([{
+    var user_workouts = await UserWorkouts.aggregate([
+      {
         $match: condition
       },
       {
@@ -239,13 +245,13 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
             exercise.push(ex);
           }
         });
-        workout.warmup = _.sortBy(warmup, function (w) {
+        workout.warmup = _.sortBy(warmup, function(w) {
           return w.sequence;
         });
-        workout.exercise = _.sortBy(exercise, function (w) {
+        workout.exercise = _.sortBy(exercise, function(w) {
           return w.sequence;
         });
-        workout.cooldown = _.sortBy(cooldown, function (w) {
+        workout.cooldown = _.sortBy(cooldown, function(w) {
           return w.sequence;
         });
         delete workout.exercises;
@@ -279,7 +285,8 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
  */
 user_workouts_helper.get_workouts_by_date = async (condition = {}) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([{
+    var user_workouts = await UserWorkouts.aggregate([
+      {
         $match: condition
       },
       {
@@ -370,7 +377,8 @@ user_workouts_helper.get_workouts_by_date = async (condition = {}) => {
  */
 user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([{
+    var user_workouts = await UserWorkouts.aggregate([
+      {
         $match: condition
       },
       {
@@ -492,7 +500,8 @@ user_workouts_helper.get_all_workouts_group_by = async (condition = {}) => {
  */
 user_workouts_helper.count_all_completed_workouts = async condition => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([{
+    var user_workouts = await UserWorkouts.aggregate([
+      {
         $match: condition
       },
       {
@@ -543,7 +552,8 @@ user_workouts_helper.count_all_completed_workouts = async condition => {
  */
 user_workouts_helper.workout_detail_for_badges = async condition => {
   try {
-    var user_workouts = await WorkoutLogs.aggregate([{
+    var user_workouts = await WorkoutLogs.aggregate([
+      {
         $match: condition
       },
       {
@@ -649,7 +659,6 @@ user_workouts_helper.workout_detail_for_badges = async condition => {
           workouts_total: {
             $sum: "$workouts_total"
           }
-
         }
       }
     ]);
@@ -718,7 +727,6 @@ user_workouts_helper.insert_user_workouts_exercises = async (
   childCollectionObject,
   authUserId
 ) => {
-
   var workoutLogsObj = {};
   var insertWorkoutLogArray = [];
   try {
@@ -728,15 +736,13 @@ user_workouts_helper.insert_user_workouts_exercises = async (
     var user_workouts_exercise_data = await user_workouts_exercise.save();
 
     _.each(user_workouts_exercise_data.exercises, ex => {
-
       if (ex.differentSets) {
         var totalSetDetails = ex.setsDetails.length;
         var cnt = 0;
-        _.each(ex.setsDetails, (childDetail) => {
-          var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
+        _.each(ex.setsDetails, childDetail => {
+          var restTime = (time = distance = effort = weight = repTime = speed = setTime = reps = 0);
           if (cnt < totalSetDetails - 1) {
             restTime += childDetail.baseRestTime;
-
           }
           if (childDetail.field1) {
             if (childDetail.field1.baseUnit === "second") {
@@ -790,10 +796,9 @@ user_workouts_helper.insert_user_workouts_exercises = async (
           cnt++;
         });
       } else {
-
         var childDetail = ex.setsDetails[0];
         for (var i = 0; i < ex.sets; i++) {
-          var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
+          var restTime = (time = distance = effort = weight = repTime = speed = setTime = reps = 0);
           if (i < ex.sets - 1) {
             restTime = childDetail.baseRestTime;
           }
@@ -845,7 +850,6 @@ user_workouts_helper.insert_user_workouts_exercises = async (
             logDate: childCollectionObject.date,
             sets: 1
           };
-
 
           insertWorkoutLogArray.push(workoutLogsObj);
         }
@@ -917,27 +921,33 @@ user_workouts_helper.copy_exercise_by_id = async (
   var workoutLogsObj = {};
   var insertWorkoutLogArray = [];
   try {
-    var day_data = await UserWorkouts.findOne({
-      _id: workoutId
-    }, {
-      _id: 0,
-      type: 1,
-      title: 1,
-      description: 1,
-      userId: 1
-    }).lean();
+    var day_data = await UserWorkouts.findOne(
+      {
+        _id: workoutId
+      },
+      {
+        _id: 0,
+        type: 1,
+        title: 1,
+        description: 1,
+        userId: 1
+      }
+    ).lean();
 
     day_data.date = date;
 
     let user_workouts = new UserWorkouts(day_data);
     var workout_day = await user_workouts.save();
 
-    var exercise_data = await UserWorkoutExercises.find({
-      userWorkoutsId: workoutId
-    }, {
-      isCompleted: 0,
-      userWorkoutsId: 0
-    }).lean();
+    var exercise_data = await UserWorkoutExercises.find(
+      {
+        userWorkoutsId: workoutId
+      },
+      {
+        isCompleted: 0,
+        userWorkoutsId: 0
+      }
+    ).lean();
 
     exercise_data.forEach(ex => {
       delete ex._id;
@@ -964,10 +974,10 @@ user_workouts_helper.copy_exercise_by_id = async (
             let totalChildExercise = childExercises.setsDetails.length;
             let cnt = 0;
             for (let childDetail of childExercises.setsDetails) {
-              var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
-              if (cnt < (totalChildExercise - 1)) {
+              var restTime = (time = distance = effort = weight = repTime = speed = setTime = reps = 0);
+              if (cnt < totalChildExercise - 1) {
                 // restTime += childDetail.restTime;
-                restTime += childDetail.baseRestTime
+                restTime += childDetail.baseRestTime;
               }
               if (childDetail.field1) {
                 if (childDetail.field1.baseUnit === "second") {
@@ -1023,11 +1033,10 @@ user_workouts_helper.copy_exercise_by_id = async (
           } else {
             var childDetail = childExercises.setsDetails[0];
             for (var i = 0; i < childExercises.sets; i++) {
-              var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
+              var restTime = (time = distance = effort = weight = repTime = speed = setTime = reps = 0);
               if (i < childExercises.sets - 1) {
                 // restTime += childDetail.restTime ? childDetail.restTime : 0;
                 restTime += childDetail.baseRestTime;
-
               }
               if (childDetail.field1) {
                 if (childDetail.field1.baseUnit === "second") {
@@ -1125,10 +1134,12 @@ user_workouts_helper.update_user_workout_exercise = async (
   var insertWorkoutLogArray = [];
   var workoutLogsObj = {};
   try {
-    var user_workouts_data = await UserWorkoutExercises.findOneAndUpdate({
+    var user_workouts_data = await UserWorkoutExercises.findOneAndUpdate(
+      {
         _id: id
       },
-      childCollectionObject, {
+      childCollectionObject,
+      {
         new: true
       }
     );
@@ -1138,13 +1149,12 @@ user_workouts_helper.update_user_workout_exercise = async (
     });
     for (let childExercises of user_workouts_data.exercises) {
       if (childExercises.differentSets) {
-
         let totalChildExercise = childExercises.setsDetails.length;
         let cnt = 0;
         for (let childDetail of childExercises.setsDetails) {
-          var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
+          var restTime = (time = distance = effort = weight = repTime = speed = setTime = reps = 0);
 
-          if (cnt < (totalChildExercise - 1)) {
+          if (cnt < totalChildExercise - 1) {
             restTime += childDetail.baseRestTime;
           }
           if (childDetail.field1) {
@@ -1202,7 +1212,7 @@ user_workouts_helper.update_user_workout_exercise = async (
         var childDetail = childExercises.setsDetails[0];
 
         for (var i = 0; i < childExercises.sets; i++) {
-          var restTime = time = distance = effort = weight = repTime = speed = setTime = reps = 0;
+          var restTime = (time = distance = effort = weight = repTime = speed = setTime = reps = 0);
 
           if (i < childExercises.sets - 1) {
             restTime += childDetail.baseRestTime;
@@ -1299,10 +1309,12 @@ user_workouts_helper.update_user_workouts_by_id = async (
   masterCollectionObject
 ) => {
   try {
-    var user_workouts_data = await UserWorkouts.findOneAndUpdate({
+    var user_workouts_data = await UserWorkouts.findOneAndUpdate(
+      {
         _id: id
       },
-      masterCollectionObject, {
+      masterCollectionObject,
+      {
         new: true
       }
     );
@@ -1338,10 +1350,12 @@ user_workouts_helper.update_user_workouts_by_id = async (
  */
 user_workouts_helper.complete_master_event = async (id, updateObject) => {
   try {
-    let user_workouts_data = await UserWorkouts.findByIdAndUpdate({
+    let user_workouts_data = await UserWorkouts.findByIdAndUpdate(
+      {
         _id: id
       },
-      updateObject, {
+      updateObject,
+      {
         new: true
       }
     );
@@ -1369,35 +1383,44 @@ user_workouts_helper.complete_master_event = async (id, updateObject) => {
  */
 user_workouts_helper.complete_all_workout = async (id, updateObject) => {
   try {
-    let user_workouts_data1 = await UserWorkouts.update({
+    let user_workouts_data1 = await UserWorkouts.update(
+      {
         _id: id
       },
-      updateObject, {
+      updateObject,
+      {
         new: true
       }
     );
 
-    let user_workouts_data2 = await UserWorkoutExercises.updateMany({
+    let user_workouts_data2 = await UserWorkoutExercises.updateMany(
+      {
         userWorkoutsId: id
       },
-      updateObject, {
+      updateObject,
+      {
         new: true
       }
     );
 
-    let user_workoutsids = await UserWorkoutExercises.find({
-      userWorkoutsId: id
-    }, {
-      _id: 1
-    });
+    let user_workoutsids = await UserWorkoutExercises.find(
+      {
+        userWorkoutsId: id
+      },
+      {
+        _id: 1
+      }
+    );
     user_workoutsids = _.pluck(user_workoutsids, "_id");
 
-    let user_workouts_data3 = await WorkoutLogs.updateMany({
+    let user_workouts_data3 = await WorkoutLogs.updateMany(
+      {
         workoutId: {
           $in: user_workoutsids
         }
       },
-      updateObject, {
+      updateObject,
+      {
         new: true
       }
     );
@@ -1426,22 +1449,26 @@ user_workouts_helper.complete_all_workout = async (id, updateObject) => {
  */
 user_workouts_helper.complete_workout = async (id, updateObject) => {
   try {
-    let user_workout_exercises = await UserWorkoutExercises.updateMany({
+    let user_workout_exercises = await UserWorkoutExercises.updateMany(
+      {
         _id: {
           $in: id
         }
       },
-      updateObject, {
+      updateObject,
+      {
         new: true
       }
     );
 
-    let user_workouts_data3 = await WorkoutLogs.updateMany({
+    let user_workouts_data3 = await WorkoutLogs.updateMany(
+      {
         workoutId: {
           $in: id
         }
       },
-      updateObject, {
+      updateObject,
+      {
         new: true
       }
     );
@@ -1471,19 +1498,23 @@ user_workouts_helper.delete_user_workouts_exercise = async (
   subChildIds
 ) => {
   try {
-    let user_workouts_exercise = await UserWorkoutExercises.update({
-      _id: childId
-    }, {
-      $pull: {
-        exercises: {
-          _id: {
-            $in: subChildIds
+    let user_workouts_exercise = await UserWorkoutExercises.update(
+      {
+        _id: childId
+      },
+      {
+        $pull: {
+          exercises: {
+            _id: {
+              $in: subChildIds
+            }
           }
         }
+      },
+      {
+        new: true
       }
-    }, {
-      new: true
-    });
+    );
     let user_workouts_exercise2 = await WorkoutLogs.remove({
       setsDetailId: {
         $in: subChildIds
@@ -1521,13 +1552,16 @@ user_workouts_helper.delete_user_workouts_exercise = async (
  */
 user_workouts_helper.delete_user_workouts_by_exercise_ids = async workoutIds => {
   try {
-    let ids = await UserWorkoutExercises.find({
-      _id: {
-        $in: workoutIds
+    let ids = await UserWorkoutExercises.find(
+      {
+        _id: {
+          $in: workoutIds
+        }
+      },
+      {
+        _id: 1
       }
-    }, {
-      _id: 1
-    });
+    );
     ids = _.pluck(ids, "_id");
 
     let user_workouts_data = await UserWorkoutExercises.remove({
@@ -1577,13 +1611,16 @@ user_workouts_helper.delete_user_workouts_by_id = async workoutIds => {
       }
     });
 
-    let ids = await UserWorkoutExercises.find({
-      userWorkoutsId: {
-        $in: workoutIds
+    let ids = await UserWorkoutExercises.find(
+      {
+        userWorkoutsId: {
+          $in: workoutIds
+        }
+      },
+      {
+        _id: 1
       }
-    }, {
-      _id: 1
-    });
+    );
     ids = _.pluck(ids, "_id");
     let user_workouts_data2 = await UserWorkoutExercises.remove({
       userWorkoutsId: {
@@ -1619,49 +1656,61 @@ user_workouts_helper.delete_user_workouts_by_id = async workoutIds => {
  *          status  2 - If user_workouts not completed, with appropriate message 
  * @developed by "amc"
  */
-user_workouts_helper.complete_workout_by_days = async (id, userId, updateObject) => {
+user_workouts_helper.complete_workout_by_days = async (
+  id,
+  userId,
+  updateObject
+) => {
   try {
-    let user_workouts_data1 = await UserWorkouts.updateMany({
+    let user_workouts_data1 = await UserWorkouts.updateMany(
+      {
         _id: {
           $in: id
         },
         userId: userId
       },
-      updateObject, {
+      updateObject,
+      {
         new: true
       }
     );
     if (user_workouts_data1) {
-      let idsForWorkoutLog = await UserWorkoutExercises.find({
-        userWorkoutsId: {
-          $in: id
-        }
-      }, {
-        _id: 1
-      });
-
-      idsForWorkoutLog = _.pluck(idsForWorkoutLog, "_id");
-      await UserWorkoutExercises.updateMany({
+      let idsForWorkoutLog = await UserWorkoutExercises.find(
+        {
           userWorkoutsId: {
             $in: id
           }
         },
-        updateObject, {
+        {
+          _id: 1
+        }
+      );
+
+      idsForWorkoutLog = _.pluck(idsForWorkoutLog, "_id");
+      await UserWorkoutExercises.updateMany(
+        {
+          userWorkoutsId: {
+            $in: id
+          }
+        },
+        updateObject,
+        {
           new: true
         }
       );
-      await WorkoutLogs.updateMany({
+      await WorkoutLogs.updateMany(
+        {
           workoutId: {
             $in: idsForWorkoutLog
           },
           userId: userId
         },
-        updateObject, {
+        updateObject,
+        {
           new: true
         }
       );
     }
-
 
     return {
       status: 1,
@@ -1680,34 +1729,33 @@ user_workouts_helper.complete_workout_by_days = async (id, userId, updateObject)
  * reorder_exercises is used to reorder user workouts data based on user workouts sequence
  * @param   condition         Object  condition of user_workouts that need to be order
  * @return  status  0 - If any error occur in updating user_workouts, with error
- *          status  1 - If user_workouts completed successfully, with appropriate message
- *          status  2 - If user_workouts not completed, with appropriate message 
+ *          status  1 - If user_workouts updated successfully, with appropriate message
+ *          status  2 - If user_workouts not updated, with appropriate message 
  * @developed by "amc"
  */
-user_workouts_helper.reorder_exercises = async (reorderArray) => {
+user_workouts_helper.reorder_exercises = async reorderArray => {
   try {
     var condition = {};
-    var updateObj = {}
-    var returnArray = [];
+    var updateObj = {};
     for (let x of reorderArray) {
       condition = {
         _id: mongoose.Types.ObjectId(x.id)
-      }
+      };
       updateObj = {
         sequence: x.sequence
-      }
+      };
       await UserWorkoutExercises.findByIdAndUpdate(condition, updateObj, {
         new: true
       });
     }
     return {
       status: 1,
-      message: "Workout sequence updated",
+      message: "Workout sequence updated"
     };
   } catch (err) {
     return {
       status: 0,
-      message: "Error occured while updating user workouts completed",
+      message: "Error occured while updating user workouts updated",
       error: err
     };
   }
@@ -1723,11 +1771,13 @@ user_workouts_helper.reorder_exercises = async (reorderArray) => {
  */
 user_workouts_helper.totalGlobalUserWhoHaveCompletedExercises = async () => {
   try {
-    var count = await UserWorkouts.aggregate([{
-      $group: {
-        _id: "$userId",
+    var count = await UserWorkouts.aggregate([
+      {
+        $group: {
+          _id: "$userId"
+        }
       }
-    }, ]);
+    ]);
 
     if (count.length > 0) {
       return {
@@ -1750,6 +1800,5 @@ user_workouts_helper.totalGlobalUserWhoHaveCompletedExercises = async () => {
     };
   }
 };
-
 
 module.exports = user_workouts_helper;

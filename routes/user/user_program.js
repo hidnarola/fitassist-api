@@ -747,6 +747,40 @@ router.post("/", async (req, res) => {
     });
   }
 });
+
+/**
+ * @api {put} /user/user_program/reorder_exercises Update reorder of exercise
+ * @apiName Update reorder of exercise
+ * @apiGroup  User Program
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} workoutId workoutId of exercise
+ * @apiParam {Array} reorderExercises array of new exercise sequence
+ * @apiSuccess (Success 200) {String} message Success message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.put("/reorder_exercises", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var resp_data = await user_workout_helper.reorder_exercises(
+    req.body.reorderExercises
+  );
+
+  if (resp_data.status === 1) {
+    var group_by_data = await user_program_helper.get_all_program_workouts_group_by(
+      {
+        _id: mongoose.Types.ObjectId(req.body.workoutId)
+      },
+      false
+    );
+    if (group_by_data.status === 1) {
+      res.status(config.OK_STATUS).json(group_by_data);
+    } else {
+      res.status(config.OK_STATUS).json(group_by_data);
+    }
+  } else {
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
+});
 /**
  * @api {put} /user/user_program/workout/:workout_day_id Update user's program's exercises
  * @apiName Update user's program's exercises
