@@ -13,7 +13,8 @@ var _ = require("underscore");
  */
 user_program_helper.get_user_programs_in_details = async condition => {
   try {
-    var user_program = await UserPrograms.aggregate([{
+    var user_program = await UserPrograms.aggregate([
+      {
         $match: condition
       },
       {
@@ -114,7 +115,6 @@ user_program_helper.count_total_programs = async (condition = {}) => {
   }
 };
 
-
 /*
  * get_user_programs_in_details_for_assign is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
@@ -124,7 +124,8 @@ user_program_helper.count_total_programs = async (condition = {}) => {
  */
 user_program_helper.get_user_programs_in_details_for_assign = async condition => {
   try {
-    var user_program = await UserPrograms.aggregate([{
+    var user_program = await UserPrograms.aggregate([
+      {
         $match: condition
       },
       {
@@ -172,9 +173,12 @@ user_program_helper.get_user_programs_in_details_for_assign = async condition =>
  *          status 1 - If user program data found, with user program object
  *          status 2 - If user program not found, with appropriate message
  */
-user_program_helper.get_user_programs_data = async condition => {
+user_program_helper.get_user_programs_data = async (
+  condition,
+  project = {}
+) => {
   try {
-    var user_program = await userWorkoutsProgram.find(condition);
+    var user_program = await userWorkoutsProgram.find(condition, project);
 
     if (user_program) {
       return {
@@ -208,7 +212,8 @@ user_program_helper.get_all_program_workouts_group_by = async (
   condition = {}
 ) => {
   try {
-    var user_workouts = await userWorkoutsProgram.aggregate([{
+    var user_workouts = await userWorkoutsProgram.aggregate([
+      {
         $match: condition
       },
       {
@@ -237,6 +242,9 @@ user_program_helper.get_all_program_workouts_group_by = async (
           exercises: {
             $addToSet: "$exercises"
           },
+          programId: {
+            $first: "$programId"
+          },
           dayType: {
             $first: "$type"
           },
@@ -262,6 +270,7 @@ user_program_helper.get_all_program_workouts_group_by = async (
           _id: 1,
           userWorkoutsId: 1,
           type: 1,
+          programId: 1,
           exercises: 1,
           isCompleted: 1,
           dayType: 1,
@@ -279,6 +288,7 @@ user_program_helper.get_all_program_workouts_group_by = async (
         _id: user_workouts[0].userWorkoutsId,
         isCompleted: user_workouts[0].isCompleted,
         type: user_workouts[0].dayType,
+        programId: user_workouts[0].programId,
         title: user_workouts[0].title,
         description: user_workouts[0].description,
         userId: user_workouts[0].userId,
@@ -330,7 +340,8 @@ user_program_helper.get_user_programs = async (
   single = false
 ) => {
   try {
-    var user_program = await UserPrograms.aggregate([{
+    var user_program = await UserPrograms.aggregate([
+      {
         $match: condition
       },
       {
@@ -558,10 +569,12 @@ user_program_helper.update_program_workouts = async (
   childCollectionObject
 ) => {
   try {
-    user_workout_exercises_program = await userWorkoutExercisesProgram.findOneAndUpdate({
+    user_workout_exercises_program = await userWorkoutExercisesProgram.findOneAndUpdate(
+      {
         _id: id
       },
-      childCollectionObject, {
+      childCollectionObject,
+      {
         new: true
       }
     );
@@ -624,10 +637,12 @@ user_program_helper.assign_program = async programObj => {
  */
 user_program_helper.update_user_program_by_day_id = async (id, programObj) => {
   try {
-    var user_program_data = await userWorkoutsProgram.findOneAndUpdate({
+    var user_program_data = await userWorkoutsProgram.findOneAndUpdate(
+      {
         _id: id
       },
-      programObj, {
+      programObj,
+      {
         new: true
       }
     );
@@ -662,10 +677,12 @@ user_program_helper.update_user_program_by_day_id = async (id, programObj) => {
  */
 user_program_helper.update_user_program_by_id = async (id, programObj) => {
   try {
-    var user_program_data = await UserPrograms.findOneAndUpdate({
+    var user_program_data = await UserPrograms.findOneAndUpdate(
+      {
         _id: id
       },
-      programObj, {
+      programObj,
+      {
         new: true
       }
     );
@@ -692,7 +709,8 @@ user_program_helper.update_user_program_by_id = async (id, programObj) => {
  */
 user_program_helper.delete_user_program = async user_program_id => {
   try {
-    let programId = await userWorkoutsProgram.aggregate([{
+    let programId = await userWorkoutsProgram.aggregate([
+      {
         $match: {
           programId: user_program_id
         }
@@ -800,16 +818,19 @@ user_program_helper.copy_exercise_by_id = async (
   var insertWorkoutLogArray = [];
   try {
     var day_data = await userWorkoutsProgram
-      .findOne({
-        _id: exerciseId
-      }, {
-        _id: 0,
-        type: 1,
-        title: 1,
-        description: 1,
-        userId: 1,
-        programId: 1
-      })
+      .findOne(
+        {
+          _id: exerciseId
+        },
+        {
+          _id: 0,
+          type: 1,
+          title: 1,
+          description: 1,
+          userId: 1,
+          programId: 1
+        }
+      )
       .lean();
 
     day_data.day = day;
@@ -818,11 +839,14 @@ user_program_helper.copy_exercise_by_id = async (
     var workout_day = await user_workouts.save();
 
     var exercise_data = await userWorkoutExercisesProgram
-      .find({
-        userWorkoutsProgramId: exerciseId
-      }, {
-        _id: 0
-      })
+      .find(
+        {
+          userWorkoutsProgramId: exerciseId
+        },
+        {
+          _id: 0
+        }
+      )
       .lean();
 
     exercise_data.forEach(ex => {
@@ -905,19 +929,23 @@ user_program_helper.delete_user_workouts_exercise = async (
   subChildIds
 ) => {
   try {
-    let user_workouts_exercise = await userWorkoutExercisesProgram.update({
-      _id: childId
-    }, {
-      $pull: {
-        exercises: {
-          _id: {
-            $in: subChildIds
+    let user_workouts_exercise = await userWorkoutExercisesProgram.update(
+      {
+        _id: childId
+      },
+      {
+        $pull: {
+          exercises: {
+            _id: {
+              $in: subChildIds
+            }
           }
         }
+      },
+      {
+        new: true
       }
-    }, {
-      new: true
-    });
+    );
 
     let exercise = await userWorkoutExercisesProgram.findOne({
       _id: childId

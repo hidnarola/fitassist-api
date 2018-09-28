@@ -11,6 +11,7 @@ var user_program_helper = require("../../helpers/user_program_helper");
 var exercise_helper = require("../../helpers/exercise_helper");
 var common_helper = require("../../helpers/common_helper");
 var exercise_measurements_helper = require("../../helpers/exercise_measurements_helper");
+var body_parts_helper = require("../../helpers/body_parts_helper");
 
 /**
  * @api {get} /user/user_program/ Get user's program
@@ -72,7 +73,8 @@ router.get("/:program_id", async (req, res) => {
   var program_id = mongoose.Types.ObjectId(req.params.program_id);
 
   logger.trace("Get all user programs API called ID:" + program_id);
-  var resp_data = await user_program_helper.get_user_programs_in_details({
+  var resp_data = await user_program_helper.get_user_programs_in_details(
+    {
       _id: program_id
     },
     true
@@ -95,7 +97,7 @@ router.get("/:program_id", async (req, res) => {
     };
     var data = resp_data.program[0];
     var programDetails = data.programDetails;
-    programDetails = _.sortBy(programDetails, function (pd) {
+    programDetails = _.sortBy(programDetails, function(pd) {
       return pd.day;
     });
     returnObject.program.workouts = programDetails;
@@ -117,13 +119,74 @@ router.get("/:program_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/workout/:workout_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
 
   logger.trace("Get all user workout API called ID:" + workout_id);
   var resp_data = await user_program_helper.get_all_program_workouts_group_by({
-    _id: workout_id
+    _id: workout_id,
+    userId: authUserId
   });
 
+  var related_date_data = await user_program_helper.get_user_programs_data(
+    {
+      userId: authUserId,
+      programId: mongoose.Types.ObjectId(resp_data.workouts.programId),
+      day: resp_data.workouts.day
+    },
+    {
+      _id: 1,
+      programId: 1,
+      title: 1,
+      description: 1,
+      day: 1,
+      userId: 1
+    }
+  );
+  var tmp = [];
+  var warmupExercises = resp_data.workouts.warmup;
+  warmupExercises.forEach(warmup => {
+    warmup.exercises.forEach(w => {
+      if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+        tmp.push(w.exercises.mainMuscleGroup);
+      }
+    });
+  });
+  warmupExercises = resp_data.workouts.exercise;
+  warmupExercises.forEach(warmup => {
+    warmup.exercises.forEach(w => {
+      if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+        tmp.push(w.exercises.mainMuscleGroup);
+      }
+    });
+  });
+  warmupExercises = resp_data.workouts.cooldown;
+  warmupExercises.forEach(warmup => {
+    warmup.exercises.forEach(w => {
+      if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+        tmp.push(w.exercises.mainMuscleGroup);
+      }
+    });
+  });
+
+  var bodypartsNames = await body_parts_helper.get_all_body_parts({
+    _id: {
+      $in: tmp
+    }
+  });
+
+  if (bodypartsNames.status == 1) {
+    bodypartsNames = _.pluck(bodypartsNames.bodyparts, "bodypart");
+  }
+  var workouts_stat = {
+    muscle_work:
+      bodypartsNames && bodypartsNames.length > 0 ? bodypartsNames : []
+  };
+  resp_data.workouts_list = related_date_data.program
+    ? related_date_data.program
+    : [];
+  resp_data.workouts_stat = workouts_stat ? workouts_stat : null;
   if (resp_data.status == 1) {
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
@@ -151,13 +214,13 @@ router.post("/", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 0 to 100 characters',
+        errorMessage: "Name should be between 0 to 100 characters",
         options: {
           min: 0,
           max: 100
         }
       },
-      errorMessage: "Name is required",
+      errorMessage: "Name is required"
     }
   };
   req.checkBody(schema);
@@ -185,7 +248,6 @@ router.post("/", async (req, res) => {
       message: errors
     });
   }
-
 });
 
 /**
@@ -257,8 +319,6 @@ router.post("/day", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/workout", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
   var isError = false;
   var schema = {
     userWorkoutsId: {
@@ -463,7 +523,8 @@ router.post("/workout", async (req, res) => {
       totalExerciseIds.forEach((id, index) => {
         totalExerciseIds[index] = mongoose.Types.ObjectId(id);
       });
-      var exercise_data = await exercise_helper.get_exercise_id({
+      var exercise_data = await exercise_helper.get_exercise_id(
+        {
           _id: {
             $in: totalExerciseIds
           }
@@ -526,9 +587,11 @@ router.post("/workout", async (req, res) => {
         insertObj
       );
 
-      var returnObject = await user_program_helper.get_all_program_workouts_group_by({
-        _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
-      });
+      var returnObject = await user_program_helper.get_all_program_workouts_group_by(
+        {
+          _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
+        }
+      );
 
       if (workout_day.status == 1) {
         res.status(config.OK_STATUS).json(returnObject);
@@ -803,7 +866,8 @@ router.put("/workout", async (req, res) => {
       totalExerciseIds.forEach((id, index) => {
         totalExerciseIds[index] = mongoose.Types.ObjectId(id);
       });
-      var exercise_data = await exercise_helper.get_exercise_id({
+      var exercise_data = await exercise_helper.get_exercise_id(
+        {
           _id: {
             $in: totalExerciseIds
           }
@@ -866,9 +930,11 @@ router.put("/workout", async (req, res) => {
         insertObj
       );
 
-      var returnObject = await user_program_helper.get_all_program_workouts_group_by({
-        _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
-      });
+      var returnObject = await user_program_helper.get_all_program_workouts_group_by(
+        {
+          _id: mongoose.Types.ObjectId(req.body.userWorkoutsId)
+        }
+      );
 
       if (workout_day.status == 1) {
         res.status(config.OK_STATUS).json(returnObject);
@@ -1032,9 +1098,11 @@ router.post("/delete", async (req, res) => {
   );
 
   if (workout_data.status == 1) {
-    var resp_data = await user_program_helper.get_all_program_workouts_group_by({
-      _id: parentId
-    });
+    var resp_data = await user_program_helper.get_all_program_workouts_group_by(
+      {
+        _id: parentId
+      }
+    );
 
     resp_data.message = "Exercises Deleted";
 
@@ -1074,7 +1142,8 @@ router.post("/delete/exercise", async (req, res) => {
     subChildIds
   );
   if (workout_data.status === 1) {
-    var workout_day = await user_program_helper.get_all_program_workouts_group_by({
+    var workout_day = await user_program_helper.get_all_program_workouts_group_by(
+      {
         _id: mongoose.Types.ObjectId(parentId)
       },
       true
