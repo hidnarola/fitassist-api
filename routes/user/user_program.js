@@ -12,6 +12,7 @@ var exercise_helper = require("../../helpers/exercise_helper");
 var common_helper = require("../../helpers/common_helper");
 var exercise_measurements_helper = require("../../helpers/exercise_measurements_helper");
 var body_parts_helper = require("../../helpers/body_parts_helper");
+var user_workout_helper = require("../../helpers/user_workouts_helper");
 
 /**
  * @api {get} /user/user_program/ Get user's program
@@ -25,9 +26,7 @@ router.get("/", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Get all user programs API called");
-  var resp_data = await user_program_helper.get_user_programs({
-    userId: authUserId
-  });
+  var resp_data = await user_program_helper.get_user_programs({});
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user programs = ", resp_data);
@@ -598,7 +597,7 @@ router.post("/workout", async (req, res) => {
         delete single.exerciseId;
 
         for (let tmp of single.setsDetails) {
-          if (tmp.field1) {
+          if (tmp && tmp.field1) {
             var data = await common_helper.unit_converter(
               tmp.field1.value,
               tmp.field1.unit
@@ -607,7 +606,7 @@ router.post("/workout", async (req, res) => {
             tmp.field1.baseValue = data.baseValue;
           }
 
-          if (tmp.field2) {
+          if (tmp && tmp.field2) {
             var data = await common_helper.unit_converter(
               tmp.field2.value,
               tmp.field2.unit
@@ -616,7 +615,7 @@ router.post("/workout", async (req, res) => {
             tmp.field2.baseValue = data.baseValue;
           }
 
-          if (tmp.field3) {
+          if (tmp && tmp.field3) {
             var data = await common_helper.unit_converter(
               tmp.field3.value,
               tmp.field3.unit
@@ -759,8 +758,6 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/reorder_exercises", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
   var resp_data = await user_workout_helper.reorder_exercises(
     req.body.reorderExercises
   );

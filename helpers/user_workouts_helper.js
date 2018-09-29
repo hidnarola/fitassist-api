@@ -1,5 +1,6 @@
 var UserWorkouts = require("./../models/user_workouts");
 var UserWorkoutExercises = require("./../models/user_workout_exercises");
+var userWorkoutExercisesProgram = require("./../models/user_workout_exercises_program");
 var WorkoutLogs = require("./../models/workout_logs");
 var user_workouts_helper = {};
 var _ = require("underscore");
@@ -1744,9 +1745,14 @@ user_workouts_helper.reorder_exercises = async reorderArray => {
       updateObj = {
         sequence: x.sequence
       };
-      await UserWorkoutExercises.findByIdAndUpdate(condition, updateObj, {
-        new: true
-      });
+
+      await userWorkoutExercisesProgram.findByIdAndUpdate(
+        condition,
+        updateObj,
+        {
+          new: true
+        }
+      );
     }
     return {
       status: 1,

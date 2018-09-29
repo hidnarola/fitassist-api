@@ -131,7 +131,7 @@ router.post("/", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 150 characters',
+        errorMessage: "Name should be between 3 to 150 characters",
         options: {
           min: 3,
           max: 150
@@ -173,9 +173,8 @@ router.post("/", async (req, res) => {
         errorMessage: "Please enter valid Sub category "
       },
       errorMessage: "Sub Category is required"
-    }
+    };
   }
-
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -207,7 +206,7 @@ router.post("/", async (req, res) => {
       otherMuscleGroup: otherMuscleGroupData,
       detailedMuscleGroup: detailedMuscleGroupData,
       category: req.body.category,
-      mechanics: req.body.mechanics ? req.body.mechanics : 'compound',
+      mechanics: req.body.mechanics ? req.body.mechanics : "compound",
       equipments: equipmentsData,
       difficltyLevel: req.body.difficltyLevel,
       status: req.body.status,
@@ -220,7 +219,7 @@ router.post("/", async (req, res) => {
 
     async.waterfall(
       [
-        function (callback) {
+        function(callback) {
           //image upload
           if (req.files && req.files["images"]) {
             var file_path_array = [];
@@ -231,7 +230,7 @@ router.post("/", async (req, res) => {
             // assuming openFiles is an array of file names
             async.eachSeries(
               files,
-              function (file, loop_callback) {
+              function(file, loop_callback) {
                 var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
@@ -239,7 +238,7 @@ router.post("/", async (req, res) => {
                   }
                   extention = path.extname(file.name);
                   filename = "exercise_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function (err) {
+                  file.mv(dir + "/" + filename, function(err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -264,7 +263,7 @@ router.post("/", async (req, res) => {
                   });
                 }
               },
-              function (err) {
+              function(err) {
                 // if any of the file processing produced an error, err would equal that error
                 if (err) {
                   res.status(err.status).json(err);
@@ -333,7 +332,7 @@ router.put("/:exercise_id", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 150 characters',
+        errorMessage: "Name should be between 3 to 150 characters",
         options: {
           min: 3,
           max: 150
@@ -364,7 +363,7 @@ router.put("/:exercise_id", async (req, res) => {
     status: {
       notEmpty: true,
       errorMessage: "Status is required"
-    },
+    }
   };
   if (req.body.category && req.body.category !== "balance") {
     schema.subCategory = {
@@ -374,7 +373,7 @@ router.put("/:exercise_id", async (req, res) => {
         errorMessage: "Please enter valid Sub category "
       },
       errorMessage: "Sub Category is required"
-    }
+    };
   }
 
   req.checkBody(schema);
@@ -389,7 +388,6 @@ router.put("/:exercise_id", async (req, res) => {
       status: req.body.status,
       modifiedAt: new Date()
     };
-
 
     if (req.body.equipments) {
       let equipmentsData = [];
@@ -419,7 +417,7 @@ router.put("/:exercise_id", async (req, res) => {
     if (req.body.mechanics) {
       exercise_obj.mechanics = req.body.mechanics;
     }
-    if (req.body.subCategory) {
+    if (typeof req.body.subCategory != "undefined") {
       exercise_obj.subCategory = req.body.subCategory;
     }
     if (req.body.steps) {
@@ -453,7 +451,7 @@ router.put("/:exercise_id", async (req, res) => {
         //   // }
         //   // callback(null, new_img_path_list);
         // },
-        function (callback) {
+        function(callback) {
           //image upload
           var file_path_array = [];
 
@@ -466,14 +464,14 @@ router.put("/:exercise_id", async (req, res) => {
             // assuming openFiles is an array of file names
             async.eachSeries(
               files,
-              function (file, loop_callback) {
+              function(file, loop_callback) {
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
                     fs.mkdirSync(dir);
                   }
                   extention = path.extname(file.name);
                   filename = "exercise_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function (err) {
+                  file.mv(dir + "/" + filename, function(err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -498,7 +496,7 @@ router.put("/:exercise_id", async (req, res) => {
                   });
                 }
               },
-              function (err) {
+              function(err) {
                 // if any of the file processing produced an error, err would equal that error
                 if (err) {
                   res.status(err.status).json(err);
@@ -556,7 +554,8 @@ router.put("/:exercise_id", async (req, res) => {
 router.put("/undo/:exercise_id", async (req, res) => {
   logger.trace("Undo Exercise API - Id = ", req.params.exercise_id);
   let exercise_data = await exercise_helper.update_exercise_by_id(
-    req.params.exercise_id, {
+    req.params.exercise_id,
+    {
       isDeleted: 0
     }
   );
@@ -566,7 +565,10 @@ router.put("/undo/:exercise_id", async (req, res) => {
     res.status(config.OK_STATUS).json(exercise_data);
   } else {
     exercise_data.message = "Exercise could not recovered";
-    logger.error("Exercise not recovered Successfully = ", req.params.exercise_id);
+    logger.error(
+      "Exercise not recovered Successfully = ",
+      req.params.exercise_id
+    );
     res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
   }
 });
@@ -582,7 +584,8 @@ router.put("/undo/:exercise_id", async (req, res) => {
 router.delete("/:exercise_id", async (req, res) => {
   logger.trace("Delete Exercise API - Id = ", req.params.exercise_id);
   let exercise_data = await exercise_helper.update_exercise_by_id(
-    req.params.exercise_id, {
+    req.params.exercise_id,
+    {
       isDeleted: 1
     }
   );
@@ -592,7 +595,10 @@ router.delete("/:exercise_id", async (req, res) => {
     res.status(config.OK_STATUS).json(exercise_data);
   } else {
     exercise_data.message = "Exercise could not deleted";
-    logger.error("Exercise not deleted Successfully = ", req.params.exercise_id);
+    logger.error(
+      "Exercise not deleted Successfully = ",
+      req.params.exercise_id
+    );
     res.status(config.INTERNAL_SERVER_ERROR).json(exercise_data);
   }
 });
