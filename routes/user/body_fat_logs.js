@@ -25,8 +25,8 @@ router.post("/", async (req, res) => {
     },
     site1: {
       notEmpty: true,
-      isLength: {
-        errorMessage: 'Site1 should be between 0 to 200 characters',
+      isInt: {
+        errorMessage: "Site1 should be between 0 to 200",
         options: {
           min: 0,
           max: 200
@@ -36,8 +36,8 @@ router.post("/", async (req, res) => {
     },
     site2: {
       notEmpty: true,
-      isLength: {
-        errorMessage: 'Site2 should be between 0 to 200 characters',
+      isInt: {
+        errorMessage: "Site2 should be between 0 to 200",
         options: {
           min: 0,
           max: 200
@@ -47,8 +47,8 @@ router.post("/", async (req, res) => {
     },
     site3: {
       notEmpty: true,
-      isLength: {
-        errorMessage: 'Site3 should be between 0 to 200 characters',
+      isInt: {
+        errorMessage: "Site3 should be between 0 to 200",
         options: {
           min: 0,
           max: 200
@@ -58,8 +58,8 @@ router.post("/", async (req, res) => {
     },
     age: {
       notEmpty: true,
-      isLength: {
-        errorMessage: 'Age should be between 18 to 100 characters',
+      isInt: {
+        errorMessage: "Age should be between 18 to 100",
         options: {
           min: 18,
           max: 100
@@ -70,7 +70,7 @@ router.post("/", async (req, res) => {
     bodyFatPer: {
       notEmpty: true,
       errorMessage: "Body Fat % is required"
-    },
+    }
   };
 
   req.checkBody(schema);
@@ -87,7 +87,7 @@ router.post("/", async (req, res) => {
       bodyFatPer: req.body.bodyFatPer,
       age: req.body.age,
       modifiedAt: new Date()
-    }
+    };
 
     var startdate = moment(logDate).utcOffset(0);
     startdate.toISOString();
@@ -107,6 +107,13 @@ router.post("/", async (req, res) => {
         $lte: enddate
       }
     });
+    console.log("------------------------------------");
+    console.log("resp_data => ", resp_data);
+    console.log("------------------------------------");
+    console.log("------------------------------------");
+    console.log("bodyFatObject => ", bodyFatObject);
+    console.log("------------------------------------");
+
     if (resp_data.status === 2) {
       var resp_data = await body_fat_helper.save_body_fat_log(bodyFatObject);
       if (resp_data.status == 1) {
@@ -117,10 +124,13 @@ router.post("/", async (req, res) => {
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
       }
     } else {
-      var resp_data = await body_fat_helper.save_body_fat_log(
-        bodyFatObject, {
-          _id: resp_data.body_fat_log._id
-        });
+      console.log("------------------------------------");
+      console.log("Update this => ", resp_data.body_fat_log._id);
+      console.log("------------------------------------");
+
+      var resp_data = await body_fat_helper.save_body_fat_log(bodyFatObject, {
+        _id: resp_data.body_fat_log._id
+      });
       if (resp_data.status == 1) {
         logger.trace("body_fat_log got saved = ", resp_data);
         res.status(config.OK_STATUS).json(resp_data);
@@ -135,7 +145,5 @@ router.post("/", async (req, res) => {
       message: errors
     });
   }
-
-
 });
 module.exports = router;
