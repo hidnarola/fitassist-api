@@ -546,6 +546,7 @@ user_program_helper.insert_program_workouts = async childCollectionObject => {
     };
   }
 };
+
 /*
  * update_program_workouts is used to update user program workouts data based on user program workouts id
  * @param   id         String  _id of user program workouts that need to be update

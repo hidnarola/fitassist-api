@@ -14,20 +14,24 @@ var exercise_helper = require("../../helpers/exercise_helper");
  */
 router.get("/names", async (req, res) => {
   logger.trace("Get all Exercise of name API called");
-  var resp_data = await exercise_helper.get_all_exercise({
-    $and: [{
-        isDeleted: 0
-      },
-      {
-        status: 1
-      }
-    ]
-  }, {
-    _id: 1,
-    name: 1,
-    category: 1,
-    subCategory: 1
-  });
+  var resp_data = await exercise_helper.get_all_exercise(
+    {
+      $and: [
+        {
+          isDeleted: 0
+        },
+        {
+          status: 1
+        }
+      ]
+    },
+    {
+      _id: 1,
+      name: 1,
+      category: 1,
+      subCategory: 1
+    }
+  );
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching exercise = ", resp_data);
@@ -50,7 +54,8 @@ router.get("/names", async (req, res) => {
 router.get("/", async (req, res) => {
   logger.trace("Get all Exercise API called");
   var resp_data = await exercise_helper.get_all_exercise_for_user({
-    $and: [{
+    $and: [
+      {
         isDeleted: 0
       },
       {

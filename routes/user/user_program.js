@@ -69,12 +69,14 @@ router.get("/names", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:program_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   var program_id = mongoose.Types.ObjectId(req.params.program_id);
-
   logger.trace("Get all user programs API called ID:" + program_id);
   var resp_data = await user_program_helper.get_user_programs_in_details(
     {
-      _id: program_id
+      _id: program_id,
+      userId: authUserId
     },
     true
   );
@@ -127,71 +129,72 @@ router.get("/workout/:workout_id", async (req, res) => {
     _id: workout_id,
     userId: authUserId
   });
-
-  var related_date_data = await user_program_helper.get_user_programs_data(
-    {
-      userId: authUserId,
-      programId: mongoose.Types.ObjectId(resp_data.workouts.programId),
-      day: resp_data.workouts.day
-    },
-    {
-      _id: 1,
-      programId: 1,
-      title: 1,
-      description: 1,
-      day: 1,
-      userId: 1
+  if (resp_data.status === 1) {
+    var related_date_data = await user_program_helper.get_user_programs_data(
+      {
+        userId: authUserId,
+        programId: mongoose.Types.ObjectId(resp_data.workouts.programId),
+        day: resp_data.workouts.day
+      },
+      {
+        _id: 1,
+        programId: 1,
+        title: 1,
+        description: 1,
+        day: 1,
+        userId: 1
+      }
+    );
+    var tmp = [];
+    var warmupExercises = resp_data.workouts.warmup;
+    warmupExercises.forEach(warmup => {
+      warmup.exercises.forEach(w => {
+        if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+          tmp.push(w.exercises.mainMuscleGroup);
+        }
+      });
+    });
+    warmupExercises = resp_data.workouts.exercise;
+    warmupExercises.forEach(warmup => {
+      warmup.exercises.forEach(w => {
+        if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+          tmp.push(w.exercises.mainMuscleGroup);
+        }
+      });
+    });
+    warmupExercises = resp_data.workouts.cooldown;
+    warmupExercises.forEach(warmup => {
+      warmup.exercises.forEach(w => {
+        if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+          tmp.push(w.exercises.mainMuscleGroup);
+        }
+      });
+    });
+    var bodypartsNames = await body_parts_helper.get_all_body_parts({
+      _id: {
+        $in: tmp
+      }
+    });
+    if (bodypartsNames.status == 1) {
+      bodypartsNames = _.pluck(bodypartsNames.bodyparts, "bodypart");
     }
-  );
-  var tmp = [];
-  var warmupExercises = resp_data.workouts.warmup;
-  warmupExercises.forEach(warmup => {
-    warmup.exercises.forEach(w => {
-      if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
-        tmp.push(w.exercises.mainMuscleGroup);
-      }
-    });
-  });
-  warmupExercises = resp_data.workouts.exercise;
-  warmupExercises.forEach(warmup => {
-    warmup.exercises.forEach(w => {
-      if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
-        tmp.push(w.exercises.mainMuscleGroup);
-      }
-    });
-  });
-  warmupExercises = resp_data.workouts.cooldown;
-  warmupExercises.forEach(warmup => {
-    warmup.exercises.forEach(w => {
-      if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
-        tmp.push(w.exercises.mainMuscleGroup);
-      }
-    });
-  });
-
-  var bodypartsNames = await body_parts_helper.get_all_body_parts({
-    _id: {
-      $in: tmp
-    }
-  });
-
-  if (bodypartsNames.status == 1) {
-    bodypartsNames = _.pluck(bodypartsNames.bodyparts, "bodypart");
-  }
-  var workouts_stat = {
-    muscle_work:
-      bodypartsNames && bodypartsNames.length > 0 ? bodypartsNames : []
-  };
-  resp_data.workouts_list = related_date_data.program
-    ? related_date_data.program
-    : [];
-  resp_data.workouts_stat = workouts_stat ? workouts_stat : null;
-  if (resp_data.status == 1) {
+    var workouts_stat = {
+      muscle_work:
+        bodypartsNames && bodypartsNames.length > 0 ? bodypartsNames : []
+    };
+    resp_data.workouts_stat = workouts_stat ? workouts_stat : null;
+    resp_data.workouts_list = related_date_data.program
+      ? related_date_data.program
+      : [];
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
     logger.error("Error occured while fetching user program = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json({
+      status: 0,
+      message: "Invalid request",
+      error: null
+    });
   }
 });
 
@@ -370,6 +373,8 @@ router.post("/day", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/workout", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   var isError = false;
   var schema = {
     userWorkoutsId: {
@@ -645,6 +650,62 @@ router.post("/workout", async (req, res) => {
       );
 
       if (workout_day.status == 1) {
+        var related_date_data = await user_program_helper.get_user_programs_data(
+          {
+            userId: authUserId,
+            programId: mongoose.Types.ObjectId(returnObject.workouts.programId),
+            day: returnObject.workouts.day
+          },
+          {
+            _id: 1,
+            programId: 1,
+            title: 1,
+            description: 1,
+            day: 1,
+            userId: 1
+          }
+        );
+        var tmp = [];
+        var warmupExercises = returnObject.workouts.warmup;
+        warmupExercises.forEach(warmup => {
+          warmup.exercises.forEach(w => {
+            if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+              tmp.push(w.exercises.mainMuscleGroup);
+            }
+          });
+        });
+        warmupExercises = returnObject.workouts.exercise;
+        warmupExercises.forEach(warmup => {
+          warmup.exercises.forEach(w => {
+            if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+              tmp.push(w.exercises.mainMuscleGroup);
+            }
+          });
+        });
+        warmupExercises = returnObject.workouts.cooldown;
+        warmupExercises.forEach(warmup => {
+          warmup.exercises.forEach(w => {
+            if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+              tmp.push(w.exercises.mainMuscleGroup);
+            }
+          });
+        });
+        var bodypartsNames = await body_parts_helper.get_all_body_parts({
+          _id: {
+            $in: tmp
+          }
+        });
+        if (bodypartsNames.status == 1) {
+          bodypartsNames = _.pluck(bodypartsNames.bodyparts, "bodypart");
+        }
+        var workouts_stat = {
+          muscle_work:
+            bodypartsNames && bodypartsNames.length > 0 ? bodypartsNames : []
+        };
+        returnObject.workouts_stat = workouts_stat ? workouts_stat : null;
+        returnObject.workouts_list = related_date_data.program
+          ? related_date_data.program
+          : [];
         res.status(config.OK_STATUS).json(returnObject);
       } else {
         res.status(config.BAD_REQUEST).json(workout_day);
