@@ -44,13 +44,19 @@ user_post_helper.count_post = async id => {
  *          status 1 - If user's post photos data found, with user's post photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
-user_post_helper.get_user_post_photos = async (username, skip, limit, sort = {
-  $sort: {
-    createdAt: -1
+user_post_helper.get_user_post_photos = async (
+  username,
+  skip,
+  limit,
+  sort = {
+    $sort: {
+      createdAt: -1
+    }
   }
-}, ) => {
+) => {
   try {
-    var user_post_photos = await UserPost.aggregate([{
+    var user_post_photos = await UserPost.aggregate([
+      {
         $lookup: {
           from: "users",
           localField: "userId",
@@ -141,7 +147,8 @@ user_post_helper.get_user_post_photos = async (username, skip, limit, sort = {
 user_post_helper.get_user_timeline_by_id = async condition => {
   try {
     //#region timeline old query
-    var timeline = await UserTimeline.aggregate([{
+    var timeline = await UserTimeline.aggregate([
+      {
         $match: condition
       },
       {
@@ -369,6 +376,7 @@ user_post_helper.get_user_timeline_by_id = async condition => {
           }
         });
         t.likes = likes;
+        t.comments = comments;
       });
       // var tmp = _.sortBy(timeline[0].comments, function (o) {
       //   return o.createdAt;
@@ -408,7 +416,8 @@ user_post_helper.get_user_timeline = async (
 ) => {
   try {
     //#region timeline old query
-    var timeline = await UserTimeline.aggregate([{
+    var timeline = await UserTimeline.aggregate([
+      {
         $match: condition
       },
       {
@@ -644,7 +653,7 @@ user_post_helper.get_user_timeline = async (
           comments.push(comment);
         }
       });
-      tmp = _.sortBy(comments, function (o) {
+      tmp = _.sortBy(comments, function(o) {
         return o.create_date;
       });
       t.likes = likes;
@@ -788,7 +797,8 @@ user_post_helper.update_user_post_photo = async (
   try {
     let user_post_photo = await UserPostsImages.findOneAndUpdate(
       condition,
-      user_post_photo_obj, {
+      user_post_photo_obj,
+      {
         new: true
       }
     );
@@ -859,37 +869,42 @@ user_post_helper.delete_user_timeline_post = async (id, updateObj) => {
     var postPhotoId = timeline_data.postPhotoId;
 
     if (progressPhotoId) {
-      let user_progress_photo = await user_progress_photos_helper.delete_user_progress_photo({
-        _id: progressPhotoId
-      }, {
-        updateObj
-      }, {
-        new: true
-      });
-    }
-    if (postPhotoId) {
-      await UserPostsImages.findOneAndUpdate({
-          postId: postPhotoId
+      let user_progress_photo = await user_progress_photos_helper.delete_user_progress_photo(
+        {
+          _id: progressPhotoId
         },
-        updateObj, {
+        {
+          updateObj
+        },
+        {
           new: true
         }
       );
-      await UserPost.findOneAndUpdate({
+    }
+    if (postPhotoId) {
+      await UserPostsImages.findOneAndUpdate(
+        {
+          postId: postPhotoId
+        },
+        updateObj,
+        {
+          new: true
+        }
+      );
+      await UserPost.findOneAndUpdate(
+        {
           _id: postPhotoId
         },
-        updateObj, {
+        updateObj,
+        {
           new: true
         }
       );
     }
 
-    let timeline = await UserTimeline.findOneAndUpdate(
-      id,
-      updateObj, {
-        new: true
-      }
-    );
+    let timeline = await UserTimeline.findOneAndUpdate(id, updateObj, {
+      new: true
+    });
     if (!timeline) {
       return {
         status: 2,
