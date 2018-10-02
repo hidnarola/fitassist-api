@@ -542,7 +542,7 @@ workout_progress_helper.user_body_progress = async (id) => {
 				})
 				weight.push({
 					date,
-					count: parseFloat((await common_helper.convertUnits("cm", weightUnit, bodypart.weight)).toFixed(2)),
+					count: parseFloat((await common_helper.convertUnits("gram", weightUnit, bodypart.weight)).toFixed(2)),
 					metaData: {
 						unit: weightUnit,
 						name: "Weight"

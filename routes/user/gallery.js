@@ -32,15 +32,18 @@ router.get("/:username/:skip/:limit/:sort?", async (req, res) => {
   logger.trace("Get all user's post photos API called");
 
   var resp_data = await user_posts_helper.get_user_post_photos(
-    username, {
+    username,
+    {
       $skip: skip
-    }, {
+    },
+    {
       $limit: limit
-    }, {
+    },
+    {
       $sort: {
         createdAt: sort
       }
-    },
+    }
   );
 
   if (resp_data.status === 1) {
@@ -103,8 +106,6 @@ router.post("/", async (req, res) => {
       errorMessage: "privacy is required"
     }
   };
-  galleryImages = typeof req.files['images'] !== "undefined" ? req.files['images'][0].filename : '';
-  req.checkBody('images', 'Invalid Image format').isImage(galleryImages);
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -127,7 +128,7 @@ router.post("/", async (req, res) => {
 
     async.waterfall(
       [
-        function (callback) {
+        function(callback) {
           //image upload
           if (req.files && req.files["images"]) {
             var file_path_array = [];
@@ -137,7 +138,7 @@ router.post("/", async (req, res) => {
 
             async.eachSeries(
               files,
-              function (file, loop_callback) {
+              function(file, loop_callback) {
                 var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
@@ -145,7 +146,7 @@ router.post("/", async (req, res) => {
                   }
                   extention = path.extname(file.name);
                   filename = "user_post_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function (err) {
+                  file.mv(dir + "/" + filename, function(err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -171,7 +172,7 @@ router.post("/", async (req, res) => {
                   });
                 }
               },
-              function (err) {
+              function(err) {
                 if (err) {
                   res.status(err.status).json(err);
                 } else {
@@ -209,60 +210,61 @@ router.post("/", async (req, res) => {
 
           async.each(
             file_path_array,
-            async function (file, callback) {
-                post_image_obj.image = file;
-                let user_post_data = await user_posts_helper.insert_user_post_image(
-                  post_image_obj
+            async function(file, callback) {
+              post_image_obj.image = file;
+              let user_post_data = await user_posts_helper.insert_user_post_image(
+                post_image_obj
+              );
+              if (user_post_data.status === 0) {
+                unsuccess++;
+                logger.error(
+                  "Error while inserting user post data = ",
+                  user_post_data
                 );
-                if (user_post_data.status === 0) {
-                  unsuccess++;
-                  logger.error(
-                    "Error while inserting user post data = ",
-                    user_post_data
-                  );
-                } else {
-                  success++;
-                }
-              },
-              async function (err) {
-                if (err) {
-                  console.log("Failed to upload image");
-                } else {
-                  //TIMELINE START
-                  var timelineObj = {
-                    userId: authUserId,
-                    createdBy: authUserId,
-                    postPhotoId: user_post_data.user_post_photo._id,
-                    tagLine: "added a new gallery photo",
-                    type: "gallery",
-                    privacy: req.body.privacy ? req.body.privacy : 3
-                  };
-
-                  let user_timeline_data = await user_timeline_helper.insert_timeline_data(
-                    timelineObj
-                  );
-
-                  if (user_timeline_data.status === 0) {
-                    logger.error(
-                      "Error while inserting timeline data = ",
-                      user_timeline_data
-                    );
-                  } else {
-                    logger.error(
-                      "successfully added timeline data = ",
-                      user_timeline_data
-                    );
-                  }
-                  // TIMELINE END
-                  return res.status(config.OK_STATUS).json({
-                    status: 1,
-                    message: success +
-                      " successfully uploaded image(s), " +
-                      unsuccess +
-                      " failed uploaded image(s)"
-                  });
-                }
+              } else {
+                success++;
               }
+            },
+            async function(err) {
+              if (err) {
+                console.log("Failed to upload image");
+              } else {
+                //TIMELINE START
+                var timelineObj = {
+                  userId: authUserId,
+                  createdBy: authUserId,
+                  postPhotoId: user_post_data.user_post_photo._id,
+                  tagLine: "added a new gallery photo",
+                  type: "gallery",
+                  privacy: req.body.privacy ? req.body.privacy : 3
+                };
+
+                let user_timeline_data = await user_timeline_helper.insert_timeline_data(
+                  timelineObj
+                );
+
+                if (user_timeline_data.status === 0) {
+                  logger.error(
+                    "Error while inserting timeline data = ",
+                    user_timeline_data
+                  );
+                } else {
+                  logger.error(
+                    "successfully added timeline data = ",
+                    user_timeline_data
+                  );
+                }
+                // TIMELINE END
+                return res.status(config.OK_STATUS).json({
+                  status: 1,
+                  message:
+                    success +
+                    " successfully uploaded image(s), " +
+                    unsuccess +
+                    " failed uploaded image(s)"
+                });
+              }
+            }
           );
         }
       }
@@ -329,7 +331,7 @@ router.put("/:photo_id", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "user_post_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function (err) {
+        file.mv(dir + "/" + filename, function(err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -358,13 +360,14 @@ router.put("/:photo_id", async (req, res) => {
       var resp_data = await user_posts_helper.get_user_post_photo_by_id({
         _id: req.params.photo_id
       });
-      fs.unlink(resp_data.user_post_photo.image, function (err, Success) {
+      fs.unlink(resp_data.user_post_photo.image, function(err, Success) {
         if (err) throw err;
       });
       user_post_obj.image = "uploads/gallery/" + filename;
     }
 
-    resp_data = await user_posts_helper.update_user_post_photo({
+    resp_data = await user_posts_helper.update_user_post_photo(
+      {
         _id: req.params.photo_id,
         userId: authUserId
       },
@@ -398,12 +401,15 @@ router.delete("/:photo_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete user's post photo API - Id = ", req.params.photo_id);
-  let user_post_data = await user_posts_helper.delete_user_post_photo({
-    userId: authUserId,
-    _id: req.params.photo_id
-  }, {
-    isDeleted: 1
-  });
+  let user_post_data = await user_posts_helper.delete_user_post_photo(
+    {
+      userId: authUserId,
+      _id: req.params.photo_id
+    },
+    {
+      isDeleted: 1
+    }
+  );
 
   if (user_post_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(user_post_data);

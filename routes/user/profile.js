@@ -90,19 +90,26 @@ router.get("/:username", async (req, res) => {
       friendshipStatus = "self";
     } else {
       friend_data = await friend_helper.checkFriend({
-        $or: [{
-            $and: [{
-              userId: authUserId
-            }, {
-              friendId: userAuthId
-            }]
+        $or: [
+          {
+            $and: [
+              {
+                userId: authUserId
+              },
+              {
+                friendId: userAuthId
+              }
+            ]
           },
           {
-            $and: [{
-              userId: userAuthId
-            }, {
-              friendId: authUserId
-            }]
+            $and: [
+              {
+                userId: userAuthId
+              },
+              {
+                friendId: authUserId
+              }
+            ]
           }
         ]
       });
@@ -177,16 +184,22 @@ router.put("/", async (req, res) => {
     gender: {
       notEmpty: true,
       isIn: {
-        options: ['male', 'female'],
+        options: ["male", "female"],
         errorMessage: "Gender is invalid"
       },
       errorMessage: "Gender is required"
-    },
+    }
   };
-  req.checkBody('firstName').trim().notEmpty().withMessage('First name is required.').isLength({
-    min: 2,
-    max: 20
-  }).withMessage('First name should be between 2 to 20 chars');
+  req
+    .checkBody("firstName")
+    .trim()
+    .notEmpty()
+    .withMessage("First name is required.")
+    .isLength({
+      min: 2,
+      max: 20
+    })
+    .withMessage("First name should be between 2 to 20 chars");
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -213,15 +226,21 @@ router.put("/", async (req, res) => {
     // }
     if (req.body.height) {
       if (req.body.heightUnit) {
-        var height = await common_helper.unit_converter(req.body.height, req.body.heightUnit);
+        var height = await common_helper.unit_converter(
+          req.body.height,
+          req.body.heightUnit
+        );
+        user_obj.height = height.baseValue;
       }
-      user_obj.height = height.baseValue;
     }
     if (req.body.weight) {
       if (req.body.weightUnit) {
-        var weight = await common_helper.unit_converter(req.body.weight, req.body.weightUnit);
+        var weight = await common_helper.unit_converter(
+          req.body.weight,
+          req.body.weightUnit
+        );
+        user_obj.weight = weight.baseValue;
       }
-      user_obj.weight = weight.baseValue;
     }
     if (req.body.aboutMe) {
       user_obj.aboutMe = req.body.aboutMe;
@@ -330,13 +349,19 @@ router.put("/update_aboutme", async (req, res) => {
     user_profile_obj.weight = 0;
     if (req.body.height) {
       if (req.body.heightUnit) {
-        var height = await common_helper.unit_converter(req.body.height, req.body.heightUnit);
+        var height = await common_helper.unit_converter(
+          req.body.height,
+          req.body.heightUnit
+        );
       }
       user_profile_obj.height = height.baseValue;
     }
     if (req.body.weight) {
       if (req.body.weightUnit) {
-        var weight = await common_helper.unit_converter(req.body.weight, req.body.weightUnit);
+        var weight = await common_helper.unit_converter(
+          req.body.weight,
+          req.body.weightUnit
+        );
       }
       user_profile_obj.weight = weight.baseValue;
     }
@@ -389,16 +414,19 @@ router.put("/photo", async (req, res) => {
 
     resp_data = await user_helper.get_user_by_id(authUserId);
     try {
-      fs.unlink(resp_data.user.avatar, function () {});
+      fs.unlink(resp_data.user.avatar, function() {});
     } catch (err) {}
     let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
 
     if (user_data.status === 1) {
       logger.info("Updated user profile", user_data);
       res.status(config.OK_STATUS).json(user_data);
-      common_helper.sync_user_data_to_auth(authUserId, {
-        picture: user_obj.avatar
-      }).then(function (response) {}).catch(function (error) {});
+      common_helper
+        .sync_user_data_to_auth(authUserId, {
+          picture: user_obj.avatar
+        })
+        .then(function(response) {})
+        .catch(function(error) {});
       var badges = await badgeAssign(authUserId);
     } else {
       logger.error("Error while updating user avatar = ", user_data);
@@ -407,12 +435,10 @@ router.put("/photo", async (req, res) => {
       });
     }
   } else {
-    return res
-      .status(config.BAD_REQUEST)
-      .json({
-        status: 2,
-        message: "no image selected"
-      });
+    return res.status(config.BAD_REQUEST).json({
+      status: 2,
+      message: "no image selected"
+    });
   }
 });
 
@@ -442,9 +468,7 @@ router.put("/preferences", async (req, res) => {
     schema.distance = {
       notEmpty: false,
       isIn: {
-        options: [
-          ["km", "mile"]
-        ],
+        options: [["km", "mile"]],
         errorMessage: "distance is invalid"
       },
       errorMessage: "distance unit required"
@@ -455,9 +479,7 @@ router.put("/preferences", async (req, res) => {
     schema.weight = {
       notEmpty: false,
       isIn: {
-        options: [
-          ["kg", "lb"]
-        ],
+        options: [["kg", "lb"]],
         errorMessage: "weight is invalid"
       },
       errorMessage: "weight unit required"
@@ -468,9 +490,7 @@ router.put("/preferences", async (req, res) => {
     schema.bodyMeasurement = {
       notEmpty: false,
       isIn: {
-        options: [
-          ["cm", "inch"]
-        ],
+        options: [["cm", "inch"]],
         errorMessage: "body is invalid"
       },
       errorMessage: "body measurement unit required"
@@ -553,7 +573,8 @@ router.put("/preferences", async (req, res) => {
 
     setting_obj.modifiedAt = new Date();
 
-    let settings_data = await user_settings_helper.save_settings({
+    let settings_data = await user_settings_helper.save_settings(
+      {
         userId: authUserId
       },
       setting_obj
@@ -574,9 +595,7 @@ router.put("/preferences", async (req, res) => {
   }
 });
 
-
 async function badgeAssign(authUserId) {
-
   var user_data = await user_helper.get_user_by_id(authUserId);
   if (user_data.status === 1) {
     var data = user_data.user;
@@ -609,7 +628,8 @@ async function badgeAssign(authUserId) {
     //badge assign
     var badgeAssign = await badge_assign_helper.badge_assign(
       authUserId,
-      constant.BADGES_TYPE.PROFILE, {
+      constant.BADGES_TYPE.PROFILE,
+      {
         percentage: percentage
       }
     );
@@ -617,6 +637,6 @@ async function badgeAssign(authUserId) {
   }
   return {
     status: 0
-  }
+  };
 }
 module.exports = router;
