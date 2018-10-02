@@ -13,8 +13,8 @@ var notification_helper = require("./../helpers/notification_helper");
 var badge_assign_helper = require("./../helpers/badge_assign_helper");
 var socket = require("../socket/socketServer");
 
-common_helper.hashPassword = function (callback) {
-  bcrypt.compare(this.password, this.hash, function (err, res) {
+common_helper.hashPassword = function(callback) {
+  bcrypt.compare(this.password, this.hash, function(err, res) {
     if (err) {
       callback({
         status: 0,
@@ -29,13 +29,13 @@ common_helper.hashPassword = function (callback) {
   });
 };
 
-common_helper.changeObject = function (data, callback) {
+common_helper.changeObject = function(data, callback) {
   columnFilter = {};
   columnSort = {};
   filter = [];
   //   columnFilterEqual = {};
 
-  async.forEach(data.columnFilter, function (val, next) {
+  async.forEach(data.columnFilter, function(val, next) {
     var key = val.id;
     var value = val.value;
     if (val.isDigitFlag) {
@@ -49,7 +49,7 @@ common_helper.changeObject = function (data, callback) {
     columnFilter[key] = value;
   });
   if (data.columnSort && data.columnSort.length > 0) {
-    async.forEach(data.columnSort, function (val, next) {
+    async.forEach(data.columnSort, function(val, next) {
       var key = val.id;
       var value = 1;
       if (val.desc) {
@@ -240,68 +240,77 @@ common_helper.unit_converter = async (data, unit) => {
  *          status 2 - If notification not inserted, with appropriate message
  */
 common_helper.send_notification = async (notificationData, socket) => {
-  let receiver_data = await user_helper.get_user_by({
-    authUserId: notificationData.receiverId
-  });
-
-  if (receiver_data.status == 1) {
-    var receiver = {
-      firstName: receiver_data.user.firstName,
-      lastName: receiver_data.user.lastName ? receiver_data.user.lastName : "",
-      avatar: receiver_data.user.avatar,
-      username: receiver_data.user.username,
-      authUserId: receiver_data.user.authUserId
-    };
-  }
-
-  if (notificationData.senderId == "system") {
-    var sender = {
-      firstName: "System",
-      lastName: ""
-    };
-  } else {
-    let sender_data = await user_helper.get_user_by({
-      authUserId: notificationData.senderId
+  try {
+    let receiver_data = await user_helper.get_user_by({
+      authUserId: notificationData.receiverId
     });
-    if (sender_data.status == 1) {
-      var sender = {
-        firstName: sender_data.user.firstName,
-        lastName: sender_data.user.lastName ? sender_data.user.lastName : "",
-        avatar: sender_data.user.avatar,
-        username: sender_data.user.username,
-        authUserId: sender_data.user.authUserId
+
+    if (receiver_data.status == 1) {
+      var receiver = {
+        firstName: receiver_data.user.firstName,
+        lastName: receiver_data.user.lastName
+          ? receiver_data.user.lastName
+          : "",
+        avatar: receiver_data.user.avatar,
+        username: receiver_data.user.username,
+        authUserId: receiver_data.user.authUserId
       };
     }
-  }
 
-  if (sender && receiver) {
-    var notificationObj = {
-      sender: sender,
-      receiver: receiver,
-      type: notificationData.type,
-      timelineId: notificationData.timelineId,
-      body: `${sender.firstName} ${
-        sender.lastName ? " " + sender.lastName : ""
-      } ${notificationData.bodyMessage}`
-    };
-
-    let notification_data = await notification_helper.add_notifications(
-      notificationObj,
-      socket
-    );
-
-    if (notification_data.status == 1) {
-      return {
-        status: 1,
-        message: "notification sent",
-        notification: notification_data
+    if (notificationData.senderId == "system") {
+      var sender = {
+        firstName: "System",
+        lastName: ""
       };
     } else {
-      return {
-        status: 1,
-        message: "notification not sent"
-      };
+      let sender_data = await user_helper.get_user_by({
+        authUserId: notificationData.senderId
+      });
+      if (sender_data.status == 1) {
+        var sender = {
+          firstName: sender_data.user.firstName,
+          lastName: sender_data.user.lastName ? sender_data.user.lastName : "",
+          avatar: sender_data.user.avatar,
+          username: sender_data.user.username,
+          authUserId: sender_data.user.authUserId
+        };
+      }
     }
+
+    if (sender && receiver) {
+      var notificationObj = {
+        sender: sender,
+        receiver: receiver,
+        type: notificationData.type,
+        timelineId: notificationData.timelineId,
+        body: `${sender.firstName} ${
+          sender.lastName ? " " + sender.lastName : ""
+        } ${notificationData.bodyMessage}`
+      };
+
+      let notification_data = await notification_helper.add_notifications(
+        notificationObj,
+        socket
+      );
+
+      if (notification_data.status == 1) {
+        return {
+          status: 1,
+          message: "notification sent",
+          notification: notification_data
+        };
+      } else {
+        return {
+          status: 1,
+          message: "notification not sent"
+        };
+      }
+    }
+  } catch (error) {
+    return {
+      status: 1,
+      message: "notification not sent"
+    };
   }
 };
 
@@ -443,10 +452,10 @@ common_helper.convertUnits = async (from, to, value) => {
       break;
   }
   return result;
-}
+};
 
 //@param authUserId auth user id
-common_helper.assign_badges = async (authUserId) => {
+common_helper.assign_badges = async authUserId => {
   let workout_detail = await user_workouts_helper.workout_detail_for_badges({
     userId: authUserId
   });
@@ -458,15 +467,14 @@ common_helper.assign_badges = async (authUserId) => {
     workout_detail.workouts
   );
   //badge assign end
-}
-
+};
 
 common_helper.sync_user_data_to_auth = async (authUserId, bodyContent) => {
   var options = {
-    method: 'POST',
+    method: "POST",
     url: config.AUTH_TOKEN_URL,
     headers: {
-      'content-type': 'application/json'
+      "content-type": "application/json"
     },
     body: {
       grant_type: config.GRANT_TYPE,
@@ -476,31 +484,31 @@ common_helper.sync_user_data_to_auth = async (authUserId, bodyContent) => {
     },
     json: true
   };
-  var myPro = new Promise(function (resolve, reject) {
-    request(options, function (error, response, body) {
+  var myPro = new Promise(function(resolve, reject) {
+    request(options, function(error, response, body) {
       if (error) throw new Error(error);
-      bodyContent.connection = 'Username-Password-Authentication'
+      bodyContent.connection = "Username-Password-Authentication";
       if (body) {
         var options = {
-          method: 'PATCH',
+          method: "PATCH",
           url: config.AUTH_USER_API_URL + authUserId,
           headers: {
-            'content-type': 'application/json',
-            "Authorization": 'Bearer ' + body.access_token
+            "content-type": "application/json",
+            Authorization: "Bearer " + body.access_token
           },
           body: bodyContent,
           json: true
         };
 
-        request(options, function (error, response, body) {
+        request(options, function(error, response, body) {
           if (error) {
-            reject(error)
+            reject(error);
           } else {
             resolve(body);
           }
         });
       }
-    })
+    });
   });
   return myPro;
 };
