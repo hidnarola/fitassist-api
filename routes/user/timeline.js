@@ -21,6 +21,7 @@ var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
 var common_helper = require("../../helpers/common_helper");
+var socket = require("../../socket/socketServer");
 
 /**
  * @api {get} /user/timeline/widgets/:username Get user's widgets
