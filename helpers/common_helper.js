@@ -287,18 +287,10 @@ common_helper.send_notification = async (notificationData, socket) => {
           sender.lastName ? " " + sender.lastName : ""
         } ${notificationData.bodyMessage}`
       };
-      console.log("------------------------------------");
-      console.log("notificationObj => ", notificationObj);
-      console.log("------------------------------------");
-
       let notification_data = await notification_helper.add_notifications(
         notificationObj,
         socket
       );
-      console.log("------------------------------------");
-      console.log("notification_data => ", notification_data);
-      console.log("------------------------------------");
-
       if (notification_data.status == 1) {
         return {
           status: 1,

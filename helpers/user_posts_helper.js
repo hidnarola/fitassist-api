@@ -378,11 +378,12 @@ user_post_helper.get_user_timeline_by_id = async condition => {
         t.likes = likes;
         t.comments = comments;
       });
-      // var tmp = _.sortBy(timeline[0].comments, function (o) {
-      //   return o.createdAt;
-      // });
 
-      // // timeline[0].comments = tmp;
+      var tmp = _.sortBy(timeline[0].comments, function(o) {
+        return o.create_date;
+      });
+
+      timeline[0].comments = tmp.reverse();
 
       return {
         status: 1,

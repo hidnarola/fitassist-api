@@ -70,10 +70,10 @@ router.post("/", async (req, res) => {
         );
         return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
       } else {
-        var resp_data = await user_posts_helper.get_user_timeline_by_id({
-          _id: mongoose.Types.ObjectId(req.body.postId),
-          isDeleted: 0
-        });
+        // var resp_data = await user_posts_helper.get_user_timeline_by_id({
+        //   _id: mongoose.Types.ObjectId(req.body.postId),
+        //   isDeleted: 0
+        // });
 
         if (
           authUserId.toString() !==
@@ -86,33 +86,16 @@ router.post("/", async (req, res) => {
             type: constant.NOTIFICATION_MESSAGES.COMMENT.TYPE,
             bodyMessage: constant.NOTIFICATION_MESSAGES.COMMENT.MESSAGE
           };
-
-          var notification_data = await common_helper.send_notification(
-            notificationObj,
-            socket
-          );
-        }
-
-        if (resp_data.status == 0) {
-          logger.error(
-            "Error occured while commenting user timeline = ",
-            req.body.postId
-          );
-          res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-        } else {
-          resp_data.message = "comment successfully";
-          logger.trace("user posted comment successfully = ", resp_data);
-          res.status(config.OK_STATUS).json(resp_data);
+          await common_helper.send_notification(notificationObj, socket);
         }
         resp_data.message = "comment successfully";
-        logger.trace("user comment got successfully = ", resp_data);
-        res.status(config.OK_STATUS).json(resp_data);
+        logger.trace("user posted comment successfully = ", resp_data);
+        return res.status(config.OK_STATUS).json(resp_data);
       }
-      res.status(config.OK_STATUS).json(comment_data);
     }
   } else {
     logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({
+    return res.status(config.VALIDATION_FAILURE_STATUS).json({
       message: errors
     });
   }
@@ -154,7 +137,8 @@ router.put("/:comment_id", async (req, res) => {
       modifiedAt: new Date()
     };
 
-    let comment_data = await like_comment_helper.update_comment({
+    let comment_data = await like_comment_helper.update_comment(
+      {
         _id: req.params.comment_id,
         userId: authUserId
       },
