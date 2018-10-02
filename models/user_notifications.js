@@ -17,7 +17,8 @@ var UserNotificationsSchema = new Schema(
         "friend_request_approved",
         "like_post",
         "comment_post",
-        "badge_awarded"
+        "badge_awarded",
+        "submit_post"
       ],
       required: true
     },
