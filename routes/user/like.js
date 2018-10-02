@@ -99,10 +99,7 @@ router.post("/", async (req, res) => {
             bodyMessage: constant.NOTIFICATION_MESSAGES.LIKE.MESSAGE
           };
 
-          var notification_data = await common_helper.send_notification(
-            notificationObj,
-            socket
-          );
+          await common_helper.send_notification(notificationObj, socket);
         }
         var resp_data = await user_posts_helper.get_user_timeline_by_id({
           _id: mongoose.Types.ObjectId(req.body.postId),

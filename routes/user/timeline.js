@@ -21,7 +21,6 @@ var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
 
-
 /**
  * @api {get} /user/timeline/widgets/:username Get user's widgets
  * @apiName Get user's widgets
@@ -53,29 +52,34 @@ router.get("/widgets/:username", async (req, res) => {
       progressPhoto: null,
       badges: null,
       bodyFat: null,
-      muscle: null,
+      muscle: null
     }
-  }
+  };
 
   //Widgets
-  var widgets = await widgets_settings_helper.get_all_widgets({
-    userId: authUserId,
-    widgetFor: "timeline"
-  }, {
-    bodyFat: 1,
-    muscle: 1,
-    badges: 1,
-    progressPhoto: 1,
-  });
+  var widgets = await widgets_settings_helper.get_all_widgets(
+    {
+      userId: authUserId,
+      widgetFor: "timeline"
+    },
+    {
+      bodyFat: 1,
+      muscle: 1,
+      badges: 1,
+      progressPhoto: 1
+    }
+  );
 
   if (widgets.status === 1) {
     timeline.data.userWidgets = widgets.widgets;
 
     if (widgets.widgets.progressPhoto) {
-      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
-        userId: authUserId,
-        isDeleted: 0
-      });
+      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
+        {
+          userId: authUserId,
+          isDeleted: 0
+        }
+      );
       if (progressPhoto.status === 1) {
         timeline.data.progressPhoto = progressPhoto.user_progress_photos;
       } else {
@@ -84,15 +88,19 @@ router.get("/widgets/:username", async (req, res) => {
     }
 
     if (widgets.widgets.badges) {
-      var badges = await badge_assign_helper.get_all_badges({
-        userId: authUserId
-      }, {
-        $sort: {
-          createdAt: -1
+      var badges = await badge_assign_helper.get_all_badges(
+        {
+          userId: authUserId
+        },
+        {
+          $sort: {
+            createdAt: -1
+          }
+        },
+        {
+          $limit: 5
         }
-      }, {
-        $limit: 5
-      });
+      );
       if (badges.status === 1) {
         timeline.data.badges = badges.badges;
       }
@@ -105,8 +113,8 @@ router.get("/widgets/:username", async (req, res) => {
             $gte: new Date(widgets.widgets.bodyFat.start),
             $lte: new Date(widgets.widgets.bodyFat.end)
           },
-          userId: authUserId,
-        },
+          userId: authUserId
+        }
       });
 
       if (body.status === 1) {
@@ -136,7 +144,7 @@ router.get("/widgets/:username", async (req, res) => {
     }
   }
   return res.send(timeline);
-  //end Other data on timeline 
+  //end Other data on timeline
 });
 /**
  * @api {get} /user/timeline/privacy/:username Get User Preference
@@ -176,7 +184,7 @@ router.get("/privacy/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:post_id", async (req, res) => {
-  console.log('here');
+  console.log("here");
 
   var _id = req.params.post_id;
   logger.trace("Get all user's timeline API called");
@@ -219,19 +227,26 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
   if (user.status === 1) {
     var friendId = user.user.authUserId;
     var searchObject = {
-      $or: [{
-          $and: [{
-            userId: authUserId
-          }, {
-            friendId: friendId
-          }]
+      $or: [
+        {
+          $and: [
+            {
+              userId: authUserId
+            },
+            {
+              friendId: friendId
+            }
+          ]
         },
         {
-          $and: [{
-            userId: friendId
-          }, {
-            friendId: authUserId
-          }]
+          $and: [
+            {
+              userId: friendId
+            },
+            {
+              friendId: authUserId
+            }
+          ]
         }
       ]
     };
@@ -245,17 +260,21 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
       privacyArray = [3];
     }
 
-    var resp_data = await user_posts_helper.get_user_timeline({
-      privacy: {
-        $in: privacyArray
+    var resp_data = await user_posts_helper.get_user_timeline(
+      {
+        privacy: {
+          $in: privacyArray
+        },
+        userId: friendId,
+        isDeleted: 0
       },
-      userId: friendId,
-      isDeleted: 0
-    }, {
-      $skip: parseInt(skip)
-    }, {
-      $limit: parseInt(limit)
-    });
+      {
+        $skip: parseInt(skip)
+      },
+      {
+        $limit: parseInt(limit)
+      }
+    );
 
     if (resp_data.status === 1) {
       var getUserPrivacy = await user_settings_helper.get_setting({
@@ -265,10 +284,13 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
       if (getUserPrivacy.status === 1) {
         getUserPrivacy = {
           postAccessibility: getUserPrivacy.user_settings.postAccessibility,
-          commentAccessibility: getUserPrivacy.user_settings.commentAccessibility,
-          messageAccessibility: getUserPrivacy.user_settings.messageAccessibility,
-          friendRequestAccessibility: getUserPrivacy.user_settings.friendRequestAccessibility,
-        }
+          commentAccessibility:
+            getUserPrivacy.user_settings.commentAccessibility,
+          messageAccessibility:
+            getUserPrivacy.user_settings.messageAccessibility,
+          friendRequestAccessibility:
+            getUserPrivacy.user_settings.friendRequestAccessibility
+        };
       } else {
         getUserPrivacy = null;
       }
@@ -334,7 +356,7 @@ router.post("/body_fat", async (req, res) => {
       widgets: null,
       bodyFat: null
     }
-  }
+  };
   var schema = {
     start: {
       notEmpty: true,
@@ -344,43 +366,49 @@ router.post("/body_fat", async (req, res) => {
       notEmpty: true,
       errorMessage: "End date required"
     }
-  }
+  };
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
     var widgets_settings_object = {
       userId: authUserId,
       modifiedAt: new Date()
-    }
+    };
     widgets_settings_object.bodyFat = {
       start: req.body.start,
       end: req.body.end
-    }
+    };
 
-    var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
-      userId: authUserId,
-      widgetFor: "timeline"
-    });
+    var widgets_data = await widgets_settings_helper.save_widgets(
+      widgets_settings_object,
+      {
+        userId: authUserId,
+        widgetFor: "timeline"
+      }
+    );
 
     if (widgets_data && widgets_data.status === 1) {
-      returnObj.data.widgets = widgets_data.widgets
+      returnObj.data.widgets = widgets_data.widgets;
       var body = await workout_progress_helper.graph_data_body_fat({
         createdAt: {
           logDate: {
             $gte: new Date(req.body.start),
             $lte: new Date(req.body.end)
           },
-          userId: authUserId,
-        },
+          userId: authUserId
+        }
       });
 
       if (body.status === 1) {
-        returnObj.data.bodyFat = body.progress
+        returnObj.data.bodyFat = body.progress;
       }
       logger.trace("user body fat widget saved   = ", returnObj);
       res.status(config.OK_STATUS).json(returnObj);
     } else {
-      logger.error("Error occured while saving user body fat widgets = ", widgets_data);
+      logger.error(
+        "Error occured while saving user body fat widgets = ",
+        widgets_data
+      );
       res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
     }
   } else {
@@ -414,7 +442,7 @@ router.post("/muscle", async (req, res) => {
       bodypart: null,
       muscle: []
     }
-  }
+  };
   var schema = {
     start: {
       notEmpty: true,
@@ -428,17 +456,16 @@ router.post("/muscle", async (req, res) => {
       notEmpty: true,
       errorMessage: "Muscle type required"
     }
-  }
+  };
 
   req.checkBody(schema);
   var errors = req.validationErrors();
 
   if (!errors) {
-
     var widgets_settings_object = {
       userId: authUserId,
       modifiedAt: new Date()
-    }
+    };
 
     var widgets_data = await widgets_settings_helper.get_all_widgets({
       userId: authUserId,
@@ -447,18 +474,21 @@ router.post("/muscle", async (req, res) => {
 
     if (widgets_data.status === 1) {
       var muscle = widgets_data.widgets.muscle;
-      _.map(muscle, function (o) {
+      _.map(muscle, function(o) {
         if (o.name === req.body.bodypart) {
           o.start = req.body.start;
           o.end = req.body.end;
         }
-      })
+      });
 
       widgets_settings_object.muscle = muscle;
-      var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
-        userId: authUserId,
-        widgetFor: "timeline"
-      });
+      var widgets_data = await widgets_settings_helper.save_widgets(
+        widgets_settings_object,
+        {
+          userId: authUserId,
+          widgetFor: "timeline"
+        }
+      );
 
       if (widgets_data && widgets_data.status === 1) {
         returnObj.data.bodypart = req.body.bodypart;
@@ -475,7 +505,8 @@ router.post("/muscle", async (req, res) => {
 
         if (bodyMeasurment.status === 1) {
           try {
-            returnObj.data.muscle = bodyMeasurment.progress.data[req.body.bodypart];
+            returnObj.data.muscle =
+              bodyMeasurment.progress.data[req.body.bodypart];
           } catch (error) {
             returnObj.data.muscle = null;
           }
@@ -485,8 +516,11 @@ router.post("/muscle", async (req, res) => {
         // returnObj.data.muscle = muscleObject;
         res.status(config.OK_STATUS).json(returnObj);
       } else {
-        returnObj.wi
-        logger.error("Error occured while saving user muscle widgets = ", widgets_data);
+        returnObj.wi;
+        logger.error(
+          "Error occured while saving user muscle widgets = ",
+          widgets_data
+        );
         res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
       }
     }
@@ -518,6 +552,10 @@ router.post("/", async (req, res) => {
     privacy: {
       notEmpty: true,
       errorMessage: "privacy is required"
+    },
+    onWall: {
+      notEmpty: true,
+      errorMessage: "Reciver Id is required"
     }
   };
 
@@ -527,7 +565,7 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var user_post_obj = {
       userId: req.body.onWall,
-      description: req.body.description
+      description: req.body.description ? req.body.description : null
     };
 
     if (req.body.privacy) {
@@ -536,7 +574,7 @@ router.post("/", async (req, res) => {
     user_post_obj.createdBy = authUserId;
     async.waterfall(
       [
-        function (callback) {
+        function(callback) {
           //image upload
           if (req.files && req.files["images"]) {
             var file_path_array = [];
@@ -545,7 +583,7 @@ router.post("/", async (req, res) => {
 
             async.eachSeries(
               files,
-              function (file, loop_callback) {
+              function(file, loop_callback) {
                 var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
@@ -553,7 +591,7 @@ router.post("/", async (req, res) => {
                   }
                   extention = path.extname(file.name);
                   filename = "user_post_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function (err) {
+                  file.mv(dir + "/" + filename, function(err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -579,7 +617,7 @@ router.post("/", async (req, res) => {
                   });
                 }
               },
-              function (err) {
+              function(err) {
                 if (err) {
                   res.status(err.status).json(err);
                 } else {
@@ -614,83 +652,101 @@ router.post("/", async (req, res) => {
           };
           async.each(
             file_path_array,
-            async function (file, callback) {
-                post_image_obj.image = file;
-                let user_post_data = await user_posts_helper.insert_user_post_image(
-                  post_image_obj
+            async function(file, callback) {
+              post_image_obj.image = file;
+              let user_post_data = await user_posts_helper.insert_user_post_image(
+                post_image_obj
+              );
+              if (user_post_data.status === 0) {
+                unsuccess++;
+                logger.error(
+                  "Error while inserting user post data = ",
+                  user_post_data
                 );
-                if (user_post_data.status === 0) {
-                  unsuccess++;
-                  logger.error(
-                    "Error while inserting user post data = ",
-                    user_post_data
-                  );
-                } else {
-                  success++;
-                }
-              },
-              async function (err) {
-                if (err) {
-                  console.log("Failed to upload image");
-                } else {
-                  //TIMELINE START
-                  let resp_data_for_single_post;
-                  var timelineObj = {
-                    userId: req.body.onWall,
-                    createdBy: authUserId,
-                    postPhotoId: user_post_data.user_post_photo._id,
-                    tagLine: "added a new post",
-                    type: "timeline",
-                    privacy: req.body.privacy ? req.body.privacy : 3
-                  };
-                  let user_timeline_data = await user_timeline_helper.insert_timeline_data(
-                    timelineObj
-                  );
+              } else {
+                success++;
+              }
+            },
+            async function(err) {
+              if (err) {
+                console.log("Failed to upload image");
+              } else {
+                //TIMELINE START
+                let resp_data_for_single_post;
+                var timelineObj = {
+                  userId: req.body.onWall,
+                  createdBy: authUserId,
+                  postPhotoId: user_post_data.user_post_photo._id,
+                  tagLine: "added a new post",
+                  type: "timeline",
+                  privacy: req.body.privacy ? req.body.privacy : 3
+                };
+                let user_timeline_data = await user_timeline_helper.insert_timeline_data(
+                  timelineObj
+                );
 
-                  if (user_timeline_data.status === 0) {
-                    logger.error(
-                      "Error while inserting timeline data = ",
-                      user_timeline_data
-                    );
-                  } else {
-                    resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id({
+                if (user_timeline_data.status === 0) {
+                  logger.error(
+                    "Error while inserting timeline data = ",
+                    user_timeline_data
+                  );
+                } else {
+                  resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id(
+                    {
                       _id: mongoose.Types.ObjectId(
                         user_timeline_data.user_timeline._id
                       ),
                       isDeleted: 0
-                    });
+                    }
+                  );
 
-                    logger.error(
-                      "successfully added timeline data = ",
-                      user_timeline_data
-                    );
-                  }
-                  //TIMELINE END
+                  logger.error(
+                    "successfully added timeline data = ",
+                    user_timeline_data
+                  );
+                }
+                //TIMELINE END
 
-                  // Badge assign
-                  var total_post = await user_posts_helper.count_post({
-                    userId: authUserId
-                  });
+                res.status(config.OK_STATUS).json({
+                  status: 1,
+                  message:
+                    "post successfully added, " +
+                    success +
+                    " successfully uploaded image(s), " +
+                    unsuccess +
+                    " failed uploaded image(s)",
+                  timeline: resp_data_for_single_post.timeline
+                });
+                if (authUserId != req.body.onWall) {
+                  var notificationObj = {
+                    senderId: authUserId,
+                    receiverId: req.body.onWall,
+                    timelineId: user_timeline_data.user_timeline._id,
+                    type: constant.NOTIFICATION_MESSAGES.POST.TYPE,
+                    bodyMessage: constant.NOTIFICATION_MESSAGES.POST.MESSAGE
+                  };
+                  await common_helper.send_notification(
+                    notificationObj,
+                    socket
+                  );
+                }
 
+                // Badge assign
+                var total_post = await user_posts_helper.count_post({
+                  userId: authUserId
+                });
+                if (total_post.status === 1) {
                   var post_data = await badge_assign_helper.badge_assign(
                     authUserId,
-                    constant.BADGES_TYPE.PROFILE, {
+                    constant.BADGES_TYPE.PROFILE,
+                    {
                       post: total_post.count
                     }
                   );
-                  // Badge assign end
-
-                  return res.status(config.OK_STATUS).json({
-                    status: 1,
-                    message: "post successfully added, " +
-                      success +
-                      " successfully uploaded image(s), " +
-                      unsuccess +
-                      " failed uploaded image(s)",
-                    timeline: resp_data_for_single_post.timeline
-                  });
                 }
+                // Badge assign end
               }
+            }
           );
         }
       }
@@ -733,7 +789,8 @@ router.put("/:timelineId", async (req, res) => {
     user_post_obj.status = req.body.status;
   }
 
-  var resp_data = await user_timeline_helper.update_user_timeline_by_id({
+  var resp_data = await user_timeline_helper.update_user_timeline_by_id(
+    {
       _id: req.params.timelineId,
       userId: authUserId
     },
@@ -761,18 +818,20 @@ router.delete("/:timelineId", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete user's post photo API - Id = ", req.params.photo_id);
-  let user_post_data = await user_posts_helper.delete_user_timeline_post({
-    userId: authUserId,
-    _id: req.params.timelineId
-  }, {
-    isDeleted: 1
-  });
+  let user_post_data = await user_posts_helper.delete_user_timeline_post(
+    {
+      userId: authUserId,
+      _id: req.params.timelineId
+    },
+    {
+      isDeleted: 1
+    }
+  );
   if (user_post_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(user_post_data);
   } else {
     res.status(config.OK_STATUS).json(user_post_data);
   }
 });
-
 
 module.exports = router;

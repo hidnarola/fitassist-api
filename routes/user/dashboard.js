@@ -17,8 +17,6 @@ var friend_helper = require("../../helpers/friend_helper");
 var common_helper = require("../../helpers/common_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
-
-
 /**
  * @api {post} /user/dashboard/muscle Save
  * @apiName Save Muscle
@@ -42,7 +40,7 @@ router.post("/muscle", async (req, res) => {
       bodypart: null,
       muscle: []
     }
-  }
+  };
   var schema = {
     start: {
       notEmpty: true,
@@ -56,7 +54,7 @@ router.post("/muscle", async (req, res) => {
       notEmpty: true,
       errorMessage: "Muscle type required"
     }
-  }
+  };
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -65,7 +63,7 @@ router.post("/muscle", async (req, res) => {
     var widgets_settings_object = {
       userId: authUserId,
       modifiedAt: new Date()
-    }
+    };
     var widgets_data = await widgets_settings_helper.get_all_widgets({
       userId: authUserId,
       widgetFor: "dashboard"
@@ -73,19 +71,22 @@ router.post("/muscle", async (req, res) => {
 
     if (widgets_data.status === 1) {
       var muscle = widgets_data.widgets.muscle;
-      _.map(muscle, function (o) {
+      _.map(muscle, function(o) {
         if (o.name === req.body.bodypart) {
           o.start = req.body.start;
           o.end = req.body.end;
         }
-      })
+      });
 
       widgets_settings_object.muscle = muscle;
 
-      var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
-        userId: authUserId,
-        widgetFor: "dashboard"
-      });
+      var widgets_data = await widgets_settings_helper.save_widgets(
+        widgets_settings_object,
+        {
+          userId: authUserId,
+          widgetFor: "dashboard"
+        }
+      );
 
       if (widgets_data && widgets_data.status === 1) {
         returnObj.data.bodypart = req.body.bodypart;
@@ -102,7 +103,8 @@ router.post("/muscle", async (req, res) => {
 
         if (bodyMeasurment.status === 1) {
           try {
-            returnObj.data.muscle = bodyMeasurment.progress.data[req.body.bodypart];
+            returnObj.data.muscle =
+              bodyMeasurment.progress.data[req.body.bodypart];
           } catch (error) {
             returnObj.data.muscle = null;
           }
@@ -112,8 +114,11 @@ router.post("/muscle", async (req, res) => {
         // returnObj.data.muscle = muscleObject;
         res.status(config.OK_STATUS).json(returnObj);
       } else {
-        returnObj.wi
-        logger.error("Error occured while saving user muscle widgets = ", widgets_data);
+        returnObj.wi;
+        logger.error(
+          "Error occured while saving user muscle widgets = ",
+          widgets_data
+        );
         res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
       }
     }
@@ -146,7 +151,7 @@ router.post("/body_fat", async (req, res) => {
       widgets: null,
       bodyFat: null
     }
-  }
+  };
   var schema = {
     start: {
       notEmpty: true,
@@ -156,45 +161,50 @@ router.post("/body_fat", async (req, res) => {
       notEmpty: true,
       errorMessage: "End date required"
     }
-  }
+  };
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
-
     var widgets_settings_object = {
       userId: authUserId,
       modifiedAt: new Date()
-    }
+    };
 
     widgets_settings_object.bodyFat = {
       start: req.body.start,
       end: req.body.end
-    }
+    };
 
-    var widgets_data = await widgets_settings_helper.save_widgets(widgets_settings_object, {
-      userId: authUserId,
-      widgetFor: "dashboard"
-    });
+    var widgets_data = await widgets_settings_helper.save_widgets(
+      widgets_settings_object,
+      {
+        userId: authUserId,
+        widgetFor: "dashboard"
+      }
+    );
 
     if (widgets_data && widgets_data.status === 1) {
-      returnObj.data.widgets = widgets_data.widgets
+      returnObj.data.widgets = widgets_data.widgets;
       var body = await workout_progress_helper.graph_data_body_fat({
         createdAt: {
           logDate: {
             $gte: new Date(req.body.start),
             $lte: new Date(req.body.end)
           },
-          userId: authUserId,
-        },
+          userId: authUserId
+        }
       });
 
       if (body.status === 1) {
-        returnObj.data.bodyFat = body.progress
+        returnObj.data.bodyFat = body.progress;
       }
       logger.trace("user body fat widget saved   = ", returnObj);
       res.status(config.OK_STATUS).json(returnObj);
     } else {
-      logger.error("Error occured while saving user body fat widgets = ", widgets_data);
+      logger.error(
+        "Error occured while saving user body fat widgets = ",
+        widgets_data
+      );
       res.status(config.INTERNAL_SERVER_ERROR).json(widgets_data);
     }
   } else {
@@ -223,7 +233,9 @@ router.post("/workout_complete", async (req, res) => {
 
   logger.trace("Complete workout by id = ", workoutId);
   let workout_data = await user_workouts_helper.complete_workout_by_days(
-    [workoutId], authUserId, {
+    [workoutId],
+    authUserId,
+    {
       isCompleted: isCompleted
     }
   );
@@ -254,8 +266,12 @@ router.post("/", async (req, res) => {
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var startdate = moment(req.body.today).startOf('day').utc();
-  var enddate = moment(req.body.today).endOf('day').utc();
+  var startdate = moment(req.body.today)
+    .startOf("day")
+    .utc();
+  var enddate = moment(req.body.today)
+    .endOf("day")
+    .utc();
   var dashboard = {
     status: 1,
     message: "Success",
@@ -267,22 +283,25 @@ router.post("/", async (req, res) => {
       bodyFat: null,
       progressPhoto: null,
       muscle: null,
-      profileComplete: null,
+      profileComplete: null
     }
-  }
+  };
   //Widgets
-  var widgets = await widgets_settings_helper.get_all_widgets({
-    userId: authUserId,
-    widgetFor: "dashboard"
-  }, {
-    "badges": 1,
-    "workout": 1,
-    "bodyFat": 1,
-    "activityFeed": 1,
-    "profileComplete": 1,
-    "progressPhoto": 1,
-    "muscle": 1,
-  });
+  var widgets = await widgets_settings_helper.get_all_widgets(
+    {
+      userId: authUserId,
+      widgetFor: "dashboard"
+    },
+    {
+      badges: 1,
+      workout: 1,
+      bodyFat: 1,
+      activityFeed: 1,
+      profileComplete: 1,
+      progressPhoto: 1,
+      muscle: 1
+    }
+  );
 
   if (widgets.status === 1) {
     dashboard.data.userWidgets = widgets.widgets;
@@ -305,22 +324,30 @@ router.post("/", async (req, res) => {
         authUserId: authUserId
       });
       var username = userdata.friends.username;
-      var resp_data = await friend_helper.get_friend_by_username({
+      var resp_data = await friend_helper.get_friend_by_username(
+        {
           username: username
         },
         2
       );
-      var friendsIds = _.pluck(resp_data.friends, 'authUserId');
-      var activityFeed = await user_posts_helper.get_user_timeline({
-        userId: {
-          $in: friendsIds
+      var friendsIds = _.pluck(resp_data.friends, "authUserId");
+      var activityFeed = await user_posts_helper.get_user_timeline(
+        {
+          userId: {
+            $in: friendsIds
+          },
+          isDeleted: 0,
+          privacy: {
+            $gt: 1
+          }
         },
-        isDeleted: 0
-      }, {
-        $skip: 0
-      }, {
-        $limit: 5
-      });
+        {
+          $skip: 0
+        },
+        {
+          $limit: 5
+        }
+      );
       if (activityFeed.status === 1) {
         dashboard.data.activityFeed = activityFeed.timeline;
       } else {
@@ -328,15 +355,19 @@ router.post("/", async (req, res) => {
       }
     }
     if (widgets.widgets.badges) {
-      var badges = await badge_assign_helper.get_all_badges({
-        userId: authUserId
-      }, {
-        $sort: {
-          createdAt: -1
+      var badges = await badge_assign_helper.get_all_badges(
+        {
+          userId: authUserId
+        },
+        {
+          $sort: {
+            createdAt: -1
+          }
+        },
+        {
+          $limit: 6
         }
-      }, {
-        $limit: 6
-      });
+      );
       if (badges.status === 1) {
         dashboard.data.badges = badges.badges;
       }
@@ -348,8 +379,8 @@ router.post("/", async (req, res) => {
             $gte: new Date(widgets.widgets.bodyFat.start),
             $lte: new Date(widgets.widgets.bodyFat.end)
           },
-          userId: authUserId,
-        },
+          userId: authUserId
+        }
       });
 
       if (body.status === 1) {
@@ -357,10 +388,12 @@ router.post("/", async (req, res) => {
       }
     }
     if (widgets.widgets.progressPhoto) {
-      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos({
-        userId: authUserId,
-        isDeleted: 0
-      });
+      var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
+        {
+          userId: authUserId,
+          isDeleted: 0
+        }
+      );
       if (progressPhoto.status === 1) {
         dashboard.data.progressPhoto = progressPhoto.user_progress_photos;
       } else {
@@ -418,7 +451,6 @@ router.post("/", async (req, res) => {
     dashboard.data.profileComplete = percentage;
   }
   return res.send(dashboard);
-
 });
 
 module.exports = router;

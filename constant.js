@@ -211,7 +211,8 @@ module.exports = {
     dietRestrictionLabels: [],
     excludeIngredients: [],
     nutritionTargets: [],
-    maxRecipeTime: [{
+    maxRecipeTime: [
+      {
         time: 0,
         dayDrive: "breakfast"
       },
@@ -234,6 +235,10 @@ module.exports = {
     LIKE: {
       TYPE: "like_post",
       MESSAGE: "liked your post"
+    },
+    POST: {
+      TYPE: "submit_post",
+      MESSAGE: "posted on your timeline"
     },
     COMMENT: {
       TYPE: "comment_post",
