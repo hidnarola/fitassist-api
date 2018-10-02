@@ -20,6 +20,7 @@ var user_progress_photos_helper = require("../../helpers/user_progress_photos_he
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var widgets_settings_helper = require("../../helpers/widgets_settings_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
+var common_helper = require("../../helpers/common_helper");
 
 /**
  * @api {get} /user/timeline/widgets/:username Get user's widgets
@@ -717,7 +718,8 @@ router.post("/", async (req, res) => {
                     " failed uploaded image(s)",
                   timeline: resp_data_for_single_post.timeline
                 });
-                if (authUserId != req.body.onWall) {
+
+                if (authUserId.toString() !== req.body.onWall.toString()) {
                   var notificationObj = {
                     senderId: authUserId,
                     receiverId: req.body.onWall,
