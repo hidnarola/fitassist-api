@@ -29,15 +29,24 @@ var socket = require("../../socket/socketServer");
 router.get("/:workout_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
-  var resp_data = await get_respose_data_for_workout(workout_id, authUserId);
+  if (mongoose.Types.ObjectId.isValid(req.params.workout_id)) {
+    var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
+    var resp_data = await get_respose_data_for_workout(workout_id, authUserId);
 
-  if (resp_data.status === 1) {
-    logger.trace("user workouts got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
+    if (resp_data.status === 1) {
+      logger.trace("user workouts got successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    } else {
+      logger.error("Error occured while fetching user workouts = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    }
   } else {
-    logger.error("Error occured while fetching user workouts = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    logger.error("Invalid Object is passed= ", req.params.workout_id);
+    res.status(config.BAD_REQUEST).json({
+      status: 0,
+      message: "Invalid WorkoutId passed"
+    });
+
   }
 });
 
@@ -219,17 +228,19 @@ router.post("/day", async (req, res) => {
     title: {
       notEmpty: true,
       isLength: {
-        errorMessage: "Title should be between 0 to 50 characters",
+        errorMessage: "Title should be between 0 to 20 characters",
         options: {
           min: 0,
-          max: 50
+          max: 20
         }
       },
       errorMessage: "Title is required"
     }
   };
 
+  req.checkBody('description', 'Description should be less than 200').isLength({ max: 200 });
   req.checkBody(schema);
+
   var errors = req.validationErrors();
   if (!errors) {
     var masterCollectionObject = {
@@ -874,11 +885,11 @@ router.put("/workout", async (req, res) => {
     },
     userWorkoutsId: {
       notEmpty: true,
-      errorMessage: "userWorkoutsId is required"
+      errorMessage: "User Workouts Id is required"
     },
     exercises: {
       notEmpty: true,
-      errorMessage: "exercises is required"
+      errorMessage: "Exercises is required"
     }
   };
   req.checkBody(schema);
@@ -1262,21 +1273,20 @@ router.put("/reorder_exercises", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/:workout_id", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
   var schema = {
     title: {
       notEmpty: true,
       isLength: {
-        errorMessage: "Site1 should be between 0 to 50 characters",
+        errorMessage: "Site1 should be between 0 to 20 characters",
         options: {
           min: 0,
-          max: 50
+          max: 20
         }
       },
-      errorMessage: "title is required"
+      errorMessage: "Title is required"
     }
   };
+  req.checkBody('description', 'Description should be less than 200').isLength({ max: 200 });
   req.checkBody(schema);
   var errors = req.validationErrors();
 
