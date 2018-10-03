@@ -67,41 +67,41 @@ workout_progress_helper.graph_data_body_data = async (condition = {}, type = "fl
 workout_progress_helper.graph_data = async (condition = {}, type = "flexibility") => {
 	try {
 		var progress = await UserTestExerciseLogs.aggregate([{
-				$match: condition.createdAt
-			},
-			{
-				$lookup: {
-					from: "test_exercises",
-					localField: "test_exercise_id",
-					foreignField: "_id",
-					as: "test_exercises"
-				}
-			},
-			{
-				$match: {
-					"test_exercises.category": type
-				}
-			},
-			{
-				$group: {
-					_id: "$createdAt",
-					count: {
-						$sum: "$$ROOT.a_or_b"
-					}
-				}
-			},
-			{
-				$project: {
-					_id: 0,
-					date: "$_id",
-					count: 1
-				}
-			},
-			{
-				$sort: {
-					date: 1
+			$match: condition.createdAt
+		},
+		{
+			$lookup: {
+				from: "test_exercises",
+				localField: "test_exercise_id",
+				foreignField: "_id",
+				as: "test_exercises"
+			}
+		},
+		{
+			$match: {
+				"test_exercises.category": type
+			}
+		},
+		{
+			$group: {
+				_id: "$createdAt",
+				count: {
+					$sum: "$$ROOT.a_or_b"
 				}
 			}
+		},
+		{
+			$project: {
+				_id: 0,
+				date: "$_id",
+				count: 1
+			}
+		},
+		{
+			$sort: {
+				date: 1
+			}
+		}
 		]);
 
 		if (progress && progress.length > 0) {
@@ -136,56 +136,56 @@ workout_progress_helper.graph_data = async (condition = {}, type = "flexibility"
 workout_progress_helper.get_progress_detail = async (condition = {}) => {
 	try {
 		var progress = await UserTestExerciseLogs.aggregate([{
-				$match: condition.createdAt
-			},
-			{
-				$lookup: {
-					from: "test_exercises",
-					localField: "test_exercise_id",
-					foreignField: "_id",
-					as: "exercise"
+			$match: condition.createdAt
+		},
+		{
+			$lookup: {
+				from: "test_exercises",
+				localField: "test_exercise_id",
+				foreignField: "_id",
+				as: "exercise"
+			}
+		},
+		{
+			$unwind: "$exercise"
+		},
+		{
+			$match: {
+				"exercise.category": {
+					$in: condition.category
 				}
-			},
-			{
-				$unwind: "$exercise"
-			},
-			{
-				$match: {
-					"exercise.category": {
-						$in: condition.category
+			}
+		},
+		{
+			$group: {
+				_id: condition.category.length <= 1 ? "$exercise.name" : {
+					category: "$exercise.category",
+					subCategory: "$exercise.subCategory"
+				},
+				name: {
+					$first: "$exercise.name"
+				},
+				category: {
+					$first: "$exercise.category"
+				},
+				subCategory: {
+					$first: "$exercise.subCategory"
+				},
+				exercises: {
+					$addToSet: {
+						_id: "$_id",
+						text_field: "$text_field",
+						multiselect: "$multiselect",
+						max_rep: "$max_rep",
+						a_or_b: "$a_or_b",
+						userId: "$userId",
+						format: "$format",
+						createdAt: "$createdAt",
+						exercises: "$exercise"
 					}
 				}
-			},
-			{
-				$group: {
-					_id: condition.category.length <= 1 ? "$exercise.name" : {
-						category: "$exercise.category",
-						subCategory: "$exercise.subCategory"
-					},
-					name: {
-						$first: "$exercise.name"
-					},
-					category: {
-						$first: "$exercise.category"
-					},
-					subCategory: {
-						$first: "$exercise.subCategory"
-					},
-					exercises: {
-						$addToSet: {
-							_id: "$_id",
-							text_field: "$text_field",
-							multiselect: "$multiselect",
-							max_rep: "$max_rep",
-							a_or_b: "$a_or_b",
-							userId: "$userId",
-							format: "$format",
-							createdAt: "$createdAt",
-							exercises: "$exercise"
-						}
-					}
-				}
-			},
+			}
+		},
 		]);
 
 		if (progress && progress.length > 0) {
@@ -350,32 +350,32 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 workout_progress_helper.user_endurance_test = async (condition, type) => {
 	try {
 		var enduranceData = await UserTestExerciseLogs.aggregate([{
-				$match: condition.createdAt
-			},
-			{
-				$lookup: {
-					from: "test_exercises",
-					localField: "test_exercise_id",
-					foreignField: "_id",
-					as: "test_exercises"
+			$match: condition.createdAt
+		},
+		{
+			$lookup: {
+				from: "test_exercises",
+				localField: "test_exercise_id",
+				foreignField: "_id",
+				as: "test_exercises"
+			}
+		},
+		{
+			$unwind: "$test_exercises"
+		},
+		{
+			$match: {
+				"test_exercises.category": type
+			}
+		},
+		{
+			$group: {
+				_id: "$test_exercises._id",
+				data: {
+					$addToSet: "$$ROOT"
 				}
-			},
-			{
-				$unwind: "$test_exercises"
-			},
-			{
-				$match: {
-					"test_exercises.category": type
-				}
-			},
-			{
-				$group: {
-					_id: "$test_exercises._id",
-					data: {
-						$addToSet: "$$ROOT"
-					}
-				}
-			},
+			}
+		},
 
 		]);
 
@@ -434,13 +434,13 @@ workout_progress_helper.user_endurance_test = async (condition, type) => {
 workout_progress_helper.user_body_progress = async (id) => {
 	try {
 		var body_progress = await Measurement.aggregate([{
-				$match: id
-			},
-			{
-				$sort: {
-					logDate: 1
-				}
-			},
+			$match: id
+		},
+		{
+			$sort: {
+				logDate: 1
+			}
+		},
 		]);
 
 		var measurement_unit_data = await user_settings_helper.get_setting({
@@ -570,12 +570,12 @@ workout_progress_helper.user_body_progress = async (id) => {
 			var last = _.last(body_progress);
 			var bodypartKeys = ["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "height", "weight", "heartRate"];
 
-			_.each(bodypartKeys, async function (key) {
+			for (let key of bodypartKeys) {
 				first[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, first[key]);
 				first[key] = first[key].toFixed(2);
 				last[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, last[key]);
 				last[key] = last[key].toFixed(2);
-			});
+			}
 
 			first.weight = await common_helper.convertUnits("gram", weightUnit, first.weight);
 			first.weight = first.weight.toFixed(2);
@@ -710,13 +710,13 @@ workout_progress_helper.user_body_progress = async (id) => {
 workout_progress_helper.user_body_fat = async (id) => {
 	try {
 		var body_progress = await BodyFatLogs.aggregate([{
-				$match: id
-			},
-			{
-				$sort: {
-					logDate: 1
-				}
-			},
+			$match: id
+		},
+		{
+			$sort: {
+				logDate: 1
+			}
+		},
 		]);
 		if (body_progress && body_progress.length > 0) {
 			var first = _.first(body_progress);
@@ -760,28 +760,28 @@ workout_progress_helper.user_body_fat = async (id) => {
 workout_progress_helper.graph_data_body_fat = async (condition = {}) => {
 	try {
 		var progress = await BodyFatLogs.aggregate([{
-				$match: condition.createdAt
-			},
-			{
-				$group: {
-					_id: "$logDate",
-					count: {
-						$first: "$$ROOT.bodyFatPer"
-					}
-				}
-			},
-			{
-				$project: {
-					_id: 0,
-					date: "$_id",
-					count: 1
-				}
-			},
-			{
-				$sort: {
-					date: 1
+			$match: condition.createdAt
+		},
+		{
+			$group: {
+				_id: "$logDate",
+				count: {
+					$first: "$$ROOT.bodyFatPer"
 				}
 			}
+		},
+		{
+			$project: {
+				_id: 0,
+				date: "$_id",
+				count: 1
+			}
+		},
+		{
+			$sort: {
+				date: 1
+			}
+		}
 		]);
 
 		if (progress && progress.length > 0) {

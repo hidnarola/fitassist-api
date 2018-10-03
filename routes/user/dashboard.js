@@ -71,7 +71,7 @@ router.post("/muscle", async (req, res) => {
 
     if (widgets_data.status === 1) {
       var muscle = widgets_data.widgets.muscle;
-      _.map(muscle, function(o) {
+      _.map(muscle, function (o) {
         if (o.name === req.body.bodypart) {
           o.start = req.body.start;
           o.end = req.body.end;
@@ -114,7 +114,6 @@ router.post("/muscle", async (req, res) => {
         // returnObj.data.muscle = muscleObject;
         res.status(config.OK_STATUS).json(returnObj);
       } else {
-        returnObj.wi;
         logger.error(
           "Error occured while saving user muscle widgets = ",
           widgets_data
@@ -266,6 +265,8 @@ router.post("/", async (req, res) => {
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
+  var monthStartDate = req.body.start;
+  var monthEndDate = req.body.end;
   var startdate = moment(req.body.today)
     .startOf("day")
     .utc();
@@ -373,11 +374,15 @@ router.post("/", async (req, res) => {
       }
     }
     if (widgets.widgets.bodyFat) {
+      widgets.widgets.bodyFat = {
+        start: monthStartDate,
+        end: monthEndDate
+      }
       var body = await workout_progress_helper.graph_data_body_fat({
         createdAt: {
           logDate: {
-            $gte: new Date(widgets.widgets.bodyFat.start),
-            $lte: new Date(widgets.widgets.bodyFat.end)
+            $gte: new Date(monthStartDate),
+            $lte: new Date(monthEndDate)
           },
           userId: authUserId
         }
@@ -404,11 +409,13 @@ router.post("/", async (req, res) => {
       var muscle = {};
       var bodyMeasurment;
       for (let x of widgets.widgets.muscle) {
+        x.start = monthStartDate
+        x.end = monthEndDate
         bodyMeasurment = await workout_progress_helper.user_body_progress({
           userId: authUserId,
           logDate: {
-            $gte: new Date(x.start),
-            $lte: new Date(x.end)
+            $gte: new Date(monthStartDate),
+            $lte: new Date(monthEndDate)
           }
         });
 
@@ -450,7 +457,11 @@ router.post("/", async (req, res) => {
     }
     dashboard.data.profileComplete = percentage;
   }
-  return res.send(dashboard);
+  res.send(dashboard);
+  await widgets_settings_helper.save_widgets(widgets.widgets, {
+    userId: authUserId,
+    widgetFor: "dashboard",
+  })
 });
 
 module.exports = router;

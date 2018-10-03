@@ -246,13 +246,13 @@ user_workouts_helper.get_all_workouts_by_date = async (condition = {}) => {
             exercise.push(ex);
           }
         });
-        workout.warmup = _.sortBy(warmup, function(w) {
+        workout.warmup = _.sortBy(warmup, function (w) {
           return w.sequence;
         });
-        workout.exercise = _.sortBy(exercise, function(w) {
+        workout.exercise = _.sortBy(exercise, function (w) {
           return w.sequence;
         });
-        workout.cooldown = _.sortBy(cooldown, function(w) {
+        workout.cooldown = _.sortBy(cooldown, function (w) {
           return w.sequence;
         });
         delete workout.exercises;
@@ -1746,7 +1746,7 @@ user_workouts_helper.reorder_exercises = async reorderArray => {
         sequence: x.sequence
       };
 
-      await userWorkoutExercisesProgram.findByIdAndUpdate(
+      await UserWorkoutExercises.findByIdAndUpdate(
         condition,
         updateObj,
         {
