@@ -184,7 +184,7 @@ router.put("/", async (req, res) => {
     gender: {
       notEmpty: true,
       isIn: {
-        options: ["male", "female"],
+        options: [["male", "female"]],
         errorMessage: "Gender is invalid"
       },
       errorMessage: "Gender is required"
