@@ -82,19 +82,11 @@ router.post("/", async (req, res) => {
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
-      console.log('------------------------------------');
-      console.log('resp_data => ', resp_data);
-      console.log('------------------------------------');
-
     } else {
       logger.error(
         "Error occured while fetching user statistics data = ",
         resp_data
       );
-      console.log('------------------------------------');
-      console.log('resp_data => ', resp_data);
-      console.log('------------------------------------');
-
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     }
   } else {
