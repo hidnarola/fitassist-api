@@ -284,6 +284,7 @@ router.post("/workouts_list_by_program_day", async (req, res) => {
         title: 1,
         description: 1,
         day: 1,
+        type: 1,
         userId: 1
       }
     );
