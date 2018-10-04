@@ -1,7 +1,4 @@
 var express = require("express");
-var fs = require("fs");
-var path = require("path");
-var async = require("async");
 var jwtDecode = require("jwt-decode");
 var router = express.Router();
 var mongoose = require("mongoose");
@@ -16,7 +13,6 @@ var common_helper = require("../../helpers/common_helper");
 var user_program_helper = require("../../helpers/user_program_helper");
 var exercise_measurements_helper = require("../../helpers/exercise_measurements_helper");
 var body_parts_helper = require("../../helpers/body_parts_helper");
-var socket = require("../../socket/socketServer");
 
 /**
  * @api {get} /user/user_workouts/:workout_id Get User Workouts
@@ -227,12 +223,10 @@ router.post("/day", async (req, res) => {
   var schema = {
     title: {
       notEmpty: true,
+      trim: { options: [[" "]] },
       isLength: {
         errorMessage: "Title should be between 0 to 20 characters",
-        options: {
-          min: 0,
-          max: 20
-        }
+        options: { min: 0, max: 20 }
       },
       errorMessage: "Title is required"
     }

@@ -98,7 +98,7 @@ router.get("/:program_id", async (req, res) => {
     };
     var data = resp_data.program[0];
     var programDetails = data.programDetails;
-    programDetails = _.sortBy(programDetails, function(pd) {
+    programDetails = _.sortBy(programDetails, function (pd) {
       return pd.day;
     });
     returnObject.program.workouts = programDetails;
@@ -324,9 +324,16 @@ router.post("/day", async (req, res) => {
   var schema = {
     title: {
       notEmpty: true,
+      trim: { options: [[" "]] },
+      isLength: {
+        errorMessage: "Title should be between 0 to 20 characters",
+        options: { min: 0, max: 20 }
+      },
       errorMessage: "Title is required"
     }
   };
+
+  req.checkBody('description', 'Description should be less than 200').isLength({ max: 200 });
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -1189,26 +1196,50 @@ router.put("/:program_id", async (req, res) => {
  */
 router.put("/day/:program_day_id", async (req, res) => {
   var program_day_id = mongoose.Types.ObjectId(req.params.program_day_id);
-  var programObj = {
-    title: req.body.title,
-    description: req.body.description
+  var schema = {
+    title: {
+      notEmpty: true,
+      trim: { options: [[" "]] },
+      isLength: {
+        errorMessage: "Title should be between 0 to 20 characters",
+        options: { min: 0, max: 20 }
+      },
+      errorMessage: "Title is required"
+    }
   };
-  logger.trace(
-    "user programs title and description edit  API called " + program_day_id
-  );
-  var resp_data = await user_program_helper.update_user_program_by_day_id(
-    program_day_id,
-    programObj
-  );
-  if (resp_data.status == 0) {
-    logger.error(
-      "Error occured while updating user programs title and description = ",
-      resp_data
+
+  req.checkBody('description', 'Description should be less than 200').isLength({ max: 200 });
+
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    var programObj = {
+      title: req.body.title,
+      description: req.body.description
+    };
+    logger.trace(
+      "user programs title and description edit  API called " + program_day_id
     );
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user programs updated successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
+    var resp_data = await user_program_helper.update_user_program_by_day_id(
+      program_day_id,
+      programObj
+    );
+    if (resp_data.status == 0) {
+      logger.error(
+        "Error occured while updating user programs title and description = ",
+        resp_data
+      );
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      logger.trace("user programs updated successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    }
+  }
+  else {
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -1222,10 +1253,8 @@ router.put("/day/:program_day_id", async (req, res) => {
  */
 router.delete("/:program_id", async (req, res) => {
   var program_id = mongoose.Types.ObjectId(req.params.program_id);
-
   logger.trace("Delete user program  API called ID:" + program_id);
   var resp_data = await user_program_helper.delete_user_program(program_id);
-
   if (resp_data.status == 0) {
     logger.error("Error occured while deleting user program = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);

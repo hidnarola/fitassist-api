@@ -57,9 +57,9 @@ router.post("/", async (req, res) => {
         $lte: new Date(end),
       },
     }, {
-      start,
-      end
-    });
+        start,
+        end
+      });
 
     overview = await statistics_helper.get_overview_statistics_data({
       userId: authUserId,
@@ -70,9 +70,9 @@ router.post("/", async (req, res) => {
         $lte: new Date(end),
       }
     }, {
-      start,
-      end
-    });
+        start,
+        end
+      });
 
     if (overview.status === 1) {
       if (resp_data.statistics) {
@@ -82,11 +82,19 @@ router.post("/", async (req, res) => {
     if (resp_data.status == 1) {
       logger.trace("Get user statistics data successfully   = ", resp_data);
       res.status(config.OK_STATUS).json(resp_data);
+      console.log('------------------------------------');
+      console.log('resp_data => ', resp_data);
+      console.log('------------------------------------');
+
     } else {
       logger.error(
         "Error occured while fetching user statistics data = ",
         resp_data
       );
+      console.log('------------------------------------');
+      console.log('resp_data => ', resp_data);
+      console.log('------------------------------------');
+
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     }
   } else {
@@ -179,9 +187,9 @@ router.post("/single", async (req, res) => {
           $lte: new Date(end),
         }
       }, {
-        start,
-        end
-      });
+          start,
+          end
+        });
     } else {
       resp_data = await statistics_helper.get_statistics_single_data(condition, {
         start,
@@ -238,8 +246,8 @@ router.post("/graph_data", async (req, res) => {
   username = username.user.username;
 
   var resp_data = await friend_helper.get_friend_by_username({
-      username: username
-    },
+    username: username
+  },
     2
   );
   var friendsIds = _.pluck(resp_data.friends, 'authUserId');
