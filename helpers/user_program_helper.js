@@ -176,7 +176,21 @@ user_program_helper.get_user_programs_data = async (
   project = {}
 ) => {
   try {
-    var user_program = await userWorkoutsProgram.find(condition, project);
+    var user_program = await userWorkoutsProgram.aggregate([
+      {
+        $match: condition,
+      },
+      {
+        $group: {
+          _id: "$_id",
+          programId: { $first: "$programId" },
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          dayType: { $first: "$type" },
+          userId: { $first: "$userId" }
+        }
+      }
+    ]);
 
     if (user_program) {
       return {

@@ -184,9 +184,9 @@ router.get("/workout/:workout_id", async (req, res) => {
         bodypartsNames && bodypartsNames.length > 0 ? bodypartsNames : []
     };
     resp_data.workouts_stat = workouts_stat ? workouts_stat : null;
-    resp_data.workouts_list = related_date_data.program
-      ? related_date_data.program
-      : [];
+    if (related_date_data.status === 1) {
+      resp_data.workouts_list = related_date_data.program;
+    }
     logger.trace("user program got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
