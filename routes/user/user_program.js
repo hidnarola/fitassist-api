@@ -142,6 +142,7 @@ router.get("/workout/:workout_id", async (req, res) => {
         title: 1,
         description: 1,
         day: 1,
+        type: 1,
         userId: 1
       }
     );
