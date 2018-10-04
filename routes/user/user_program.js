@@ -778,19 +778,18 @@ router.post("/", async (req, res) => {
   var schema = {
     name: {
       notEmpty: true,
+      trim: { options: [[" "]] },
       isLength: {
-        errorMessage: "Name should be between 0 to 100 characters",
-        options: {
-          min: 0,
-          max: 100
-        }
+        errorMessage: "Name should be between 0 to 20 characters",
+        options: { min: 0, max: 20 }
       },
       errorMessage: "Name is required"
     }
   };
+
+  req.checkBody('description', 'Description should be less than 200').isLength({ max: 200 });
   req.checkBody(schema);
   var errors = req.validationErrors();
-
   if (!errors) {
     var programObj = {
       name: req.body.name,
@@ -1167,22 +1166,45 @@ router.put("/:program_id", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var program_id = mongoose.Types.ObjectId(req.params.program_id);
-  var programObj = {
-    name: req.body.name,
-    description: req.body.description,
-    userId: authUserId
+  var schema = {
+    name: {
+      notEmpty: true,
+      trim: { options: [[" "]] },
+      isLength: {
+        errorMessage: "Name should be between 0 to 20 characters",
+        options: { min: 0, max: 20 }
+      },
+      errorMessage: "Name is required"
+    }
   };
-  logger.trace("Add user programs  API called");
-  var resp_data = await user_program_helper.update_user_program_by_id(
-    program_id,
-    programObj
-  );
-  if (resp_data.status == 0) {
-    logger.error("Error occured while adding user programs = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+
+  req.checkBody('description', 'Description should be less than 200').isLength({ max: 200 });
+
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    var programObj = {
+      name: req.body.name,
+      description: req.body.description,
+      userId: authUserId
+    };
+    logger.trace("Add user programs  API called");
+    var resp_data = await user_program_helper.update_user_program_by_id(
+      program_id,
+      programObj
+    );
+    if (resp_data.status == 0) {
+      logger.error("Error occured while adding user programs = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      logger.trace("user programs added successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    }
   } else {
-    logger.trace("user programs added successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
+    logger.error("Validation Error = ", errors);
+    res.status(config.VALIDATION_FAILURE_STATUS).json({
+      message: errors
+    });
   }
 });
 
@@ -1207,7 +1229,6 @@ router.put("/day/:program_day_id", async (req, res) => {
       errorMessage: "Title is required"
     }
   };
-
   req.checkBody('description', 'Description should be less than 200').isLength({ max: 200 });
 
   req.checkBody(schema);
