@@ -72,8 +72,8 @@ router.get("/:username?/:type?/:skip?/:limit?/:sort?", async (req, res) => {
     }
   }
   var resp_data = await friend_helper.get_friend_by_username({
-      username: username
-    },
+    username: username
+  },
     friendStatus, {
       $skip: skip
     }, {
@@ -130,19 +130,19 @@ router.post("/", async (req, res) => {
 
     check_friend_data = await friend_helper.checkFriend({
       $or: [{
-          $and: [{
-            userId: authUserId
-          }, {
-            friendId: req.body.friendId
-          }]
-        },
-        {
-          $and: [{
-            userId: req.body.friendId
-          }, {
-            friendId: authUserId
-          }]
-        }
+        $and: [{
+          userId: authUserId
+        }, {
+          friendId: req.body.friendId
+        }]
+      },
+      {
+        $and: [{
+          userId: req.body.friendId
+        }, {
+          friendId: authUserId
+        }]
+      }
       ]
     });
     var msg = "is already friend";
@@ -218,8 +218,8 @@ router.put("/:request_id", async (req, res) => {
       });
   }
   let friend_data = await friend_helper.approve_friend({
-      _id: req.params.request_id
-    },
+    _id: req.params.request_id
+  },
     friend_obj
   );
   if (friend_data.status === 1) {
@@ -248,22 +248,22 @@ router.put("/:request_id", async (req, res) => {
 
     var receiver_data_friends = await friend_helper.total_count_friends({
       $or: [{
-          userId: friend.friends.userId
-        },
-        {
-          friendId: friend.friends.userId,
-        }
+        userId: friend.friends.userId
+      },
+      {
+        friendId: friend.friends.userId,
+      }
       ],
       status: 2
     });
 
     var sender_data_friends = await friend_helper.total_count_friends({
       $or: [{
-          userId: friend.friends.friendId
-        },
-        {
-          friendId: friend.friends.friendId,
-        }
+        userId: friend.friends.friendId
+      },
+      {
+        friendId: friend.friends.friendId,
+      }
       ],
       status: 2
     });

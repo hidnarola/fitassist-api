@@ -374,9 +374,14 @@ badges_assign_helper.badge_assign = async (
 
             if (resp_data.status == 1) {
               var first = resp_data.measurement.weight;
-              var last = valueToBeCompare.weight;
-
-              if (last - first >= single_badge.baseValue) {
+              var last = valueToBeCompare.weight_gain;
+              var tmp = 0;
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -427,7 +432,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.weight;
               var last = valueToBeCompare.weight_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -477,7 +487,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.body_fat_log.bodyFatPer;
               var last = valueToBeCompare.body_fat_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -492,16 +507,16 @@ badges_assign_helper.badge_assign = async (
           }
         }
       }
-      else if (element == "body_fat_gain" || element == "body_fat_average" || element == "body_fat_least" || element == "body_fat_most") {
-
+      else if (element == "body_fat_gain" ||
+        element == "body_fat_average" ||
+        element == "body_fat_least" ||
+        element == "body_fat_most") {
         for (let single_badge of all_possible_badges) {
           var id = single_badge._id;
           var badge_assigned = _.find(user_gained_badges, user_badge => {
             return user_badge.badgeId.toString() === id.toString();
           });
           if (!badge_assigned) {
-            console.log('badge not assignedd =>', element);
-
             if (single_badge.timeType == "standard") {
               var resp_data = await body_fat_helper.get_body_fat_logs({
                 userId: authUserId
@@ -528,15 +543,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.body_fat_log.bodyFatPer;
               var last = valueToBeCompare[element];
-              console.log('------------------------------------');
-              console.log('first => ', first);
-              console.log('last => ', last);
-              console.log('single_badge.baseValue => ', single_badge.baseValue);
-              console.log('------------------------------------');
               let tmp = last - first;
-              if (element === "body_fat_most" || element === "body_fat_least") {
+
+              if (single_badge.timeType === "standard") {
                 tmp = last;
               }
+
               if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
@@ -588,7 +600,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.neck;
               var last = valueToBeCompare.neck_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -639,7 +656,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.neck;
               var last = valueToBeCompare.neck_measurement_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -689,7 +711,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.shoulders;
               var last = valueToBeCompare.shoulders_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -740,7 +767,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.shoulders;
               var last = valueToBeCompare.shoulders_measurement_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -790,7 +822,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.chest;
               var last = valueToBeCompare.chest_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -841,7 +878,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.chest;
               var last = valueToBeCompare.chest_measurement_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -891,7 +933,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.upperArm;
               var last = valueToBeCompare.upper_arm_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -942,7 +989,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.upperArm;
               var last = valueToBeCompare.upper_arm_measurement_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -992,7 +1044,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.waist;
               var last = valueToBeCompare.waist_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1043,7 +1100,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.waist;
               var last = valueToBeCompare.waist_measurement_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1093,7 +1155,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.forearm;
               var last = valueToBeCompare.forearm_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1144,7 +1211,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.forearm;
               var last = valueToBeCompare.forearm_measurement_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1194,7 +1266,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.hips;
               var last = valueToBeCompare.hips_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1245,7 +1322,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.hips;
               var last = valueToBeCompare.hips_measurement_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1295,7 +1377,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.thigh;
               var last = valueToBeCompare.thigh_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1346,7 +1433,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.thigh;
               var last = valueToBeCompare.thigh_measurement_gain;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1396,7 +1488,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.calf;
               var last = valueToBeCompare.calf_measurement_gain;
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1447,7 +1544,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.calf;
               var last = valueToBeCompare.calf_measurement_loss;
-              if (last - first <= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -1514,7 +1616,12 @@ badges_assign_helper.badge_assign = async (
             if (resp_data.status == 1) {
               var first = resp_data.measurement.heartRate;
               var last = valueToBeCompare[element];
-              if (last - first >= single_badge.baseValue) {
+              if (single_badge.timeType === "standard") {
+                tmp = last;
+              } else {
+                tmp = last - first;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,

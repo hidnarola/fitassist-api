@@ -8,40 +8,40 @@ var badge_helper = {};
  *          status 1 - If badges data found, with badges object
  *          status 2 - If badges not found, with appropriate message
  */
-badge_helper.get_badges_group_by = async (condition = {}) => {
+badge_helper.get_badges_group_by = async (authUserId) => {
   try {
     var badges = await Badges.aggregate([{
-        $match: {
-          // isDeleted: 0,
-          // status: 1
-          $and: [{
-              isDeleted: 0
-            },
-            {
-              status: 1
-            }
-          ]
+      $match: {
+        // isDeleted: 0,
+        // status: 1
+        $and: [{
+          isDeleted: 0
+        },
+        {
+          status: 1
         }
-      },
-      {
-        $group: {
-          _id: "$category",
-          category: {
-            $first: "$category"
-          },
-          badges: {
-            $addToSet: "$$ROOT"
-          }
+        ]
+      }
+    },
+    {
+      $group: {
+        _id: "$category",
+        category: {
+          $first: "$category"
+        },
+        badges: {
+          $addToSet: "$$ROOT"
         }
-      },
-      {
-        $lookup: {
-          from: "badges_assign",
-          localField: "badges._id",
-          foreignField: "badgeId",
-          as: "badgeDetail"
-        }
-      },
+      }
+    },
+    {
+      $lookup: {
+        from: "badges_assign",
+        localField: "badges._id",
+        foreignField: "badgeId",
+        as: "badgeDetail"
+      }
+    },
 
     ]);
 
@@ -51,7 +51,11 @@ badge_helper.get_badges_group_by = async (condition = {}) => {
       _.each(badge.badges, b => {
         var obj = Object.assign({}, b);
         var result = _.find(badge.badgeDetail, function (o) {
-          return o.badgeId.toString() === obj._id.toString();
+          if (o.userId.toString() === authUserId.toString() && o.badgeId.toString() === obj._id.toString()) {
+            return true;
+          } else {
+            return false;
+          }
         });
         if (result) {
           obj.isCompleted = 1;
@@ -187,8 +191,8 @@ badge_helper.update_badge_by_id = async (badge_id, badge_obj) => {
     let badge = await Badges.findOneAndUpdate({
       _id: badge_id
     }, badge_obj, {
-      new: true
-    });
+        new: true
+      });
     if (!badge) {
       return {
         status: 2,
@@ -222,8 +226,8 @@ badge_helper.delete_badge_by_id = async badge_id => {
     let resp = await Badges.findOneAndUpdate({
       _id: badge_id
     }, {
-      isDeleted: 1
-    });
+        isDeleted: 1
+      });
     if (!resp) {
       return {
         status: 2,
@@ -256,8 +260,8 @@ badge_helper.undo_badge_by_id = async badge_id => {
     let resp = await Badges.findOneAndUpdate({
       _id: badge_id
     }, {
-      isDeleted: 0
-    });
+        isDeleted: 0
+      });
     if (!resp) {
       return {
         status: 2,
@@ -290,17 +294,17 @@ badge_helper.get_filtered_records = async filter_obj => {
       $match: filter_object.columnFilter
     }]);
     var filtered_data = await Badges.aggregate([{
-        $match: filter_object.columnFilter
-      },
-      {
-        $sort: filter_obj.columnSort
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: filter_object.pageSize
-      },
+      $match: filter_object.columnFilter
+    },
+    {
+      $sort: filter_obj.columnSort
+    },
+    {
+      $skip: skip
+    },
+    {
+      $limit: filter_object.pageSize
+    },
     ]);
 
     if (filtered_data) {

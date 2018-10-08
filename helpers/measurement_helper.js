@@ -93,12 +93,10 @@ measurement_helper.heart_rate_data = async (
 measurement_helper.get_body_measurement_id = async (
   id,
   sort = {},
-  limit = 0
 ) => {
   try {
     var measurement = await Measurement.findOne(id)
       .sort(sort)
-      .limit(limit);
     if (measurement) {
       return {
         status: 1,
@@ -229,8 +227,8 @@ measurement_helper.update_body_measurement = async (
 ) => {
   try {
     let measurement = await Measurement.findOneAndUpdate({
-        _id: body_measurement_id
-      },
+      _id: body_measurement_id
+    },
       measurement_obj, {
         new: true
       }
@@ -306,18 +304,18 @@ measurement_helper.get_filtered_records = async filter_obj => {
     }]);
 
     var filtered_data = await Measurement.aggregate([{
-        $match: filter_object.columnFilter
-      },
-      {
-        $sort: filter_obj.columnSort
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: filter_object.pageSize
-      },
-      
+      $match: filter_object.columnFilter
+    },
+    {
+      $sort: filter_obj.columnSort
+    },
+    {
+      $skip: skip
+    },
+    {
+      $limit: filter_object.pageSize
+    },
+
     ]);
 
     if (filtered_data) {

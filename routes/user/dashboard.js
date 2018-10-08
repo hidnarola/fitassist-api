@@ -366,7 +366,7 @@ router.post("/", async (req, res) => {
           }
         },
         {
-          $limit: 6
+          $limit: 10
         }
       );
       if (badges.status === 1) {

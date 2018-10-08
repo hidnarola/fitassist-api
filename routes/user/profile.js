@@ -197,9 +197,9 @@ router.put("/", async (req, res) => {
     .withMessage("First name is required.")
     .isLength({
       min: 2,
-      max: 20
+      max: 15
     })
-    .withMessage("First name should be between 2 to 20 chars");
+    .withMessage("First name should be between 2 to 15 characters");
 
   req.checkBody(schema);
   var errors = req.validationErrors();
@@ -414,8 +414,8 @@ router.put("/photo", async (req, res) => {
 
     resp_data = await user_helper.get_user_by_id(authUserId);
     try {
-      fs.unlink(resp_data.user.avatar, function() {});
-    } catch (err) {}
+      fs.unlink(resp_data.user.avatar, function () { });
+    } catch (err) { }
     let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
 
     if (user_data.status === 1) {
@@ -425,8 +425,8 @@ router.put("/photo", async (req, res) => {
         .sync_user_data_to_auth(authUserId, {
           picture: user_obj.avatar
         })
-        .then(function(response) {})
-        .catch(function(error) {});
+        .then(function (response) { })
+        .catch(function (error) { });
       var badges = await badgeAssign(authUserId);
     } else {
       logger.error("Error while updating user avatar = ", user_data);
