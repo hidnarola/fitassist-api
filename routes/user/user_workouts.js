@@ -1526,6 +1526,8 @@ router.post("/workouts_list_by_date", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(related_date_data);
   }
 });
+
+
 /**
  * @api {post} /user/user_workouts/delete Multiple Workout delete by Days
  * @apiName Multiple Workout delete by Days
@@ -1559,7 +1561,6 @@ router.post("/delete", async (req, res) => {
       logger.error("Error occured while fetching user workouts = ", resp_data);
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     }
-    res.status(config.OK_STATUS).json(workout_day);
   } else {
     res.status(config.INTERNAL_SERVER_ERROR).json(workout_data);
   }

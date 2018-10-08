@@ -224,7 +224,6 @@ badges_assign_helper.badge_assign = async (
         task: element,
         $and: [{ isDeleted: 0 }, { status: 1 }]
       });
-
       var all_possible_badges = [];
       for (let singleBadge of badge) {
         all_possible_badges.push(singleBadge);
@@ -443,7 +442,7 @@ badges_assign_helper.badge_assign = async (
             }
           }
         }
-      } else if (element == "body_fat_gain" || element == "body_fat_average" || element == "body_fat_most" || element == "body_fat_least") {
+      } else if (element == "body_fat_loss") {
         for (let single_badge of all_possible_badges) {
           var duration = parseInt(single_badge.baseDuration);
           var id = single_badge._id;
@@ -477,8 +476,8 @@ badges_assign_helper.badge_assign = async (
             }
             if (resp_data.status == 1) {
               var first = resp_data.body_fat_log.bodyFatPer;
-              var last = valueToBeCompare[element];
-              if (last - first >= single_badge.baseValue) {
+              var last = valueToBeCompare.body_fat_loss;
+              if (last - first <= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -492,14 +491,17 @@ badges_assign_helper.badge_assign = async (
             }
           }
         }
-      } else if (element == "body_fat_loss") {
+      }
+      else if (element == "body_fat_gain" || element == "body_fat_average" || element == "body_fat_least" || element == "body_fat_most") {
+
         for (let single_badge of all_possible_badges) {
           var id = single_badge._id;
           var badge_assigned = _.find(user_gained_badges, user_badge => {
             return user_badge.badgeId.toString() === id.toString();
           });
-
           if (!badge_assigned) {
+            console.log('badge not assignedd =>', element);
+
             if (single_badge.timeType == "standard") {
               var resp_data = await body_fat_helper.get_body_fat_logs({
                 userId: authUserId
@@ -523,11 +525,19 @@ badges_assign_helper.badge_assign = async (
                 1
               );
             }
-
             if (resp_data.status == 1) {
               var first = resp_data.body_fat_log.bodyFatPer;
-              var last = valueToBeCompare.body_fat_loss;
-              if (last - first <= single_badge.baseValue) {
+              var last = valueToBeCompare[element];
+              console.log('------------------------------------');
+              console.log('first => ', first);
+              console.log('last => ', last);
+              console.log('single_badge.baseValue => ', single_badge.baseValue);
+              console.log('------------------------------------');
+              let tmp = last - first;
+              if (element === "body_fat_most" || element === "body_fat_least") {
+                tmp = last;
+              }
+              if (tmp >= single_badge.baseValue) {
                 var badge_assign_obj = {
                   userId: authUserId,
                   badgeId: single_badge._id,
@@ -537,13 +547,13 @@ badges_assign_helper.badge_assign = async (
                 };
                 insert_batch_data.push(badge_assign_obj);
                 notification_badges_data.push(single_badge);
-                console.log("body fat log badge assigned");
+                console.log(element + "  badge assigned");
               }
             }
           }
         }
-
-      } else if (element == "neck_measurement_gain") {
+      }
+      else if (element == "neck_measurement_gain") {
         for (let single_badge of all_possible_badges) {
           var duration = parseInt(single_badge.baseDuration);
           var id = single_badge._id;
@@ -1466,22 +1476,6 @@ badges_assign_helper.badge_assign = async (
           insert_batch_data,
           notification_badges_data
         );
-      } else if (element == "running_distance_total") {
-
-      } else if (element == "running_distance_average") {
-
-      } else if (element == "running_distance_most") {
-
-      } else if (element == "running_distance_least") {
-
-      } else if (element == "running_time_average") {
-
-      } else if (element == "running_time_total") {
-
-      } else if (element == "running_elevation_total") {
-
-      } else if (element == "running_elevation_average") {
-
       } else if (element == "heart_rate_total" ||
         element == "heart_rate_average" ||
         element == "heart_rate_most" ||
@@ -1534,22 +1528,6 @@ badges_assign_helper.badge_assign = async (
             }
           }
         }
-
-      } else if (element == "cycle_distance_total") {
-
-      } else if (element == "cycle_distance_average") {
-
-      } else if (element == "cycle_distance_most") {
-
-      } else if (element == "cycle_distance_least") {
-
-      } else if (element == "cycle_time_total") {
-
-      } else if (element == "cycle_time_average") {
-
-      } else if (element == "cycle_elevation_total") {
-
-      } else if (element == "cycle_elevation_average") {
 
       } else if (
         constant.BADGES_TYPE.NUTRITIONS.concat(

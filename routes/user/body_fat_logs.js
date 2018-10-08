@@ -1,10 +1,12 @@
 var express = require("express");
 var router = express.Router();
 var config = require("../../config");
+var constant = require("../../constant");
 var logger = config.logger;
 var jwtDecode = require("jwt-decode");
 var moment = require("moment");
 var body_fat_helper = require("../../helpers/body_fat_helper");
+var badge_assign_helper = require("../../helpers/badge_assign_helper");
 
 /**
  * @api {get} /user/body_fat_log Save
@@ -107,13 +109,6 @@ router.post("/", async (req, res) => {
         $lte: enddate
       }
     });
-    console.log("------------------------------------");
-    console.log("resp_data => ", resp_data);
-    console.log("------------------------------------");
-    console.log("------------------------------------");
-    console.log("bodyFatObject => ", bodyFatObject);
-    console.log("------------------------------------");
-
     if (resp_data.status === 2) {
       var resp_data = await body_fat_helper.save_body_fat_log(bodyFatObject);
       if (resp_data.status == 1) {
@@ -124,16 +119,39 @@ router.post("/", async (req, res) => {
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
       }
     } else {
-      console.log("------------------------------------");
-      console.log("Update this => ", resp_data.body_fat_log._id);
-      console.log("------------------------------------");
-
       var resp_data = await body_fat_helper.save_body_fat_log(bodyFatObject, {
         _id: resp_data.body_fat_log._id
       });
       if (resp_data.status == 1) {
         logger.trace("body_fat_log got saved = ", resp_data);
         res.status(config.OK_STATUS).json(resp_data);
+
+        var body_fat = await body_fat_helper.body_fat_data({
+          userId: authUserId
+        });
+
+        var body_fat_measurment = {
+          body_fat_gain: body_fat.body_fat_log.body_fat_gain,
+          body_fat_loss: body_fat.body_fat_log.body_fat_loss,
+          body_fat_average: body_fat.body_fat_log.body_fat_average,
+          body_fat_most: body_fat.body_fat_log.body_fat_most,
+          body_fat_least: body_fat.body_fat_log.body_fat_least,
+        };
+        console.log('------------------------------------');
+        console.log('body_fat_measurment => ', body_fat_measurment);
+        console.log('------------------------------------');
+
+        var badges = await badge_assign_helper.badge_assign(
+          authUserId,
+          constant.BADGES_TYPE.BODY_FAT,
+          body_fat_measurment
+        );
+        console.log('------------------------------------');
+        console.log('badges => ', badges);
+        console.log('------------------------------------');
+
+        //badge assign end
+
       } else {
         logger.error("Error occured while saving body_fat_logs = ", resp_data);
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);

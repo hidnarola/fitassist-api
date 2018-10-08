@@ -64,24 +64,58 @@ user_workouts_helper.get_workouts_for_calendar = async (
  */
 user_workouts_helper.get_all_workouts = async (condition, single = false) => {
   try {
-    var user_workouts = await UserWorkouts.aggregate([
-      {
-        $match: condition
-      }
-    ]);
     // var user_workouts = await UserWorkouts.aggregate([
     //   {
     //     $match: condition
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "user_workout_exercises",
-    //       foreignField: "userWorkoutsId",
-    //       localField: "_id",
-    //       as: "exercises"
-    //     }
     //   }
     // ]);
+    var user_workouts = await UserWorkouts.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_workout_exercises",
+          foreignField: "userWorkoutsId",
+          localField: "_id",
+          as: "exercises"
+        }
+      }, {
+        $group: {
+          _id: "$_id",
+          "isCompleted": { $first: "$isCompleted" },
+          "type": { $first: "$type" },
+          "title": { $first: "$title" },
+          "description": { $first: "$description" },
+          "userId": { $first: "$userId" },
+          "date": { $first: "$date" },
+          "createdAt": { $first: "$createdAt" },
+          "modifiedAt": { $first: "$modifiedAt" },
+          "exercises": { $first: "$exercises" },
+        }
+      }, {
+        $project: {
+          _id: 1,
+          isCompleted: 1,
+          type: 1,
+          title: 1,
+          description: 1,
+          userId: 1,
+          date: 1,
+          createdAt: 1,
+          modifiedAt: 1,
+          // exercises: 1,
+          totalExercises:
+          {
+            $size: "$exercises"
+          }
+        }
+      }
+    ]);
+    console.log('------------------------------------');
+    console.log('user_workouts => ', user_workouts);
+    console.log('------------------------------------');
+
 
     // _.each(user_workouts, user_workout => {
     //   var tmp = [];
@@ -334,6 +368,7 @@ user_workouts_helper.get_workouts_by_date = async (condition = {}) => {
         $project: {
           _id: 1,
           title: 1,
+          totalExercises: { $size: "$exercises" },
           description: 1,
           isCompleted: 1,
           date: 1,

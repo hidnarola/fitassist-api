@@ -21,6 +21,9 @@ var user_program_helper = require("../../helpers/user_program_helper");
  */
 router.post("/", async (req, res) => {
   logger.trace('Admin dashboard API called');
+  console.log('------------------------------------');
+  console.log('req.body => ', req.body);
+  console.log('------------------------------------');
 
   var returnObject = {
     totalUsers: null,
@@ -38,6 +41,18 @@ router.post("/", async (req, res) => {
   var start = await moment(req.body.start).startOf('day').utc(0);
   var days = current.diff(start, 'days') + 1;
   var previousStart = await moment(start).subtract(days, "day");
+  console.log('------------------------------------');
+  console.log('current => ', current);
+  console.log('------------------------------------');
+  console.log('------------------------------------');
+  console.log('start => ', start);
+  console.log('------------------------------------');
+  console.log('------------------------------------');
+  console.log('days => ', days);
+  console.log('------------------------------------');
+  console.log('------------------------------------');
+  console.log('previousStart => ', previousStart);
+  console.log('------------------------------------');
 
   newData = await user_helper.count_users({
     createdAt: {
@@ -45,12 +60,19 @@ router.post("/", async (req, res) => {
       $lte: current
     }
   });
+  console.log('------------------------------------');
+  console.log('newData => ', newData);
+  console.log('------------------------------------');
+
   prevData = await user_helper.count_users({
     createdAt: {
       $gte: previousStart,
       $lte: start
     }
   });
+  console.log('------------------------------------');
+  console.log('prevData => ', prevData);
+  console.log('------------------------------------');
 
   returnObject = await perChange(returnObject, "totalUsers", newData, prevData, days);
 
@@ -127,14 +149,18 @@ router.post("/", async (req, res) => {
 
 async function perChange(returnObject, key, newData, prevData, days) {
   let tmp = 0;
-  let perChange = 100;
+  let perChange = 0;
   if (newData.status === 1) {
+    // if (prevData.count === 0 && newData.count === 0) {
+    //   perChange = 0;
+    // }
+    // else 
     if (prevData.count <= newData.count) {
       tmp = (newData.count - prevData.count);
     } else {
       tmp = (prevData.count - newData.count);
     }
-    if (prevData.count != 0) {
+    if (tmp != 0) {
       perChange = parseFloat(((tmp / prevData.count) * 100).toFixed(2));
     }
     returnObject[key] = {

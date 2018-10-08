@@ -409,8 +409,8 @@ router.post("/get_log_dates_by_date", async (req, res) => {
 async function badgesAssign(authUserId) {
   // badge_assign start;
   var resp_data = await measurement_helper.get_body_measurement_id({
-      userId: authUserId
-    }, {
+    userId: authUserId
+  }, {
       logDate: -1
     },
     1
@@ -454,6 +454,9 @@ async function badgesAssign(authUserId) {
     body_fat_most: body_fat.body_fat_log.body_fat_most,
     body_fat_least: body_fat.body_fat_log.body_fat_least,
   };
+  console.log('------------------------------------');
+  console.log('body_measurement_data => ', body_measurement_data);
+  console.log('------------------------------------');
 
   var badges = await badge_assign_helper.badge_assign(
     authUserId,

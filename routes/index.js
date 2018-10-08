@@ -83,9 +83,9 @@ router.post("/user_login", async (req, res) => {
       // Checking password
 
       common_helper.hashPassword.call({
-          password: req.body.password,
-          hash: user_resp.user.password
-        },
+        password: req.body.password,
+        hash: user_resp.user.password
+      },
         async password_resp => {
           logger.trace("password resp = ", password_resp);
           if (password_resp.status === 0 || password_resp.res === false) {
@@ -98,9 +98,9 @@ router.post("/user_login", async (req, res) => {
               // Generate token
               logger.trace("valid user. Generating token");
               var refreshToken = jwt.sign({
-                  id: user_resp.user._id,
-                  role: "user"
-                },
+                id: user_resp.user._id,
+                role: "user"
+              },
                 config.REFRESH_TOKEN_SECRET_KEY, {}
               );
 
@@ -215,9 +215,9 @@ router.post("/admin_login", async (req, res) => {
       // Checking password
 
       common_helper.hashPassword.call({
-          password: req.body.password,
-          hash: user_resp.admin.password
-        },
+        password: req.body.password,
+        hash: user_resp.admin.password
+      },
         async password_resp => {
           logger.trace("password resp = ", password_resp);
           if (password_resp.status === 0 || password_resp.res === false) {
@@ -230,9 +230,9 @@ router.post("/admin_login", async (req, res) => {
               // Generate token
               logger.trace("valid admin request. Generating token");
               var refreshToken = jwt.sign({
-                  id: user_resp.admin._id,
-                  role: "admin"
-                },
+                id: user_resp.admin._id,
+                role: "admin"
+              },
                 config.REFRESH_TOKEN_SECRET_KEY, {}
               );
 
@@ -363,9 +363,9 @@ router.put("/admin_change_password", async (req, res) => {
 
         // Checking password
         common_helper.hashPassword.call({
-            password: req.body.password,
-            hash: user_resp.admin.password
-          },
+          password: req.body.password,
+          hash: user_resp.admin.password
+        },
           async password_resp => {
 
             logger.trace("password resp = ", password_resp);
@@ -583,8 +583,8 @@ router.get("/auth0_user_sync", async (req, res) => {
           let tmp = await user_helper.update_user({
             email: response.email
           }, {
-            authUserId: response.sub
-          });
+              authUserId: response.sub
+            });
 
 
           let data = await user_helper.get_user_by({
