@@ -73,7 +73,7 @@ router.post("/filter", async (req, res) => {
  */
 router.get("/", async (req, res) => {
   logger.trace("Get all equipment API called");
-  var resp_data = await equipment_helper.get_all_equipment();
+  var resp_data = await equipment_helper.get_all_equipment({ isDeleted: 0 });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching equipment = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
@@ -308,7 +308,7 @@ router.put("/:equipment_id", async (req, res) => {
             logger.error("Image could not deleted = ", resp_data.equipment.image, err);
           }
         });
-      } catch (error) {}
+      } catch (error) { }
       equipment_obj.image = "uploads/equipment/" + filename;
     }
 
@@ -346,10 +346,10 @@ router.delete("/:equipment_id", async (req, res) => {
   let equipment_data = await equipment_helper.delete_equipment_by_id({
     _id: mongoose.Types.ObjectId(req.params.equipment_id)
   }, {
-    isDeleted: 1
-  });
+      isDeleted: 1
+    });
 
-  if (equipment_data.status == 0) {} else {
+  if (equipment_data.status == 0) { } else {
     logger.error("failed to delete equipment = ", req.params.equipment_id);
     res.status(config.INTERNAL_SERVER_ERROR).json(equipment_data);
     logger.trace("Delete equipment successfully = ", req.params.equipment_id);
@@ -371,8 +371,8 @@ router.get("/undo/:equipment_id", async (req, res) => {
   let equipment_data = await equipment_helper.delete_equipment_by_id({
     _id: mongoose.Types.ObjectId(req.params.equipment_id)
   }, {
-    isDeleted: 0
-  });
+      isDeleted: 0
+    });
 
   if (equipment_data.status == 0) {
     logger.error("Undo equipment failed ", req.params.equipment_id);

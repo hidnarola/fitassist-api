@@ -179,6 +179,16 @@ router.post("/", async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
+    let count = await exercise_helper.count_exercises({ name: req.body.name });
+    if (count.status === 1 && count.count > 0) {
+      logger.error("Name Validation Error = ");
+      return res.status(config.VALIDATION_FAILURE_STATUS).json({
+        message: [{
+          msg: "Name already exists"
+        }]
+      });
+    }
+
     mainMuscleGroupData = mongoose.Types.ObjectId(req.body.mainMuscleGroup);
     detailedMuscleGroupData = [];
     equipmentsData = [];
@@ -219,7 +229,7 @@ router.post("/", async (req, res) => {
 
     async.waterfall(
       [
-        function(callback) {
+        function (callback) {
           //image upload
           if (req.files && req.files["images"]) {
             var file_path_array = [];
@@ -230,7 +240,7 @@ router.post("/", async (req, res) => {
             // assuming openFiles is an array of file names
             async.eachSeries(
               files,
-              function(file, loop_callback) {
+              function (file, loop_callback) {
                 var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
@@ -238,13 +248,17 @@ router.post("/", async (req, res) => {
                   }
                   extention = path.extname(file.name);
                   filename = "exercise_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function(err) {
+                  file.mv(dir + "/" + filename, function (err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
-                      loop_callback({
-                        status: config.MEDIA_ERROR_STATUS,
-                        err: "There was an issue in uploading image"
-                      });
+                      loop_callback(
+                        {
+                          message: [{
+                            "msg": "There was an issue in uploading image"
+                          },],
+                          status: config.INTERNAL_SERVER_ERROR,
+                        }
+                      );
                     } else {
                       logger.trace(
                         "image has been uploaded. Image name = ",
@@ -258,12 +272,14 @@ router.post("/", async (req, res) => {
                 } else {
                   logger.error("Image format is invalid");
                   loop_callback({
+                    message: [{
+                      "msg": "Invalid file(s). Please select jpg, png, gif only."
+                    },],
                     status: config.VALIDATION_FAILURE_STATUS,
-                    err: "Image format is invalid"
                   });
                 }
               },
-              function(err) {
+              function (err) {
                 // if any of the file processing produced an error, err would equal that error
                 if (err) {
                   res.status(err.status).json(err);
@@ -285,6 +301,7 @@ router.post("/", async (req, res) => {
         exercise_obj.images = file_path_array;
 
         let exercise_data = await exercise_helper.insert_exercise(exercise_obj);
+
         if (exercise_data.status == 0) {
           logger.error("Error while inserting exercise data = ", exercise_data);
           res.status(config.INTERNAL_SERVER_ERROR).json({
@@ -380,6 +397,18 @@ router.put("/:exercise_id", async (req, res) => {
   var errors = req.validationErrors();
 
   if (!errors) {
+    let count = await exercise_helper.count_exercises({
+      name: req.body.name,
+      _id: { $ne: exercise_id }
+    });
+    if (count.status === 1 && count.count > 0) {
+      logger.error("Name Validation Error = ");
+      return res.status(config.VALIDATION_FAILURE_STATUS).json({
+        message: [{
+          msg: "Name already exists"
+        }]
+      });
+    }
     var exercise_obj = {
       name: req.body.name,
       mainMuscleGroup: req.body.mainMuscleGroup,
@@ -451,7 +480,7 @@ router.put("/:exercise_id", async (req, res) => {
         //   // }
         //   // callback(null, new_img_path_list);
         // },
-        function(callback) {
+        function (callback) {
           //image upload
           var file_path_array = [];
 
@@ -464,14 +493,14 @@ router.put("/:exercise_id", async (req, res) => {
             // assuming openFiles is an array of file names
             async.eachSeries(
               files,
-              function(file, loop_callback) {
+              function (file, loop_callback) {
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
                     fs.mkdirSync(dir);
                   }
                   extention = path.extname(file.name);
                   filename = "exercise_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function(err) {
+                  file.mv(dir + "/" + filename, function (err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -491,12 +520,14 @@ router.put("/:exercise_id", async (req, res) => {
                 } else {
                   logger.error("Image format is invalid");
                   loop_callback({
+                    message: [{
+                      "msg": "Invalid file(s). Please select jpg, png, gif only."
+                    },],
                     status: config.VALIDATION_FAILURE_STATUS,
-                    err: "Image format is invalid"
                   });
                 }
               },
-              function(err) {
+              function (err) {
                 // if any of the file processing produced an error, err would equal that error
                 if (err) {
                   res.status(err.status).json(err);

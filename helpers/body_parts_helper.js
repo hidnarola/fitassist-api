@@ -3,7 +3,6 @@ var body_part_helper = {};
 
 /*
  * get_all_body_parts is used to fetch all body_parts data
- * 
  * @return  status 0 - If any internal error occured while fetching body_parts data, with error
  *          status 1 - If body_parts data found, with body_parts object
  *          status 2 - If body_parts not found, with appropriate message
@@ -35,7 +34,6 @@ body_part_helper.get_all_body_parts = async (condition = {}) => {
 
 /*
  * get_body_part_id is used to fetch Body Part by ID
- * 
  * @return  status 0 - If any internal error occured while fetching body part data, with error
  *          status 1 - If Body parts data found, with body part object
  *          status 2 - If Body parts data not found, with appropriate message
@@ -68,12 +66,9 @@ body_part_helper.get_body_part_id = async (id) => {
 
 /*
  * insert_body_part is used to insert into bodyparts collection
- * 
  * @param   body_part_obj     JSON object consist of all property that need to insert in collection
- * 
  * @return  status  0 - If any error occur in inserting Body part, with error
  *          status  1 - If Body part inserted, with inserted Body part document and appropriate message
- * 
  * @developed by "amc"
  */
 body_part_helper.insert_body_part = async (body_part_obj) => {
@@ -96,14 +91,11 @@ body_part_helper.insert_body_part = async (body_part_obj) => {
 
 /*
  * update_bodypart_by_id is used to update bodypart data based on body_part_id
- * 
  * @param   body_part_id         String  _id of bodypart that need to be update
  * @param   body_part_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in updating bodypart, with error
  *          status  1 - If bodypart updated successfully, with appropriate message
  *          status  2 - If bodypart not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 body_part_helper.update_bodypart_by_id = async (body_part_id, body_part_obj) => {
@@ -111,8 +103,8 @@ body_part_helper.update_bodypart_by_id = async (body_part_id, body_part_obj) => 
         let bodypart = await BodyPart.findByIdAndUpdate({
             _id: body_part_id
         }, body_part_obj, {
-            new: true
-        });
+                new: true
+            });
         if (!bodypart) {
             return {
                 "status": 2,
@@ -136,12 +128,9 @@ body_part_helper.update_bodypart_by_id = async (body_part_id, body_part_obj) => 
 
 /*
  * delete_bodypart_by_id is used to delete bodypart from database
- * 
  * @param   bodypart_id String  _id of bodypart that need to be delete
- * 
  * @return  status  0 - If any error occur in deletion of bodypart, with error
  *          status  1 - If bodypart deleted successfully, with appropriate message
- * 
  * @developed by "amc"
  */
 body_part_helper.delete_bodypart_by_id = async (bodypart_id) => {
@@ -171,7 +160,6 @@ body_part_helper.delete_bodypart_by_id = async (bodypart_id) => {
 
 /*
  * get_filtered_records is used to fetch all filtered data
- * 
  * @return  status 0 - If any internal error occured while fetching filtered data, with error
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message
@@ -183,17 +171,17 @@ body_part_helper.get_filtered_records = async filter_obj => {
             $match: filter_object.columnFilter
         }]);
         var filtered_data = await BodyPart.aggregate([{
-                $match: filter_object.columnFilter
-            },
-            {
-                $sort: filter_obj.columnSort
-            },
-            {
-                $skip: skip
-            },
-            {
-                $limit: filter_object.pageSize
-            },
+            $match: filter_object.columnFilter
+        },
+        {
+            $sort: filter_obj.columnSort
+        },
+        {
+            $skip: skip
+        },
+        {
+            $limit: filter_object.pageSize
+        },
 
         ]);
 

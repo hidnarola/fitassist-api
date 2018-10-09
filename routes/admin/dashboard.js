@@ -147,10 +147,6 @@ async function perChange(returnObject, key, newData, prevData, days) {
   if (tmp !== 0) {
     perChange = parseFloat(tmp.toFixed(2));
   }
-  console.log('------------------------------------');
-  console.log('perChange => ', perChange);
-  console.log('------------------------------------');
-
 
   returnObject[key] = {
     total: newData.count,

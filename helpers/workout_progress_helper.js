@@ -395,13 +395,6 @@ workout_progress_helper.user_endurance_test = async (condition, type) => {
 
 				var first = _.first(tmp);
 				var last = _.last(tmp);
-				console.log('------------------------------------');
-				console.log('first => ', first);
-				console.log('------------------------------------');
-				console.log('------------------------------------');
-				console.log('last => ', last);
-				console.log('------------------------------------');
-
 				var checkField = first.format;
 				returnObj.name = first.test_exercises.name;
 				returnObj.unit = "min";

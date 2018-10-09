@@ -64,7 +64,7 @@ router.post("/filter", async (req, res) => {
  */
 router.get("/", async (req, res) => {
   logger.trace("Get all equipment category API called");
-  var resp_data = await equipment_category_helper.get_all_equipment_category();
+  var resp_data = await equipment_category_helper.get_all_equipment_category({ isDeleted: 0 });
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching equipment category = ",

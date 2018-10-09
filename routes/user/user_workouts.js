@@ -40,7 +40,7 @@ router.get("/:workout_id", async (req, res) => {
     logger.error("Invalid Object is passed= ", req.params.workout_id);
     res.status(config.BAD_REQUEST).json({
       status: 0,
-      message: "Invalid WorkoutId passed"
+      message: "Something went wrong"
     });
 
   }

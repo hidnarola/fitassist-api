@@ -2,6 +2,7 @@ var express = require("express");
 var fs = require("fs");
 var path = require("path");
 var request = require("request");
+var mongoose = require("mongoose");
 var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
@@ -66,28 +67,38 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:authUserId", async (req, res) => {
-  authUserId = req.params.authUserId;
-  logger.trace("Get user by id API called");
-  var resp_data = await user_helper.get_user_by_id(authUserId);
+  if (mongoose.Types.ObjectId.isValid(req.params.workout_id)) {
+    authUserId = req.params.authUserId;
+    logger.trace("Get user by id API called");
+    var resp_data = await user_helper.get_user_by_id(authUserId);
 
-  if (resp_data.status === 0) {
-    logger.error("Error occured while fetching user = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    var user_settings = await user_settings_helper.get_setting({
-      userId: authUserId
-    }, {
-      "bodyMeasurement": 1,
-      "weight": 1,
-      "distance": 1,
-    });
-    resp_data.user_preferences = null;
-    if (user_settings.status === 1) {
-      resp_data.user_preferences = user_settings.user_settings;
+    if (resp_data.status === 0) {
+      logger.error("Error occured while fetching user = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      var user_settings = await user_settings_helper.get_setting({
+        userId: authUserId
+      }, {
+          "bodyMeasurement": 1,
+          "weight": 1,
+          "distance": 1,
+        });
+      resp_data.user_preferences = null;
+      if (user_settings.status === 1) {
+        resp_data.user_preferences = user_settings.user_settings;
+      }
+      logger.trace("user got successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
     }
-    logger.trace("user got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Invalid Object is passed= ", req.params.authUserId);
+    res.status(config.BAD_REQUEST).json({
+      status: 0,
+      message: "Something went wrong"
+    });
+
   }
+
 });
 
 /**
@@ -116,7 +127,7 @@ router.put("/change_block_status", async (req, res) => {
   var errors = req.validationErrors();
   if (!errors) {
     var authUserId = req.body.authUserId;
-    var status = (req.body.status && req.body.status === 1) ? true : false;
+    var status = (req.body.status && req.body.status === 1) ? false : true;
     common_helper.sync_user_data_to_auth(authUserId, {
       blocked: status
     }).then(async function (response) {
@@ -264,11 +275,11 @@ router.put("/:authUserId", async (req, res) => {
       user_obj.avatar = config.BASE_URL + "uploads/user/" + filename;
       common_helper.sync_user_data_to_auth(authUserId, {
         picture: user_obj.avatar
-      }).then(function (response) {}).catch(function (error) {});
+      }).then(function (response) { }).catch(function (error) { });
       resp_data = await user_helper.get_user_by_id(authUserId);
       try {
-        fs.unlink(resp_data.user.avatar, function () {});
-      } catch (err) {}
+        fs.unlink(resp_data.user.avatar, function () { });
+      } catch (err) { }
     }
 
     let user_data = await user_helper.update_user_by_id(authUserId, user_obj);

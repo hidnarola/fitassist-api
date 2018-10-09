@@ -65,7 +65,9 @@ router.post("/filter", async (req, res) => {
  */
 router.get("/", async (req, res) => {
   logger.trace("Get all body parts API called");
-  var resp_data = await body_part_helper.get_all_body_parts();
+  var resp_data = await body_part_helper.get_all_body_parts({
+    isDeleted: 0
+  });
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching body parts = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);

@@ -7,9 +7,9 @@ var equipment_helper = {};
  *          status 1 - If equipment data found, with equipment object
  *          status 2 - If equipment not found, with appropriate message
  */
-equipment_helper.get_all_equipment = async () => {
+equipment_helper.get_all_equipment = async (condition = {}) => {
   try {
-    var equipment = await Equipment.find();
+    var equipment = await Equipment.find(condition);
     if (equipment) {
       return {
         status: 1,
@@ -112,8 +112,8 @@ equipment_helper.update_equipment_by_id = async (
 ) => {
   try {
     let equipment = await Equipment.findOneAndUpdate({
-        _id: equipment_id
-      },
+      _id: equipment_id
+    },
       equipment_object, {
         new: true
       }
@@ -189,17 +189,17 @@ equipment_helper.get_filtered_records = async filter_obj => {
     }]);
 
     var filtered_data = await Equipment.aggregate([{
-        $match: filter_object.columnFilter
-      },
-      {
-        $sort: filter_obj.columnSort
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: filter_object.pageSize
-      },
+      $match: filter_object.columnFilter
+    },
+    {
+      $sort: filter_obj.columnSort
+    },
+    {
+      $skip: skip
+    },
+    {
+      $limit: filter_object.pageSize
+    },
 
     ]);
 
