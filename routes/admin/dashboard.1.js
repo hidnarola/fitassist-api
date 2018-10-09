@@ -130,27 +130,20 @@ router.post("/", async (req, res) => {
 async function perChange(returnObject, key, newData, prevData, days) {
   let tmp = 0;
   var perChange = 0;
-  var newOldDiff = (newData.count - prevData.count);
-  if (prevData.count <= 0) {
-    if (newOldDiff > 0) {
-      perChange = 100;
-    }
+  if ((prevData.count <= 0 && newData.count <= 0) || (prevData.count <= 0)) {
+    perChange = 0;
   } else {
-    if (newOldDiff > 0) {
-      tmp = (newOldDiff / prevData.count) * 100;
-    } else if (newOldDiff < 0) {
-      tmp = (((prevData.count - newData.count) / prevData.count) * 100) * -1;
+    if ((newData.count - prevData.count) > 0) {
+      tmp = ((newData.count - prevData.count) / prevData.count) * 100;
+    } else if ((newData.count - prevData.count) < 0) {
+      tmp = ((prevData.count - newData.count) / prevData.count) * 100;
     } else {
       perChange = 0;
     }
   }
-  if (tmp !== 0) {
+  if (tmp > 0) {
     perChange = parseFloat(tmp.toFixed(2));
   }
-  console.log('------------------------------------');
-  console.log('perChange => ', perChange);
-  console.log('------------------------------------');
-
 
   returnObject[key] = {
     total: newData.count,

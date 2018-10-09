@@ -346,7 +346,7 @@ router.post("/", async (req, res) => {
           $skip: 0
         },
         {
-          $limit: 5
+          $limit: 10
         }
       );
       if (activityFeed.status === 1) {
@@ -366,7 +366,7 @@ router.post("/", async (req, res) => {
           }
         },
         {
-          $limit: 10
+          $limit: 6
         }
       );
       if (badges.status === 1) {
