@@ -92,14 +92,21 @@ user_post_helper.count_all_gallery_images = async (condition) => {
  */
 user_post_helper.get_user_post_photos = async (
   username,
-  skip,
-  limit,
   sort = {
     $sort: {
       createdAt: -1
     }
-  }
+  },
+  skip,
+  limit
 ) => {
+  console.log('------------------------------------');
+  console.log('skip => ', skip);
+  console.log('------------------------------------');
+  console.log('------------------------------------');
+  console.log('limit => ', limit);
+  console.log('------------------------------------');
+
   try {
     var user_post_photos = await UserPost.aggregate([
       {
@@ -134,6 +141,9 @@ user_post_helper.get_user_post_photos = async (
           "images.isDeleted": 0
         }
       },
+      sort,
+      skip,
+      limit,
       {
         $project: {
           privacy: 1,
@@ -142,34 +152,12 @@ user_post_helper.get_user_post_photos = async (
           userId: 1,
           images: 1,
         }
-      },
-      // {
-      //   $group: {
-      //     _id: "$_id",
-      //     description: {
-      //       $first: "$description"
-      //     },
-      //     privacy: {
-      //       $first: "$privacy"
-      //     },
-      //     postType: {
-      //       $first: "$postType"
-      //     },
-      //     status: {
-      //       $first: "$status"
-      //     },
-      //     userId: {
-      //       $first: "$userId"
-      //     },
-      //     images: {
-      //       $addToSet: "$images"
-      //     }
-      //   }
-      // },
-      sort,
-      skip,
-      limit
+      }
+
     ]);
+    console.log('------------------------------------');
+    console.log('user_post_photos => ', user_post_photos);
+    console.log('------------------------------------');
 
     if (user_post_photos || user_post_photos.length != 0) {
       return {
