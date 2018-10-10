@@ -40,7 +40,6 @@ user_post_helper.count_post = async id => {
 
 /*
  * count_all_gallery_images is used to count all user's post photos
- * 
  * @return  status 0 - If any internal error occured while couting user's post photos data, with error
  *          status 1 - If user's post photos data found, with user's post photos object
  *          status 2 - If user's post photos not found, with appropriate message
@@ -60,17 +59,17 @@ user_post_helper.count_all_gallery_images = async (condition) => {
         }
       },
       {
-        $unwind: {
-          path: "$user_post_images",
-          preserveNullAndEmptyArrays: true
-        }
+        $unwind: "$images"
       },
       {
         $match: {
           "images.isDeleted": 0
         }
-      },
+      }
     ]);
+    console.log('------------------------------------');
+    console.log('count => ', count.length);
+    console.log('------------------------------------');
 
     return {
       status: 1,
@@ -136,28 +135,37 @@ user_post_helper.get_user_post_photos = async (
         }
       },
       {
-        $group: {
-          _id: "$_id",
-          description: {
-            $first: "$description"
-          },
-          privacy: {
-            $first: "$privacy"
-          },
-          postType: {
-            $first: "$postType"
-          },
-          status: {
-            $first: "$status"
-          },
-          userId: {
-            $first: "$userId"
-          },
-          images: {
-            $addToSet: "$images"
-          }
+        $project: {
+          privacy: 1,
+          postType: 1,
+          status: 1,
+          userId: 1,
+          images: 1,
         }
       },
+      // {
+      //   $group: {
+      //     _id: "$_id",
+      //     description: {
+      //       $first: "$description"
+      //     },
+      //     privacy: {
+      //       $first: "$privacy"
+      //     },
+      //     postType: {
+      //       $first: "$postType"
+      //     },
+      //     status: {
+      //       $first: "$status"
+      //     },
+      //     userId: {
+      //       $first: "$userId"
+      //     },
+      //     images: {
+      //       $addToSet: "$images"
+      //     }
+      //   }
+      // },
       sort,
       skip,
       limit
