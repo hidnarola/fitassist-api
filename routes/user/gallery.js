@@ -410,7 +410,7 @@ router.put("/:photo_id", async (req, res) => {
 router.delete("/:photo_id/:postId", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  logger.trace("Delete user's post photo API - Id = ", req.params.photo_id);
+  logger.trace("Delete user's gallery photo - Id = ", req.params.photo_id);
   let user_post_data = await user_posts_helper.delete_user_post_photo(
     {
       _id: req.params.photo_id,

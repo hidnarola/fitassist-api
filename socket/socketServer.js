@@ -2,7 +2,7 @@ var io = require("socket.io")();
 var jwtDecode = require("jwt-decode");
 var mongoose = require("mongoose");
 var _ = require("underscore");
-var user_notification_helper = require("../helpers/notification_helper");
+var notification_helper = require("../helpers/notification_helper");
 var chat_helper = require("../helpers/chat_helper");
 var user_helper = require("../helpers/user_helper");
 var friend_helper = require("../helpers/friend_helper");
@@ -93,7 +93,7 @@ myIo.init = function (server) {
 			var decoded = jwtDecode(token);
 			var authUserId = decoded.sub;
 			var user = users.get(authUserId);
-			var user_notifications_count = await user_notification_helper.get_notifications_count({
+			var user_notifications_count = await notification_helper.get_notifications_count({
 				"receiver.authUserId": authUserId,
 				isSeen: 0
 			});
@@ -167,6 +167,11 @@ myIo.init = function (server) {
 				if (resp_data.status == 0) {
 					logger.error("Error occured while fetching chat messages = ", resp_data);
 				} else {
+					resp_data.total_records = 0;
+					count = await chat_helper.get_messages_count(authUserId);
+					if (count && count.status === 1) {
+						resp_data.total_records = count.count;
+					}
 					logger.trace("chat messages got successfully = ", resp_data);
 				}
 			} catch (error) {
@@ -200,10 +205,10 @@ myIo.init = function (server) {
 				var resp_data = await friend_helper.get_friend_by_username({
 					username: userData.user.username
 				}, 2, {
-					$skip: skip
-				}, {
-					$limit: limit
-				});
+						$skip: skip
+					}, {
+						$limit: limit
+					});
 				_.map(resp_data.friends, function (friend) {
 					var user = users.get(friend.authUserId);
 					friend.isOnline = false;
@@ -253,8 +258,8 @@ myIo.init = function (server) {
 				resp_data = await chat_helper.get_conversation(authUserId, condition, {
 					$skip: start
 				}, {
-					$limit: limit
-				});
+						$limit: limit
+					});
 
 				if (resp_data.status == 0) {
 					logger.error("Error occured while fetching chat messages = ", resp_data);
@@ -403,8 +408,8 @@ myIo.init = function (server) {
 				conversationId: data.channelId,
 				isSeen: 0
 			}, {
-				isSeen: 1
-			});
+					isSeen: 1
+				});
 		});
 		/**
 		 * @api {socket on} request_make_user_offline Make user offline
@@ -426,7 +431,7 @@ myIo.init = function (server) {
 				}
 				if (user.socketIds.length <= 0) {
 					await broadcastOnlineOfflineFlagToFriends(socketToUser, false);
-				} else {}
+				} else { }
 				socketToUsers.delete(socketId);
 			}
 		});
@@ -463,8 +468,8 @@ myIo.init = function (server) {
 async function broadcastOnlineOfflineFlagToFriends(authUserId, flag) {
 	var userdata = await user_helper.get_user_by_id(authUserId);
 	var user_friends = await friend_helper.get_friend_by_username({
-			username: userdata.user.username
-		},
+		username: userdata.user.username
+	},
 		2
 	);
 	var usersFriendsSocketIds = [];
@@ -477,7 +482,7 @@ async function broadcastOnlineOfflineFlagToFriends(authUserId, flag) {
 			);
 		}
 	});
-	if (flag) {} else {}
+	if (flag) { } else { }
 	usersFriendsSocketIds.forEach(socketId => {
 		io.to(socketId).emit("receive_online_friend_status", {
 			isOnline: flag,

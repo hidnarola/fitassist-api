@@ -26,19 +26,24 @@ router.get("/all/:skip?/:limit?/:sort?", async (req, res) => {
   var resp_data = await notification_helper.get_notifications(obj, {
     $skip: skip
   }, {
-    $limit: limit
-  }, {
-    $sort: {
-      _id: sort
-    }
-  });
+      $limit: limit
+    }, {
+      $sort: {
+        _id: sort
+      }
+    });
 
-  if (resp_data.status === 0) {
-    logger.error("Error occured while fetching notifications = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
+  if (resp_data.status === 1) {
+    resp_data.total_records = 0;
+    var count = await notification_helper.get_notifications_count(obj);
+    if (count && count.status === 1) {
+      resp_data.total_records = count.count
+    }
     logger.trace("notifications got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching notifications = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
@@ -67,8 +72,8 @@ router.get("/:type/:skip?/:limit?", async (req, res) => {
   var resp_data = await notification_helper.get_notifications(obj, {
     $skip: skip
   }, {
-    $limit: limit
-  }, );
+      $limit: limit
+    });
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching notifications = ", resp_data);
@@ -95,8 +100,8 @@ router.put("/", async (req, res) => {
   let notification_data = await notification_helper.notification_seen({
     "receiver.authUserId": authUserId
   }, {
-    isSeen: 1
-  });
+      isSeen: 1
+    });
   if (notification_data.status === 0) {
     logger.error(
       "Error while mark as read notifications = ",
@@ -125,8 +130,8 @@ router.put("/:notification_id?", async (req, res) => {
   let notification_data = await notification_helper.notification_seen({
     _id: req.params.notification_id
   }, {
-    isSeen: 1
-  });
+      isSeen: 1
+    });
   if (notification_data.status === 0) {
     logger.error("Error while mark as read notification = ", notification_data);
     return res.status(config.BAD_REQUEST).json({

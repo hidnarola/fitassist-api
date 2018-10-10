@@ -95,7 +95,6 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
           preserveNullAndEmptyArrays: true
         }
       },
-
       {
         $project: {
           _id: 1,

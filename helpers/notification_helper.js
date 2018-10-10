@@ -11,10 +11,12 @@ var user_notifications_helper = {};
  */
 user_notifications_helper.get_notifications = async (userId, skip = false, limit = false, sort = false) => {
     try {
+        var count = await UserNotifications.count(userId);
+
         var aggregate = [{
-                $match: userId
-            }];
-        
+            $match: userId
+        }];
+
         if (sort) {
             aggregate.push(sort);
         } else {
@@ -22,7 +24,7 @@ user_notifications_helper.get_notifications = async (userId, skip = false, limit
                 $sort: {
                     _id: -1
                 }
-            });  
+            });
         }
         if (skip) {
             aggregate.push(skip);
@@ -31,7 +33,7 @@ user_notifications_helper.get_notifications = async (userId, skip = false, limit
             aggregate.push(limit);
         }
         var notifications = await UserNotifications.aggregate(aggregate);
-        
+
         if (notifications) {
             return {
                 status: 1,
@@ -51,7 +53,7 @@ user_notifications_helper.get_notifications = async (userId, skip = false, limit
             message: "Error occured while finding notifications",
             error: err
         };
-}
+    }
 };
 
 /*
@@ -89,10 +91,10 @@ user_notifications_helper.get_notifications_count = async userId => {
  * @developed by "amc"
  */
 user_notifications_helper.add_notifications = async (
-        notificationObj,
-        socket,
-        type = ""
-        ) => {
+    notificationObj,
+    socket,
+    type = ""
+) => {
     var authUserId = "";
     let notification_data;
     try {
@@ -104,7 +106,7 @@ user_notifications_helper.add_notifications = async (
             notification_data = await notification.save();
             authUserId = notificationObj.receiver.authUserId;
         }
-        
+
         var user_notifications_count = await user_notifications_helper.get_notifications_count({
             "receiver.authUserId": authUserId,
             isSeen: 0
@@ -129,7 +131,7 @@ user_notifications_helper.add_notifications = async (
             message: "Error occured while sending notification",
             error: err
         };
-}
+    }
 };
 
 /*

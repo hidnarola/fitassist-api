@@ -85,12 +85,35 @@ router.get("/:username?/:type?/:skip?/:limit?/:sort?", async (req, res) => {
     }
   );
 
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching friend = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
+  if (resp_data.status == 1) {
+    resp_data.total_records = 0;
+    if (friendStatus === 1) {
+      var count = await friend_helper.total_count_friends(
+        {
+          friendId: authUserId,
+          status: friendStatus
+        });
+    } else {
+      var count = await friend_helper.total_count_friends({
+        $or: [{
+          userId: authUserId
+        },
+        {
+          friendId: authUserId,
+        }
+        ],
+        status: friendStatus
+      });
+    }
+
+    if (count.status == 1) {
+      resp_data.total_records = count.count;
+    }
     logger.trace("friend got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error("Error occured while fetching friend = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
