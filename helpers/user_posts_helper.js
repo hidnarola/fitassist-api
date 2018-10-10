@@ -3,6 +3,7 @@ var UserPostsImages = require("./../models/user_posts_images");
 var UserTimeline = require("./../models/user_timeline");
 var user_progress_photos_helper = require("./user_progress_photos_helper");
 var _ = require("underscore");
+var mongoose = require("mongoose");
 var user_post_helper = {};
 
 /*
@@ -59,23 +60,21 @@ user_post_helper.count_all_gallery_images = async (condition) => {
         }
       },
       {
-        $unwind: "$images"
+        $unwind: {
+          path: "$user_post_images",
+          preserveNullAndEmptyArrays: true
+        }
       },
       {
         $match: {
           "images.isDeleted": 0
         }
       },
-      {
-        $group: {
-          _id: null,
-          count: { $sum: 1 }
-        }
-      }
     ]);
+
     return {
       status: 1,
-      count: count[0].count
+      count: count.length
     }
   } catch (err) {
     return {
@@ -118,7 +117,6 @@ user_post_helper.get_user_post_photos = async (
       {
         $match: {
           "users.username": username,
-          isDeleted: 0
         }
       },
       {
@@ -881,10 +879,62 @@ user_post_helper.update_user_post_photo = async (
  */
 user_post_helper.delete_user_post_photo = async (id, user_post_photo_obj) => {
   try {
-    let user_post_photo = await UserPostsImages.findOneAndUpdate(
-      id,
-      user_post_photo_obj
-    );
+
+    var tmp = await UserPostsImages.aggregate([
+      {
+        $match: id
+      },
+      {
+        $lookup: {
+          from: "user_posts",
+          localField: "postId",
+          foreignField: "_id",
+          as: "userPost"
+        }
+      }
+    ]);
+    console.log('------------------------------------');
+    console.log('tmp => ', tmp);
+    console.log('------------------------------------');
+
+
+    // let user_post_photo = await UserPostsImages.findOneAndUpdate(
+    //   id,
+    //   user_post_photo_obj, { new: true }
+    // );
+    let parentId = user_post_photo.postId;
+    var count = await UserPost.aggregate([
+      {
+        $match: {
+          _id: parentId,
+          "postType": "gallery"
+        }
+      },
+      {
+        $lookup: {
+          from: "user_posts_images",
+          localField: "_id",
+          foreignField: "postId",
+          as: "images"
+        }
+      },
+      {
+        $unwind:
+        {
+          path: "$images",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $match: {
+          "images.isDeleted": 0
+        }
+      },
+    ]);
+    // if (count && count.length <= 0) {
+    //   var updateParentDeleted = await UserPost.findOneAndUpdate({ _id: mongoose.Types.ObjectId(parentId) }, { isDeleted: 1 }, { new: true });
+    // }
+
     if (!user_post_photo) {
       return {
         status: 2,

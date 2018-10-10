@@ -413,7 +413,6 @@ router.delete("/:photo_id", async (req, res) => {
   logger.trace("Delete user's post photo API - Id = ", req.params.photo_id);
   let user_post_data = await user_posts_helper.delete_user_post_photo(
     {
-      userId: authUserId,
       _id: req.params.photo_id
     },
     {
