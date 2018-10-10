@@ -407,18 +407,22 @@ router.put("/:photo_id", async (req, res) => {
  * @apiSuccess (Success 200) {String} message Success message
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.delete("/:photo_id", async (req, res) => {
+router.delete("/:photo_id/:postId", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Delete user's post photo API - Id = ", req.params.photo_id);
   let user_post_data = await user_posts_helper.delete_user_post_photo(
     {
-      _id: req.params.photo_id
+      _id: req.params.photo_id,
+      postId: req.params.postId
     },
     {
       isDeleted: 1
-    }
-  );
+    },
+    {
+      postId: req.params.postId,
+      authUserId: authUserId
+    });
 
   if (user_post_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(user_post_data);

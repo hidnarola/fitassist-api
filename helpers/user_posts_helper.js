@@ -877,31 +877,21 @@ user_post_helper.update_user_post_photo = async (
  *          status 1 - If user's post photos data updated, with user's post photos object
  *          status 2 - If user's post photos not updated, with appropriate message
  */
-user_post_helper.delete_user_post_photo = async (id, user_post_photo_obj) => {
+user_post_helper.delete_user_post_photo = async (id, user_post_photo_obj, postId) => {
   try {
+    var tmp = await UserPost.findOne({ _id: mongoose.Types.ObjectId(postId.postId) });
+    if (tmp && (tmp.userId.toString() != postId.authUserId.toString())) {
+      return {
+        status: 0,
+        message: "Invalid Deleted request"
+      };
+    }
 
-    var tmp = await UserPostsImages.aggregate([
-      {
-        $match: id
-      },
-      {
-        $lookup: {
-          from: "user_posts",
-          localField: "postId",
-          foreignField: "_id",
-          as: "userPost"
-        }
-      }
-    ]);
-    console.log('------------------------------------');
-    console.log('tmp => ', tmp);
-    console.log('------------------------------------');
+    let user_post_photo = await UserPostsImages.findOneAndUpdate(
+      id,
+      user_post_photo_obj, { new: true }
+    );
 
-
-    // let user_post_photo = await UserPostsImages.findOneAndUpdate(
-    //   id,
-    //   user_post_photo_obj, { new: true }
-    // );
     let parentId = user_post_photo.postId;
     var count = await UserPost.aggregate([
       {
@@ -931,9 +921,9 @@ user_post_helper.delete_user_post_photo = async (id, user_post_photo_obj) => {
         }
       },
     ]);
-    // if (count && count.length <= 0) {
-    //   var updateParentDeleted = await UserPost.findOneAndUpdate({ _id: mongoose.Types.ObjectId(parentId) }, { isDeleted: 1 }, { new: true });
-    // }
+    if (count && count.length <= 0) {
+      var updateParentDeleted = await UserPost.findOneAndUpdate({ _id: mongoose.Types.ObjectId(parentId) }, { isDeleted: 1 }, { new: true });
+    }
 
     if (!user_post_photo) {
       return {
