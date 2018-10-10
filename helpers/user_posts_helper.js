@@ -61,15 +61,21 @@ user_post_helper.count_all_gallery_images = async (condition) => {
       {
         $unwind: "$images"
       },
-      // {
-      //   $match: {
-      //     "images.isDeleted": 0
-      //   }
-      // },
+      {
+        $match: {
+          "images.isDeleted": 0
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 }
+        }
+      }
     ]);
     return {
       status: 1,
-      count
+      count: count[0].count
     }
   } catch (err) {
     return {

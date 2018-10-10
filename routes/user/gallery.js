@@ -53,9 +53,6 @@ router.get("/:username/:skip/:limit/:sort?", async (req, res) => {
       isDeleted: 0,
       "postType": "gallery"
     });
-    console.log('------------------------------------');
-    console.log('count => ', count);
-    console.log('------------------------------------');
 
     if (count.status === 1) {
       resp_data.total_records = count.count;
