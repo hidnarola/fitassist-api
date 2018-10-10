@@ -23,8 +23,8 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
   var resp_data = await user_progress_photos_helper.get_user_progress_photos_month_wise({
     username: req.params.username
   }, {
-    $limit: limit
-  });
+      $limit: limit
+    });
   if (resp_data.status == 0) {
     logger.error(
       "Error occured while fetching get all user progress photos = ",
@@ -59,23 +59,31 @@ router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
     username: req.params.username,
     isDeleted: 0
   }, {
-    $skip: start
-  }, {
-    $limit: limit
-  }, {
-    $sort: {
-      date: sort_by
+      $skip: start
+    }, {
+      $limit: limit
+    }, {
+      $sort: {
+        date: sort_by
+      }
+    });
+  if (resp_data.status === 1) {
+    resp_data.total_records = 0;
+    var count = await user_progress_photos_helper.count_all_progress_photo({
+      userId: authUserId,
+      isDeleted: 0
+    });
+    if (count.status === 1) {
+      resp_data.total_records = count.count;
     }
-  });
-  if (resp_data.status == 0) {
+    logger.trace("user progress photos got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
     logger.error(
       "Error occured while fetching get all user progress photos = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user progress photos got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 
@@ -226,8 +234,8 @@ router.delete("/:photo_id", async (req, res) => {
     userId: authUserId,
     _id: req.params.photo_id
   }, {
-    isDeleted: 1
-  });
+      isDeleted: 1
+    });
 
   if (nutrition_predata_data.status === 0) {
     res.status(config.INTERNAL_SERVER_ERROR).json(nutrition_predata_data);

@@ -695,34 +695,36 @@ router.post("/assign_program", async (req, res) => {
         );
       }
     );
+    let newGeneratedDate = moment(date).utcOffset(0).add(program.day, "days");
     masterCollectionObject = {
       title: program.title,
       userId: authUserId,
       description: program.description,
       type: program.type,
-      date: moment(date)
-        .utcOffset(0)
-        .add(program.day, "days")
+      date: newGeneratedDate
     };
 
     var resp_data = await user_workout_helper.insert_user_workouts_day(
       masterCollectionObject
     );
-    childCollectionObject = exForProgram.map(single => {
+
+    childCollectionObject = [];
+    exForProgram.map(single => {
       var newSingle = Object.assign({}, single);
       delete newSingle._id;
       delete newSingle.userWorkoutsProgramId;
       newSingle.userWorkoutsId = resp_data.day._id;
-      return newSingle;
+      newSingle.date = newGeneratedDate;
+      childCollectionObject.push(newSingle);
     });
 
     if (childCollectionObject.length > 0) {
-      var _childCollectionObject = childCollectionObject[0];
-
-      resp_data = await user_workout_helper.insert_user_workouts_exercises(
-        _childCollectionObject,
-        authUserId
-      );
+      childCollectionObject.map(async (_childCollectionObject) => {
+        resp_data = await user_workout_helper.insert_user_workouts_exercises(
+          _childCollectionObject,
+          authUserId
+        );
+      })
     }
   }
 

@@ -34,19 +34,32 @@ router.get("/:username/:skip/:limit/:sort?", async (req, res) => {
   var resp_data = await user_posts_helper.get_user_post_photos(
     username,
     {
+      $sort: {
+        createdAt: sort
+      }
+    },
+    {
       $skip: skip
     },
     {
       $limit: limit
     },
-    {
-      $sort: {
-        createdAt: sort
-      }
-    }
   );
 
   if (resp_data.status === 1) {
+    resp_data.total_records = 0;
+    var count = await user_posts_helper.count_all_gallery_images({
+      userId: authUserId,
+      isDeleted: 0,
+      "postType": "gallery"
+    });
+    console.log('------------------------------------');
+    console.log('count => ', count);
+    console.log('------------------------------------');
+
+    if (count.status === 1) {
+      resp_data.total_records = count.count;
+    }
     logger.trace("user gallery photos got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
@@ -128,7 +141,7 @@ router.post("/", async (req, res) => {
 
     async.waterfall(
       [
-        function(callback) {
+        function (callback) {
           //image upload
           if (req.files && req.files["images"]) {
             var file_path_array = [];
@@ -138,7 +151,7 @@ router.post("/", async (req, res) => {
 
             async.eachSeries(
               files,
-              function(file, loop_callback) {
+              function (file, loop_callback) {
                 var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
@@ -146,7 +159,7 @@ router.post("/", async (req, res) => {
                   }
                   extention = path.extname(file.name);
                   filename = "user_post_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function(err) {
+                  file.mv(dir + "/" + filename, function (err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -172,7 +185,7 @@ router.post("/", async (req, res) => {
                   });
                 }
               },
-              function(err) {
+              function (err) {
                 if (err) {
                   res.status(err.status).json(err);
                 } else {
@@ -210,7 +223,7 @@ router.post("/", async (req, res) => {
 
           async.each(
             file_path_array,
-            async function(file, callback) {
+            async function (file, callback) {
               post_image_obj.image = file;
               let user_post_data = await user_posts_helper.insert_user_post_image(
                 post_image_obj
@@ -225,7 +238,7 @@ router.post("/", async (req, res) => {
                 success++;
               }
             },
-            async function(err) {
+            async function (err) {
               if (err) {
                 console.log("Failed to upload image");
               } else {
@@ -331,7 +344,7 @@ router.put("/:photo_id", async (req, res) => {
         }
         extention = path.extname(file.name);
         filename = "user_post_" + new Date().getTime() + extention;
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             res.send({
@@ -360,7 +373,7 @@ router.put("/:photo_id", async (req, res) => {
       var resp_data = await user_posts_helper.get_user_post_photo_by_id({
         _id: req.params.photo_id
       });
-      fs.unlink(resp_data.user_post_photo.image, function(err, Success) {
+      fs.unlink(resp_data.user_post_photo.image, function (err, Success) {
         if (err) throw err;
       });
       user_post_obj.image = "uploads/gallery/" + filename;

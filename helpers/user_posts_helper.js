@@ -38,6 +38,48 @@ user_post_helper.count_post = async id => {
 };
 
 /*
+ * count_all_gallery_images is used to count all user's post photos
+ * 
+ * @return  status 0 - If any internal error occured while couting user's post photos data, with error
+ *          status 1 - If user's post photos data found, with user's post photos object
+ *          status 2 - If user's post photos not found, with appropriate message
+ */
+user_post_helper.count_all_gallery_images = async (condition) => {
+  try {
+    var count = await UserPost.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_posts_images",
+          localField: "_id",
+          foreignField: "postId",
+          as: "images"
+        }
+      },
+      {
+        $unwind: "$images"
+      },
+      // {
+      //   $match: {
+      //     "images.isDeleted": 0
+      //   }
+      // },
+    ]);
+    return {
+      status: 1,
+      count
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user photos",
+      error: err
+    };
+  }
+};
+/*
  * get_user_post_photos is used to fetch all user's post photos
  * 
  * @return  status 0 - If any internal error occured while fetching user's post photos data, with error
@@ -379,7 +421,7 @@ user_post_helper.get_user_timeline_by_id = async condition => {
         t.comments = comments;
       });
 
-      var tmp = _.sortBy(timeline[0].comments, function(o) {
+      var tmp = _.sortBy(timeline[0].comments, function (o) {
         return o.create_date;
       });
 
@@ -654,7 +696,7 @@ user_post_helper.get_user_timeline = async (
           comments.push(comment);
         }
       });
-      tmp = _.sortBy(comments, function(o) {
+      tmp = _.sortBy(comments, function (o) {
         return o.create_date;
       });
       t.likes = likes;

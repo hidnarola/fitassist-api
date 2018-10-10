@@ -13,14 +13,16 @@ var mongoose = require("mongoose");
  *          status 1 - If user exercises data found, with user exercises object
  *          status 2 - If user exercises not found, with appropriate message
  */
-user_workouts_helper.get_workouts_for_calendar = async (
-  condition,
-  single = false
-) => {
+user_workouts_helper.get_workouts_for_calendar = async (condition) => {
   try {
     var user_workouts = await UserWorkouts.aggregate([
       {
         $match: condition
+      },
+      {
+        $project: {
+          date: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+        }
       },
       {
         $group: {
@@ -34,11 +36,14 @@ user_workouts_helper.get_workouts_for_calendar = async (
         }
       }
     ]);
+    var dates = _.uniq(user_workouts, function (x) {
+      return x.date;
+    });
     if (user_workouts) {
       return {
         status: 1,
         message: "user workouts found",
-        workouts: user_workouts
+        workouts: dates
       };
     } else {
       return {
