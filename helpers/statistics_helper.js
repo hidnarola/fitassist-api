@@ -26,94 +26,94 @@ async function getSum(total, num) {
 statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
-        $match: condition
-      },
-      {
-        $group: {
-          _id: "$subType",
-          "fields": {
-            $push: {
-              "time": {
-                "total": {
-                  $sum: "$time"
-                },
-                "unit": 'second'
+      $match: condition
+    },
+    {
+      $group: {
+        _id: "$subType",
+        "fields": {
+          $push: {
+            "time": {
+              "total": {
+                $sum: "$time"
               },
-              "distance": {
-                "total": {
-                  $sum: "$distance"
-                },
-                "unit": 'km'
+              "unit": 'second'
+            },
+            "distance": {
+              "total": {
+                $sum: "$distance"
               },
-              "effort": {
-                "total": {
-                  $sum: "$effort"
-                },
-                "unit": ''
+              "unit": 'km'
+            },
+            "effort": {
+              "total": {
+                $sum: "$effort"
               },
-              "weight": {
-                "total": {
-                  $sum: "$weight"
-                },
-                "unit": 'kg'
+              "unit": ''
+            },
+            "weight": {
+              "total": {
+                $sum: "$weight"
               },
-              "repTime": {
-                "total": {
-                  $sum: "$repTime"
-                },
-                "unit": 'number'
+              "unit": 'kg'
+            },
+            "repTime": {
+              "total": {
+                $sum: "$repTime"
               },
-              "setTime": {
-                "total": {
-                  $sum: "$setTime"
-                },
-                "unit": 'second'
+              "unit": 'number'
+            },
+            "setTime": {
+              "total": {
+                $sum: "$setTime"
               },
-              "reps": {
-                "total": {
-                  $sum: "$reps"
-                },
-                "unit": 'number'
+              "unit": 'second'
+            },
+            "reps": {
+              "total": {
+                $sum: "$reps"
               },
-              "sets": {
-                "total": {
-                  $sum: "$sets"
-                },
-                "unit": 'number'
+              "unit": 'number'
+            },
+            "sets": {
+              "total": {
+                $sum: "$sets"
               },
-              "restTime": {
-                "total": {
-                  $sum: "$restTime"
-                },
-                "unit": ''
+              "unit": 'number'
+            },
+            "restTime": {
+              "total": {
+                $sum: "$restTime"
               },
-              "speed": {
-                "total": {
-                  $sum: "$speed"
-                },
-                "unit": ''
+              "unit": ''
+            },
+            "speed": {
+              "total": {
+                $sum: "$speed"
               },
-            }
-          },
-          "exercises": {
-            $addToSet: {
-              name: "$name",
-              _id: "$exerciseId"
-            }
-          },
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          subCategory: "$_id",
-          exerciseId: 'all',
-          exercises: "$exercises",
-          fields: "$fields",
-          startDate: date.start,
-          endDate: date.end
-        }
+              "unit": ''
+            },
+          }
+        },
+        "exercises": {
+          $addToSet: {
+            name: "$name",
+            _id: "$exerciseId"
+          }
+        },
       }
+    },
+    {
+      $project: {
+        _id: 0,
+        subCategory: "$_id",
+        exerciseId: 'all',
+        exercises: "$exercises",
+        fields: "$fields",
+        startDate: date.start,
+        endDate: date.end
+      }
+    }
     ]);
 
 
@@ -248,58 +248,59 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
 statistics_helper.get_overview_statistics_data = async (condition = {}, date = null) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
-        $match: condition
-      },
-      {
-        $group: {
-          _id: "$subType",
-          time: {
-            $sum: "$time"
-          },
-          distance: {
-            $sum: "$distance"
-          },
-          effort: {
-            $sum: "$effort"
-          },
-          weight: {
-            $sum: "$weight"
-          },
-          repTime: {
-            $sum: "$repTime"
-          },
-          setTime: {
-            $sum: "$setTime"
-          },
-          reps: {
-            $sum: "$reps"
-          },
-          sets: {
-            $sum: "$sets"
-          },
-          restTime: {
-            $sum: "$restTime"
-          },
-          speed: {
-            $sum: "$speed"
-          },
-          "subCategory": {
-            $first: "Overview"
-          },
-          "exerciseId": {
-            $first: ""
-          },
-          "exercises": {
-            $first: null
-          }
-        }
-      },
-      {
-        $project: {
-          _id: 0
+      $match: condition
+    },
+    {
+      $group: {
+        _id: null,
+        time: {
+          $sum: "$time"
+        },
+        distance: {
+          $sum: "$distance"
+        },
+        effort: {
+          $sum: "$effort"
+        },
+        weight: {
+          $sum: "$weight"
+        },
+        repTime: {
+          $sum: "$repTime"
+        },
+        setTime: {
+          $sum: "$setTime"
+        },
+        reps: {
+          $sum: "$reps"
+        },
+        sets: {
+          $sum: "$sets"
+        },
+        restTime: {
+          $sum: "$restTime"
+        },
+        speed: {
+          $sum: "$speed"
+        },
+        "subCategory": {
+          $first: "Overview"
+        },
+        "exerciseId": {
+          $first: ""
+        },
+        "exercises": {
+          $first: null
         }
       }
+    },
+    {
+      $project: {
+        _id: 0
+      }
+    }
     ]);
+
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
     });
@@ -413,48 +414,48 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
 statistics_helper.graph_data = async (condition = {}, activeField, userId) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
-        $match: condition
-      },
-      {
-        $group: {
-          _id: "$logDate",
-          "time": {
-            $sum: "$time"
-          },
-          "distance": {
-            $sum: "$distance"
-          },
-          "effort": {
-            $sum: "$effort"
-          },
-          "weight": {
-            $sum: "$weight"
-          },
-          "repTime": {
-            $sum: "$repTime"
-          },
-          "setTime": {
-            $sum: "$setTime"
-          },
-          "sets": {
-            $sum: "$sets"
-          },
-          "reps": {
-            $sum: "$reps"
-          },
-          "restTime": {
-            $sum: "$restTime"
-          },
-          "speed": {
-            $sum: "$speed"
-          },
-        }
-      },
-      {
-        $sort: {
-          _id: 1
-        }
+      $match: condition
+    },
+    {
+      $group: {
+        _id: "$logDate",
+        "time": {
+          $sum: "$time"
+        },
+        "distance": {
+          $sum: "$distance"
+        },
+        "effort": {
+          $sum: "$effort"
+        },
+        "weight": {
+          $sum: "$weight"
+        },
+        "repTime": {
+          $sum: "$repTime"
+        },
+        "setTime": {
+          $sum: "$setTime"
+        },
+        "sets": {
+          $sum: "$sets"
+        },
+        "reps": {
+          $sum: "$reps"
+        },
+        "restTime": {
+          $sum: "$restTime"
+        },
+        "speed": {
+          $sum: "$speed"
+        },
       }
+    },
+    {
+      $sort: {
+        _id: 1
+      }
+    }
     ]);
 
     var measurement_unit_data = await user_settings_helper.get_setting({
@@ -477,10 +478,11 @@ statistics_helper.graph_data = async (condition = {}, activeField, userId) => {
 
     for (let w of user_workouts) {
       var tmp = {
-        "metaData": {
+        metaData: {
           name: activeField,
         },
-        "date": moment(w._id).format("DD/MM/YYYY"),
+        date: w._id,
+        dateToCompare: moment(w._id).format("DD/MM/YYYY"),
       }
       if (activeField === "weight") {
         tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, w[activeField])).toFixed(2))
@@ -534,91 +536,91 @@ statistics_helper.graph_data = async (condition = {}, activeField, userId) => {
 statistics_helper.get_overview_single_data = async (condition = {}, date = null) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
-        $match: condition
-      },
-      {
-        $group: {
-          _id: null,
-          "fields": {
-            $push: {
-              "time": {
-                "total": {
-                  $sum: "$time"
-                },
-                "unit": 'second'
+      $match: condition
+    },
+    {
+      $group: {
+        _id: null,
+        "fields": {
+          $push: {
+            "time": {
+              "total": {
+                $sum: "$time"
               },
-              "distance": {
-                "total": {
-                  $sum: "$distance"
-                },
-                "unit": 'km'
+              "unit": 'second'
+            },
+            "distance": {
+              "total": {
+                $sum: "$distance"
               },
-              "effort": {
-                "total": {
-                  $sum: "$effort"
-                },
-                "unit": ''
+              "unit": 'km'
+            },
+            "effort": {
+              "total": {
+                $sum: "$effort"
               },
-              "weight": {
-                "total": {
-                  $sum: "$weight"
-                },
-                "unit": 'kg'
+              "unit": ''
+            },
+            "weight": {
+              "total": {
+                $sum: "$weight"
               },
-              "repTime": {
-                "total": {
-                  $sum: "$repTime"
-                },
-                "unit": 'number'
+              "unit": 'kg'
+            },
+            "repTime": {
+              "total": {
+                $sum: "$repTime"
               },
-              "setTime": {
-                "total": {
-                  $sum: "$setTime"
-                },
-                "unit": 'second'
+              "unit": 'number'
+            },
+            "setTime": {
+              "total": {
+                $sum: "$setTime"
               },
-              "reps": {
-                "total": {
-                  $sum: "$reps"
-                },
-                "unit": 'number'
+              "unit": 'second'
+            },
+            "reps": {
+              "total": {
+                $sum: "$reps"
               },
-              "sets": {
-                "total": {
-                  $sum: "$sets"
-                },
-                "unit": 'number'
+              "unit": 'number'
+            },
+            "sets": {
+              "total": {
+                $sum: "$sets"
               },
-              "restTime": {
-                "total": {
-                  $sum: "$restTime"
-                },
-                "unit": 'second'
+              "unit": 'number'
+            },
+            "restTime": {
+              "total": {
+                $sum: "$restTime"
               },
-              "speed": {
-                "total": {
-                  $sum: "$speed"
-                },
-                "unit": 'kmph'
+              "unit": 'second'
+            },
+            "speed": {
+              "total": {
+                $sum: "$speed"
               },
-            }
-          },
-          "exercises": {
-            $addToSet: {
-              name: "$name",
-              _id: "$exerciseId"
-            }
-          },
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          subCategory: "Overview",
-          exerciseId: [],
-          fields: "$fields"
-        }
+              "unit": 'kmph'
+            },
+          }
+        },
+        "exercises": {
+          $addToSet: {
+            name: "$name",
+            _id: "$exerciseId"
+          }
+        },
       }
+    },
+    {
+      $project: {
+        _id: 0,
+        subCategory: "Overview",
+        exerciseId: [],
+        fields: "$fields"
+      }
+    }
     ]);
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
@@ -754,91 +756,91 @@ statistics_helper.get_statistics_single_data = async (condition = {}, date = nul
 
 
     var user_workouts = await WorkoutLogs.aggregate([{
-        $match: condition
-      },
-      {
-        $group: {
-          _id: "$subType",
-          "fields": {
-            $push: {
-              "time": {
-                "total": {
-                  $sum: "$time"
-                },
-                "unit": 'second'
+      $match: condition
+    },
+    {
+      $group: {
+        _id: "$subType",
+        "fields": {
+          $push: {
+            "time": {
+              "total": {
+                $sum: "$time"
               },
-              "distance": {
-                "total": {
-                  $sum: "$distance"
-                },
-                "unit": 'km'
+              "unit": 'second'
+            },
+            "distance": {
+              "total": {
+                $sum: "$distance"
               },
-              "effort": {
-                "total": {
-                  $sum: "$effort"
-                },
-                "unit": ''
+              "unit": 'km'
+            },
+            "effort": {
+              "total": {
+                $sum: "$effort"
               },
-              "weight": {
-                "total": {
-                  $sum: "$weight"
-                },
-                "unit": 'kg'
+              "unit": ''
+            },
+            "weight": {
+              "total": {
+                $sum: "$weight"
               },
-              "repTime": {
-                "total": {
-                  $sum: "$repTime"
-                },
-                "unit": 'number'
+              "unit": 'kg'
+            },
+            "repTime": {
+              "total": {
+                $sum: "$repTime"
               },
-              "setTime": {
-                "total": {
-                  $sum: "$setTime"
-                },
-                "unit": 'second'
+              "unit": 'number'
+            },
+            "setTime": {
+              "total": {
+                $sum: "$setTime"
               },
-              "reps": {
-                "total": {
-                  $sum: "$reps"
-                },
-                "unit": 'number'
+              "unit": 'second'
+            },
+            "reps": {
+              "total": {
+                $sum: "$reps"
               },
-              "sets": {
-                "total": {
-                  $sum: "$sets"
-                },
-                "unit": 'number'
+              "unit": 'number'
+            },
+            "sets": {
+              "total": {
+                $sum: "$sets"
               },
-              "restTime": {
-                "total": {
-                  $sum: "$restTime"
-                },
-                "unit": 'number'
+              "unit": 'number'
+            },
+            "restTime": {
+              "total": {
+                $sum: "$restTime"
               },
-              "speed": {
-                "total": {
-                  $sum: "$speed"
-                },
-                "unit": 'number'
+              "unit": 'number'
+            },
+            "speed": {
+              "total": {
+                $sum: "$speed"
               },
-            }
-          },
-          "exercises": {
-            $addToSet: {
-              name: "$name",
-              _id: "$exerciseId"
-            }
-          },
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          subCategory: "$_id",
-          exerciseId: condition["exerciseId"],
-          fields: "$fields"
-        }
+              "unit": 'number'
+            },
+          }
+        },
+        "exercises": {
+          $addToSet: {
+            name: "$name",
+            _id: "$exerciseId"
+          }
+        },
       }
+    },
+    {
+      $project: {
+        _id: 0,
+        subCategory: "$_id",
+        exerciseId: condition["exerciseId"],
+        fields: "$fields"
+      }
+    }
     ]);
     var measurement_unit_data = await user_settings_helper.get_setting({
       userId: condition.userId
@@ -976,91 +978,91 @@ statistics_helper.get_statistics_single_data = async (condition = {}, date = nul
 statistics_helper.get_strength_single_graph_data = async (condition = {}) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
-        $match: condition
-      },
-      {
-        $group: {
-          _id: "$subType",
-          "fields": {
-            $push: {
-              "time": {
-                "total": {
-                  $sum: "$time"
-                },
-                "unit": 'second'
+      $match: condition
+    },
+    {
+      $group: {
+        _id: "$subType",
+        "fields": {
+          $push: {
+            "time": {
+              "total": {
+                $sum: "$time"
               },
-              "distance": {
-                "total": {
-                  $sum: "$distance"
-                },
-                "unit": 'km'
+              "unit": 'second'
+            },
+            "distance": {
+              "total": {
+                $sum: "$distance"
               },
-              "effort": {
-                "total": {
-                  $sum: "$effort"
-                },
-                "unit": ''
+              "unit": 'km'
+            },
+            "effort": {
+              "total": {
+                $sum: "$effort"
               },
-              "weight": {
-                "total": {
-                  $sum: "$weight"
-                },
-                "unit": 'kg'
+              "unit": ''
+            },
+            "weight": {
+              "total": {
+                $sum: "$weight"
               },
-              "repTime": {
-                "total": {
-                  $sum: "$repTime"
-                },
-                "unit": 'number'
+              "unit": 'kg'
+            },
+            "repTime": {
+              "total": {
+                $sum: "$repTime"
               },
-              "setTime": {
-                "total": {
-                  $sum: "$setTime"
-                },
-                "unit": 'second'
+              "unit": 'number'
+            },
+            "setTime": {
+              "total": {
+                $sum: "$setTime"
               },
-              "reps": {
-                "total": {
-                  $sum: "$reps"
-                },
-                "unit": 'number'
+              "unit": 'second'
+            },
+            "reps": {
+              "total": {
+                $sum: "$reps"
               },
-              "sets": {
-                "total": {
-                  $sum: "$sets"
-                },
-                "unit": 'number'
+              "unit": 'number'
+            },
+            "sets": {
+              "total": {
+                $sum: "$sets"
               },
-              "restTime": {
-                "total": {
-                  $sum: "$restTime"
-                },
-                "unit": 'second'
+              "unit": 'number'
+            },
+            "restTime": {
+              "total": {
+                $sum: "$restTime"
               },
-              "speed": {
-                "total": {
-                  $sum: "$speed"
-                },
-                "unit": 'kmph'
+              "unit": 'second'
+            },
+            "speed": {
+              "total": {
+                $sum: "$speed"
               },
-            }
-          },
-          "exercises": {
-            $addToSet: {
-              name: "$name",
-              _id: "$exerciseId"
-            }
-          },
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          subCategory: "$_id",
-          exerciseId: condition["exerciseId"],
-          fields: "$fields"
-        }
+              "unit": 'kmph'
+            },
+          }
+        },
+        "exercises": {
+          $addToSet: {
+            name: "$name",
+            _id: "$exerciseId"
+          }
+        },
       }
+    },
+    {
+      $project: {
+        _id: 0,
+        subCategory: "$_id",
+        exerciseId: condition["exerciseId"],
+        fields: "$fields"
+      }
+    }
 
     ]);
     var measurement_unit_data = await user_settings_helper.get_setting({
@@ -1193,104 +1195,104 @@ statistics_helper.get_strength_single_graph_data = async (condition = {}) => {
 statistics_helper.get_graph_data = async (condition = {}, activeField) => {
   try {
     var user_workouts = await WorkoutLogs.aggregate([{
-        $match: condition
-      },
-      {
-        $sort: {
-          logDate: 1
-        }
-      },
-      {
-        $group: {
-          _id: "$subType",
-          "fields": {
-            $push: {
-              "time": {
-                "total": {
-                  $sum: "$time"
-                },
-                "unit": 'second',
-                "date": "$logDate"
-              },
-              "distance": {
-                "total": {
-                  $sum: "$distance"
-                },
-                "unit": 'meter',
-                "date": "$logDate"
-              },
-              "effort": {
-                "total": {
-                  $sum: "$effort"
-                },
-                "unit": '',
-                "date": "$logDate"
-              },
-              "weight": {
-                "total": {
-                  $sum: "$weight"
-                },
-                "unit": 'gram',
-                "date": "$logDate"
-              },
-              "repTime": {
-                "total": {
-                  $sum: "$repTime"
-                },
-                "unit": 'number',
-                "date": "$logDate"
-              },
-              "setTime": {
-                "total": {
-                  $sum: "$setTime"
-                },
-                "unit": 'second'
-              },
-              "reps": {
-                "total": {
-                  $sum: "$reps"
-                },
-                "unit": 'number',
-                "date": "$logDate"
-              },
-              "sets": {
-                "total": {
-                  $sum: "$sets"
-                },
-                "unit": 'number',
-                "date": "$logDate"
-              },
-              "restTime": {
-                "total": {
-                  $sum: "$restTime"
-                },
-                "unit": 'second',
-                "date": "$logDate"
-              },
-              "speed": {
-                "total": {
-                  $sum: "$speed"
-                },
-                "unit": 'number',
-                "date": "$logDate"
-              },
-            }
-          },
-          "exercises": {
-            $addToSet: {
-              name: "$name",
-              _id: "$exerciseId"
-            }
-          },
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          subCategory: "$_id",
-          fields: "$fields"
-        }
+      $match: condition
+    },
+    {
+      $sort: {
+        logDate: 1
       }
+    },
+    {
+      $group: {
+        _id: "$subType",
+        "fields": {
+          $push: {
+            "time": {
+              "total": {
+                $sum: "$time"
+              },
+              "unit": 'second',
+              "date": "$logDate"
+            },
+            "distance": {
+              "total": {
+                $sum: "$distance"
+              },
+              "unit": 'meter',
+              "date": "$logDate"
+            },
+            "effort": {
+              "total": {
+                $sum: "$effort"
+              },
+              "unit": '',
+              "date": "$logDate"
+            },
+            "weight": {
+              "total": {
+                $sum: "$weight"
+              },
+              "unit": 'gram',
+              "date": "$logDate"
+            },
+            "repTime": {
+              "total": {
+                $sum: "$repTime"
+              },
+              "unit": 'number',
+              "date": "$logDate"
+            },
+            "setTime": {
+              "total": {
+                $sum: "$setTime"
+              },
+              "unit": 'second'
+            },
+            "reps": {
+              "total": {
+                $sum: "$reps"
+              },
+              "unit": 'number',
+              "date": "$logDate"
+            },
+            "sets": {
+              "total": {
+                $sum: "$sets"
+              },
+              "unit": 'number',
+              "date": "$logDate"
+            },
+            "restTime": {
+              "total": {
+                $sum: "$restTime"
+              },
+              "unit": 'second',
+              "date": "$logDate"
+            },
+            "speed": {
+              "total": {
+                $sum: "$speed"
+              },
+              "unit": 'number',
+              "date": "$logDate"
+            },
+          }
+        },
+        "exercises": {
+          $addToSet: {
+            name: "$name",
+            _id: "$exerciseId"
+          }
+        },
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        subCategory: "$_id",
+        fields: "$fields"
+      }
+    }
     ]);
 
     var measurement_unit_data = await user_settings_helper.get_setting({
@@ -1305,10 +1307,12 @@ statistics_helper.get_graph_data = async (condition = {}, activeField) => {
     for (let w of user_workouts) {
       for (let field of w.fields) {
         var tmp = {
-          "metaData": {
+          metaData: {
             name: activeField,
           },
-          "date": moment(field[activeField].date).format("DD/MM/YYYY"),
+          date: field[activeField].date,
+          dateToCompare: moment(field[activeField].date).format("DD/MM/YYYY"),
+
         }
         if (activeField === "weight") {
           tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, field[activeField].total)).toFixed(2))

@@ -465,8 +465,10 @@ workout_progress_helper.user_body_progress = async (id) => {
 			var weight = [];
 			var height = [];
 			var heartRate = [];
+
 			for (let bodypart of body_progress) {
-				var date = moment(bodypart.logDate).format("DD/MM/YYYY");
+				// var date = moment(bodypart.logDate).format("DD/MM/YYYY");
+				var date = bodypart.logDate;
 				neck.push({
 					date,
 					count: parseFloat((await common_helper.convertUnits("cm", bodyMeasurementUnit, bodypart.neck)).toFixed(2)),
@@ -787,7 +789,7 @@ workout_progress_helper.graph_data_body_fat = async (condition = {}) => {
 		if (progress && progress.length > 0) {
 			_.each(progress, function (o) {
 				o.count = parseFloat(o.count.toFixed(2));
-				o.date = moment(o.date).format("DD/MM/YYYY");
+				// o.date = moment(o.date).format("DD/MM/YYYY");
 			})
 			return {
 				status: 1,

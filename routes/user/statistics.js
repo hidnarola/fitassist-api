@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 var config = require("../../config");
 var jwtDecode = require("jwt-decode");
-var moment = require("moment");
 var mongoose = require("mongoose");
 var logger = config.logger;
 var _ = require("underscore");
@@ -279,6 +278,7 @@ router.post("/graph_data", async (req, res) => {
     if (subCategory === "Overview") {
       resp_data = await statistics_helper.graph_data({
         userId: authUserId,
+        type: type,
         isCompleted: 1,
         logDate: {
           $gte: new Date(start),
@@ -340,15 +340,16 @@ router.post("/graph_data", async (req, res) => {
         o.self = 0;
 
         let tmp = _.findWhere(friend_overview_data.graphData, {
-          date: o.date
+          dateToCompare: o.dateToCompare
         });
         if (tmp) {
           o.friendAvg = tmp.count
         }
 
         tmp = _.findWhere(resp_data.graphData, {
-          date: o.date
+          dateToCompare: o.dateToCompare
         });
+
         if (tmp) {
           o.self = tmp.count
         }

@@ -100,13 +100,6 @@ user_post_helper.get_user_post_photos = async (
   skip,
   limit
 ) => {
-  console.log('------------------------------------');
-  console.log('skip => ', skip);
-  console.log('------------------------------------');
-  console.log('------------------------------------');
-  console.log('limit => ', limit);
-  console.log('------------------------------------');
-
   try {
     var user_post_photos = await UserPost.aggregate([
       {
