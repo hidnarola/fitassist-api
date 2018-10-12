@@ -6,87 +6,194 @@ var chat_helper = {};
 
 /*
  * get_messages is used to fetch all messages data
- * 
  * @return  status 0 - If any internal error occured while fetching chat messages data, with error
  *          status 1 - If chat messages data found, with chat messages object
  *          status 2 - If chat messages not found, with appropriate message
  */
-chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
+chat_helper.get_messages = async (userId, skip = null, limit = null) => {
   try {
-    var conversation = await Conversations.aggregate([{
-      $match: {
-        $or: [{
-          userId: userId
-        },
-        {
-          friendId: userId
+    // let aggregate = [
+    //   {
+    //   $match: {
+    //     $or: [{
+    //       userId: userId
+    //     },
+    //     {
+    //       friendId: userId
+    //     }
+    //     ]
+    //   }
+    // },
+    // {
+    //   $lookup: {
+    //     from: "conversations_replies",
+    //     foreignField: "conversationId",
+    //     localField: "_id",
+    //     as: "conversations"
+    //   }
+    // },
+    // {
+    //   $unwind: "$conversations"
+    // },
+    // {
+    //   $lookup: {
+    //     from: "users",
+    //     foreignField: "authUserId",
+    //     localField: "userId",
+    //     as: "userId"
+    //   }
+    // },
+    // {
+    //   $unwind: "$userId"
+    // },
+    // {
+    //   $lookup: {
+    //     from: "users",
+    //     foreignField: "authUserId",
+    //     localField: "friendId",
+    //     as: "friendId"
+    //   }
+    // },
+    // {
+    //   $unwind: "$friendId"
+    // },
+    // {
+    //   $sort: {
+    //     "conversations.createdAt": -1
+    //   }
+    // },
+    // {
+    //   $group: {
+    //     _id: "$_id",
+    //     lastReplyAt: {
+    //       $first: "$lastReplyAt"
+    //     },
+    //     userData: {
+    //       $first: "$userId"
+    //     },
+    //     friendData: {
+    //       $first: "$friendId"
+    //     },
+    //     conversation: {
+    //       $first: "$conversations"
+    //     }
+    //   }
+    // },
+    // {
+    //   $sort: {
+    //     lastReplyAt: -1
+    //   }
+    // },
+    // ]
+
+    let aggregate = [
+      {
+        $match: {
+          $or: [{
+            userId: userId
+          },
+          {
+            friendId: userId
+          }
+          ]
         }
-        ]
-      }
-    },
-    {
-      $lookup: {
-        from: "conversations_replies",
-        foreignField: "conversationId",
-        localField: "_id",
-        as: "conversations"
-      }
-    },
-    {
-      $unwind: "$conversations"
-    },
-    {
-      $lookup: {
-        from: "users",
-        foreignField: "authUserId",
-        localField: "userId",
-        as: "userId"
-      }
-    },
-    {
-      $unwind: "$userId"
-    },
-    {
-      $lookup: {
-        from: "users",
-        foreignField: "authUserId",
-        localField: "friendId",
-        as: "friendId"
-      }
-    },
-    {
-      $unwind: "$friendId"
-    },
-    {
-      $sort: {
-        "conversations.createdAt": -1
-      }
-    },
-    {
-      $group: {
-        _id: "$_id",
-        lastReplyAt: {
-          $first: "$lastReplyAt"
-        },
-        userData: {
-          $first: "$userId"
-        },
-        friendData: {
-          $first: "$friendId"
-        },
-        conversation: {
-          $first: "$conversations"
+      },
+      {
+        $lookup: {
+          from: "conversations_replies",
+          foreignField: "conversationId",
+          localField: "_id",
+          as: "conversations"
         }
-      }
-    },
-    {
-      $sort: {
-        lastReplyAt: -1
-      }
-    },
-      skip,
-      limit,
-    ]);
+      },
+      {
+        $unwind: "$conversations"
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "authUserId",
+          localField: "userId",
+          as: "userId"
+        }
+      },
+      {
+        $unwind: "$userId"
+      },
+      {
+        $lookup: {
+          from: "user_settings",
+          foreignField: "userId",
+          localField: "userId.authUserId",
+          as: "user_settings"
+        }
+      },
+      {
+        $unwind: "$user_settings"
+      },
+      {
+        $lookup: {
+          from: "user_settings",
+          foreignField: "friendId",
+          localField: "friendId.authUserId",
+          as: "friend_settings"
+        }
+      },
+      {
+        $unwind: "$friend_settings"
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "authUserId",
+          localField: "friendId",
+          as: "friendId"
+        }
+      },
+      {
+        $unwind: "$friendId"
+      },
+      {
+        $sort: {
+          "conversations.createdAt": -1
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          lastReplyAt: {
+            $first: "$lastReplyAt"
+          },
+          userData: {
+            $first: "$userId"
+          },
+          friendData: {
+            $first: "$friendId"
+          },
+          conversation: {
+            $first: "$conversations"
+          },
+          userPreferences: {
+            $first: "$user_settings"
+          },
+          friendPreferences: {
+            $first: "$friend_settings"
+          }
+        }
+      },
+      {
+        $sort: {
+          lastReplyAt: -1
+        }
+      },
+    ]
+    if (skip) {
+      aggregate.push(skip)
+    }
+    if (limit) {
+      aggregate.push(limit)
+    }
+    var conversation = await Conversations.aggregate(aggregate);
 
     if (conversation) {
       return {
@@ -108,6 +215,68 @@ chat_helper.get_messages = async (userId, skip = {}, limit = {}) => {
     };
   }
 };
+
+
+/*
+ * get_setting_for_chat is used to get channel ID settings messages data
+ * @return  status 0 - If any internal error occured while fetching chat messages's privacy data, with error
+ *          status 1 - If chat messages data found, with chat messages object
+ *          status 2 - If chat messages not found, with appropriate message
+ */
+chat_helper.get_setting_for_chat = async (channelId) => {
+  try {
+    var privacy = await Conversations.aggregate([
+      {
+        $match: channelId
+      },
+      {
+        $lookup: {
+          from: "user_settings",
+          foreignField: "userId",
+          localField: "userId",
+          as: "userId"
+        }
+      },
+      { $unwind: "$userId" },
+      {
+        $lookup: {
+          from: "user_settings",
+          foreignField: "userId",
+          localField: "friendId",
+          as: "friendId"
+        }
+      }, { $unwind: "$friendId" },
+      {
+        $project: {
+          _id: 0,
+          lastReplyAt: 1,
+          userId: 1,
+          friendId: 1,
+        }
+      }
+    ]);
+
+    if (privacy) {
+      return {
+        status: 1,
+        message: "conversation privacy found",
+        privacy: privacy
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No privacy available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding privacy",
+      error: err
+    };
+  }
+};
+
 /*
  * get_messages_count is used to count all messages data
  * @return  status 0 - If any internal error occured while fetching chat messages data, with error

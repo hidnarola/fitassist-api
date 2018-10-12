@@ -6,6 +6,7 @@ var notification_helper = require("../helpers/notification_helper");
 var chat_helper = require("../helpers/chat_helper");
 var user_helper = require("../helpers/user_helper");
 var friend_helper = require("../helpers/friend_helper");
+var user_settings_helper = require("../helpers/user_settings_helper");
 var config = require("../config");
 var logger = config.logger;
 
@@ -163,19 +164,21 @@ myIo.init = function (server) {
 						$limit: limit
 					}
 				);
+				console.log('------------------------------------');
+				console.log('resp_data => ', resp_data);
+				console.log('------------------------------------');
 
 				if (resp_data.status == 0) {
 					logger.error("Error occured while fetching chat messages = ", resp_data);
 				} else {
 					resp_data.total_records = 0;
-					let count = await chat_helper.get_messages_count(authUserId);
+					let count = await chat_helper.get_messages(
+						authUserId
+					);
+					// let count = await chat_helper.get_messages_count(authUserId);
 					if (count && count.status === 1) {
-						resp_data.total_records = count.count;
+						resp_data.total_records = count.channels.length;
 					}
-					console.log('------------------------------------');
-					console.log('count => ', count);
-					console.log('------------------------------------');
-
 					logger.trace("chat messages got successfully = ", resp_data);
 				}
 			} catch (error) {
@@ -250,6 +253,7 @@ myIo.init = function (server) {
 		 * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
 		 */
 		socket.on("get_user_conversation_by_channel", async function (data) {
+
 			var resp_data = {};
 			var decoded = jwtDecode(data.token);
 			var authUserId = decoded.sub;
@@ -267,17 +271,25 @@ myIo.init = function (server) {
 			};
 
 			try {
-				resp_data = await chat_helper.get_conversation(authUserId, condition, {
-					$skip: start
-				}, {
-						$limit: limit
-					});
+				resp_data = await chat_helper.get_conversation(authUserId, condition,
+					{ $skip: start },
+					{ $limit: limit });
+				let user_settings = await chat_helper.get_setting_for_chat({
+					_id: mongoose.Types.ObjectId(data.channel_id)
+				});
+
+				resp_data.user_settings = null;
+				if (user_settings && user_settings.status === 1) {
+					resp_data.user_settings = user_settings.privacy[0];
+				}
 
 				if (resp_data.status == 0) {
 					logger.error("Error occured while fetching chat messages = ", resp_data);
 				} else {
 					logger.trace("chat messages got successfully = ", resp_data);
 				}
+
+
 			} catch (error) {
 				resp_data.message = "Internal server error! please try again later.";
 				resp_data.status = 0;

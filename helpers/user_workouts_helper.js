@@ -112,10 +112,6 @@ user_workouts_helper.get_all_workouts = async (condition, single = false) => {
         }
       }
     ]);
-    console.log('------------------------------------');
-    console.log('user_workouts => ', user_workouts);
-    console.log('------------------------------------');
-
 
     // _.each(user_workouts, user_workout => {
     //   var tmp = [];

@@ -414,10 +414,6 @@ async function badgesAssign(authUserId) {
       logDate: -1
     }
   );
-  console.log('------------------------------------');
-  console.log('resp_data => ', resp_data);
-  console.log('------------------------------------');
-
   var heartRate = await measurement_helper.heart_rate_data({
     userId: authUserId
   });

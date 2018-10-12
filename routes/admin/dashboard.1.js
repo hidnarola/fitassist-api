@@ -21,9 +21,6 @@ var user_program_helper = require("../../helpers/user_program_helper");
  */
 router.post("/", async (req, res) => {
   logger.trace('Admin dashboard API called');
-  console.log('------------------------------------');
-  console.log('req.body => ', req.body);
-  console.log('------------------------------------');
 
   var returnObject = {
     totalUsers: null,
