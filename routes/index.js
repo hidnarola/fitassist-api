@@ -531,8 +531,8 @@ router.get("/auth0_user_sync", async (req, res) => {
         if (data.count <= 0) {
           var user_obj = {
             authUserId: response.sub,
-            firstName: response.name,
             email: response.email,
+            firstName: response.nickname,
             avatar: response.picture
           };
           var username = response.email.split("@")[0];
@@ -551,12 +551,20 @@ router.get("/auth0_user_sync", async (req, res) => {
               });
               if (data.count <= 0) {
                 user_obj.username = username;
+                user_obj.firstName = username;
                 tmp = false;
               }
             }
           }
+          console.log('------------------------------------');
+          console.log('user_obj => ', user_obj);
+          console.log('------------------------------------');
 
           var user_data = await user_helper.insert_user(user_obj);
+          console.log('------------------------------------');
+          console.log('user_data => ', user_data);
+          console.log('------------------------------------');
+
           var exercise_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
           exercise_obj.userId = response.sub;
           var nutrition_obj = constant.NUTRITION_PREFERENCE_DEFUALT_VALUE;

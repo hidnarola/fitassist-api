@@ -20,11 +20,6 @@ user_workouts_helper.get_workouts_for_calendar = async (condition) => {
         $match: condition
       },
       {
-        $project: {
-          date: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-        }
-      },
-      {
         $group: {
           _id: "$date"
         }

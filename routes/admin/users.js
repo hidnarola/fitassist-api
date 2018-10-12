@@ -59,7 +59,7 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * @api {get} /admin/user/:authUserId Get by authUserId
+ * @api {get} /admin/user/:user Get by authUserId
  * @apiName Users by authUserId
  * @apiGroup Admin Side User
  * @apiHeader {String}  x-access-token Admin's unique access-key
@@ -67,37 +67,29 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:authUserId", async (req, res) => {
-  if (mongoose.Types.ObjectId.isValid(req.params.workout_id)) {
-    authUserId = req.params.authUserId;
-    logger.trace("Get user by id API called");
-    var resp_data = await user_helper.get_user_by_id(authUserId);
+  authUserId = req.params.authUserId;
+  logger.trace("Get user by id API called");
+  var resp_data = await user_helper.get_user_by_id(authUserId);
 
-    if (resp_data.status === 0) {
-      logger.error("Error occured while fetching user = ", resp_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-    } else {
-      var user_settings = await user_settings_helper.get_setting({
-        userId: authUserId
-      }, {
-          "bodyMeasurement": 1,
-          "weight": 1,
-          "distance": 1,
-        });
-      resp_data.user_preferences = null;
-      if (user_settings.status === 1) {
-        resp_data.user_preferences = user_settings.user_settings;
-      }
-      logger.trace("user got successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    }
+  if (resp_data.status === 0) {
+    logger.error("Error occured while fetching user = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    logger.error("Invalid Object is passed= ", req.params.authUserId);
-    res.status(config.BAD_REQUEST).json({
-      status: 0,
-      message: "Something went wrong"
-    });
-
+    var user_settings = await user_settings_helper.get_setting({
+      userId: authUserId
+    }, {
+        "bodyMeasurement": 1,
+        "weight": 1,
+        "distance": 1,
+      });
+    resp_data.user_preferences = null;
+    if (user_settings.status === 1) {
+      resp_data.user_preferences = user_settings.user_settings;
+    }
+    logger.trace("user got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
   }
+
 
 });
 
@@ -193,6 +185,7 @@ router.put("/:authUserId", async (req, res) => {
     }
   };
 
+  req.checkBody('lastName', 'Last Name should be between 2 to 50 characters').isLength({ max: 20, min: 2 });
   req.checkBody(schema);
   var errors = req.validationErrors();
 
@@ -251,7 +244,7 @@ router.put("/:authUserId", async (req, res) => {
         file.mv(dir + "/" + filename, async function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
-            res.send({
+            return res.send({
               status: config.MEDIA_ERROR_STATUS,
               err: "There was an issue in uploading image"
             });
@@ -262,14 +255,14 @@ router.put("/:authUserId", async (req, res) => {
         });
       } else {
         logger.error("Image format is invalid");
-        res.send({
+        return res.send({
           status: config.VALIDATION_FAILURE_STATUS,
           err: "Image format is invalid"
         });
       }
     } else {
       logger.info("Image not available to upload. Executing next instruction");
-      //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
+      // return res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
     }
     if (filename) {
       user_obj.avatar = config.BASE_URL + "uploads/user/" + filename;
@@ -297,9 +290,9 @@ router.put("/:authUserId", async (req, res) => {
       common_helper.sync_user_data_to_auth(authUserId, {
         blocked: status
       }).then(function (response) {
-        res.status(config.OK_STATUS).json(user_data);
+        return res.status(config.OK_STATUS).json(user_data);
       }).catch(function (error) {
-        res.status(config.BAD_REQUEST).json({
+        return res.status(config.BAD_REQUEST).json({
           message: error
         });
       });

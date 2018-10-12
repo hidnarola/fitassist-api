@@ -280,8 +280,8 @@ user_helper.update_user_by_id = async (user_id, user_obj) => {
     let user = await User.findOneAndUpdate({
       authUserId: user_id
     }, user_obj, {
-      new: true
-    }).lean();
+        new: true
+      }).lean();
     if (!user) {
       return {
         status: 2,
@@ -351,17 +351,17 @@ user_helper.get_filtered_records = async filter_obj => {
     }]);
 
     var filtered_data = await User.aggregate([{
-        $match: filter_object.columnFilter
-      },
-      {
-        $sort: filter_obj.columnSort
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: filter_object.pageSize
-      },
+      $match: filter_object.columnFilter
+    },
+    {
+      $sort: filter_obj.columnSort
+    },
+    {
+      $skip: skip
+    },
+    {
+      $limit: filter_object.pageSize
+    },
     ]);
 
     if (filtered_data) {

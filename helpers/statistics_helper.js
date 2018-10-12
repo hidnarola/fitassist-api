@@ -174,6 +174,7 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
       } else if (totalRestTime < 3600) {
         formatStringForRestTime = "m [min]";
       }
+
       w.fields.time = {
         total: totalTime > 0 ? moment.duration(totalTime, "seconds").format(formatStringForTime) : 0,
         unit: ""
@@ -212,7 +213,7 @@ statistics_helper.get_statistics_data = async (condition = {}, date = null) => {
       }
       w.fields.speed = {
         total: totalSpeed > 0 ? Math.round(await common_helper.convertUnits("kmph", speedUnit, totalSpeed)) : 0,
-        unit: ""
+        unit: speedUnit
       }
     }
 
@@ -382,7 +383,7 @@ statistics_helper.get_overview_statistics_data = async (condition = {}, date = n
       }
       returnObject.fields.speed = {
         total: w.speed > 0 ? Math.round(await common_helper.convertUnits("kmph", speedUnit, w.speed)) : 0,
-        unit: ""
+        unit: speedUnit
       }
     }
 
@@ -484,10 +485,12 @@ statistics_helper.graph_data = async (condition = {}, activeField, userId) => {
         date: w._id,
         dateToCompare: moment(w._id).format("DD/MM/YYYY"),
       }
+
       if (activeField === "weight") {
         tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, w[activeField])).toFixed(2))
         tmp.metaData.unit = weightUnit;
       } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime" || activeField === "restTime") {
+        console.log('I am inside');
         tmp.count = await common_helper.convertUnits("second", "minute", w[activeField])
         tmp.metaData.unit = "minute";
       } else if (activeField === "distance") {

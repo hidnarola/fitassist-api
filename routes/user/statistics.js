@@ -300,6 +300,7 @@ router.post("/graph_data", async (req, res) => {
         o.count = parseFloat((o.count / totalFriends).toFixed(2));
       });
 
+
       global_overview_data = await statistics_helper.graph_data({
         isCompleted: 1,
         logDate: {
