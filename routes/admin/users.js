@@ -284,7 +284,7 @@ router.put("/:authUserId", async (req, res) => {
     } else {
       res.status(config.OK_STATUS).json(user_data);
       var status = true;
-      if (req.body.status === 1) {
+      if (req.body.status == 1) {
         status = false;
       }
       common_helper.sync_user_data_to_auth(authUserId, {

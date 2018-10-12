@@ -193,10 +193,6 @@ router.get("/:post_id", async (req, res) => {
     _id: mongoose.Types.ObjectId(_id),
     isDeleted: 0
   });
-  console.log('------------------------------------');
-  console.log('resp_data => ', resp_data);
-  console.log('------------------------------------');
-
 
   if (resp_data.status == 0) {
     logger.error(
