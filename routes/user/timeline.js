@@ -186,8 +186,6 @@ router.get("/privacy/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:post_id", async (req, res) => {
-  console.log("here");
-
   var _id = req.params.post_id;
   logger.trace("Get all user's timeline API called");
 
@@ -195,6 +193,10 @@ router.get("/:post_id", async (req, res) => {
     _id: mongoose.Types.ObjectId(_id),
     isDeleted: 0
   });
+  console.log('------------------------------------');
+  console.log('resp_data => ', resp_data);
+  console.log('------------------------------------');
+
 
   if (resp_data.status == 0) {
     logger.error(
@@ -476,7 +478,7 @@ router.post("/muscle", async (req, res) => {
 
     if (widgets_data.status === 1) {
       var muscle = widgets_data.widgets.muscle;
-      _.map(muscle, function(o) {
+      _.map(muscle, function (o) {
         if (o.name === req.body.bodypart) {
           o.start = req.body.start;
           o.end = req.body.end;
@@ -576,7 +578,7 @@ router.post("/", async (req, res) => {
     user_post_obj.createdBy = authUserId;
     async.waterfall(
       [
-        function(callback) {
+        function (callback) {
           //image upload
           if (req.files && req.files["images"]) {
             var file_path_array = [];
@@ -585,7 +587,7 @@ router.post("/", async (req, res) => {
 
             async.eachSeries(
               files,
-              function(file, loop_callback) {
+              function (file, loop_callback) {
                 var mimetype = ["image/png", "image/jpeg", "image/jpg"];
                 if (mimetype.indexOf(file.mimetype) != -1) {
                   if (!fs.existsSync(dir)) {
@@ -593,7 +595,7 @@ router.post("/", async (req, res) => {
                   }
                   extention = path.extname(file.name);
                   filename = "user_post_" + new Date().getTime() + extention;
-                  file.mv(dir + "/" + filename, function(err) {
+                  file.mv(dir + "/" + filename, function (err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
                       loop_callback({
@@ -619,7 +621,7 @@ router.post("/", async (req, res) => {
                   });
                 }
               },
-              function(err) {
+              function (err) {
                 if (err) {
                   res.status(err.status).json(err);
                 } else {
@@ -654,7 +656,7 @@ router.post("/", async (req, res) => {
           };
           async.each(
             file_path_array,
-            async function(file, callback) {
+            async function (file, callback) {
               post_image_obj.image = file;
               let user_post_data = await user_posts_helper.insert_user_post_image(
                 post_image_obj
@@ -669,7 +671,7 @@ router.post("/", async (req, res) => {
                 success++;
               }
             },
-            async function(err) {
+            async function (err) {
               if (err) {
                 console.log("Failed to upload image");
               } else {

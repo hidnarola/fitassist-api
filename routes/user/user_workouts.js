@@ -1436,6 +1436,8 @@ router.post("/workout/:workout_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/delete/exercise", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   var parentId = mongoose.Types.ObjectId(req.body.parentId);
   var childId = mongoose.Types.ObjectId(req.body.childId);
   var subChildIds = req.body.subChildIds;
