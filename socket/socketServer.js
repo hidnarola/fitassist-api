@@ -168,10 +168,14 @@ myIo.init = function (server) {
 					logger.error("Error occured while fetching chat messages = ", resp_data);
 				} else {
 					resp_data.total_records = 0;
-					count = await chat_helper.get_messages_count(authUserId);
+					let count = await chat_helper.get_messages_count(authUserId);
 					if (count && count.status === 1) {
 						resp_data.total_records = count.count;
 					}
+					console.log('------------------------------------');
+					console.log('count => ', count);
+					console.log('------------------------------------');
+
 					logger.trace("chat messages got successfully = ", resp_data);
 				}
 			} catch (error) {
@@ -209,6 +213,14 @@ myIo.init = function (server) {
 					}, {
 						$limit: limit
 					});
+				var count = await friend_helper.get_friend_by_username({
+					username: userData.user.username
+				}, 2);
+				resp_data.total_records = 0;
+				if (count && count.status === 1) {
+					resp_data.total_records = count.friends.length;
+				}
+
 				_.map(resp_data.friends, function (friend) {
 					var user = users.get(friend.authUserId);
 					friend.isOnline = false;
