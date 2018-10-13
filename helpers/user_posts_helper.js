@@ -67,9 +67,6 @@ user_post_helper.count_all_gallery_images = async (condition) => {
         }
       }
     ]);
-    console.log('------------------------------------');
-    console.log('count => ', count.length);
-    console.log('------------------------------------');
 
     return {
       status: 1,
@@ -148,9 +145,6 @@ user_post_helper.get_user_post_photos = async (
       }
 
     ]);
-    console.log('------------------------------------');
-    console.log('user_post_photos => ', user_post_photos);
-    console.log('------------------------------------');
 
     if (user_post_photos || user_post_photos.length != 0) {
       return {

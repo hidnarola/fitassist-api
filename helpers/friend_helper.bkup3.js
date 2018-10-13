@@ -77,9 +77,8 @@ friend_helper.get_friends = async id => {
  */
 friend_helper.get_friend_by_username = async (username, statusType, skip = false, limit = false, sort = false) => {
   try {
-    let aggregate;
     if (statusType == 2) {
-      aggregate = [{
+      let aggregate = [{
         $match: username
       },
       {
@@ -188,6 +187,7 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
           }
         }
       },
+
       {
         $lookup: {
           from: "friends",
@@ -252,48 +252,11 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
           "user.friendshipId": 1,
           "user.totalFriends": 1,
         }
-      },
-        {
-          $unwind: "$user"
-        },
-        {
-          '$lookup': {
-            from: 'user_settings',
-            localField: 'user.authUserId',
-            foreignField: 'userId',
-            as: 'userSettings'
-          }
-        },
-        {
-          $unwind: "$userSettings"
-        },
-        {
-          "$addFields": { "user.userSettings": "$userSettings" }
-        },
-        {
-          $group: {
-            _id: "",
-            user: {
-              $addToSet: "$$ROOT.user"
-            }
-          }
-        },
-        {
-          $project: {
-            "user._id": 1,
-            "user.authUserId": 1,
-            "user.firstName": 1,
-            "user.avatar": 1,
-            "user.username": 1,
-            "user.lastName": 1,
-            "user.friendshipId": 1,
-            "user.totalFriends": 1,
-            "user.userSettings": 1
-          }
-        }
-      );
+      });
+      var friends = await Users.aggregate(aggregate);
     } else {
-      aggregate = [{
+
+      let aggregate = [{
         $match: username
       },
       {
@@ -397,49 +360,9 @@ friend_helper.get_friend_by_username = async (username, statusType, skip = false
           "user.friendshipId": 1,
           "user.totalFriends": 1,
         }
-      },
-        {
-          $unwind: "$user"
-        },
-        {
-          '$lookup': {
-            from: 'user_settings',
-            localField: 'user.authUserId',
-            foreignField: 'userId',
-            as: 'userSettings'
-          }
-        },
-        {
-          $unwind: "$userSettings"
-        },
-        {
-          "$addFields": { "user.userSettings": "$userSettings" }
-        },
-        {
-          $group: {
-            _id: "",
-            user: {
-              $addToSet: "$$ROOT.user"
-            }
-          }
-        },
-        {
-          $project: {
-            "user._id": 1,
-            "user.authUserId": 1,
-            "user.firstName": 1,
-            "user.avatar": 1,
-            "user.username": 1,
-            "user.lastName": 1,
-            "user.friendshipId": 1,
-            "user.totalFriends": 1,
-            "user.userSettings": 1
-          }
-        }
-      );
+      });
+      var friends = await Users.aggregate(aggregate);
     }
-
-    let friends = await Users.aggregate(aggregate);
     if (friends && friends.length > 0) {
       _.each(friends[0].user, (friend, index) => {
         var total_friends = friend.totalFriends;

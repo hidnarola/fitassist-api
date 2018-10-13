@@ -164,9 +164,6 @@ myIo.init = function (server) {
 						$limit: limit
 					}
 				);
-				console.log('------------------------------------');
-				console.log('resp_data => ', resp_data);
-				console.log('------------------------------------');
 
 				if (resp_data.status == 0) {
 					logger.error("Error occured while fetching chat messages = ", resp_data);
@@ -496,17 +493,22 @@ async function broadcastOnlineOfflineFlagToFriends(authUserId, flag) {
 	},
 		2
 	);
+
 	var usersFriendsSocketIds = [];
-	user_friends.friends.forEach((element) => {
-		var socketId = users.get(element.authUserId);
-		if (socketId) {
-			usersFriendsSocketIds = _.union(
-				usersFriendsSocketIds,
-				socketId.socketIds
-			);
-		}
-	});
-	if (flag) { } else { }
+	if (user_friends && user_friends.status === 1) {
+		user_friends.friends.forEach((element) => {
+			var socketId = users.get(element.authUserId);
+			if (socketId) {
+				usersFriendsSocketIds = _.union(
+					usersFriendsSocketIds,
+					socketId.socketIds
+				);
+			}
+		});
+	} else {
+
+	}
+
 	usersFriendsSocketIds.forEach(socketId => {
 		io.to(socketId).emit("receive_online_friend_status", {
 			isOnline: flag,
