@@ -443,15 +443,8 @@ async function badgesAssign(authUserId) {
     heart_rate_average: heartRate.heart_rate.heart_rate_average,
     heart_rate_most: heartRate.heart_rate.heart_rate_most,
     heart_rate_least: heartRate.heart_rate.heart_rate_least,
-    // body_fat_gain: body_fat.body_fat_log.body_fat_gain,
-    // body_fat_loss: body_fat.body_fat_log.body_fat_loss,
-    // body_fat_average: body_fat.body_fat_log.body_fat_average,
-    // body_fat_most: body_fat.body_fat_log.body_fat_most,
-    // body_fat_least: body_fat.body_fat_log.body_fat_least,
   };
-  // console.log('------------------------------------');
-  // console.log('body_measurement_data => ', body_measurement_data);
-  // console.log('------------------------------------');
+
 
   var badges = await badge_assign_helper.badge_assign(
     authUserId,

@@ -719,13 +719,6 @@ router.post("/", async (req, res) => {
                 });
 
                 if (authUserId.toString() !== req.body.onWall.toString()) {
-                  console.log("------------------------------------");
-                  console.log(
-                    authUserId + " authUserId posted on  => ",
-                    req.body.onWall
-                  );
-                  console.log("------------------------------------");
-
                   var notificationObj = {
                     senderId: authUserId,
                     receiverId: req.body.onWall,
@@ -733,17 +726,10 @@ router.post("/", async (req, res) => {
                     type: constant.NOTIFICATION_MESSAGES.POST.TYPE,
                     bodyMessage: constant.NOTIFICATION_MESSAGES.POST.MESSAGE
                   };
-                  console.log("------------------------------------");
-                  console.log("notificationObj => ", notificationObj);
-                  console.log("------------------------------------");
-
                   var tmp = await common_helper.send_notification(
                     notificationObj,
                     socket
                   );
-                  console.log("------------------------------------");
-                  console.log("tmp => ", tmp);
-                  console.log("------------------------------------");
                 }
 
                 // Badge assign

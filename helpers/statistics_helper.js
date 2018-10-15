@@ -490,7 +490,6 @@ statistics_helper.graph_data = async (condition = {}, activeField, userId) => {
         tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, w[activeField])).toFixed(2))
         tmp.metaData.unit = weightUnit;
       } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime" || activeField === "restTime") {
-        console.log('I am inside');
         tmp.count = await common_helper.convertUnits("second", "minute", w[activeField])
         tmp.metaData.unit = "minute";
       } else if (activeField === "distance") {

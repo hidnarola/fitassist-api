@@ -269,8 +269,8 @@ router.put("/", async (req, res) => {
 
     if (nutrition_data.status == 1) {
       var nutrition_data = await user_nutritions_helper.update_user_nutritions({
-          userId: authUserId
-        },
+        userId: authUserId
+      },
         nutrition_obj
       );
     } else {

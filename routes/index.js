@@ -556,15 +556,8 @@ router.get("/auth0_user_sync", async (req, res) => {
               }
             }
           }
-          console.log('------------------------------------');
-          console.log('user_obj => ', user_obj);
-          console.log('------------------------------------');
 
           var user_data = await user_helper.insert_user(user_obj);
-          console.log('------------------------------------');
-          console.log('user_data => ', user_data);
-          console.log('------------------------------------');
-
           var exercise_obj = constant.EXERCISE_PREFERENCE_DEFUALT_VALUE;
           exercise_obj.userId = response.sub;
           var nutrition_obj = constant.NUTRITION_PREFERENCE_DEFUALT_VALUE;

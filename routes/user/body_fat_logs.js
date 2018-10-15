@@ -137,18 +137,12 @@ router.post("/", async (req, res) => {
           body_fat_most: body_fat.body_fat_log.body_fat_most,
           body_fat_least: body_fat.body_fat_log.body_fat_least,
         };
-        console.log('------------------------------------');
-        console.log('body_fat_measurment => ', body_fat_measurment);
-        console.log('------------------------------------');
 
         var badges = await badge_assign_helper.badge_assign(
           authUserId,
           constant.BADGES_TYPE.BODY_FAT,
           body_fat_measurment
         );
-        console.log('------------------------------------');
-        console.log('badges => ', badges);
-        console.log('------------------------------------');
 
         //badge assign end
 

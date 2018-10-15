@@ -1743,10 +1743,6 @@ user_workouts_helper.complete_workout_by_days = async (
         }
       );
     }
-    console.log('------------------------------------');
-    console.log('user_workouts_data1 => ', user_workouts_data1);
-    console.log('------------------------------------');
-
     if (user_workouts_data1 && user_workouts_data1.nModified > 0) {
       return {
         status: 1,
