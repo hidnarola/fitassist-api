@@ -186,23 +186,60 @@ router.get("/privacy/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:post_id", async (req, res) => {
-  var _id = req.params.post_id;
+  let decoded = jwtDecode(req.headers["authorization"]);
+  let authUserId = decoded.sub;
+  let friendshipStatus = "unknown";
+  let _id = req.params.post_id;
   logger.trace("Get all user's timeline API called");
 
-  var resp_data = await user_posts_helper.get_user_timeline_by_id({
+  let resp_data = await user_posts_helper.get_user_timeline_by_id({
     _id: mongoose.Types.ObjectId(_id),
     isDeleted: 0
   });
 
-  if (resp_data.status == 0) {
+  if (resp_data && resp_data.status === 1 &&
+    resp_data.timeline &&
+    resp_data.timeline.owner_by &&
+    resp_data.timeline.owner_by.authUserId) {
+    if (authUserId.toString() === resp_data.timeline.owner_by.authUserId.toString()) {
+      friendshipStatus = "self";
+    }
+    let friendId = resp_data.timeline.owner_by.authUserId;
+
+    var friend = await friend_helper.checkFriend({
+      $or: [{
+        $and: [{
+          userId: authUserId
+        }, {
+          friendId: friendId
+        }]
+      },
+      {
+        $and: [{
+          userId: friendId
+        }, {
+          friendId: authUserId
+        }]
+      }
+      ]
+    });
+
+    if (friend && friend.status === 1) {
+      if (friend.friends.status === 2) {
+        friendshipStatus = "friend"
+      }
+    }
+  }
+  if (resp_data.status == 1) {
+    resp_data.timeline.friendshipStatus = friendshipStatus
+    logger.trace("user timeline got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
     logger.error(
       "Error occured while fetching get all user timeline = ",
       resp_data
     );
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user timeline got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
   }
 });
 

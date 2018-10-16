@@ -490,7 +490,7 @@ statistics_helper.graph_data = async (condition = {}, activeField, userId) => {
         tmp.count = parseFloat((await common_helper.convertUnits("gram", weightUnit, w[activeField])).toFixed(2))
         tmp.metaData.unit = weightUnit;
       } else if (activeField === "time" || activeField === "repTime" || activeField === "setTime" || activeField === "restTime") {
-        tmp.count = await common_helper.convertUnits("second", "minute", w[activeField])
+        tmp.count = parseFloat((await common_helper.convertUnits("second", "minute", w[activeField])).toFixed(2))
         tmp.metaData.unit = "minute";
       } else if (activeField === "distance") {
         tmp.count = parseFloat((await common_helper.convertUnits("meter", distanceUnit, w[activeField])).toFixed(2))

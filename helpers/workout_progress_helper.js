@@ -211,8 +211,8 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				category = p.category;
 
 				var name = p.name;
-				var first = _.first(p.exercises);
-				var last = _.last(p.exercises);
+				var first = _.last(p.exercises);
+				var last = _.first(p.exercises);
 
 				var fieldCheckName = first.format;
 				tmp.subCategory = subCategory;

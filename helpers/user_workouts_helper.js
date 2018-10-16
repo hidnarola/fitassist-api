@@ -178,6 +178,29 @@ user_workouts_helper.count_all_workouts = async (condition = {}) => {
 };
 
 /*
+ * in_complete_master_workout is used to in-complete master workout data
+ * @return  status 0 - If any internal error occured while updating user exercises data, with error
+ *          status 1 - If user exercises data updated, with user exercises object
+ *          status 2 - If user exercises not updated, with appropriate message
+ */
+user_workouts_helper.in_complete_master_workout = async (condition, updateObj = {}) => {
+  try {
+    var count = await UserWorkouts.findByIdAndUpdate(condition, updateObj);
+    return {
+      status: 1,
+      message: "Workouts updated",
+      count
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user workouts",
+      error: err
+    };
+  }
+};
+
+/*
  * get_first_workout_by_date is used to fetch first user exercises data
  * @params condition condition of aggregate pipeline.
  * @return  status 0 - If any internal error occured while fetching user exercises data, with error

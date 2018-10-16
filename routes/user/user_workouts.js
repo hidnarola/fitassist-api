@@ -276,6 +276,8 @@ router.post("/day", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/workout", async (req, res) => {
+  console.log('new ex added api claled');
+
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var error = {};
@@ -591,10 +593,16 @@ router.post("/workout", async (req, res) => {
 
       if (workout_day.status == 1) {
         var workout_id = mongoose.Types.ObjectId(req.body.userWorkoutsId);
+        var tmp = await user_workout_helper.in_complete_master_workout({ _id: workout_id }, { isCompleted: 0 });
+        console.log('------------------------------------');
+        console.log('tmp => ', tmp);
+        console.log('------------------------------------');
+
         var resp_data = await get_respose_data_for_workout(
           workout_id,
           authUserId
         );
+
         if (resp_data.status === 1) {
           logger.trace("user workouts got successfully = ", resp_data);
           res.status(config.OK_STATUS).json(resp_data);
@@ -673,7 +681,10 @@ router.post("/assign_program", async (req, res) => {
   var masterCollectionObject;
   var childCollectionObject;
   var exForProgram;
-
+  var returnErrorObject = {
+    status: 0,
+    message: "no workout exercise available"
+  }
   var program_id = mongoose.Types.ObjectId(req.body.programId);
   var program_data = await user_program_helper.get_user_programs_in_details_for_assign(
     {
@@ -681,61 +692,70 @@ router.post("/assign_program", async (req, res) => {
     }
   );
 
-  var user_workouts_program = program_data.programs[0].user_workouts_program;
-  var user_workout_exercises_program =
-    program_data.programs[0].user_workout_exercises_program;
+  if (program_data &&
+    program_data.status === 1 &&
+    typeof program_data.programs != undefined &&
+    typeof program_data.programs[0] != undefined &&
+    typeof program_data.programs[0].user_workouts_program != undefined &&
+    program_data.programs[0].user_workouts_program.length > 0) {
 
-  for (let program of user_workouts_program) {
-    exForProgram = _.filter(
-      user_workout_exercises_program,
-      program_exercise => {
+    var user_workouts_program = program_data.programs[0].user_workouts_program;
+    var user_workout_exercises_program = program_data.programs[0].user_workout_exercises_program;
+
+    for (let program of user_workouts_program) {
+      exForProgram = _.filter(user_workout_exercises_program, program_exercise => {
         return (
-          program_exercise.userWorkoutsProgramId.toString() ===
-          program._id.toString()
+          program_exercise.userWorkoutsProgramId.toString() === program._id.toString()
         );
+      });
+
+      let newGeneratedDate = moment(date).utcOffset(0).add(program.day, "days");
+      masterCollectionObject = {
+        title: program.title,
+        userId: authUserId,
+        description: program.description,
+        type: program.type,
+        date: newGeneratedDate
+      };
+
+      var resp_data = await user_workout_helper.insert_user_workouts_day(
+        masterCollectionObject
+      );
+
+      childCollectionObject = [];
+      exForProgram.map(single => {
+        var newSingle = Object.assign({}, single);
+        delete newSingle._id;
+        delete newSingle.userWorkoutsProgramId;
+        newSingle.userWorkoutsId = resp_data.day._id;
+        newSingle.date = newGeneratedDate;
+        childCollectionObject.push(newSingle);
+      });
+
+      if (childCollectionObject.length > 0) {
+        childCollectionObject.map(async (_childCollectionObject) => {
+          resp_data = await user_workout_helper.insert_user_workouts_exercises(
+            _childCollectionObject,
+            authUserId
+          );
+        })
       }
-    );
-    let newGeneratedDate = moment(date).utcOffset(0).add(program.day, "days");
-    masterCollectionObject = {
-      title: program.title,
-      userId: authUserId,
-      description: program.description,
-      type: program.type,
-      date: newGeneratedDate
-    };
-
-    var resp_data = await user_workout_helper.insert_user_workouts_day(
-      masterCollectionObject
-    );
-
-    childCollectionObject = [];
-    exForProgram.map(single => {
-      var newSingle = Object.assign({}, single);
-      delete newSingle._id;
-      delete newSingle.userWorkoutsProgramId;
-      newSingle.userWorkoutsId = resp_data.day._id;
-      newSingle.date = newGeneratedDate;
-      childCollectionObject.push(newSingle);
-    });
-
-    if (childCollectionObject.length > 0) {
-      childCollectionObject.map(async (_childCollectionObject) => {
-        resp_data = await user_workout_helper.insert_user_workouts_exercises(
-          _childCollectionObject,
-          authUserId
-        );
-      })
     }
+
+    logger.trace("Assign user programs  API called");
+    if (resp_data.status === 1) {
+      logger.trace("user programs assigning successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    } else {
+      logger.error("Error occured while assigning user programs = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    }
+  } else {
+    logger.trace("no program available = ", program_data);
+    res.status(config.OK_STATUS).json(returnErrorObject);
   }
 
-  logger.trace("Assign user programs  API called");
-  if (resp_data.status == 0) {
-    logger.error("Error occured while assigning user programs = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user programs assigning successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
+
 });
 
 /**
