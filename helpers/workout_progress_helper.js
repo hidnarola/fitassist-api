@@ -151,6 +151,11 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 		},
 		{
 			$match: {
+				"exercise.isDeleted": 0
+			}
+		},
+		{
+			$match: {
 				"exercise.category": {
 					$in: condition.category
 				}

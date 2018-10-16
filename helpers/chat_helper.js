@@ -450,11 +450,17 @@ chat_helper.get_channel_id = async (userId, friendId) => {
     },
     ]);
     if (conversation) {
+      let friendshipStatus = "unknown"
       let friendStatus = await Friends.findOne(
         conversation_pair
       );
+      if (friendStatus) {
+        if (friendStatus.status === 2) {
+          friendshipStatus = "friend"
+        }
+      }
       let _conversation = conversation[0];
-      _conversation.friendshipStatus = (friendStatus && friendStatus.status) ? friendStatus.status : 0
+      _conversation.friendshipStatus = friendshipStatus
       return {
         status: 1,
         message: "channel found",
