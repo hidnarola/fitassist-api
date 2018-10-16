@@ -5,7 +5,6 @@ var friend_helper = {};
 
 /*
  * get_friends is used to fetch all friends data
- * 
  * @return  status 0 - If any internal error occured while fetching friends data, with error
  *          status 1 - If friends data found, with friends object
  *          status 2 - If friends not found, with appropriate message
@@ -500,14 +499,11 @@ friend_helper.send_friend_request = async friend_obj => {
 
 /*
  * approve_friend is used to approve friend 
- * 
  * @param   id         id of friend that need to be update
  * @param   friend_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in approving friend request, with error
  *          status  1 - If approving friend request updated successfully, with appropriate message
  *          status  2 - If approving friend request not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 friend_helper.approve_friend = async (id, friend_obj) => {
@@ -538,14 +534,11 @@ friend_helper.approve_friend = async (id, friend_obj) => {
 
 /*
  * reject_friend is used to reject friend requets 
- * 
  * @param   id         id of friend that need to be update
  * @param   friend_obj     JSON    object consist of all property that need to update
- * 
  * @return  status  0 - If any error occur in reject friend request, with error
  *          status  1 - If reject friend request updated successfully, with appropriate message
  *          status  2 - If reject friend request not updated, with appropriate message
- * 
  * @developed by "amc"
  */
 friend_helper.reject_friend = async id => {
@@ -574,7 +567,6 @@ friend_helper.reject_friend = async id => {
 
 /*
  * get_filtered_records is used to fetch all filtered data
- * 
  * @return  status 0 - If any internal error occured while fetching filtered data, with error
  *          status 1 - If filtered data found, with filtered object
  *          status 2 - If filtered not found, with appropriate message
@@ -627,7 +619,6 @@ friend_helper.get_filtered_records = async filter_obj => {
 
 /*
  * count_friends is used to count all friends data
- * 
  * @return  status 0 - If any internal error occured while couting friends data, with error
  *          status 1 - If friends data found, with friends object
  *          status 2 - If friends not found, with appropriate message
@@ -654,7 +645,6 @@ friend_helper.count_friends = async id => {
 
 /*
  * total_count_friends is used to count all friends data
- * 
  * @return  status 0 - If any internal error occured while couting friends data, with error
  *          status 1 - If friends data found, with friends object
  *          status 2 - If friends not found, with appropriate message
@@ -678,7 +668,6 @@ friend_helper.total_count_friends = async condititon => {
 
 /*
  * find is used to fetch all friends data
- * 
  * @return  status 0 - If any internal error occured while fetching friends data, with error
  *          status 1 - If friends data found, with friends object
  *          status 2 - If friends not found, with appropriate message
@@ -710,7 +699,6 @@ friend_helper.find = async id => {
 
 /*
  * checkFriend is used to check friend 
- * 
  * @return  status 0 - If any internal error occured while checking friend data, with error
  *          status 1 - If checking friend data found, with checking friend object
  *          status 2 - If checking friend not found, with appropriate message

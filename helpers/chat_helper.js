@@ -1,4 +1,5 @@
 var Conversations = require("./../models/conversations");
+var Friends = require("./../models/friends");
 var ConversationsReplies = require("./../models/conversations_replies");
 var mongoose = require("mongoose");
 var _ = require("underscore");
@@ -409,6 +410,28 @@ chat_helper.get_channel_id = async (userId, friendId) => {
       $unwind: "$friendId"
     },
     {
+      $lookup: {
+        from: 'user_settings',
+        localField: 'userId.authUserId',
+        foreignField: 'userId',
+        as: 'userSettings'
+      }
+    },
+    {
+      $unwind: "$userSettings"
+    },
+    {
+      $lookup: {
+        from: 'user_settings',
+        localField: 'friendId.authUserId',
+        foreignField: 'userId',
+        as: 'friendSettings'
+      }
+    },
+    {
+      $unwind: "$friendSettings"
+    },
+    {
       $group: {
         _id: "$_id",
         userData: {
@@ -416,16 +439,26 @@ chat_helper.get_channel_id = async (userId, friendId) => {
         },
         friendData: {
           $first: "$friendId"
+        },
+        userPreferences: {
+          $first: "$userSettings"
+        },
+        friendPreferences: {
+          $first: "$friendSettings"
         }
       }
-    }
+    },
     ]);
-
     if (conversation) {
+      let friendStatus = await Friends.findOne(
+        conversation_pair
+      );
+      let _conversation = conversation[0];
+      _conversation.friendshipStatus = (friendStatus && friendStatus.status) ? friendStatus.status : 0
       return {
         status: 1,
         message: "channel found",
-        channel: conversation[0]
+        channel: _conversation
       };
     } else {
       return {

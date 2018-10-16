@@ -115,7 +115,10 @@ myIo.init = function (server) {
 		 * @apiSuccess (Success 200) {JSON} channel channel of channel
 		 */
 		socket.on("get_channel_id", async function (data) {
-			var resp_data = {};
+			var resp_data = {
+				status: 0,
+				message: "error"
+			};
 			var user = users.get(data.userId);
 			var socketIds = user && user.socketIds && user.socketIds.length ? user.socketIds : [];
 			try {

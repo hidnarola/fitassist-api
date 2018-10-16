@@ -106,7 +106,7 @@ workout_progress_helper.graph_data = async (condition = {}, type = "flexibility"
 
 		if (progress && progress.length > 0) {
 			_.each(progress, function (o) {
-				o.date = moment(o.date).format("DD/MM/YYYY");
+				// o.date = moment(o.date).format("DD/MM/YYYY");
 			})
 			return {
 				status: 1,
