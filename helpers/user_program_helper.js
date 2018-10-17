@@ -341,16 +341,17 @@ user_program_helper.get_all_program_workouts_group_by = async (
 /*
  * get_user_programs is used to fetch all user program data
  * @params condition condition of aggregate pipeline.
+ * @params withExerciseCountCheck withExerciseCountCheck for check if program has exercise pipeline.
  * @return  status 0 - If any internal error occured while fetching user program data, with error
  *          status 1 - If user program data found, with user program object
  *          status 2 - If user program not found, with appropriate message
  */
 user_program_helper.get_user_programs = async (
   condition = {},
-  single = false
+  withExerciseCountCheck = false
 ) => {
   try {
-    var user_program = await UserPrograms.aggregate([
+    let aggregate = [
       {
         $match: condition
       },
@@ -416,23 +417,22 @@ user_program_helper.get_user_programs = async (
             $size: "$totalWorkouts"
           }
         }
-      }
-    ]);
-
+      },
+    ];
+    if (withExerciseCountCheck) {
+      aggregate.push({
+        $match: {
+          totalWorkouts: { $gt: 0 }
+        }
+      })
+    }
+    var user_program = await UserPrograms.aggregate(aggregate);
     if (user_program) {
-      if (!single) {
-        return {
-          status: 1,
-          message: "user programs found",
-          programs: user_program
-        };
-      } else {
-        return {
-          status: 1,
-          message: "user program found",
-          program: user_program[0]
-        };
-      }
+      return {
+        status: 1,
+        message: "user program found",
+        programs: user_program
+      };
     } else {
       return {
         status: 2,

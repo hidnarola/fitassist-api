@@ -49,7 +49,8 @@ router.get("/names", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   logger.trace("Get all user programs API called");
-  var resp_data = await user_program_helper.get_user_programs({});
+  var resp_data = await user_program_helper.get_user_programs({}, true);
+
 
   if (resp_data.status == 0) {
     logger.error("Error occured while fetching user programs = ", resp_data);
