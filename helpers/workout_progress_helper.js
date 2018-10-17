@@ -193,6 +193,7 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 		},
 		]);
 
+
 		if (progress && progress.length > 0) {
 			var returnArray = [];
 			var start_totalPostureExercises = 0;
@@ -211,8 +212,13 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				category = p.category;
 
 				var name = p.name;
-				var first = _.last(p.exercises);
-				var last = _.first(p.exercises);
+				var sortedData = _.sortBy(p.exercises, function (p) {
+					return p.createdAt;
+				});
+				p.exercises = sortedData;
+
+				var first = _.first(p.exercises);
+				var last = _.last(p.exercises);
 
 				var fieldCheckName = first.format;
 				tmp.subCategory = subCategory;
@@ -226,6 +232,7 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				if (category === "strength") {
 					var _first = first[fieldCheckName]; // first strength test data of user
 					var _last = last[fieldCheckName]; // last strength test data of user
+
 					switch (fieldCheckName) {
 						case "max_rep":
 							var firstKeys = Object.keys(_first); // key of _first record 
@@ -258,18 +265,18 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 					}
 					returnArray.push(tmp);
 				} else if (category === "flexibility") {
-					var lastDateOfTest = first.createdAt;
+					var firstDateOfTest = first.createdAt;
+					var lastDateOfTest = last.createdAt;
 					for (let x of p.exercises) {
-						if (x.createdAt.toString() == lastDateOfTest.toString()) {
+						if (x.createdAt.toString() == firstDateOfTest.toString()) {
 							start_totalFlexiblityExercises++;
 							if (x[fieldCheckName] == 1) {
 								start_totalFlexiblityPassedExercises++;
 							}
 						}
 					}
-					var firstDateOfTest = last.createdAt;
 					for (let x of p.exercises) {
-						if (x.createdAt.toString() == firstDateOfTest.toString()) {
+						if (x.createdAt.toString() == lastDateOfTest.toString()) {
 							end_totalFlexiblityExercises++;
 							if (x[fieldCheckName] == 1) {
 								end_totalFlexiblityPassedExercises++;
@@ -277,18 +284,18 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 						}
 					}
 				} else if (category === "posture") {
-					var lastDateOfTest = first.createdAt;
+					var firstDateOfTest = first.createdAt;
+					var lastDateOfTest = last.createdAt;
 					for (let x of p.exercises) {
-						if (x.createdAt.toString() == lastDateOfTest.toString()) {
+						if (x.createdAt.toString() == firstDateOfTest.toString()) {
 							start_totalPostureExercises++;
 							if (x[fieldCheckName] == 1) {
 								start_totalPosturePassedExercises++;
 							}
 						}
 					}
-					var firstDateOfTest = last.createdAt;
 					for (let x of p.exercises) {
-						if (x.createdAt.toString() == firstDateOfTest.toString()) {
+						if (x.createdAt.toString() == lastDateOfTest.toString()) {
 							end_totalPostureExercises++;
 							if (x[fieldCheckName] == 1) {
 								end_totalPosturePassedExercises++;

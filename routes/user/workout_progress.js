@@ -85,6 +85,8 @@ router.post("/", async (req, res) => {
         },
         category: category
       });
+
+
     } else if (req.body.category === "mobility") {
       resp_data = await workout_progress_helper.get_progress_detail({
         createdAt: {
@@ -96,6 +98,7 @@ router.post("/", async (req, res) => {
         },
         category: category
       });
+
       var flexibility = await workout_progress_helper.graph_data({
         createdAt: {
           createdAt: {
@@ -125,6 +128,7 @@ router.post("/", async (req, res) => {
           resp_data.progress.data.posture.graph_data = posture.progress
         } catch (error) { }
       }
+
     } else if (req.body.category === "endurance") {
       resp_data = await workout_progress_helper.user_endurance_test({
         createdAt: {
