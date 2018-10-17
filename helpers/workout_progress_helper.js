@@ -232,10 +232,9 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 				if (category === "strength") {
 					var _first = first[fieldCheckName]; // first strength test data of user
 					var _last = last[fieldCheckName]; // last strength test data of user
-
 					switch (fieldCheckName) {
 						case "max_rep":
-							var firstKeys = Object.keys(_first); // key of _first record 
+							var firstKeys = Object.keys(_first); // key of _first record
 							var lastKeys = Object.keys(_last); // key of _last record 
 							var keys = _.union(firstKeys, lastKeys); // union of both record 
 							var differenceData = {};
@@ -246,7 +245,7 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 										start: _first[key],
 										current: _last[key],
 										difference: diff,
-										percentageChange: (diff / _first[key] * 100),
+										percentageChange: parseFloat((diff / _first[key] * 100).toFixed(2)),
 									}
 								} else {
 									var diff = _last[key] ? _last[key] : 0 - _first[key] ? _first[key] : 0;
@@ -254,7 +253,7 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 										start: _first[key] ? _first[key] : 0,
 										current: _last[key] ? _last[key] : 0,
 										difference: diff,
-										percentageChange: (diff / _first[key] * 100),
+										percentageChange: parseFloat((diff / _first[key] * 100).toFixed(2)),
 									}
 								}
 							});
