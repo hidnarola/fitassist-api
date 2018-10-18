@@ -219,6 +219,36 @@ chat_helper.get_messages = async (userId, skip = null, limit = null) => {
 
 
 /*
+ * get_channel_data is used to get channel ID data
+ * @return  status 0 - If any internal error occured while fetching channel ID data with error
+ *          status 1 - If chat id data found, with chat messages object
+ *          status 2 - If chat id not found, with appropriate message
+ */
+chat_helper.get_channel_data = async (channelId) => {
+  try {
+    var channel = await Conversations.findOne(channelId);
+
+    if (channel) {
+      return {
+        status: 1,
+        message: "conversation channel found",
+        channel
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No privacy available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding privacy",
+      error: err
+    };
+  }
+};
+/*
  * get_setting_for_chat is used to get channel ID settings messages data
  * @return  status 0 - If any internal error occured while fetching chat messages's privacy data, with error
  *          status 1 - If chat messages data found, with chat messages object

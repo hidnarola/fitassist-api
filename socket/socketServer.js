@@ -253,7 +253,6 @@ myIo.init = function (server) {
 		 * @apiSuccess (Success 200) {JSON} resp_data resp_data of channel
 		 */
 		socket.on("get_user_conversation_by_channel", async function (data) {
-
 			var resp_data = {};
 			var decoded = jwtDecode(data.token);
 			var authUserId = decoded.sub;
@@ -270,15 +269,34 @@ myIo.init = function (server) {
 				}]
 			};
 
+
 			try {
 				resp_data = await chat_helper.get_conversation(authUserId, condition,
 					{ $skip: start },
 					{ $limit: limit });
+
 				let user_settings = await chat_helper.get_setting_for_chat({
 					_id: mongoose.Types.ObjectId(data.channel_id)
 				});
 
+				let get_channel_data = await chat_helper.get_channel_data({
+					_id: mongoose.Types.ObjectId(data.channel_id)
+				});
+
+				if (get_channel_data && get_channel_data.status === 1) {
+					let userId = get_channel_data.channel.userId;
+					let friendId = get_channel_data.channel.friendId;
+					var searchObject = { $or: [{ $and: [{ userId: userId }, { friendId: friendId }] }, { $and: [{ userId: friendId }, { friendId: userId }] }] };
+					let friendship_data = await friend_helper.checkFriend(searchObject);
+					var friendshipStatus = "unknown";
+					if (friendship_data && friendship_data.status === 1 && friendship_data.friends && friendship_data.friends.status === 2) {
+						friendshipStatus = "friend";
+					}
+				}
+
 				resp_data.user_settings = null;
+				resp_data.friendshipStatus = friendshipStatus;
+
 				if (user_settings && user_settings.status === 1) {
 					resp_data.user_settings = user_settings.privacy[0];
 				}
@@ -288,8 +306,6 @@ myIo.init = function (server) {
 				} else {
 					logger.trace("chat messages got successfully = ", resp_data);
 				}
-
-
 			} catch (error) {
 				resp_data.message = "Internal server error! please try again later.";
 				resp_data.status = 0;
