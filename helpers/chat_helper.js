@@ -134,17 +134,6 @@ chat_helper.get_messages = async (userId, skip = null, limit = null) => {
       },
       {
         $lookup: {
-          from: "user_settings",
-          foreignField: "friendId",
-          localField: "friendId.authUserId",
-          as: "friend_settings"
-        }
-      },
-      {
-        $unwind: "$friend_settings"
-      },
-      {
-        $lookup: {
           from: "users",
           foreignField: "authUserId",
           localField: "friendId",
@@ -153,6 +142,17 @@ chat_helper.get_messages = async (userId, skip = null, limit = null) => {
       },
       {
         $unwind: "$friendId"
+      },
+      {
+        $lookup: {
+          from: "user_settings",
+          foreignField: "userId",
+          localField: "friendId.authUserId",
+          as: "friend_settings"
+        }
+      },
+      {
+        $unwind: "$friend_settings"
       },
       {
         $sort: {
