@@ -96,11 +96,11 @@ router.get("/widgets/:username", async (req, res) => {
         },
         {
           $sort: {
-            createdAt: -1
+            _id: -1
           }
         },
         {
-          $limit: 5
+          $limit: 6
         }
       );
       if (badges.status === 1) {

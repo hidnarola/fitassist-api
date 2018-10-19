@@ -708,7 +708,7 @@ statistics_helper.get_overview_single_data = async (condition = {}, date = null)
       }
       w.fields.setTime = {
         total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
-        unit: "min"
+        unit: ""
       }
       w.fields.reps = {
         total: Math.round(totalReps),
@@ -928,7 +928,7 @@ statistics_helper.get_statistics_single_data = async (condition = {}, date = nul
       }
       w.fields.setTime = {
         total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
-        unit: "min"
+        unit: ""
       }
       w.fields.reps = {
         total: Math.round(totalReps),
@@ -1146,7 +1146,7 @@ statistics_helper.get_strength_single_graph_data = async (condition = {}) => {
       }
       w.fields.setTime = {
         total: moment.duration(totalSetTime, "seconds").format(formatStringForSetTime),
-        unit: "min"
+        unit: ""
       }
       w.fields.reps = {
         total: Math.round(totalReps),

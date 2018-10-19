@@ -25,7 +25,7 @@ var badges_assign_helper = {
  */
 badges_assign_helper.get_all_badges = async (condition = {}, sort = {
   $sort: {
-    createdAt: -1
+    _id: -1
   }
 }, limit = false) => {
   try {
@@ -88,6 +88,7 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {
     if (limit) {
       aggregate.push(limit);
     }
+
     var badges = await BadgesAssign.aggregate(aggregate);
     if (badges) {
       return {
