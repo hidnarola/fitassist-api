@@ -204,51 +204,49 @@ router.put("/", async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
-    var user_obj = {};
+    var user_obj = {
+      dateOfBirth: req.body.dateOfBirth ? req.body.dateOfBirth : null,
+      modifiedAt: new Date()
+    }
+    if (typeof req.body.lastName !== "undefined") {
+      user_obj.lastName = req.body.lastName;
+    }
+    if (typeof req.body.aboutMe !== "undefined") {
+      user_obj.aboutMe = req.body.aboutMe;
+    }
+    if (typeof req.body.workoutLocation !== "undefined") {
+      user_obj.workoutLocation = req.body.workoutLocation;
+    }
+    if (typeof req.body.height !== "undefined") {
+      user_obj.height = req.body.height;
+    }
+    if (typeof req.body.weight !== "undefined") {
+      user_obj.weight = req.body.weight;
+    }
     if (req.body.firstName) {
       user_obj.firstName = req.body.firstName;
     }
-    user_obj.lastName = req.body.lastName;
     if (req.body.mobileNumber) {
       user_obj.mobileNumber = req.body.mobileNumber;
     }
     if (req.body.gender) {
       user_obj.gender = req.body.gender;
     }
-    if (req.body.dateOfBirth) {
-      user_obj.dateOfBirth = req.body.dateOfBirth;
+    if (req.body.heightUnit) {
+      var height = await common_helper.unit_converter(
+        req.body.height,
+        req.body.heightUnit
+      );
+      user_obj.height = height.baseValue;
     }
-    // if (req.body.height) {
-    //   user_obj.height = req.body.height;
-    // }
-    // if (req.body.weight) {
-    //   user_obj.weight = req.body.weight;
-    // }
-    if (req.body.height) {
-      if (req.body.heightUnit) {
-        var height = await common_helper.unit_converter(
-          req.body.height,
-          req.body.heightUnit
-        );
-        user_obj.height = height.baseValue;
-      }
+    if (req.body.weightUnit) {
+      var weight = await common_helper.unit_converter(
+        req.body.weight,
+        req.body.weightUnit
+      );
+      user_obj.weight = weight.baseValue;
     }
-    if (req.body.weight) {
-      if (req.body.weightUnit) {
-        var weight = await common_helper.unit_converter(
-          req.body.weight,
-          req.body.weightUnit
-        );
-        user_obj.weight = weight.baseValue;
-      }
-    }
-    if (req.body.aboutMe) {
-      user_obj.aboutMe = req.body.aboutMe;
-    }
-    if (req.body.workoutLocation) {
-      user_obj.workoutLocation = req.body.workoutLocation;
-    }
-    user_obj.modifiedAt = new Date();
+
 
     let user = await user_helper.get_user_by_id(authUserId);
 
