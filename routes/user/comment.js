@@ -58,11 +58,7 @@ router.post("/", async (req, res) => {
         comment_data
       });
     } else {
-      var resp_data = await user_posts_helper.get_user_timeline_by_id({
-        _id: mongoose.Types.ObjectId(req.body.postId),
-        isDeleted: 0
-      });
-
+      var resp_data = await user_posts_helper.get_user_timeline_by_id({ _id: mongoose.Types.ObjectId(req.body.postId), isDeleted: 0 }, authUserId);
       if (resp_data.status == 0) {
         logger.error(
           "Error occured while commenting user timeline = ",
@@ -70,15 +66,7 @@ router.post("/", async (req, res) => {
         );
         return res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
       } else {
-        // var resp_data = await user_posts_helper.get_user_timeline_by_id({
-        //   _id: mongoose.Types.ObjectId(req.body.postId),
-        //   isDeleted: 0
-        // });
-
-        if (
-          authUserId.toString() !==
-          resp_data.timeline.created_by.authUserId.toString()
-        ) {
+        if (authUserId.toString() !== resp_data.timeline.created_by.authUserId.toString()) {
           var notificationObj = {
             senderId: authUserId,
             receiverId: resp_data.timeline.created_by.authUserId,

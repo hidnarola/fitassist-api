@@ -192,10 +192,7 @@ router.get("/:post_id", async (req, res) => {
   let _id = req.params.post_id;
   logger.trace("Get all user's timeline API called");
 
-  let resp_data = await user_posts_helper.get_user_timeline_by_id({
-    _id: mongoose.Types.ObjectId(_id),
-    isDeleted: 0
-  });
+  let resp_data = await user_posts_helper.get_user_timeline_by_id({ _id: mongoose.Types.ObjectId(_id), isDeleted: 0 }, authUserId);
 
   if (resp_data && resp_data.status === 1 &&
     resp_data.timeline &&
@@ -728,15 +725,7 @@ router.post("/", async (req, res) => {
                     user_timeline_data
                   );
                 } else {
-                  resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id(
-                    {
-                      _id: mongoose.Types.ObjectId(
-                        user_timeline_data.user_timeline._id
-                      ),
-                      isDeleted: 0
-                    }
-                  );
-
+                  resp_data_for_single_post = await user_posts_helper.get_user_timeline_by_id({ _id: mongoose.Types.ObjectId(user_timeline_data.user_timeline._id), isDeleted: 0 }, authUserId);
                   logger.error(
                     "successfully added timeline data = ",
                     user_timeline_data

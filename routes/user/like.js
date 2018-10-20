@@ -51,10 +51,7 @@ router.post("/", async (req, res) => {
       let like_data = await like_comment_helper.delete_like(like_obj);
 
       if (like_data.status === 1) {
-        var resp_data = await user_posts_helper.get_user_timeline_by_id({
-          _id: mongoose.Types.ObjectId(req.body.postId),
-          isDeleted: 0
-        });
+        var resp_data = await user_posts_helper.get_user_timeline_by_id({ _id: mongoose.Types.ObjectId(req.body.postId), isDeleted: 0 }, authUserId);
         if (resp_data.status == 1) {
           resp_data.message = "Post disliked";
           logger.trace("user like got successfully = ", resp_data);
@@ -75,10 +72,8 @@ router.post("/", async (req, res) => {
     } else {
       let like_data = await like_comment_helper.insert_like(like_obj);
       if (like_data.status === 1) {
-        var resp_data = await user_posts_helper.get_user_timeline_by_id({
-          _id: mongoose.Types.ObjectId(req.body.postId),
-          isDeleted: 0
-        });
+        var resp_data = await user_posts_helper.get_user_timeline_by_id({ _id: mongoose.Types.ObjectId(req.body.postId), isDeleted: 0 }, authUserId);
+
         if (resp_data.status === 1) {
           resp_data.message = "Post Liked";
           logger.trace("user like got successfully = ", resp_data);

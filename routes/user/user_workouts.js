@@ -276,8 +276,6 @@ router.post("/day", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/workout", async (req, res) => {
-  console.log('new ex added api claled');
-
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
   var error = {};
@@ -594,10 +592,6 @@ router.post("/workout", async (req, res) => {
       if (workout_day.status == 1) {
         var workout_id = mongoose.Types.ObjectId(req.body.userWorkoutsId);
         var tmp = await user_workout_helper.in_complete_master_workout({ _id: workout_id }, { isCompleted: 0 });
-        console.log('------------------------------------');
-        console.log('tmp => ', tmp);
-        console.log('------------------------------------');
-
         var resp_data = await get_respose_data_for_workout(
           workout_id,
           authUserId

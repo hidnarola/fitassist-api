@@ -350,10 +350,6 @@ router.post("/", async (req, res) => {
         }
       );
       if (activityFeed.status === 1) {
-        console.log('------------------------------------');
-        console.log('activityFeed => ', activityFeed);
-        console.log('------------------------------------');
-
         dashboard.data.activityFeed = activityFeed.timeline;
       } else {
         dashboard.data.activityFeed = [];
