@@ -661,6 +661,289 @@ user_post_helper.get_user_timeline_by_id = async condition => {
     };
   }
 };
+
+/*
+ * get_activity_feed is used to fetch all user's timeline data
+ * @return  status 0 - If any internal error occured while fetching user's post photos data, with error
+ *          status 1 - If user's post photos data found, with user's post photos object
+ *          status 2 - If user's post photos not found, with appropriate message
+ */
+user_post_helper.get_activity_feed = async condition => {
+  try {
+    var timeline = await UserTimeline.aggregate([
+      {
+        $match: condition
+      },
+      {
+        $lookup: {
+          from: "user_progress_photos",
+          localField: "progressPhotoId",
+          foreignField: "_id",
+          as: "user_progress_photos"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user_progress_photos",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "user_posts",
+          localField: "postPhotoId",
+          foreignField: "_id",
+          as: "user_posts"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user_posts",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "user_posts_images",
+          localField: "user_posts._id",
+          foreignField: "postId",
+          as: "user_post_images"
+        }
+      },
+      {
+        $unwind: {
+          path: "$user_post_images",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "authUserId",
+          as: "users"
+        }
+      },
+      {
+        $unwind: {
+          path: "$users",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      //new added code
+      {
+        $lookup: {
+          from: "user_settings",
+          localField: "users.authUserId",
+          foreignField: "userId",
+          as: "owner_by_settings"
+        }
+      },
+      {
+        $unwind: {
+          path: "$owner_by_settings",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      //new added code
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "authUserId",
+          as: "created_by"
+        }
+      },
+      {
+        $unwind: {
+          path: "$created_by",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "postId",
+          as: "likes"
+        }
+      },
+      {
+        $unwind: {
+          path: "$likes",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: {
+          "likes.createdAt": 1
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "likes.userId",
+          foreignField: "authUserId",
+          as: "likesDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$likesDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "postId",
+          as: "comments"
+        }
+      },
+      {
+        $unwind: {
+          path: "$comments",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "comments.userId",
+          foreignField: "authUserId",
+          as: "commentsDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$commentsDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: {
+          "comments.createdAt": 1
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          progress_photos: {
+            $addToSet: "$user_progress_photos"
+          },
+          post_images: {
+            $addToSet: "$user_post_images"
+          },
+          tag_line: {
+            $first: "$tagLine"
+          },
+          type: {
+            $first: "$type"
+          },
+          progress_description: {
+            $first: "$user_progress_photos.description"
+          },
+          post_description: {
+            $first: "$user_posts.description"
+          },
+          created_by: {
+            $first: {
+              authUserId: "$created_by.authUserId",
+              firstName: "$created_by.firstName",
+              lastName: "$created_by.lastName",
+              avatar: "$created_by.avatar",
+              username: "$created_by.username"
+            }
+          },
+          owner_by: {
+            $first: {
+              authUserId: "$users.authUserId",
+              firstName: "$users.firstName",
+              lastName: "$users.lastName",
+              avatar: "$users.avatar",
+              username: "$users.username",
+              userPreferences: "$owner_by_settings"//new added line for privacy
+            }
+          },
+          privacy: {
+            $first: "$user_posts.privacy"
+          },
+          createdAt: {
+            $first: "$createdAt"
+          },
+          likes: {
+            $addToSet: {
+              _id: "$likes._id",
+              authUserId: "$likesDetails.authUserId",
+              firstName: "$likesDetails.firstName",
+              lastName: "$likesDetails.lastName",
+              avatar: "$likesDetails.avatar",
+              username: "$likesDetails.username",
+              create_date: "$likes.createdAt"
+            }
+          },
+          comments: {
+            $addToSet: {
+              _id: "$comments._id",
+              authUserId: "$commentsDetails.authUserId",
+              firstName: "$commentsDetails.firstName",
+              lastName: "$commentsDetails.lastName",
+              avatar: "$commentsDetails.avatar",
+              username: "$commentsDetails.username",
+              comment: "$comments.comment",
+              create_date: "$comments.createdAt"
+            }
+          }
+        }
+      }
+    ]);
+    if (timeline && timeline.length != 0) {
+      _.each(timeline, t => {
+        t.friendshipStatus = "friend";
+        var likes = [];
+        var comments = [];
+        _.each(t.likes, like => {
+          if (Object.keys(like).length > 0) {
+            likes.push(like);
+          }
+        });
+
+        _.each(t.comments, comment => {
+          if (Object.keys(comment).length > 0) {
+            comments.push(comment);
+          }
+        });
+        t.likes = likes;
+        t.comments = comments;
+      });
+
+      var tmp = _.sortBy(timeline[0].comments, function (o) {
+        return o.create_date;
+      });
+
+      timeline[0].comments = tmp.reverse();
+
+      return {
+        status: 1,
+        message: "User timeline found",
+        timeline: timeline
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No user timeline available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user timeline",
+      error: err
+    };
+  }
+};
 /*
  * get_user_timeline is used to fetch all user's timeline data
  * @return  status 0 - If any internal error occured while fetching user's post photos data, with error 
@@ -941,7 +1224,6 @@ user_post_helper.get_user_timeline = async (
 
 /*
  * get_user_post_photo_by_id is used to fetch all user's post photos
- * 
  * @return  status 0 - If any internal error occured while fetching user's post photos data, with error
  *          status 1 - If user's post photos data found, with user's post photos object
  *          status 2 - If user's post photos not found, with appropriate message
