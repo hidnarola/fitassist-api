@@ -242,17 +242,17 @@ workout_progress_helper.get_progress_detail = async (condition = {}) => {
 								if (_first[key] && _last[key]) {
 									var diff = _last[key] - _first[key]; // difference between start and current reps data
 									differenceData[key] = {
-										start: _first[key],
-										current: _last[key],
-										difference: diff,
+										start: parseFloat((_first[key]).toFixed(2)),
+										current: parseFloat((_last[key]).toFixed(2)),
+										difference: parseFloat((diff).toFixed(2)),
 										percentageChange: parseFloat((diff / _first[key] * 100).toFixed(2)),
 									}
 								} else {
 									var diff = _last[key] ? _last[key] : 0 - _first[key] ? _first[key] : 0;
 									differenceData[key] = {
-										start: _first[key] ? _first[key] : 0,
-										current: _last[key] ? _last[key] : 0,
-										difference: diff,
+										start: _first[key] ? parseFloat((_first[key]).toFixed(2)) : 0,
+										current: _last[key] ? parseFloat((_last[key]).toFixed(2)) : 0,
+										difference: parseFloat((diff).toFixed(2)),
 										percentageChange: parseFloat((diff / _first[key] * 100).toFixed(2)),
 									}
 								}
@@ -409,9 +409,9 @@ workout_progress_helper.user_endurance_test = async (condition, type) => {
 				var checkField = first.format;
 				returnObj.name = first.test_exercises.name;
 				returnObj.unit = "min";
-				returnObj.start = first[checkField];
-				returnObj.current = last[checkField];
-				returnObj.difference = last[checkField] - first[checkField];
+				returnObj.start = parseFloat((first[checkField]).toFixed(2));
+				returnObj.current = parseFloat((last[checkField]).toFixed(2));
+				returnObj.difference = parseFloat((last[checkField] - first[checkField]).toFixed(2));
 				returnObj.percentageChange = parseFloat(((last[checkField] - first[checkField]) / first[checkField] * 100).toFixed(2));
 				returnArray.push(returnObj);
 			})
