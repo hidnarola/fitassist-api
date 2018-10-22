@@ -135,13 +135,6 @@ if (app.get("env") === "development") {
   });
 }
 
-
-app.get('*.js', function (req, res, next) {
-  req.url = req.url + '.gz';
-  res.set('Content-Encoding', 'gzip');
-  next();
-});
-
 // production error handler, no stacktraces leaked to user
 app.use(function (err, req, res, next) {
   res.status(err.status || 500);
