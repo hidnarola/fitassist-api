@@ -404,6 +404,11 @@ router.put("/photo", async (req, res) => {
   var base_url = config.BASE_URL;
   var dir = "./uploads/user";
   var filename = "user_" + new Date().getTime();
+  console.log('------------------------------------');
+  console.log('req.body.user_img => ', req.body.user_img);
+  console.log('req.body.user_img.length => ', req.body.user_img.length);
+  console.log('------------------------------------');
+
   var filepath = base64Img.imgSync(req.body.user_img, dir, filename);
   var filepath = filepath.replace(/\\/g, "/");
 
