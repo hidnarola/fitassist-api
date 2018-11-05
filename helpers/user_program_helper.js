@@ -1094,6 +1094,20 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                 }
             },
             {
+                $lookup: {
+                    from: "programs_rating",
+                    localField: "_id",
+                    foreignField: "programId",
+                    as: "programRatings"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$programRatings",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
                 $group: {
                     _id: "$_id",
                     name: {
@@ -1119,7 +1133,8 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                     },
                     totalWorkouts: {
                         $addToSet: "$programId"
-                    }
+                    },
+                    avgRating: { $avg: "$programRatings.rating" }
                 }
             },
             {
@@ -1132,6 +1147,7 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                     goal: 1,
                     level: 1,
                     workouts: '$totalWorkouts',
+                    rating: '$avgRating',
                     totalWorkouts: {
                         $size: "$totalWorkouts"
                     }
