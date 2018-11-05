@@ -47,6 +47,10 @@ user_post_helper.count_post = async id => {
  */
 user_post_helper.count_all_gallery_images = async (condition) => {
   try {
+    console.log('------------------------------------');
+    console.log('condition => ', condition);
+    console.log('------------------------------------');
+
     var count = await UserPost.aggregate([
       {
         $match: condition
@@ -68,6 +72,9 @@ user_post_helper.count_all_gallery_images = async (condition) => {
         }
       }
     ]);
+    console.log('------------------------------------');
+    console.log('count => ', count);
+    console.log('------------------------------------');
 
     return {
       status: 1,
@@ -100,6 +107,11 @@ user_post_helper.get_user_post_photos = async (
 ) => {
   try {
     var user_post_photos = await UserPost.aggregate([
+      {
+        $match: {
+          "isDeleted": 0
+        }
+      },
       {
         $lookup: {
           from: "users",

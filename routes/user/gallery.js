@@ -48,15 +48,18 @@ router.get("/:username/:skip/:limit/:sort?", async (req, res) => {
 
   if (resp_data.status === 1) {
     resp_data.total_records = 0;
-    var count = await user_posts_helper.count_all_gallery_images({
-      userId: authUserId,
-      isDeleted: 0,
-      "postType": "gallery"
-    });
-
-    if (count.status === 1) {
-      resp_data.total_records = count.count;
+    userId = resp_data.user_gallery_photos && resp_data.user_gallery_photos.length > 0 && resp_data.user_gallery_photos[0].userId ? resp_data.user_gallery_photos[0].userId : false;
+    if (userId) {
+      var count = await user_posts_helper.count_all_gallery_images({
+        userId: userId,
+        isDeleted: 0,
+        "postType": "gallery"
+      });
+      if (count.status === 1) {
+        resp_data.total_records = count.count;
+      }
     }
+
     logger.trace("user gallery photos got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
