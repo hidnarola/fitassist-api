@@ -338,5 +338,21 @@ module.exports = {
       "static_stretching"
     ],
     BALANCE: []
-  }
+  },
+  PROGRAM_PRIVACY_PRIVATE:'1',
+  PROGRAM_PRIVACY_PUBLIC:'0',
+  GOALS_OPTIONS:[
+    "gain_muscle",
+    "improve_mobility",
+    "lose_fat",
+    "gain_strength",
+    "gain_power",
+    "increase_endurance"
+  ],
+  PROGRAM_LEVEL_OPTIONS:[
+    "beginner",
+    "intermediate",
+    "advanced",
+    "expert"
+  ]
 };
