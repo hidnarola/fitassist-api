@@ -1514,8 +1514,11 @@ router.post("/delete/exercise", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/filter", async (req, res) => {
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
     let data = req.body;
     let filterData = user_program_helper.generateFilterObj(data);
+    filterData.authUserId = authUserId;
     logger.trace("Get all user programs API called");
     var resp_data = await user_program_helper.get_user_programs_filter(filterData);
     if (resp_data.status == 0) {

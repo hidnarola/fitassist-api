@@ -1134,6 +1134,9 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                     totalWorkouts: {
                         $addToSet: "$programId"
                     },
+                    programsRating:{
+                        $addToSet: "$programRatings"
+                    },
                     avgRating: { $avg: "$programRatings.rating" }
                 }
             },
@@ -1148,6 +1151,15 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                     level: 1,
                     workouts: '$totalWorkouts',
                     rating: '$avgRating',
+                    programsRating: {
+                        $filter: {
+                            input: "$programsRating",
+                            as: "progRate",
+                            cond: {
+                                $eq : ["$$progRate.userId", filterData.authUserId]
+                            }
+                        }
+                    },
                     totalWorkouts: {
                         $size: "$totalWorkouts"
                     }
