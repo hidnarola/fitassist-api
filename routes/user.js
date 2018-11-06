@@ -39,6 +39,7 @@ var widgets = require("./user/widgets");
 var user_settings = require("./user/user_settings");
 var change_password = require("./user/change_password");
 var flag_on_post = require("./user/flag_on_post");
+var programs_rating = require("./user/programs_rating");
 
 router.use("/measurement", isBlockedCheck, auth, body_measurement);
 router.use("/nutrition_preference", isBlockedCheck, auth, nutrition_preference);
@@ -77,7 +78,6 @@ router.use("/widgets", isBlockedCheck, auth, widgets);
 router.use("/user_settings", isBlockedCheck, auth, user_settings);
 router.use("/change_password", isBlockedCheck, auth, change_password);
 router.use("/flag_on_post", isBlockedCheck, auth, flag_on_post);
-
-
+router.use("/programs_rating", isBlockedCheck, auth, programs_rating);
 
 module.exports = router;
