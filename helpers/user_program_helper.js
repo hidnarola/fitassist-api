@@ -1160,6 +1160,9 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                             }
                         }
                     },
+                    programsRatingCount: {
+                        $size: "$programsRating"
+                    },
                     totalWorkouts: {
                         $size: "$totalWorkouts"
                     }
