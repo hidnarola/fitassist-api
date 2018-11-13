@@ -1134,10 +1134,10 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                     totalWorkouts: {
                         $addToSet: "$programId"
                     },
-                    programsRating:{
+                    programsRating: {
                         $addToSet: "$programRatings"
                     },
-                    avgRating: { $avg: "$programRatings.rating" }
+                    avgRating: {$avg: "$programRatings.rating"}
                 }
             },
             {
@@ -1156,7 +1156,7 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                             input: "$programsRating",
                             as: "progRate",
                             cond: {
-                                $eq : ["$$progRate.userId", filterData.authUserId]
+                                $eq: ["$$progRate.userId", filterData.authUserId]
                             }
                         }
                     },
@@ -1243,5 +1243,123 @@ function getFrequency(programs) {
     });
     return programs;
 }
+
+/*
+ * get_user_program_ratings is used to fetch all user program ratings data
+ * @params condition condition of aggregate pipeline.
+ * @return  status 0 - If any internal error occured while fetching user program data, with error
+ *          status 1 - If user program data found, with user program object
+ */
+user_program_helper.get_user_program_ratings = async condition => {
+    try {
+        var result = await UserPrograms.aggregate([
+            {
+                $match: condition
+            },
+            {
+                $lookup: {
+                    from: "programs_rating",
+                    foreignField: "programId",
+                    localField: "_id",
+                    as: "program_ratings"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$program_ratings",
+                    includeArrayIndex: "program_ratings_index",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    foreignField: "authUserId",
+                    localField: "program_ratings.userId",
+                    as: "program_rating_user"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$program_rating_user",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $addFields: {
+                    "program_ratings.userDetails": {
+                        _id: "$program_rating_user._id",
+                        firstName: "$program_rating_user.firstName",
+                        lastName: "$program_rating_user.lastName",
+                        email: "$program_rating_user.email",
+                        authUserId: "$program_rating_user.authUserId",
+                        username: "$program_rating_user.username",
+                        avatar: "$program_rating_user.avatar"
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    name: {
+                        $first: "$name"
+                    },
+                    description: {
+                        $first: "$description"
+                    },
+                    ownerUserId: {
+                        $first: "$userId"
+                    },
+                    ratings: {
+                        $addToSet: "$program_ratings"
+                    },
+                    ratingExists: {
+                        $first: {
+                            $cond: [
+                                {$gte: ["$program_ratings_index", 0]},
+                                true,
+                                false
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    ownerUserId: 1,
+                    ratings: {
+                        $cond: [
+                            {$eq: ["$ratingExists", true]},
+                            "$ratings",
+                            []
+                        ]
+                    }
+                }
+            }
+        ]);
+        console.log('result => ', result[0]);
+        if (result) {
+            return {
+                status: 1,
+                message: "Success",
+                program: result[0]
+            };
+        } else {
+            return {
+                status: 0,
+                message: "Error occured while finding user program"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while finding user program",
+            error: err
+        };
+    }
+};
 
 module.exports = user_program_helper;

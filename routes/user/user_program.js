@@ -293,6 +293,90 @@ router.get("/workout/:workout_id", async (req, res) => {
 });
 
 /**
+ * @api {get} /user/user_program/view_workout/:workout_id Get user's program by workout_id
+ * @apiName Get Group by workout
+ * @apiGroup  User Program
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {JSON} workouts JSON of user_program document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/view_workout/:workout_id", async (req, res) => {
+    var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
+
+    logger.trace("Get all user workout API called ID:" + workout_id);
+    var resp_data = await user_program_helper.get_all_program_workouts_group_by({
+        _id: workout_id
+    });
+    if (resp_data.status === 1) {
+        var related_date_data = await user_program_helper.get_user_programs_data(
+                {
+                    programId: mongoose.Types.ObjectId(resp_data.workouts.programId),
+                    day: resp_data.workouts.day
+                },
+                {
+                    _id: 1,
+                    programId: 1,
+                    title: 1,
+                    description: 1,
+                    day: 1,
+                    type: 1,
+                    userId: 1
+                }
+        );
+        var tmp = [];
+        var warmupExercises = resp_data.workouts.warmup;
+        warmupExercises.forEach(warmup => {
+            warmup.exercises.forEach(w => {
+                if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+                    tmp.push(w.exercises.mainMuscleGroup);
+                }
+            });
+        });
+        warmupExercises = resp_data.workouts.exercise;
+        warmupExercises.forEach(warmup => {
+            warmup.exercises.forEach(w => {
+                if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+                    tmp.push(w.exercises.mainMuscleGroup);
+                }
+            });
+        });
+        warmupExercises = resp_data.workouts.cooldown;
+        warmupExercises.forEach(warmup => {
+            warmup.exercises.forEach(w => {
+                if (tmp.indexOf(w.exercises.mainMuscleGroup) < 0) {
+                    tmp.push(w.exercises.mainMuscleGroup);
+                }
+            });
+        });
+        var bodypartsNames = await body_parts_helper.get_all_body_parts({
+            _id: {
+                $in: tmp
+            }
+        });
+        if (bodypartsNames.status == 1) {
+            bodypartsNames = _.pluck(bodypartsNames.bodyparts, "bodypart");
+        }
+        var workouts_stat = {
+            muscle_work:
+                    bodypartsNames && bodypartsNames.length > 0 ? bodypartsNames : []
+        };
+        resp_data.workouts_stat = workouts_stat ? workouts_stat : null;
+        if (related_date_data.status === 1) {
+            resp_data.workouts_list = related_date_data.program;
+        }
+        logger.trace("user program got successfully = ", resp_data);
+        res.status(config.OK_STATUS).json(resp_data);
+    } else {
+        logger.error("Error occured while fetching user program = ", resp_data);
+        res.status(config.INTERNAL_SERVER_ERROR).json({
+            status: 0,
+            message: "Invalid request",
+            error: null
+        });
+    }
+});
+
+/**
  * @api {post} /user/user_program/workout_delete Delete User workout
  * @apiName Delete User workout
  * @apiGroup  User Program
@@ -1569,6 +1653,30 @@ router.post("/filter", async (req, res) => {
     filterData.authUserId = authUserId;
     logger.trace("Get all user programs API called");
     var resp_data = await user_program_helper.get_user_programs_filter(filterData);
+    if (resp_data.status == 0) {
+        logger.error("Error occured while fetching user programs = ", resp_data);
+        res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+        logger.trace("user programs got successfully = ", resp_data);
+        res.status(config.OK_STATUS).json(resp_data);
+    }
+});
+
+
+/**
+ * @api {get} /user/user_program/rating Get user's program rating
+ * @apiName Get user's program rating
+ * @apiGroup  User Program
+ * @apiHeader {String} authorization User's unique access-key
+ * @apiSuccess (Success 200) {JSON} programs JSON of user_programs_rating document
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.get("/rating/:program_id", async (req, res) => {
+    let program_id = mongoose.Types.ObjectId(req.params.program_id);
+    logger.trace("Get all user programs API called");
+    let matchCondition = {_id: program_id};
+    var resp_data = await user_program_helper.get_user_program_ratings(matchCondition);
+
     if (resp_data.status == 0) {
         logger.error("Error occured while fetching user programs = ", resp_data);
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
