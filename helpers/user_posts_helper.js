@@ -47,10 +47,6 @@ user_post_helper.count_post = async id => {
  */
 user_post_helper.count_all_gallery_images = async (condition) => {
   try {
-    console.log('------------------------------------');
-    console.log('condition => ', condition);
-    console.log('------------------------------------');
-
     var count = await UserPost.aggregate([
       {
         $match: condition
@@ -72,10 +68,6 @@ user_post_helper.count_all_gallery_images = async (condition) => {
         }
       }
     ]);
-    console.log('------------------------------------');
-    console.log('count => ', count);
-    console.log('------------------------------------');
-
     return {
       status: 1,
       count: count.length
@@ -1340,5 +1332,36 @@ user_post_helper.delete_user_timeline_post = async (id, updateObj) => {
       error: err
     };
   }
+};
+
+/*
+ * delete_post_by_cond is used to delete user_post data based on condition
+ * @param   condition object javascript object equavilent to mongoose condition
+ * @return  status  0 - If any error occur in updating timeline, with error
+ *          status  1 - If timeline deleted successfully, with appropriate message
+ *          status  2 - If timeline not deleted, with appropriate message
+ * @developed by "amc"
+ */
+user_post_helper.delete_post_by_cond = async (condition) => {
+    try {
+        let result = await UserPost.remove(condition);
+        if (!result) {
+            return {
+                status: 2,
+                message: "post has not deleted"
+            };
+        } else {
+            return {
+                status: 1,
+                message: "post has been deleted"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while updating user post",
+            error: err
+        };
+    }
 };
 module.exports = user_post_helper;

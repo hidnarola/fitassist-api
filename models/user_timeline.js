@@ -22,16 +22,9 @@ var UserTimelineSchema = new Schema(
       ref: "user_posts",
       default: null
     },
-    exercise: {
+    workoutId: {
       type: mongoose.Schema.Types.ObjectId,
-      default: null
-    },
-    workout: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null
-    },
-    goal: {
-      type: mongoose.Schema.Types.ObjectId,
+      ref: "user_workouts",
       default: null
     },
     tagLine: {
@@ -44,9 +37,7 @@ var UserTimelineSchema = new Schema(
         "progress_photo",
         "gallery",
         "timeline",
-        "workout",
-        "goal",
-        "exercise"
+        "workout"
       ],
       default: null
     },
