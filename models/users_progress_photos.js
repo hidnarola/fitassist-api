@@ -5,14 +5,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var UserProgressPhotosSchema = new Schema({
-    userId: {type:String, ref: "users", field:"authUserId", required: true},
-    description: {type:String,default:null},
-    image: {type:String,required:true},
-    date: {type: Date, default: Date.now},
-    status:{type:Number,default:1},
-    isDeleted:{type:Number,default:0},
-    createdAt: {type: Date, default: Date.now},
-    modifiedAt: {type: Date, default: Date.now}
+    progressId: {type: Schema.Types.ObjectId, ref: "user_progress", field: "_id", required: true},
+    tags: [{type: String, default: []}],
+    image: {type: String, required: true}
 }, {versionKey: false});
 
 // Compile model from schema
