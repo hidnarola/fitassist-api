@@ -292,7 +292,7 @@ user_progress_photo_helper.get_user_progress_photo_by_id = async id => {
  */
 user_progress_photo_helper.get_first_and_last_user_progress_photos = async id => {
     try {
-        var user_progress_photos = await UserProgressPhotos.aggregate([
+        var user_progress_photos = await UserProgress.aggregate([
             {
                 $match: id
             },
