@@ -35,7 +35,7 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
 });
 
 /**
- * @api {get} /user/progress_photo/:username/:start?/:limit?:/:sort_by Get all
+ * @api {get} /user/progress_photo/:username/:start?/:limit?:/:sort_by? Get all
  * @apiName Get all
  * @apiGroup User Progress Photo
  * @apiDescription  username: user's username, start use for skip record. default is 0, limit is use to limit the records. default is : 10
@@ -43,7 +43,7 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
  * @apiSuccess (Success 200) {Array} user_progress_photos Array of user's progress_photos 's document
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
-router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
+router.get("/:username/:start?/:limit?/:sort_by?", async (req, res) => {
     var decoded = jwtDecode(req.headers["authorization"]);
     var authUserId = decoded.sub;
 
@@ -65,19 +65,14 @@ router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
     });
     if (resp_data.status === 1) {
         resp_data.total_records = 0;
-        var count = await user_progress_photos_helper.count_all_progress_photo({
-            userId: authUserId
-        });
+        var count = await user_progress_photos_helper.count_all_progress_photo({userId: authUserId});
         if (count.status === 1) {
             resp_data.total_records = count.count;
         }
         logger.trace("user progress photos got successfully = ", resp_data);
         res.status(config.OK_STATUS).json(resp_data);
     } else {
-        logger.error(
-                "Error occured while fetching get all user progress photos = ",
-                resp_data
-                );
+        logger.error("Error occured while fetching get all user progress photos = ", resp_data);
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     }
 });
@@ -91,10 +86,7 @@ router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:user_photo_id", async (req, res) => {
-    logger.trace(
-            "Get user progress photo by ID API called : ",
-            req.params.user_photo_id
-            );
+    logger.trace("Get user progress photo by ID API called : ", req.params.user_photo_id);
     var resp_data = await user_progress_photos_helper.get_user_progress_photo_by_id({
         _id: req.params.user_photo_id
     });

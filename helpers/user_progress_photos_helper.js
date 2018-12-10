@@ -13,9 +13,9 @@ user_progress_photo_helper.count_all_progress_photo = async (search_obj) => {
     try {
         let aggregateCond = [];
         if (search_obj) {
-            aggregateCond.concat([{$match: search_obj}]);
+            aggregateCond = aggregateCond.concat([{$match: search_obj}]);
         }
-        aggregateCond.concat([
+        aggregateCond = aggregateCond.concat([
             {
                 $lookup: {
                     from: "user_progress_photos",
