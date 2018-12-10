@@ -1278,17 +1278,7 @@ user_post_helper.delete_user_timeline_post = async (id, updateObj) => {
     var postPhotoId = timeline_data.postPhotoId;
 
     if (progressPhotoId) {
-      let user_progress_photo = await user_progress_photos_helper.delete_user_progress_photo(
-        {
-          _id: progressPhotoId
-        },
-        {
-          updateObj
-        },
-        {
-          new: true
-        }
-      );
+      let user_progress_photo = await user_progress_photos_helper.delete_user_progress_photo({_id: progressPhotoId});
     }
     if (postPhotoId) {
       await UserPostsImages.findOneAndUpdate(

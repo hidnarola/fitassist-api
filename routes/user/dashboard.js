@@ -398,8 +398,7 @@ router.post("/", async (req, res) => {
         if (widgets.widgets.progressPhoto) {
             var progressPhoto = await user_progress_photos_helper.get_first_and_last_user_progress_photos(
                     {
-                        userId: authUserId,
-                        isDeleted: 0
+                        userId: authUserId
                     }
             );
             if (progressPhoto.status === 1) {

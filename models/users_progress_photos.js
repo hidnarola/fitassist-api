@@ -1,12 +1,17 @@
 //Require Mongoose
 var mongoose = require('mongoose');
+let constant = require('../constant');
 
 //Define a schema
 var Schema = mongoose.Schema;
 
 var UserProgressPhotosSchema = new Schema({
+    userId: {type: String, ref: "users", field: "authUserId", required: true},
     progressId: {type: Schema.Types.ObjectId, ref: "user_progress", field: "_id", required: true},
-    tags: [{type: String, default: []}],
+    basic: {type: String, enum: [constant.PROGRESS_PHOTO_BASIC.front, constant.PROGRESS_PHOTO_BASIC.back, constant.PROGRESS_PHOTO_BASIC.side], required: true},
+    isolation: {type: Schema.Types.ObjectId, ref: "bodyparts", field: "_id", required: true},
+    posed: {type: String, default: null},
+    caption: {type: String, default: null},
     image: {type: String, required: true}
 }, {versionKey: false});
 

@@ -25,11 +25,8 @@ router.get("/latest_month_wise/:username/:limit?", async (req, res) => {
     }, {
         $limit: limit
     });
-    if (resp_data.status == 0) {
-        logger.error(
-                "Error occured while fetching get all user progress photos = ",
-                resp_data
-                );
+    if (resp_data.status === 0) {
+        logger.error("Error occured while fetching get all user progress photos = ", resp_data);
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     } else {
         logger.trace("user progress photos got successfully = ", resp_data);
@@ -56,8 +53,7 @@ router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
 
     logger.trace("Get all user's progress_photo API called");
     var resp_data = await user_progress_photos_helper.get_user_progress_photos({
-        username: req.params.username,
-        isDeleted: 0
+        username: req.params.username
     }, {
         $skip: start
     }, {
@@ -70,8 +66,7 @@ router.get("/:username/:start?/:limit?/:sort_by", async (req, res) => {
     if (resp_data.status === 1) {
         resp_data.total_records = 0;
         var count = await user_progress_photos_helper.count_all_progress_photo({
-            userId: authUserId,
-            isDeleted: 0
+            userId: authUserId
         });
         if (count.status === 1) {
             resp_data.total_records = count.count;
@@ -101,8 +96,7 @@ router.get("/:user_photo_id", async (req, res) => {
             req.params.user_photo_id
             );
     var resp_data = await user_progress_photos_helper.get_user_progress_photo_by_id({
-        _id: req.params.user_photo_id,
-        isDeleted: 0
+        _id: req.params.user_photo_id
     });
     if (resp_data.status == 0) {
         logger.error(
@@ -218,17 +212,11 @@ router.delete("/:photo_id", async (req, res) => {
     var decoded = jwtDecode(req.headers["authorization"]);
     var authUserId = decoded.sub;
     logger.trace("Delete user's progress photo API - Id = ", req.params.photo_id);
-    let nutrition_predata_data = await user_progress_photos_helper.delete_user_progress_photo({
-        userId: authUserId,
-        _id: req.params.photo_id
-    }, {
-        isDeleted: 1
-    });
-
-    if (nutrition_predata_data.status === 0) {
-        res.status(config.INTERNAL_SERVER_ERROR).json(nutrition_predata_data);
-    } else {
+    let nutrition_predata_data = await user_progress_photos_helper.delete_user_progress_photo({userId: authUserId, _id: req.params.photo_id});
+    if (nutrition_predata_data.status === 1) {
         res.status(config.OK_STATUS).json(nutrition_predata_data);
+    } else {
+        res.status(config.INTERNAL_SERVER_ERROR).json(nutrition_predata_data);
     }
 });
 
