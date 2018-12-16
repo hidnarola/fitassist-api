@@ -2,7 +2,6 @@ var UserProgress = require("./../models/users_progress");
 var UserProgressPhotos = require("./../models/users_progress_photos");
 var Users = require("./../models/users");
 var user_progress_photo_helper = {};
-const mongoose = require('mongoose');
 
 /*
  * count_all_progress_photo is used to count all user's progress photos
@@ -405,7 +404,7 @@ user_progress_photo_helper.delete_user_progress_photo = async (id) => {
 user_progress_photo_helper.deleteUserProgressById = async(_id) => {
     try {
         let cond = {_id};
-        let deleteResource = await UserProgressPhotos.deleteOne(cond);
+        let deleteResource = await UserProgress.deleteOne(cond);
         if (deleteResource) {
             return true;
         }

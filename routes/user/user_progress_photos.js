@@ -138,7 +138,7 @@ router.post("/", async (req, res) => {
             let progressPhotosDataArr = [];
             for (let pPD of progressPhotosData) {
                 let imgData = pPD.image;
-                let filename = "progress_" + new Date().getTime();
+                let filename = "user_progress_" + new Date().getTime();
                 let filepath = base64Img.imgSync(imgData, dir, filename);
                 filepath = filepath.replace(/\\/g, "/");
                 progressPhotosDataArr.push({
