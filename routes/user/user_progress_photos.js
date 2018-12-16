@@ -7,6 +7,7 @@ var jwtDecode = require("jwt-decode");
 var logger = config.logger;
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
+const base64Img = require('base64-img');
 
 /**
  * @api {get} /user/progress_photo/username/latest_month_wise/:limit? Get all Latest
@@ -115,80 +116,71 @@ router.get("/:user_photo_id", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/", async (req, res) => {
-    var decoded = jwtDecode(req.headers["authorization"]);
-    var authUserId = decoded.sub;
+    try {
+        var decoded = jwtDecode(req.headers["authorization"]);
+        var authUserId = decoded.sub;
 
-    var user_progress_photo_obj = {
-        userId: authUserId,
-        date: req.body.date
-    };
+        let userProgress = {
+            userId: authUserId,
+            description: typeof req.body.description !== 'undefined' ? req.body.description : '',
+            date: req.body.date
+        };
 
-    if (req.body.description) {
-        user_progress_photo_obj.description = req.body.description;
-    }
-
-    //image upload
-    var filename = [];
-    if (req.files && req.files["image"]) {
-        var files = req.files["image"].constructor === Array ? req.files["image"] : [req.files["image"]];
-        var dir = "./uploads/user_progress";
-        var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-        let validImageCount = 0;
-        let validImageUpload = 0;
-        for (let file of files) {
-            if (mimetype.indexOf(file.mimetype) != -1) {
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
-                }
-                extention = path.extname(file.name);
-                _filename = "user_progress_" + new Date().getTime() + extention;
-                await file.mv(dir + "/" + _filename, function (err) {
-                    if (err) {
-                        logger.error("There was an issue in uploading image");
-                    } else {
-                        logger.trace("image has been uploaded. Image name = ", _filename);
-                        filename.push(_filename);
-                        validImageUpload++;
-                    }
+        let userProgressRes = await user_progress_photos_helper.insert_user_progress(userProgress);
+        if (userProgressRes.status === 1) {
+            let userProgress = userProgressRes.user_progress_photo;
+            let userProgressId = userProgress._id;
+            let dir = "./uploads/user_progress";
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir);
+            }
+            let progressPhotosData = req.body.progressPhotosData;
+            let progressPhotosDataArr = [];
+            for (let pPD of progressPhotosData) {
+                let imgData = pPD.image;
+                let filename = "progress_" + new Date().getTime();
+                let filepath = base64Img.imgSync(imgData, dir, filename);
+                filepath = filepath.replace(/\\/g, "/");
+                progressPhotosDataArr.push({
+                    userId: authUserId,
+                    progressId: userProgressId,
+                    basic: pPD.basic ? pPD.basic : null,
+                    isolation: pPD.isolation ? pPD.isolation : null,
+                    posed: pPD.posed ? pPD.posed : null,
+                    caption: pPD.caption ? pPD.caption : null,
+                    image: filepath
                 });
-                validImageCount++;
             }
-        }
-        if (validImageUpload <= 0) {
-            res.send({status: config.MEDIA_ERROR_STATUS, err: "There was an issue in uploading image"});
-        } else if (validImageCount <= 0) {
-            logger.error("Image format is invalid");
-            res.send({status: config.VALIDATION_FAILURE_STATUS, err: "Image format is invalid"});
-        }
-    } else {
-        logger.info("Image not available to upload. Executing next instruction");
-        res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
-    }
-    console.log('filename => ', filename);
-    if (filename && filename.length > 0) {
-        for (let f of filename) {
-            user_progress_photo_obj.image = "uploads/user_progress/" + f;
-            let user_progress_photo_data = await user_progress_photos_helper.insert_user_progress_photo(user_progress_photo_obj);
-            //TIMELINE START
-            var timelineObj = {
-                userId: authUserId,
-                createdBy: authUserId,
-                progressPhotoId: user_progress_photo_data.user_progress_photo._id,
-                tagLine: "added a new progress photo",
-                type: "progress_photo",
-                privacy: req.body.privacy ? req.body.privacy : 3
-            };
-
-            let user_timeline_data = await user_timeline_helper.insert_timeline_data(timelineObj);
-
-            if (user_timeline_data.status === 0) {
-                logger.error("Error while inserting timeline data = ", user_timeline_data);
+            let userProgressPhotosRes = await user_progress_photos_helper.insert_user_progress_photo(progressPhotosDataArr);
+            if (userProgressPhotosRes.status === 1) {
+                var timelineObj = {
+                    userId: authUserId,
+                    createdBy: authUserId,
+                    progressPhotoId: userProgressId,
+                    tagLine: "added new progress photos",
+                    type: "progress_photo",
+                    privacy: req.body.privacy ? req.body.privacy : 3
+                };
+                let user_timeline_data = await user_timeline_helper.insert_timeline_data(timelineObj);
+                if (user_timeline_data.status === 0) {
+                    logger.error("Error while inserting timeline data = ", user_timeline_data);
+                } else {
+                    logger.error("successfully added timeline data = ", user_timeline_data);
+                }
+                let responseData = {status: 1, message: "Progress saved", data: userProgressRes};
+                res.status(config.OK_STATUS).json(responseData);
             } else {
-                logger.error("successfully added timeline data = ", user_timeline_data);
+                await user_progress_photos_helper.deleteUserProgressById(userProgressId);
+                let responseData = {status: 0, message: "Something went wrong while saving progress data", error: null};
+                res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
             }
+        } else {
+            let responseData = {status: 0, message: "Something went wrong while saving progress data", error: null};
+            res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
         }
-        //TIMELINE END
-        res.status(config.OK_STATUS).json(user_progress_photo_data);
+    } catch (error) {
+        let responseData = {status: 0, message: "Something went wrong while saving progress data", error: error};
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
     }
 });
 

@@ -12,7 +12,8 @@ var UserProgressPhotosSchema = new Schema({
     isolation: {type: Schema.Types.ObjectId, ref: "bodyparts", field: "_id", required: true},
     posed: {type: String, default: null},
     caption: {type: String, default: null},
-    image: {type: String, required: true}
+    image: {type: String, required: true},
+    createdAt: {type: Date, default: Date.now}
 }, {versionKey: false});
 
 // Compile model from schema
