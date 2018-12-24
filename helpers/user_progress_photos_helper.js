@@ -119,6 +119,7 @@ user_progress_photo_helper.get_user_progress_photos = async (search_obj, start, 
                     userId: "$userId",
                     date: "$date",
                     image: "$user_progress_photos.image",
+                    category: "$user_progress_photos.category",
                     basic: "$user_progress_photos.basic",
                     isolation: "$user_progress_photos.isolation",
                     posed: "$user_progress_photos.posed",
@@ -411,6 +412,47 @@ user_progress_photo_helper.deleteUserProgressById = async(_id) => {
         return false;
     } catch (error) {
         return false;
+    }
+};
+
+user_progress_photo_helper.getUserProgressByDate = async (cond) => {
+    try {
+        let aggrCond = [
+            {
+                $match: cond
+            },
+            {
+                $lookup: {
+                    from: "user_progress_photos",
+                    foreignField: "progressId",
+                    localField: "_id",
+                    as: "user_progress_photos"
+                }
+            }
+        ];
+        let userProgress = await UserProgress.aggregate(aggrCond);
+        if (userProgress && userProgress.length > 0) {
+            let responseData = {
+                status: 1,
+                message: "User progress photos found",
+                data: userProgress
+            };
+            return responseData;
+        } else {
+            let responseData = {
+                status: 0,
+                message: "Something went wrong! please try again later.",
+                error: null
+            };
+            return responseData;
+        }
+    } catch (error) {
+        let responseData = {
+            status: 0,
+            message: "Something went wrong! please try again later.",
+            error: error
+        };
+        return responseData;
     }
 };
 

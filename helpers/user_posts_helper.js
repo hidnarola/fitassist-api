@@ -186,9 +186,22 @@ user_post_helper.get_user_timeline_by_id = async (condition, userId) => {
             },
             {
                 $lookup: {
-                    from: "user_progress_photos",
+                    from: "user_progress",
                     localField: "progressPhotoId",
                     foreignField: "_id",
+                    as: "user_progress"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$user_progress"
+                }
+            },
+            {
+                $lookup: {
+                    from: "user_progress_photos",
+                    localField: "user_progress._id",
+                    foreignField: "progressId",
                     as: "user_progress_photos"
                 }
             },

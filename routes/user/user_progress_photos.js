@@ -8,6 +8,8 @@ var logger = config.logger;
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
 const base64Img = require('base64-img');
+const constant = require("../../constant");
+const moment = require('moment');
 
 /**
  * @api {get} /user/progress_photo/username/latest_month_wise/:limit? Get all Latest
@@ -141,15 +143,25 @@ router.post("/", async (req, res) => {
                 let filename = "user_progress_" + new Date().getTime();
                 let filepath = base64Img.imgSync(imgData, dir, filename);
                 filepath = filepath.replace(/\\/g, "/");
-                progressPhotosDataArr.push({
+                let obj = {
                     userId: authUserId,
                     progressId: userProgressId,
-                    basic: pPD.basic ? pPD.basic : null,
-                    isolation: pPD.isolation ? pPD.isolation : null,
-                    posed: pPD.posed ? pPD.posed : null,
+                    category: pPD.category ? pPD.category : null,
                     caption: pPD.caption ? pPD.caption : null,
                     image: filepath
-                });
+                };
+                switch (pPD.category) {
+                    case constant.PROGRESS_PHOTO_CATEGORY.basic:
+                        obj['basic'] = pPD.subCategory ? pPD.subCategory : null;
+                        break;
+                    case constant.PROGRESS_PHOTO_CATEGORY.isolation:
+                        obj['isolation'] = pPD.subCategory ? pPD.subCategory : null;
+                        break;
+                    case constant.PROGRESS_PHOTO_CATEGORY.posed:
+                        obj['posed'] = pPD.subCategory ? pPD.subCategory : null;
+                        break;
+                }
+                progressPhotosDataArr.push(obj);
             }
             let userProgressPhotosRes = await user_progress_photos_helper.insert_user_progress_photo(progressPhotosDataArr);
             if (userProgressPhotosRes.status === 1) {
@@ -201,6 +213,50 @@ router.delete("/:photo_id", async (req, res) => {
         res.status(config.OK_STATUS).json(nutrition_predata_data);
     } else {
         res.status(config.INTERNAL_SERVER_ERROR).json(nutrition_predata_data);
+    }
+});
+
+/**
+ * @api {post} /user/progress_photo/get_by_date Add
+ * @apiName Add
+ * @apiGroup User Progress Photo
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization user's unique access-key
+ * @apiParam {File} image User's Progress Image
+ * @apiParam {String} description Description of progress
+ * @apiParam {Date} date date of progress photo
+ * @apiSuccess (Success 200) {JSON} user_progress_photo user_progress_photo details
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/get_by_date", async (req, res) => {
+    try {
+        var decoded = jwtDecode(req.headers["authorization"]);
+        var authUserId = decoded.sub;
+        let logDate = req.body.logDate;
+
+        var startdate = moment(logDate).utcOffset(0);
+        startdate.toISOString();
+        startdate.format();
+
+        var enddate = moment(logDate)
+                .utcOffset(0)
+                .add(23, "hours")
+                .add(59, "minutes");
+        enddate.toISOString();
+        enddate.format();
+
+        let cond = {
+            userId: authUserId,
+            date: {
+                $gte: new Date(startdate),
+                $lte: new Date(enddate)
+            }
+        };
+        let userProgress = await user_progress_photos_helper.getUserProgressByDate(cond);
+        res.status(config.OK_STATUS).json(userProgress);
+    } catch (error) {
+        let responseData = {status: 0, message: "Something went wrong while saving progress data", error: error};
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
     }
 });
 

@@ -355,6 +355,15 @@ module.exports = {
         "advanced",
         "expert"
     ],
+    PROGRESS_PHOTO_CATEGORY: {
+        basic: 'basic',
+        isolation: 'isolation',
+        posed: 'posed'
+    },
+    PROGRESS_PHOTO_POSED: {
+        front_lat_spread: 'front_lat_spread',
+        front_double_biceps: 'front_double_biceps'
+    },
     PROGRESS_PHOTO_BASIC: {
         front: 'front',
         side: 'side',

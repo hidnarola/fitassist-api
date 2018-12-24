@@ -12,6 +12,7 @@ var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
 var user_helper = require("../../helpers/user_helper");
 var body_fat_helper = require("../../helpers/body_fat_helper");
+var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
 /**
  * @api {post} /user/measurement/get_by_id_logdate Get User Measurement
@@ -40,35 +41,39 @@ router.post("/get_by_id_logdate", async (req, res) => {
         status: 1,
         message: "",
         measurement: {},
-        body_fat_log: {}
+        body_fat_log: {},
+        user_progress_photos: []
     };
     if (!errors) {
         var startdate = moment(logDate).utcOffset(0);
         startdate.toISOString();
         startdate.format();
-
+        
         var enddate = moment(logDate)
                 .utcOffset(0)
                 .add(23, "hours")
                 .add(59, "minutes");
         enddate.toISOString();
         enddate.format();
-
-        var resp_data = await measurement_helper.get_body_measurement_id({
+        
+        let cond = {
             userId: authUserId,
             logDate: {
                 $gte: startdate,
                 $lte: enddate
             }
-        });
-        var body_fat = await body_fat_helper.get_body_fat_logs({
+        };
+        
+        var resp_data = await measurement_helper.get_body_measurement_id(cond);
+        var body_fat = await body_fat_helper.get_body_fat_logs(cond);
+        let userProgress = await user_progress_photos_helper.getUserProgressByDate({
             userId: authUserId,
-            logDate: {
-                $gte: startdate,
-                $lte: enddate
+            date: {
+                $gte: new Date(startdate),
+                $lte: new Date(enddate)
             }
         });
-
+        
         if (resp_data.status != 0 || body_fat.status != 0) {
             measurement_obj.status = 1;
             measurement_obj.message = "Success";
@@ -77,6 +82,9 @@ router.post("/get_by_id_logdate", async (req, res) => {
             }
             if (body_fat.body_fat_log) {
                 measurement_obj.body_fat_log = body_fat.body_fat_log;
+            }
+            if (userProgress && userProgress.status === 1) {
+                measurement_obj.user_progress_photos = userProgress.data;
             }
             logger.trace("Get measurement by authUserId and logDate successfully");
             res.status(config.OK_STATUS).json(measurement_obj);
@@ -205,7 +213,7 @@ router.post("/", async (req, res) => {
             } catch (error) {
                 bodyMeasurement = "cm";
             }
-
+            
             try {
                 weight = measurement_unit_data.user_settings.weight;
             } catch (error) {
@@ -222,7 +230,7 @@ router.post("/", async (req, res) => {
             var calf = await common_helper.unit_converter(req.body.calf, bodyMeasurement);
             weight = await common_helper.unit_converter(req.body.weight, weight);
             var height = await common_helper.unit_converter(req.body.height, bodyMeasurement);
-
+            
             measurement_obj = {
                 userId: authUserId,
                 logDate: logDate,
@@ -241,22 +249,22 @@ router.post("/", async (req, res) => {
                 modifiedAt: new Date()
             };
         }
-
+        
         var user_height_and_weight_object = {
             weight: weight.baseValue,
             height: height.baseValue
         };
-
+        
         await user_helper.update_user_by_id(authUserId, user_height_and_weight_object);
-
+        
         var startdate = moment(logDate).utcOffset(0);
         startdate.toISOString();
         startdate.format();
-
+        
         var enddate = moment(logDate).utcOffset(0).add(23, "hours").add(59, "minutes");
         enddate.toISOString();
         enddate.format();
-
+        
         let condOfUserAndDate = {
             userId: authUserId,
             logDate: {
@@ -264,9 +272,9 @@ router.post("/", async (req, res) => {
                 $lte: enddate
             }
         };
-
+        
         var resp_data = await measurement_helper.get_body_measurement_id(condOfUserAndDate);
-
+        
         let bodyFatData = await body_fat_helper.get_body_fat_log_by_date(condOfUserAndDate);
         let bodyFat = {
             userId: authUserId,
@@ -286,7 +294,7 @@ router.post("/", async (req, res) => {
             // body fat add
             await body_fat_helper.save_body_fat_log(bodyFat);
         }
-
+        
         if (resp_data.status == 2 || resp_data.status == 0) {
             let measurement_data = await measurement_helper.insert_body_measurement(measurement_obj);
             if (measurement_data.status === 0) {
@@ -299,7 +307,7 @@ router.post("/", async (req, res) => {
             }
         } else {
             let measurement_data = await measurement_helper.update_body_measurement(resp_data.measurement._id, measurement_obj);
-
+            
             if (measurement_data.status === 0 || measurement_data.status === 2) {
                 logger.error("Error while updating measurement data = ", measurement_data);
                 return res.status(config.BAD_REQUEST).json(measurement_data);
@@ -338,13 +346,13 @@ router.post("/get_log_dates_by_date", async (req, res) => {
     };
     req.checkBody(schema);
     var errors = req.validationErrors();
-
+    
     if (!errors) {
         var authUserId = decoded.sub;
         var check = await moment(req.body.logDate).utc(0);
         var startCheck = await moment(check).subtract(2, "month");
         var endCheck = await moment(check).add(2, "month");
-
+        
         var log_data = await measurement_helper.get_logdata_by_userid({
             userId: authUserId,
             logDate: {
@@ -352,7 +360,7 @@ router.post("/get_log_dates_by_date", async (req, res) => {
                 $lte: endCheck
             }
         });
-
+        
         if (log_data.status != 0) {
             res.status(config.OK_STATUS).json(log_data);
         } else {
@@ -379,7 +387,7 @@ async function badgesAssign(authUserId) {
     var heartRate = await measurement_helper.heart_rate_data({
         userId: authUserId
     });
-
+    
     var body_measurement_data = {
         neck_measurement_gain: resp_data.measurement.neck,
         neck_measurement_loss: resp_data.measurement.neck,
@@ -406,8 +414,8 @@ async function badgesAssign(authUserId) {
         heart_rate_most: heartRate.heart_rate.heart_rate_most,
         heart_rate_least: heartRate.heart_rate.heart_rate_least,
     };
-
-
+    
+    
     var badges = await badge_assign_helper.badge_assign(
             authUserId,
             constant.BADGES_TYPE.BODY_MEASUREMENT.concat(
