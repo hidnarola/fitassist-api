@@ -36,7 +36,7 @@ user_progress_photo_helper.count_all_progress_photo = async (search_obj) => {
                 }
             }
         ]);
-        var resource = await UserProgress.aggregate(aggregateCond);
+        var resource = await UserProgressPhotos.aggregate(aggregateCond);
         if (resource && resource.length > 0) {
             return {
                 status: 1,
