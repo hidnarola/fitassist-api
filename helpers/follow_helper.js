@@ -392,20 +392,35 @@ follow_helper.total_count_follows = async condititon => {
     }
 };
 
-follow_helper.checkFollow = async id => {
+follow_helper.checkFollow = async (userId, followingId) => {
     try {
-        var response = await Follows.findOne(id);
-        if (response) {
+        var response = await Follows.aggregate([
+            {
+                $match: {
+                    $or: [
+                        {
+                            userId: userId,
+                            followingId: followingId
+                        },
+                        {
+                            userId: followingId,
+                            followingId: userId
+                        }
+                    ]
+                }
+            }
+        ]);
+        if (response && response.length > 0) {
             return {
                 status: 1,
                 message: "follows found",
-                follows: response
+                follows: response[0]
             };
         } else {
             return {
                 status: 2,
                 message: "No follows available",
-                follows: []
+                follows: null
             };
         }
     } catch (err) {
