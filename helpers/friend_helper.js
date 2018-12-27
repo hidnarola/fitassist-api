@@ -575,10 +575,10 @@ friend_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
     var searched_record_count = await Friends.aggregate([{
-      $match: filter_object.columnFilter
+      $match: filter_obj.columnFilter
     }]);
     var filtered_data = await Friends.aggregate([{
-      $match: filter_object.columnFilter
+      $match: filter_obj.columnFilter
     },
     {
       $sort: filter_obj.columnSort
@@ -587,7 +587,7 @@ friend_helper.get_filtered_records = async filter_obj => {
       $skip: skip
     },
     {
-      $limit: filter_object.pageSize
+      $limit: filter_obj.pageSize
     },
 
     ]);
