@@ -1,5 +1,7 @@
 const express = require("express");
 const async = require("async");
+var jwtDecode = require("jwt-decode");
+const mongoose = require('mongoose');
 
 const config = require("../../config");
 
@@ -8,94 +10,87 @@ const follow_helper = require("../../helpers/follow_helper");
 const router = express.Router();
 const logger = config.logger;
 
-router.post("/", async (req, res) => {
+router.post('/', async(req, res) => {
     try {
-        let schema = {
+        var schema = {
             followingId: {
                 notEmpty: true,
                 errorMessage: "Following id is required"
             }
         };
         req.checkBody(schema);
-        let errors = req.validationErrors();
+        var errors = req.validationErrors();
         if (!errors) {
-            const {followingId} = req.body;
-            let decoded = jwtDecode(req.headers["authorization"]);
-            let authUserId = decoded.sub;
-            if (authUserId === followingId) {
-                let responseObj = {
-                    status: 0,
-                    message: "You can't follow your self",
-                    error: "You can't follow your self"
-                };
-                return res.status(config.BAD_REQUEST).json(responseObj);
-            }
-            let followingRes = await follow_helper.checkFollow(authUserId);
-            let responseStatus = config.INTERNAL_SERVER_ERROR;
-            let responseObj = {};
-            if (followingRes && followingRes.status === 2) {
-                let dataToStore = {
-                    userId: authUserId,
-                    followingId: followingId
-                };
-                let insertedRes = await follow_helper.start_following(dataToStore);
-                if (insertedRes && insertedRes.status === 1) {
-                    // notification by socket remaining
-                    responseStatus = config.OK_STATUS;
-                    responseObj = {
-                        status: 1,
-                        message: "You started following",
-                        data: insertedRes.follow
-                    };
+            var decoded = jwtDecode(req.headers["authorization"]);
+            var authUserId = decoded.sub;
+            let {followingId} = req.body;
+            let requestData = {
+                followerId: authUserId,
+                followingId
+            };
+            let followingRes = await follow_helper.getFollowing(authUserId, followingId);
+            if (followingRes && followingRes.status === 1) {
+                let followingData = followingRes.data;
+                if (!followingData) {
+                    let response = await follow_helper.startFollowing(requestData);
+                    if (response && response.status === 1) {
+                        res.status(config.OK_STATUS).json(response);
+                    } else {
+                        res.status(config.BAD_REQUEST).json(response);
+                    }
                 } else {
-                    responseStatus = config.BAD_REQUEST;
-                    responseObj = {
+                    logger.error("Already following = ", null);
+                    let responseData = {
                         status: 0,
-                        message: "You are alread following/followed",
-                        error: null
+                        message: "You are already following.",
+                        error: ["You are already following."]
                     };
+                    res.status(config.BAD_REQUEST).json(responseData);
                 }
-            } else if (followingRes && followingRes.status === 1) {
-                responseStatus = config.BAD_REQUEST;
-                responseObj = {
-                    status: 0,
-                    message: "You are alread following/followed",
-                    error: null
-                };
             } else {
-                responseStatus = config.INTERNAL_SERVER_ERROR;
-                responseObj = {
+                logger.error("Finding following error = ", null);
+                let responseData = {
                     status: 0,
                     message: "Something went wrong! please try again later.",
-                    error: null
+                    error: ["Something went wrong! please try again later."]
                 };
+                res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
             }
-            res.status(responseStatus).json(responseObj);
         } else {
             logger.error("Validation Error = ", errors);
-            let responseObj = {
+            res.status(config.VALIDATION_FAILURE_STATUS).json({
                 status: 0,
-                message: errors,
-                errors: errors
-            };
-            res.status(config.VALIDATION_FAILURE_STATUS).json(responseObj);
+                message: errors
+            });
         }
     } catch (error) {
-        logger.error("Internal Server Error = ", errors);
-        let responseObj = {
+        let responseData = {
             status: 0,
-            message: "Something went wrong! Please try again later.",
-            errors: error
+            message: "Something went wrong! please try again later.",
+            error: ["Something went wrong! please try again later."]
         };
-        res.status(config.INTERNAL_SERVER_ERROR).json(responseObj);
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
     }
 });
 
-router.get("/", async () => {
+router.post('/stop', async(req, res) => {
     try {
-        
+        let {_id} = req.body;
+        _id = mongoose.Types.ObjectId(_id);
+        let requestData = {_id};
+        let response = await follow_helper.stopFollowing(requestData);
+        if (response && response.status === 1) {
+            res.status(config.OK_STATUS).json(response);
+        } else {
+            res.status(config.BAD_REQUEST).json(response);
+        }
     } catch (error) {
-        
+        let responseData = {
+            status: 0,
+            message: "Something went wrong! please try again later.",
+            error: ["Something went wrong! please try again later."]
+        };
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
     }
 });
 

@@ -5,7 +5,7 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var FollowSchema = new Schema({
-  userId: {
+  followerId: {
     type: String,
     ref: "users",
     field: "authUserId",

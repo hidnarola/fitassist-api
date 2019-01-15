@@ -11,6 +11,7 @@ var constant = require("../../constant");
 
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
+var follow_helper = require("../../helpers/follow_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
 var common_helper = require("../../helpers/common_helper");
@@ -23,18 +24,18 @@ var common_helper = require("../../helpers/common_helper");
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/preferences", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var resp_data = await user_settings_helper.get_setting({
-    userId: authUserId
-  });
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching user profile = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user profile got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
+    var resp_data = await user_settings_helper.get_setting({
+        userId: authUserId
+    });
+    if (resp_data.status == 0) {
+        logger.error("Error occured while fetching user profile = ", resp_data);
+        res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+        logger.trace("user profile got successfully = ", resp_data);
+        res.status(config.OK_STATUS).json(resp_data);
+    }
 });
 
 /**
@@ -45,19 +46,19 @@ router.get("/preferences", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
 
-  var resp_data = await user_helper.get_user_by({
-    authUserId: authUserId
-  });
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching user profile = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    logger.trace("user profile got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
+    var resp_data = await user_helper.get_user_by({
+        authUserId: authUserId
+    });
+    if (resp_data.status == 0) {
+        logger.error("Error occured while fetching user profile = ", resp_data);
+        res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+        logger.trace("user profile got successfully = ", resp_data);
+        res.status(config.OK_STATUS).json(resp_data);
+    }
 });
 
 /**
@@ -68,90 +69,99 @@ router.get("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.get("/:username", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var friendshipStatus = "";
-  var friendshipId = "";
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
+    var friendshipStatus = "";
+    var friendshipId = "";
+    let followingStatus = false;
+    let followingId = null;
 
-  var userdata = await friend_helper.find({
-    username: req.params.username
-  });
-  if (userdata.status == 2) {
-    return res.status(config.OK_STATUS).json({
-      status: 1,
-      message: "No username available",
-      user: []
+    var userdata = await friend_helper.find({
+        username: req.params.username
     });
-  }
-
-  var userAuthId = userdata.friends.authUserId;
-  if (userAuthId && typeof userAuthId !== "undefined") {
-    if (userAuthId === authUserId) {
-      friendshipStatus = "self";
-    } else {
-      friend_data = await friend_helper.checkFriend({
-        $or: [
-          {
-            $and: [
-              {
-                userId: authUserId
-              },
-              {
-                friendId: userAuthId
-              }
-            ]
-          },
-          {
-            $and: [
-              {
-                userId: userAuthId
-              },
-              {
-                friendId: authUserId
-              }
-            ]
-          }
-        ]
-      });
-
-      if (friend_data.status == 1) {
-        friendshipId = friend_data.friends._id;
-        if (friend_data.friends.status == 1) {
-          friend_data = await friend_helper.checkFriend({
-            userId: authUserId,
-            friendId: userAuthId
-          });
-          if (friend_data.status == 1) {
-            friendshipStatus = "request_sent";
-          } else {
-            friendshipStatus = "request_received";
-          }
-        } else {
-          friendshipStatus = "friend";
-        }
-      } else {
-        friendshipStatus = "unknown";
-      }
+    if (userdata.status == 2) {
+        return res.status(config.OK_STATUS).json({
+            status: 1,
+            message: "No username available",
+            user: []
+        });
     }
-  }
 
-  logger.trace(
-    "Get user profile by ID API called : ",
-    authUserId,
-    req.params.username
-  );
-  var resp_data = await user_helper.get_user_by({
-    username: req.params.username
-  });
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching user profile = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    resp_data.user.friendshipStatus = friendshipStatus;
-    resp_data.user.friendshipId = friendshipId;
-    logger.trace("user profile got successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
+    var userAuthId = userdata.friends.authUserId;
+    if (userAuthId && typeof userAuthId !== "undefined") {
+        if (userAuthId === authUserId) {
+            friendshipStatus = "self";
+        } else {
+            friend_data = await friend_helper.checkFriend({
+                $or: [
+                    {
+                        $and: [
+                            {
+                                userId: authUserId
+                            },
+                            {
+                                friendId: userAuthId
+                            }
+                        ]
+                    },
+                    {
+                        $and: [
+                            {
+                                userId: userAuthId
+                            },
+                            {
+                                friendId: authUserId
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            if (friend_data.status == 1) {
+                friendshipId = friend_data.friends._id;
+                if (friend_data.friends.status == 1) {
+                    friend_data = await friend_helper.checkFriend({
+                        userId: authUserId,
+                        friendId: userAuthId
+                    });
+                    if (friend_data.status == 1) {
+                        friendshipStatus = "request_sent";
+                    } else {
+                        friendshipStatus = "request_received";
+                    }
+                } else {
+                    friendshipStatus = "friend";
+                }
+            } else {
+                friendshipStatus = "unknown";
+            }
+        }
+    }
+
+    logger.trace("Get user profile by ID API called : ", authUserId, req.params.username);
+
+    let followingRes = await follow_helper.getFollowing(authUserId, userAuthId);
+    if (followingRes && followingRes.status === 1) {
+        if (followingRes.data) {
+            followingStatus = true;
+            followingId = followingRes.data._id;
+        }
+    }
+
+    var resp_data = await user_helper.get_user_by({
+        username: req.params.username
+    });
+    if (resp_data.status == 0) {
+        logger.error("Error occured while fetching user profile = ", resp_data);
+        res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+        resp_data.user.friendshipStatus = friendshipStatus;
+        resp_data.user.friendshipId = friendshipId;
+        resp_data.user.followingStatus = followingStatus;
+        resp_data.user.followingId = followingId;
+        logger.trace("user profile got successfully = ", resp_data);
+        res.status(config.OK_STATUS).json(resp_data);
+    }
 });
 
 /**
@@ -174,128 +184,128 @@ router.get("/:username", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
-  var schema = {
-    mobileNumber: {
-      notEmpty: true,
-      errorMessage: "Mobile number is required"
-    },
-    gender: {
-      notEmpty: true,
-      isIn: {
-        options: [["male", "female"]],
-        errorMessage: "Gender is invalid"
-      },
-      errorMessage: "Gender is required"
-    }
-  };
-  req
-    .checkBody("firstName")
-    .trim()
-    .notEmpty()
-    .withMessage("First name is required.")
-    .isLength({
-      min: 2,
-      max: 15
-    })
-    .withMessage("First name should be between 2 to 15 characters");
-
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-  if (!errors) {
-    var user_obj = {
-      dateOfBirth: req.body.dateOfBirth ? req.body.dateOfBirth : null,
-      modifiedAt: new Date()
-    }
-    if (typeof req.body.lastName !== "undefined") {
-      user_obj.lastName = req.body.lastName;
-    }
-    if (typeof req.body.aboutMe !== "undefined") {
-      user_obj.aboutMe = req.body.aboutMe;
-    }
-    if (typeof req.body.workoutLocation !== "undefined") {
-      user_obj.workoutLocation = req.body.workoutLocation;
-    }
-    if (typeof req.body.height !== "undefined") {
-      user_obj.height = req.body.height;
-    }
-    if (typeof req.body.weight !== "undefined") {
-      user_obj.weight = req.body.weight;
-    }
-    if (req.body.firstName) {
-      user_obj.firstName = req.body.firstName;
-    }
-    if (req.body.mobileNumber) {
-      user_obj.mobileNumber = req.body.mobileNumber;
-    }
-    if (req.body.gender) {
-      user_obj.gender = req.body.gender;
-    }
-    if (req.body.heightUnit) {
-      var height = await common_helper.unit_converter(
-        req.body.height,
-        req.body.heightUnit
-      );
-      user_obj.height = height.baseValue;
-    }
-    if (req.body.weightUnit) {
-      var weight = await common_helper.unit_converter(
-        req.body.weight,
-        req.body.weightUnit
-      );
-      user_obj.weight = weight.baseValue;
-    }
-
-
-    let user = await user_helper.get_user_by_id(authUserId);
-
-    if (user.status == 1) {
-      if (user.user.goal) {
-        if (user.user.goal.name != req.body.goal) {
-          if (req.body.goal) {
-            user_obj.goal = {
-              name: req.body.goal,
-              start: 0
-            };
-          } else {
-            user_obj.goal = null;
-          }
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
+    var schema = {
+        mobileNumber: {
+            notEmpty: true,
+            errorMessage: "Mobile number is required"
+        },
+        gender: {
+            notEmpty: true,
+            isIn: {
+                options: [["male", "female"]],
+                errorMessage: "Gender is invalid"
+            },
+            errorMessage: "Gender is required"
         }
-      } else {
-        if (req.body.goal) {
-          user_obj.goal = {
-            name: req.body.goal,
-            start: 0
-          };
+    };
+    req
+            .checkBody("firstName")
+            .trim()
+            .notEmpty()
+            .withMessage("First name is required.")
+            .isLength({
+                min: 2,
+                max: 15
+            })
+            .withMessage("First name should be between 2 to 15 characters");
+
+    req.checkBody(schema);
+    var errors = req.validationErrors();
+    if (!errors) {
+        var user_obj = {
+            dateOfBirth: req.body.dateOfBirth ? req.body.dateOfBirth : null,
+            modifiedAt: new Date()
+        }
+        if (typeof req.body.lastName !== "undefined") {
+            user_obj.lastName = req.body.lastName;
+        }
+        if (typeof req.body.aboutMe !== "undefined") {
+            user_obj.aboutMe = req.body.aboutMe;
+        }
+        if (typeof req.body.workoutLocation !== "undefined") {
+            user_obj.workoutLocation = req.body.workoutLocation;
+        }
+        if (typeof req.body.height !== "undefined") {
+            user_obj.height = req.body.height;
+        }
+        if (typeof req.body.weight !== "undefined") {
+            user_obj.weight = req.body.weight;
+        }
+        if (req.body.firstName) {
+            user_obj.firstName = req.body.firstName;
+        }
+        if (req.body.mobileNumber) {
+            user_obj.mobileNumber = req.body.mobileNumber;
+        }
+        if (req.body.gender) {
+            user_obj.gender = req.body.gender;
+        }
+        if (req.body.heightUnit) {
+            var height = await common_helper.unit_converter(
+                    req.body.height,
+                    req.body.heightUnit
+                    );
+            user_obj.height = height.baseValue;
+        }
+        if (req.body.weightUnit) {
+            var weight = await common_helper.unit_converter(
+                    req.body.weight,
+                    req.body.weightUnit
+                    );
+            user_obj.weight = weight.baseValue;
+        }
+
+
+        let user = await user_helper.get_user_by_id(authUserId);
+
+        if (user.status == 1) {
+            if (user.user.goal) {
+                if (user.user.goal.name != req.body.goal) {
+                    if (req.body.goal) {
+                        user_obj.goal = {
+                            name: req.body.goal,
+                            start: 0
+                        };
+                    } else {
+                        user_obj.goal = null;
+                    }
+                }
+            } else {
+                if (req.body.goal) {
+                    user_obj.goal = {
+                        name: req.body.goal,
+                        start: 0
+                    };
+                } else {
+                    user_obj.goal = null;
+                }
+            }
+        }
+
+        let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
+
+        if (user_data.status === 1) {
+            res.status(config.OK_STATUS).json(user_data);
+            await badgeAssign(authUserId);
+        } else if (user_data.status === 2) {
+            logger.error("Error while updating user data = ", user_data);
+            res.status(config.INTERNAL_SERVER_ERROR).json({
+                user_data
+            });
         } else {
-          user_obj.goal = null;
+            logger.error("Error while updating user data = ", user_data);
+            res.status(config.INTERNAL_SERVER_ERROR).json({
+                user_data
+            });
         }
-      }
-    }
-
-    let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
-
-    if (user_data.status === 1) {
-      res.status(config.OK_STATUS).json(user_data);
-      await badgeAssign(authUserId);
-    } else if (user_data.status === 2) {
-      logger.error("Error while updating user data = ", user_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json({
-        user_data
-      });
     } else {
-      logger.error("Error while updating user data = ", user_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json({
-        user_data
-      });
+        logger.error("Validation Error = ", errors);
+        res.status(config.VALIDATION_FAILURE_STATUS).json({
+            message: errors
+        });
     }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({
-      message: errors
-    });
-  }
 });
 
 /**
@@ -310,79 +320,79 @@ router.put("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/update_aboutme", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
 
-  var schema = {
-    // height: {
-    //   notEmpty: false,
-    //   errorMessage: "height is required",
-    //   isDecimal: {
-    //     errorMessage: "Please enter numeric value"
-    //   }
-    // },
-    // weight: {
-    //   notEmpty: false,
-    //   errorMessage: "weight is required",
-    //   isDecimal: {
-    //     errorMessage: "Please enter numeric value"
-    //   }
-    // }
-  };
-  req.checkBody(schema);
-  var errors = req.validationErrors();
+    var schema = {
+        // height: {
+        //   notEmpty: false,
+        //   errorMessage: "height is required",
+        //   isDecimal: {
+        //     errorMessage: "Please enter numeric value"
+        //   }
+        // },
+        // weight: {
+        //   notEmpty: false,
+        //   errorMessage: "weight is required",
+        //   isDecimal: {
+        //     errorMessage: "Please enter numeric value"
+        //   }
+        // }
+    };
+    req.checkBody(schema);
+    var errors = req.validationErrors();
 
-  if (!errors) {
-    var user_profile_obj = {};
-    if (req.body.aboutMe) {
-      user_profile_obj.aboutMe = req.body.aboutMe;
-    }
-    // if (req.body.weight) {
-    //   user_profile_obj.weight = req.body.weight;
-    // }
-    // if (req.body.height) {
-    //   user_profile_obj.height = req.body.height;
-    // }
-    user_profile_obj.height = 0;
-    user_profile_obj.weight = 0;
-    if (req.body.height) {
-      if (req.body.heightUnit) {
-        var height = await common_helper.unit_converter(
-          req.body.height,
-          req.body.heightUnit
-        );
-      }
-      user_profile_obj.height = height.baseValue;
-    }
-    if (req.body.weight) {
-      if (req.body.weightUnit) {
-        var weight = await common_helper.unit_converter(
-          req.body.weight,
-          req.body.weightUnit
-        );
-      }
-      user_profile_obj.weight = weight.baseValue;
-    }
+    if (!errors) {
+        var user_profile_obj = {};
+        if (req.body.aboutMe) {
+            user_profile_obj.aboutMe = req.body.aboutMe;
+        }
+        // if (req.body.weight) {
+        //   user_profile_obj.weight = req.body.weight;
+        // }
+        // if (req.body.height) {
+        //   user_profile_obj.height = req.body.height;
+        // }
+        user_profile_obj.height = 0;
+        user_profile_obj.weight = 0;
+        if (req.body.height) {
+            if (req.body.heightUnit) {
+                var height = await common_helper.unit_converter(
+                        req.body.height,
+                        req.body.heightUnit
+                        );
+            }
+            user_profile_obj.height = height.baseValue;
+        }
+        if (req.body.weight) {
+            if (req.body.weightUnit) {
+                var weight = await common_helper.unit_converter(
+                        req.body.weight,
+                        req.body.weightUnit
+                        );
+            }
+            user_profile_obj.weight = weight.baseValue;
+        }
 
-    let user_data = await user_helper.update_user_by_id(
-      authUserId,
-      user_profile_obj
-    );
-    if (user_data.status === 1) {
-      res.status(config.OK_STATUS).json(user_data);
-      var badges = await badgeAssign(authUserId);
+        let user_data = await user_helper.update_user_by_id(
+                authUserId,
+                user_profile_obj
+                );
+        if (user_data.status === 1) {
+            res.status(config.OK_STATUS).json(user_data);
+            var badges = await badgeAssign(authUserId);
+        } else {
+            logger.error("Error while updating user data = ", user_data);
+            return res.status(config.BAD_REQUEST).json({
+                user_data
+            });
+        }
     } else {
-      logger.error("Error while updating user data = ", user_data);
-      return res.status(config.BAD_REQUEST).json({
-        user_data
-      });
+        logger.error("Validation Error = ", errors);
+        res.status(config.VALIDATION_FAILURE_STATUS).json({
+            message: errors
+        });
     }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({
-      message: errors
-    });
-  }
 });
 
 /**
@@ -395,49 +405,50 @@ router.put("/update_aboutme", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/photo", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
 
-  var user_obj = {
-    avatar: ""
-  };
-  var base_url = config.BASE_URL;
-  var dir = "./uploads/user";
-  var filename = "user_" + new Date().getTime();
-  var filepath = base64Img.imgSync(req.body.user_img, dir, filename);
-  var filepath = filepath.replace(/\\/g, "/");
+    var user_obj = {
+        avatar: ""
+    };
+    var base_url = config.BASE_URL;
+    var dir = "./uploads/user";
+    var filename = "user_" + new Date().getTime();
+    var filepath = base64Img.imgSync(req.body.user_img, dir, filename);
+    var filepath = filepath.replace(/\\/g, "/");
 
-  if (filepath) {
-    user_obj.avatar = base_url + filepath;
+    if (filepath) {
+        user_obj.avatar = base_url + filepath;
 
-    resp_data = await user_helper.get_user_by_id(authUserId);
-    try {
-      fs.unlink(resp_data.user.avatar, function () { });
-    } catch (err) { }
-    let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
+        resp_data = await user_helper.get_user_by_id(authUserId);
+        try {
+            fs.unlink(resp_data.user.avatar, function () { });
+        } catch (err) {
+        }
+        let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
 
-    if (user_data.status === 1) {
-      logger.info("Updated user profile", user_data);
-      res.status(config.OK_STATUS).json(user_data);
-      common_helper
-        .sync_user_data_to_auth(authUserId, {
-          picture: user_obj.avatar
-        })
-        .then(function (response) { })
-        .catch(function (error) { });
-      var badges = await badgeAssign(authUserId);
+        if (user_data.status === 1) {
+            logger.info("Updated user profile", user_data);
+            res.status(config.OK_STATUS).json(user_data);
+            common_helper
+                    .sync_user_data_to_auth(authUserId, {
+                        picture: user_obj.avatar
+                    })
+                    .then(function (response) { })
+                    .catch(function (error) { });
+            var badges = await badgeAssign(authUserId);
+        } else {
+            logger.error("Error while updating user avatar = ", user_data);
+            res.status(config.INTERNAL_SERVER_ERROR).json({
+                user_data
+            });
+        }
     } else {
-      logger.error("Error while updating user avatar = ", user_data);
-      res.status(config.INTERNAL_SERVER_ERROR).json({
-        user_data
-      });
+        return res.status(config.BAD_REQUEST).json({
+            status: 2,
+            message: "no image selected"
+        });
     }
-  } else {
-    return res.status(config.BAD_REQUEST).json({
-      status: 2,
-      message: "no image selected"
-    });
-  }
 });
 
 /**
@@ -457,184 +468,184 @@ router.put("/photo", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/preferences", async (req, res) => {
-  var decoded = jwtDecode(req.headers["authorization"]);
-  var authUserId = decoded.sub;
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
 
-  var schema = {};
+    var schema = {};
 
-  if (req.body.distance) {
-    schema.distance = {
-      notEmpty: false,
-      isIn: {
-        options: [["km", "mile"]],
-        errorMessage: "distance is invalid"
-      },
-      errorMessage: "distance unit required"
-    };
-  }
-
-  if (req.body.weight) {
-    schema.weight = {
-      notEmpty: false,
-      isIn: {
-        options: [["kg", "lb"]],
-        errorMessage: "weight is invalid"
-      },
-      errorMessage: "weight unit required"
-    };
-  }
-
-  if (req.body.bodyMeasurement) {
-    schema.bodyMeasurement = {
-      notEmpty: false,
-      isIn: {
-        options: [["cm", "inch"]],
-        errorMessage: "body is invalid"
-      },
-      errorMessage: "body measurement unit required"
-    };
-  }
-
-  if (req.body.postAccessibility) {
-    schema.postAccessibility = {
-      notEmpty: false,
-      isDecimal: {
-        errorMessage: "post accessibility is invalid"
-      },
-      errorMessage: "post accessibility is required"
-    };
-  }
-
-  if (req.body.commentAccessibility) {
-    schema.commentAccessibility = {
-      notEmpty: false,
-      isDecimal: {
-        errorMessage: "comment accessibility is invalid"
-      },
-      errorMessage: "comment accessibility is required"
-    };
-  }
-
-  if (req.body.messageAccessibility) {
-    schema.messageAccessibility = {
-      notEmpty: false,
-      isDecimal: {
-        errorMessage: "message accessibility is invalid"
-      },
-      errorMessage: "message accessibility is required"
-    };
-  }
-
-  if (req.body.friendRequestAccessibility) {
-    schema.friendRequestAccessibility = {
-      notEmpty: false,
-      isDecimal: {
-        errorMessage: "friend request accessibility is invalid"
-      },
-      errorMessage: "friend request accessibility is required"
-    };
-  }
-
-  req.checkBody(schema);
-  var errors = req.validationErrors();
-
-  if (!errors) {
-    var setting_obj = {};
     if (req.body.distance) {
-      setting_obj.distance = req.body.distance;
+        schema.distance = {
+            notEmpty: false,
+            isIn: {
+                options: [["km", "mile"]],
+                errorMessage: "distance is invalid"
+            },
+            errorMessage: "distance unit required"
+        };
     }
 
     if (req.body.weight) {
-      setting_obj.weight = req.body.weight;
+        schema.weight = {
+            notEmpty: false,
+            isIn: {
+                options: [["kg", "lb"]],
+                errorMessage: "weight is invalid"
+            },
+            errorMessage: "weight unit required"
+        };
     }
 
     if (req.body.bodyMeasurement) {
-      setting_obj.bodyMeasurement = req.body.bodyMeasurement;
+        schema.bodyMeasurement = {
+            notEmpty: false,
+            isIn: {
+                options: [["cm", "inch"]],
+                errorMessage: "body is invalid"
+            },
+            errorMessage: "body measurement unit required"
+        };
     }
 
     if (req.body.postAccessibility) {
-      setting_obj.postAccessibility = req.body.postAccessibility;
+        schema.postAccessibility = {
+            notEmpty: false,
+            isDecimal: {
+                errorMessage: "post accessibility is invalid"
+            },
+            errorMessage: "post accessibility is required"
+        };
     }
 
     if (req.body.commentAccessibility) {
-      setting_obj.commentAccessibility = req.body.commentAccessibility;
+        schema.commentAccessibility = {
+            notEmpty: false,
+            isDecimal: {
+                errorMessage: "comment accessibility is invalid"
+            },
+            errorMessage: "comment accessibility is required"
+        };
     }
 
     if (req.body.messageAccessibility) {
-      setting_obj.messageAccessibility = req.body.messageAccessibility;
+        schema.messageAccessibility = {
+            notEmpty: false,
+            isDecimal: {
+                errorMessage: "message accessibility is invalid"
+            },
+            errorMessage: "message accessibility is required"
+        };
     }
 
     if (req.body.friendRequestAccessibility) {
-      setting_obj.friendRequestAccessibility =
-        req.body.friendRequestAccessibility;
+        schema.friendRequestAccessibility = {
+            notEmpty: false,
+            isDecimal: {
+                errorMessage: "friend request accessibility is invalid"
+            },
+            errorMessage: "friend request accessibility is required"
+        };
     }
 
-    setting_obj.modifiedAt = new Date();
+    req.checkBody(schema);
+    var errors = req.validationErrors();
 
-    let settings_data = await user_settings_helper.save_settings(
-      {
-        userId: authUserId
-      },
-      setting_obj
-    );
-    if (settings_data.status === 0) {
-      logger.error("Error while saving setting  = ", settings_data);
-      return res.status(config.BAD_REQUEST).json({
-        settings_data
-      });
+    if (!errors) {
+        var setting_obj = {};
+        if (req.body.distance) {
+            setting_obj.distance = req.body.distance;
+        }
+
+        if (req.body.weight) {
+            setting_obj.weight = req.body.weight;
+        }
+
+        if (req.body.bodyMeasurement) {
+            setting_obj.bodyMeasurement = req.body.bodyMeasurement;
+        }
+
+        if (req.body.postAccessibility) {
+            setting_obj.postAccessibility = req.body.postAccessibility;
+        }
+
+        if (req.body.commentAccessibility) {
+            setting_obj.commentAccessibility = req.body.commentAccessibility;
+        }
+
+        if (req.body.messageAccessibility) {
+            setting_obj.messageAccessibility = req.body.messageAccessibility;
+        }
+
+        if (req.body.friendRequestAccessibility) {
+            setting_obj.friendRequestAccessibility =
+                    req.body.friendRequestAccessibility;
+        }
+
+        setting_obj.modifiedAt = new Date();
+
+        let settings_data = await user_settings_helper.save_settings(
+                {
+                    userId: authUserId
+                },
+                setting_obj
+                );
+        if (settings_data.status === 0) {
+            logger.error("Error while saving setting  = ", settings_data);
+            return res.status(config.BAD_REQUEST).json({
+                settings_data
+            });
+        } else {
+            return res.status(config.OK_STATUS).json(settings_data);
+        }
     } else {
-      return res.status(config.OK_STATUS).json(settings_data);
+        logger.error("Validation Error = ", errors);
+        res.status(config.VALIDATION_FAILURE_STATUS).json({
+            message: errors
+        });
     }
-  } else {
-    logger.error("Validation Error = ", errors);
-    res.status(config.VALIDATION_FAILURE_STATUS).json({
-      message: errors
-    });
-  }
 });
 
 async function badgeAssign(authUserId) {
-  var user_data = await user_helper.get_user_by_id(authUserId);
-  if (user_data.status === 1) {
-    var data = user_data.user;
+    var user_data = await user_helper.get_user_by_id(authUserId);
+    if (user_data.status === 1) {
+        var data = user_data.user;
 
-    var percentage = 0;
-    for (const key of Object.keys(data)) {
-      if (data[key]) {
-        if (key == "gender") {
-          percentage += 10;
-        } else if (key == "dateOfBirth") {
-          percentage += 15;
-        } else if (key == "height") {
-          percentage += 10;
-        } else if (key == "weight") {
-          percentage += 10;
-        } else if (key == "avatar") {
-          percentage += 15;
-        } else if (key == "aboutMe") {
-          percentage += 10;
-        } else if (key == "lastName") {
-          percentage += 10;
-        } else if (key == "mobileNumber") {
-          percentage += 10;
-        } else if (key == "goal") {
-          percentage += 10;
+        var percentage = 0;
+        for (const key of Object.keys(data)) {
+            if (data[key]) {
+                if (key == "gender") {
+                    percentage += 10;
+                } else if (key == "dateOfBirth") {
+                    percentage += 15;
+                } else if (key == "height") {
+                    percentage += 10;
+                } else if (key == "weight") {
+                    percentage += 10;
+                } else if (key == "avatar") {
+                    percentage += 15;
+                } else if (key == "aboutMe") {
+                    percentage += 10;
+                } else if (key == "lastName") {
+                    percentage += 10;
+                } else if (key == "mobileNumber") {
+                    percentage += 10;
+                } else if (key == "goal") {
+                    percentage += 10;
+                }
+            }
         }
-      }
-    }
 
-    //badge assign
-    var badgeAssign = await badge_assign_helper.badge_assign(
-      authUserId,
-      constant.BADGES_TYPE.PROFILE,
-      {
-        percentage: percentage
-      }
-    );
-    return badgeAssign;
-  }
-  return {
-    status: 0
-  };
+        //badge assign
+        var badgeAssign = await badge_assign_helper.badge_assign(
+                authUserId,
+                constant.BADGES_TYPE.PROFILE,
+                {
+                    percentage: percentage
+                }
+        );
+        return badgeAssign;
+    }
+    return {
+        status: 0
+    };
 }
 module.exports = router;

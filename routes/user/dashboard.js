@@ -14,6 +14,7 @@ var workout_progress_helper = require("../../helpers/workout_progress_helper");
 var user_posts_helper = require("../../helpers/user_posts_helper");
 var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
+var follow_helper = require("../../helpers/follow_helper");
 var common_helper = require("../../helpers/common_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
 
@@ -335,6 +336,12 @@ router.post("/", async (req, res) => {
                     2
                     );
             var friendsIds = _.pluck(resp_data.friends, "authUserId");
+            var followingsRes = await follow_helper.getFollowings(authUserId);
+            if (followingsRes && followingsRes.status === 1 && followingsRes.data) {
+                followingsRes.data.map((o) => {
+                    friendsIds.push(o.followingId);
+                });
+            }
             var activityFeed = await user_posts_helper.get_activity_feed(
                     {
                         userId: {
