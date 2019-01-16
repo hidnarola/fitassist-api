@@ -194,7 +194,8 @@ user_post_helper.get_user_timeline_by_id = async (condition, userId) => {
             },
             {
                 $unwind: {
-                    path: "$user_progress"
+                    path: "$user_progress",
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
@@ -491,7 +492,8 @@ user_post_helper.get_user_timeline_by_id = async (condition, userId) => {
         } else {
             return {
                 status: 2,
-                message: "No user timeline available"
+                message: "No user timeline available",
+                timeline: null
             };
         }
     } catch (err) {

@@ -717,6 +717,9 @@ router.post("/", async (req, res) => {
                 let user_timeline_data = await user_timeline_helper.insert_timeline_data(
                   timelineObj
                 );
+        
+                console.log('timelineObj => ', timelineObj);
+                console.log('user_timeline_data => ', user_timeline_data);
 
                 if (user_timeline_data.status === 0) {
                   logger.error(
@@ -731,7 +734,6 @@ router.post("/", async (req, res) => {
                   );
                 }
                 //TIMELINE END
-
                 res.status(config.OK_STATUS).json({
                   status: 1,
                   message:
