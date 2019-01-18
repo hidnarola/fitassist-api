@@ -114,4 +114,22 @@ follow_helper.getFollowings = async (followerId) => {
     }
 };
 
+follow_helper.countFollowers = async (userId) => {
+    try {
+        let resource = await Follows.count({followingId: userId});
+        return resource;
+    } catch (error) {
+        return 0;
+    }
+};
+
+follow_helper.countFollowings = async (userId) => {
+    try {
+        let resource = await Follows.count({followerId: userId});
+        return resource;
+    } catch (error) {
+        return 0;
+    }
+};
+
 module.exports = follow_helper;

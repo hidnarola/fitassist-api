@@ -87,16 +87,7 @@ user_post_helper.count_all_gallery_images = async (condition) => {
  *          status 1 - If user's post photos data found, with user's post photos object
  *          status 2 - If user's post photos not found, with appropriate message
  */
-user_post_helper.get_user_post_photos = async (
-        username,
-        sort = {
-        $sort: {
-        createdAt: - 1
-        }
-        },
-        skip,
-        limit
-        ) => {
+user_post_helper.get_user_post_photos = async (username, sort = {$sort: {createdAt: - 1}}, skip, limit) => {
     try {
         var user_post_photos = await UserPost.aggregate([
             {
@@ -1050,8 +1041,6 @@ user_post_helper.get_user_timeline = async (
                 }
             }
         ]);
-
-        console.log('timeline => ', timeline);
 
         _.each(timeline, t => {
             var likes = [];

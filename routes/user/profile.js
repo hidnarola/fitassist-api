@@ -15,6 +15,7 @@ var follow_helper = require("../../helpers/follow_helper");
 var badge_assign_helper = require("../../helpers/badge_assign_helper");
 var user_settings_helper = require("../../helpers/user_settings_helper");
 var common_helper = require("../../helpers/common_helper");
+var user_workouts_helper = require("../../helpers/user_workouts_helper");
 
 /**
  * @api {get} /user/profile/preferences Get User Profile preferences
@@ -148,6 +149,7 @@ router.get("/:username", async (req, res) => {
         }
     }
 
+
     var resp_data = await user_helper.get_user_by({
         username: req.params.username
     });
@@ -155,10 +157,16 @@ router.get("/:username", async (req, res) => {
         logger.error("Error occured while fetching user profile = ", resp_data);
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     } else {
+        let totalFollowers = await follow_helper.countFollowers(resp_data.user.authUserId);
+        let totalFollowings = await follow_helper.countFollowings(resp_data.user.authUserId);
+        let totalWorkouts = await user_workouts_helper.countWorkouts(resp_data.user.authUserId);
         resp_data.user.friendshipStatus = friendshipStatus;
         resp_data.user.friendshipId = friendshipId;
         resp_data.user.followingStatus = followingStatus;
         resp_data.user.followingId = followingId;
+        resp_data.user.totalFollowers = totalFollowers;
+        resp_data.user.totalFollowings = totalFollowings;
+        resp_data.user.totalWorkouts = totalWorkouts;
         logger.trace("user profile got successfully = ", resp_data);
         res.status(config.OK_STATUS).json(resp_data);
     }

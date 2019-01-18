@@ -456,4 +456,13 @@ user_progress_photo_helper.getUserProgressByDate = async (cond) => {
     }
 };
 
+user_progress_photo_helper.countTotalUsersProgresPhotos = async (userId) => {
+    try {
+        const resource = await UserProgressPhotos.count({userId});
+        return resource;
+    } catch (error) {
+        return 0;
+    }
+};
+
 module.exports = user_progress_photo_helper;
