@@ -1730,4 +1730,45 @@ router.post("/create_program_from_calendar", async (req, res) => {
         res.status(config.INTERNAL_SERVER_ERROR).json(responseObj);
     }
 });
+
+router.post("/append_program_from_calendar", async (req, res) => {
+    try {
+        const decoded = jwtDecode(req.headers["authorization"]);
+        const authUserId = decoded.sub;
+        const {selectedIds, programId} = req.body;
+        console.log('programId => ', programId);
+        let startDay = 0;
+        startDay = await user_program_helper.getProgramLastDay(programId);
+        if (startDay > 0) {
+            startDay++;
+        }
+        const programRes = await user_program_helper.appendProgramWorkoutsFromIds(programId, selectedIds, startDay);
+        if (programRes && programRes.status === 1) {
+            logger.trace("User program was appended = ", programRes);
+            let responseObj = {
+                status: 1,
+                message: "Program appended",
+                data: null
+            };
+            res.status(config.OK_STATUS).json(responseObj);
+        } else {
+            logger.trace("user programs creation error = ", null);
+            let responseObj = {
+                status: 0,
+                message: "Something went wrong! please try again.",
+                error: ["Something went wrong! please try again."]
+            };
+            res.status(config.BAD_REQUEST).json(responseObj);
+        }
+    } catch (error) {
+        logger.trace("user programs creation error = ", error);
+        let responseObj = {
+            status: 0,
+            message: "Something went wrong! please try again.",
+            error: ["Something went wrong! please try again."]
+        };
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseObj);
+    }
+});
+
 module.exports = router;

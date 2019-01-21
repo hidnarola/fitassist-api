@@ -1441,4 +1441,103 @@ user_program_helper.createProgramWorkoutsFromIds = async (programId, workoutIds)
     }
 };
 
+user_program_helper.appendProgramWorkoutsFromIds = async (programId, workoutIds, startDay) => {
+    try {
+        let _workoutIds = workoutIds.map((o) => {
+            return mongoose.Types.ObjectId(o);
+        });
+        let cond = [
+            {
+                $match: {
+                    _id: {$in: _workoutIds}
+                }
+            },
+            {
+                $lookup: {
+                    from: "user_workout_exercises",
+                    foreignField: "userWorkoutsId",
+                    localField: "_id",
+                    as: "user_workout_exercises"
+                }
+            },
+            {
+                $sort: {
+                    date: 1
+                }
+            }
+        ];
+        const userWorkouts = await UserWorkouts.aggregate(cond);
+        let day = startDay;
+        let i = 0;
+        let prevDate = null;
+        for (let o of userWorkouts) {
+            if (i !== 0 && prevDate) {
+                let currentDate = moment(o.date);
+                let dayDiff = currentDate.diff(prevDate, 'days');
+                day += dayDiff;
+            }
+            const workout = {
+                programId: programId,
+                type: o.type ? o.type : 'exercise',
+                title: o.title ? o.title : '',
+                description: o.description ? o.description : '',
+                userId: o.userId ? o.userId : '',
+                day: day
+            };
+            prevDate = moment(o.date);
+            const newWorkoutProgram = new userWorkoutsProgram(workout);
+            const newWorkoutRes = await newWorkoutProgram.save();
+            if (newWorkoutRes) {
+                const _newWorkoutId = newWorkoutRes._id;
+                const workoutExercises = o.user_workout_exercises;
+                let newWorkoutExercises = [];
+                for (let we of workoutExercises) {
+                    let weExercises = we && we.exercises ? we.exercises : [];
+                    let _weExercises = weExercises.map((o) => {
+                        delete o._id;
+                        return o;
+                    });
+                    let nwe = {
+                        sequence: we && typeof we.sequence !== 'undefined' ? we.sequence : 0,
+                        userWorkoutsProgramId: _newWorkoutId,
+                        type: we && we.type ? we.type : null,
+                        subType: we && we.subType ? we.subType : null,
+                        exercises: _weExercises
+                    };
+                    newWorkoutExercises.push(nwe);
+                }
+                await userWorkoutExercisesProgram.insertMany(newWorkoutExercises);
+            }
+            i++;
+        }
+        let responseObj = {
+            status: 1,
+            message: "Data added",
+            data: null
+        };
+        return responseObj;
+    } catch (error) {
+        console.log('error => ', error);
+        let responseObj = {
+            status: 0,
+            message: "Something went wrong! please try again",
+            error: ["Something went wrong! please try again"]
+        };
+        return responseObj;
+    }
+};
+
+user_program_helper.getProgramLastDay = async (programId) => {
+    try {
+        const _programId = mongoose.Types.ObjectId(programId);
+        const userWorkoutsProgramRes = await userWorkoutsProgram.find({programId: _programId}).sort({day: -1}).limit(1);
+        if (userWorkoutsProgramRes && userWorkoutsProgramRes.length > 0) {
+            return userWorkoutsProgramRes[0].day;
+        }
+        return 0;
+    } catch (error) {
+        return 0;
+    }
+};
+
 module.exports = user_program_helper;
