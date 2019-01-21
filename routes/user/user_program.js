@@ -1688,38 +1688,91 @@ router.get("/rating/:program_id", async (req, res) => {
 
 router.post("/create_program_from_calendar", async (req, res) => {
     try {
-        const decoded = jwtDecode(req.headers["authorization"]);
-        const authUserId = decoded.sub;
-        const {selectedIds, goal, level, privacy, title} = req.body;
-        const programData = {
-            name: title,
-            description: '',
-            userId: authUserId,
-            type: "user",
-            goal: goal,
-            level: level,
-            privacy: privacy
+        var schema = {
+            title: {
+                notEmpty: true,
+                trim: {options: [[" "]]},
+                isLength: {
+                    errorMessage: "Name should be between 0 to 100 characters",
+                    options: {min: 0, max: 100}
+                },
+                errorMessage: "Name is required"
+            },
+            privacy: {
+                notEmpty: true,
+                isIn: {
+                    options: [[constant.PROGRAM_PRIVACY_PRIVATE, constant.PROGRAM_PRIVACY_PUBLIC]],
+                    errorMessage: "Privacy is invalid"
+                },
+                errorMessage: "Privacy is required"
+            },
+            goal: {
+                notEmpty: true,
+                errorMessage: "Goal is required",
+                isIn: {
+                    options: [constant.GOALS_OPTIONS],
+                    errorMessage: "Goal is invalid"
+                }
+            },
+            level: {
+                notEmpty: true,
+                errorMessage: "Level is required",
+                isIn: {
+                    options: [constant.PROGRAM_LEVEL_OPTIONS],
+                    errorMessage: "Level is invalid"
+                }
+            },
+            selectedIds: {
+                notEmpty: true,
+                errorMessage: "Please select some workouts for creating program",
+                custom: {
+                    options: (value) => {
+                        return  Array.isArray(value);
+                    },
+                    errorMessage: "Invalid selected workouts."
+                }
+            }
         };
-        const programRes = await user_program_helper.assign_program(programData);
-        if (programRes && programRes.status === 1 && programRes.program && programRes.program._id) {
-            await user_program_helper.createProgramWorkoutsFromIds(programRes.program._id, selectedIds);
-            logger.trace("user programs created successfully = ", null);
-            let responseObj = {
-                status: 1,
-                message: "Program created",
-                data: null
+        req.checkBody(schema);
+        var errors = req.validationErrors();
+        if (!errors) {
+            const decoded = jwtDecode(req.headers["authorization"]);
+            const authUserId = decoded.sub;
+            const {selectedIds, goal, level, privacy, title} = req.body;
+            const programData = {
+                name: title,
+                description: '',
+                userId: authUserId,
+                type: "user",
+                goal: goal,
+                level: level,
+                privacy: privacy
             };
-            res.status(config.OK_STATUS).json(responseObj);
+            const programRes = await user_program_helper.assign_program(programData);
+            if (programRes && programRes.status === 1 && programRes.program && programRes.program._id) {
+                await user_program_helper.createProgramWorkoutsFromIds(programRes.program._id, selectedIds);
+                logger.trace("user programs created successfully = ", null);
+                let responseObj = {
+                    status: 1,
+                    message: "Program created",
+                    data: null
+                };
+                res.status(config.OK_STATUS).json(responseObj);
+            } else {
+                logger.trace("user programs creation error = ", error);
+                let responseObj = {
+                    status: 0,
+                    message: "Something went wrong! please try again.",
+                    error: ["Something went wrong! please try again."]
+                };
+                res.status(config.BAD_REQUEST).json(responseObj);
+            }
         } else {
-            logger.trace("user programs creation error = ", error);
-            let responseObj = {
-                status: 0,
-                message: "Something went wrong! please try again.",
-                error: ["Something went wrong! please try again."]
-            };
-            res.status(config.BAD_REQUEST).json(responseObj);
+            logger.error("Validation Error = ", errors);
+            res.status(config.VALIDATION_FAILURE_STATUS).json({
+                message: errors
+            });
         }
-
     } catch (error) {
         logger.trace("user programs creation error = ", error);
         let responseObj = {
@@ -1733,32 +1786,59 @@ router.post("/create_program_from_calendar", async (req, res) => {
 
 router.post("/append_program_from_calendar", async (req, res) => {
     try {
-        const decoded = jwtDecode(req.headers["authorization"]);
-        const authUserId = decoded.sub;
-        const {selectedIds, programId} = req.body;
-        console.log('programId => ', programId);
-        let startDay = 0;
-        startDay = await user_program_helper.getProgramLastDay(programId);
-        if (startDay > 0) {
-            startDay++;
-        }
-        const programRes = await user_program_helper.appendProgramWorkoutsFromIds(programId, selectedIds, startDay);
-        if (programRes && programRes.status === 1) {
-            logger.trace("User program was appended = ", programRes);
-            let responseObj = {
-                status: 1,
-                message: "Program appended",
-                data: null
-            };
-            res.status(config.OK_STATUS).json(responseObj);
+        var schema = {
+            programId: {
+                notEmpty: true,
+                errorMessage: "Program is required",
+                isMongoId: {
+                    errorMessage: "Invalid program",
+                }
+            },
+            selectedIds: {
+                notEmpty: true,
+                errorMessage: "Please select some workouts for creating program",
+                custom: {
+                    options: (value) => {
+                        return  Array.isArray(value);
+                    },
+                    errorMessage: "Invalid selected workouts."
+                }
+            }
+        };
+        req.checkBody(schema);
+        var errors = req.validationErrors();
+        if (!errors) {
+            const decoded = jwtDecode(req.headers["authorization"]);
+            const authUserId = decoded.sub;
+            const {selectedIds, programId} = req.body;
+            let startDay = 0;
+            startDay = await user_program_helper.getProgramLastDay(programId);
+            if (startDay > 0) {
+                startDay++;
+            }
+            const programRes = await user_program_helper.appendProgramWorkoutsFromIds(programId, selectedIds, startDay);
+            if (programRes && programRes.status === 1) {
+                logger.trace("User program was appended = ", programRes);
+                let responseObj = {
+                    status: 1,
+                    message: "Program appended",
+                    data: null
+                };
+                res.status(config.OK_STATUS).json(responseObj);
+            } else {
+                logger.trace("user programs creation error = ", null);
+                let responseObj = {
+                    status: 0,
+                    message: "Something went wrong! please try again.",
+                    error: ["Something went wrong! please try again."]
+                };
+                res.status(config.BAD_REQUEST).json(responseObj);
+            }
         } else {
-            logger.trace("user programs creation error = ", null);
-            let responseObj = {
-                status: 0,
-                message: "Something went wrong! please try again.",
-                error: ["Something went wrong! please try again."]
-            };
-            res.status(config.BAD_REQUEST).json(responseObj);
+            logger.error("Validation Error = ", errors);
+            res.status(config.VALIDATION_FAILURE_STATUS).json({
+                message: errors
+            });
         }
     } catch (error) {
         logger.trace("user programs creation error = ", error);
