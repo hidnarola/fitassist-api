@@ -1031,7 +1031,7 @@ router.post("/", async (req, res) => {
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.put("/reorder_exercises", async (req, res) => {
-    var resp_data = await user_workout_helper.reorder_exercises(
+    var resp_data = await user_program_helper.reorder_exercises(
             req.body.reorderExercises
             );
 
@@ -1683,6 +1683,51 @@ router.get("/rating/:program_id", async (req, res) => {
     } else {
         logger.trace("user programs got successfully = ", resp_data);
         res.status(config.OK_STATUS).json(resp_data);
+    }
+});
+
+router.post("/create_program_from_calendar", async (req, res) => {
+    try {
+        const decoded = jwtDecode(req.headers["authorization"]);
+        const authUserId = decoded.sub;
+        const {selectedIds, goal, level, privacy, title} = req.body;
+        const programData = {
+            name: title,
+            description: '',
+            userId: authUserId,
+            type: "user",
+            goal: goal,
+            level: level,
+            privacy: privacy
+        };
+        const programRes = await user_program_helper.assign_program(programData);
+        if (programRes && programRes.status === 1 && programRes.program && programRes.program._id) {
+            await user_program_helper.createProgramWorkoutsFromIds(programRes.program._id, selectedIds);
+            logger.trace("user programs created successfully = ", null);
+            let responseObj = {
+                status: 1,
+                message: "Program created",
+                data: null
+            };
+            res.status(config.OK_STATUS).json(responseObj);
+        } else {
+            logger.trace("user programs creation error = ", error);
+            let responseObj = {
+                status: 0,
+                message: "Something went wrong! please try again.",
+                error: ["Something went wrong! please try again."]
+            };
+            res.status(config.BAD_REQUEST).json(responseObj);
+        }
+
+    } catch (error) {
+        logger.trace("user programs creation error = ", error);
+        let responseObj = {
+            status: 0,
+            message: "Something went wrong! please try again.",
+            error: ["Something went wrong! please try again."]
+        };
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseObj);
     }
 });
 module.exports = router;

@@ -1,8 +1,11 @@
 var UserPrograms = require("./../models/user_programs");
 var userWorkoutsProgram = require("./../models/user_workouts_program");
 var userWorkoutExercisesProgram = require("./../models/user_workout_exercises_program");
+var UserWorkouts = require("./../models/user_workouts");
 var user_program_helper = {};
 var _ = require("underscore");
+const mongoose = require('mongoose');
+const moment = require('moment');
 
 /*
  * get_user_programs_in_details is used to fetch all user program data
@@ -171,10 +174,7 @@ user_program_helper.get_user_programs_in_details_for_assign = async condition =>
  *          status 1 - If user program data found, with user program object
  *          status 2 - If user program not found, with appropriate message
  */
-user_program_helper.get_user_programs_data = async (
-        condition,
-        project = {}
-) => {
+user_program_helper.get_user_programs_data = async (condition, project = {}) => {
     try {
         var user_program = await userWorkoutsProgram.aggregate([
             {
@@ -219,9 +219,7 @@ user_program_helper.get_user_programs_data = async (
  *          status 1 - If user exercises data found, with user exercises object
  *          status 2 - If user exercises not found, with appropriate message
  */
-user_program_helper.get_all_program_workouts_group_by = async (
-        condition = {}
-) => {
+user_program_helper.get_all_program_workouts_group_by = async (condition = {}) => {
     try {
         var user_workouts = await userWorkoutsProgram.aggregate([
             {
@@ -272,7 +270,7 @@ user_program_helper.get_all_program_workouts_group_by = async (
                         $first: "$day"
                     },
                     sequence: {
-                        $first: "$sequence"
+                        $first: "$exercises.sequence"
                     }
                 }
             },
@@ -283,7 +281,6 @@ user_program_helper.get_all_program_workouts_group_by = async (
                     type: 1,
                     programId: 1,
                     exercises: 1,
-                    isCompleted: 1,
                     dayType: 1,
                     title: 1,
                     description: 1,
@@ -293,11 +290,9 @@ user_program_helper.get_all_program_workouts_group_by = async (
                 }
             }
         ]);
-
-        if (user_workouts) {
+        if (user_workouts && user_workouts.length > 0) {
             var returnObj = {
                 _id: user_workouts[0].userWorkoutsId,
-                isCompleted: user_workouts[0].isCompleted,
                 type: user_workouts[0].dayType,
                 programId: user_workouts[0].programId,
                 title: user_workouts[0].title,
@@ -610,8 +605,8 @@ user_program_helper.update_program_workouts = async (
  * @developed by "amc"
  */
 user_program_helper.assign_program = async programObj => {
-    let user_program = new UserPrograms(programObj);
     try {
+        let user_program = new UserPrograms(programObj);
         var user_program_data = await user_program.save();
         return {
             status: 1,
@@ -1340,7 +1335,6 @@ user_program_helper.get_user_program_ratings = async condition => {
                 }
             }
         ]);
-        console.log('result => ', result[0]);
         if (result) {
             return {
                 status: 1,
@@ -1359,6 +1353,91 @@ user_program_helper.get_user_program_ratings = async condition => {
             message: "Error occured while finding user program",
             error: err
         };
+    }
+};
+
+user_program_helper.createProgramWorkoutsFromIds = async (programId, workoutIds) => {
+    try {
+        let _workoutIds = workoutIds.map((o) => {
+            return mongoose.Types.ObjectId(o);
+        });
+        let cond = [
+            {
+                $match: {
+                    _id: {$in: _workoutIds}
+                }
+            },
+            {
+                $lookup: {
+                    from: "user_workout_exercises",
+                    foreignField: "userWorkoutsId",
+                    localField: "_id",
+                    as: "user_workout_exercises"
+                }
+            },
+            {
+                $sort: {
+                    date: 1
+                }
+            }
+        ];
+        const userWorkouts = await UserWorkouts.aggregate(cond);
+        let day = 0;
+        let i = 0;
+        let prevDate = null;
+        for (let o of userWorkouts) {
+            if (i !== 0 && prevDate) {
+                let currentDate = moment(o.date);
+                let dayDiff = currentDate.diff(prevDate, 'days');
+                day += dayDiff;
+            }
+            const workout = {
+                programId: programId,
+                type: o.type ? o.type : 'exercise',
+                title: o.title ? o.title : '',
+                description: o.description ? o.description : '',
+                userId: o.userId ? o.userId : '',
+                day: day
+            };
+            prevDate = moment(o.date);
+            const newWorkoutProgram = new userWorkoutsProgram(workout);
+            const newWorkoutRes = await newWorkoutProgram.save();
+            if (newWorkoutRes) {
+                const _newWorkoutId = newWorkoutRes._id;
+                const workoutExercises = o.user_workout_exercises;
+                let newWorkoutExercises = [];
+                for (let we of workoutExercises) {
+                    let weExercises = we && we.exercises ? we.exercises : [];
+                    let _weExercises = weExercises.map((o) => {
+                        delete o._id;
+                        return o;
+                    });
+                    let nwe = {
+                        sequence: we && typeof we.sequence !== 'undefined' ? we.sequence : 0,
+                        userWorkoutsProgramId: _newWorkoutId,
+                        type: we && we.type ? we.type : null,
+                        subType: we && we.subType ? we.subType : null,
+                        exercises: _weExercises
+                    };
+                    newWorkoutExercises.push(nwe);
+                }
+                await userWorkoutExercisesProgram.insertMany(newWorkoutExercises);
+            }
+            i++;
+        }
+        let responseObj = {
+            status: 1,
+            message: "Data added",
+            data: null
+        };
+        return responseObj;
+    } catch (error) {
+        let responseObj = {
+            status: 0,
+            message: "Something went wrong! please try again",
+            error: ["Something went wrong! please try again"]
+        };
+        return responseObj;
     }
 };
 
