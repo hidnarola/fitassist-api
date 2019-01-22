@@ -656,4 +656,52 @@ async function badgeAssign(authUserId) {
         status: 0
     };
 }
+
+router.get("/foll/:username/:_for", async (req, res) => {
+    try {
+        const {username, _for} = req.params;
+        const userDetailsRes = await user_helper.get_user_by({username});
+        if (userDetailsRes && userDetailsRes.status === 1) {
+            const {user} = userDetailsRes;
+            if (_for === 'followers') {
+                const result = await follow_helper.getFollowers(user.authUserId);
+                console.log('result => ', result);
+                res.status(config.OK_STATUS).json({
+                    status: 1,
+                    message: "Followers",
+                    data: result.data
+                });
+            } else if (_for === 'followings') {
+                const result = await follow_helper.getFollowings(user.authUserId);
+                res.status(config.OK_STATUS).json({
+                    status: 1,
+                    message: "Followings",
+                    data: result.data
+                });
+            } else {
+                logger.error("Invalid param passed = ");
+                res.status(config.BAD_REQUEST).json({
+                    status: 0,
+                    message: "Invalid param.",
+                    error: ["Invalid param."]
+                });
+            }
+        } else {
+            logger.error("User not found by username = ");
+            res.status(config.INTERNAL_SERVER_ERROR).json({
+                status: 0,
+                message: "Something went wrong! please try again.",
+                error: ["Something went wrong! please try again."]
+            });
+        }
+    } catch (error) {
+        logger.error("Internal server error = ", error);
+        res.status(config.INTERNAL_SERVER_ERROR).json({
+            status: 0,
+            message: "Something went wrong! please try again.",
+            error: ["Something went wrong! please try again."]
+        });
+    }
+});
+
 module.exports = router;

@@ -88,7 +88,27 @@ follow_helper.getFollowing = async (followerId, followingId) => {
 
 follow_helper.getFollowings = async (followerId) => {
     try {
-        let resource = await Follows.find({followerId});
+        let cond = [
+            {
+                $match: {
+                    followerId
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    foreignField: "authUserId",
+                    localField: "followingId",
+                    as: "user_details"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$user_details"
+                }
+            }
+        ];
+        let resource = await Follows.aggregate(cond);
         if (resource && resource.length > 0) {
             let responseData = {
                 status: 1,
@@ -100,6 +120,54 @@ follow_helper.getFollowings = async (followerId) => {
             let responseData = {
                 status: 1,
                 message: "Not following",
+                data: []
+            };
+            return responseData;
+        }
+    } catch (error) {
+        let responseData = {
+            status: 0,
+            message: "Something went wrong! please try again later.",
+            error: ["Something went wrong! please try again later."]
+        };
+        return responseData;
+    }
+};
+
+follow_helper.getFollowers = async (followingId) => {
+    try {
+        let cond = [
+            {
+                $match: {
+                    followingId
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    foreignField: "authUserId",
+                    localField: "followerId",
+                    as: "user_details"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$user_details"
+                }
+            }
+        ];
+        let resource = await Follows.aggregate(cond);
+        if (resource && resource.length > 0) {
+            let responseData = {
+                status: 1,
+                message: "Followers",
+                data: resource
+            };
+            return responseData;
+        } else {
+            let responseData = {
+                status: 1,
+                message: "No Followers",
                 data: []
             };
             return responseData;
