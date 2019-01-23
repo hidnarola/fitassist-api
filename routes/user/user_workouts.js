@@ -1666,7 +1666,7 @@ router.post("/get_by_month/:username", async (req, res) => {
                     $lt: new Date(endCheck)
                 }
             });
-            
+
             if (resp_data.status == 1) {
                 logger.trace("user workouts got successfully = ", resp_data);
                 res.status(config.OK_STATUS).json(resp_data);
@@ -1685,6 +1685,161 @@ router.post("/get_by_month/:username", async (req, res) => {
         }
     } catch (error) {
         logger.error("Error occured while fetching user workouts = ", error);
+        const responseData = {
+            status: 0,
+            message: "Something went wrong! please try again.",
+            error: ["Something went wrong! please try again."]
+        };
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
+    }
+});
+
+router.get("/:username/:workout_id", async (req, res) => {
+    try {
+        var userRes = await user_helper.get_user_by({
+            username: req.params.username
+        });
+        if (userRes && userRes.status === 1 && userRes.user) {
+            const authUserId = userRes.user.authUserId;
+            if (mongoose.Types.ObjectId.isValid(req.params.workout_id)) {
+                var workout_id = mongoose.Types.ObjectId(req.params.workout_id);
+                var resp_data = await get_respose_data_for_workout(workout_id, authUserId);
+                if (resp_data.status === 1) {
+                    logger.trace("user workouts got successfully = ", resp_data);
+                    res.status(config.OK_STATUS).json(resp_data);
+                } else {
+                    logger.error("Error occured while fetching user workouts = ", resp_data);
+                    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+                }
+            } else {
+                logger.error("Invalid Object is passed= ", req.params.workout_id);
+                const responseData = {
+                    status: 0,
+                    message: "Something went wrong! please try again.",
+                    error: ["Something went wrong! please try again."]
+                };
+                res.status(config.BAD_REQUEST).json(responseData);
+            }
+        } else {
+            logger.error("Error while fetching user data = ", null);
+            const responseData = {
+                status: 0,
+                message: "Something went wrong! please try again.",
+                error: ["Something went wrong! please try again."]
+            };
+            res.status(config.BAD_REQUEST).json(responseData);
+        }
+    } catch (error) {
+        logger.error("Error occured while fetching user workout = ", error);
+        const responseData = {
+            status: 0,
+            message: "Something went wrong! please try again.",
+            error: ["Something went wrong! please try again."]
+        };
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
+    }
+});
+
+router.post("/first_workout/:username", async (req, res) => {
+    try {
+        var userRes = await user_helper.get_user_by({
+            username: req.params.username
+        });
+        if (userRes && userRes.status === 1 && userRes.user) {
+            const authUserId = userRes.user.authUserId;
+            var date = req.body.date;
+            var start = moment(date).utcOffset(0);
+            start.toISOString();
+            start.format();
+
+            var end = moment(date)
+                    .utcOffset(0)
+                    .add(23, "hours")
+                    .add(59, "minutes");
+            end.toISOString();
+            end.format();
+
+            logger.trace("Get all user workouts by date  API called");
+            var resp_data = await user_workout_helper.get_first_workout_by_date({
+                userId: authUserId,
+                date: {
+                    $gte: new Date(start),
+                    $lte: new Date(end)
+                }
+            });
+
+            if (resp_data.status == 1) {
+                logger.trace("user workouts got successfully = ", resp_data);
+                res.status(config.OK_STATUS).json(resp_data);
+            } else {
+                logger.error("Error occured while fetching user workouts = ", resp_data);
+                res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+            }
+        } else {
+            logger.error("Error while fetching user data = ", null);
+            const responseData = {
+                status: 0,
+                message: "Something went wrong! please try again.",
+                error: ["Something went wrong! please try again."]
+            };
+            res.status(config.BAD_REQUEST).json(responseData);
+        }
+    } catch (error) {
+        logger.error("Error occured while fetching user workout = ", error);
+        const responseData = {
+            status: 0,
+            message: "Something went wrong! please try again.",
+            error: ["Something went wrong! please try again."]
+        };
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
+    }
+});
+
+router.post("/calendar_list/:username", async (req, res) => {
+    try {
+        var userRes = await user_helper.get_user_by({
+            username: req.params.username
+        });
+        if (userRes && userRes.status === 1 && userRes.user) {
+            const authUserId = userRes.user.authUserId;
+            var date = req.body.date;
+            var check = await moment(date).utc(0);
+            var startCheck = await moment(check).subtract(2, "month");
+            var endCheck = await moment(check).add(2, "month");
+            var resp_data = await user_workout_helper.get_workouts_for_calendar({
+                userId: authUserId,
+                date: {
+                    $gte: new Date(startCheck),
+                    $lt: new Date(endCheck)
+                }
+            });
+            resp_data.calendar_list = resp_data.workouts;
+            delete resp_data.workouts;
+
+            if (resp_data.status == 1) {
+                logger.trace(
+                        "user workouts detail for calendar got successfully = ",
+                        resp_data
+                        );
+                res.status(config.OK_STATUS).json(resp_data);
+            } else {
+                logger.error(
+                        "Error occured while fetching user workouts details for calendar = ",
+                        resp_data
+                        );
+                res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+            }
+        } else {
+            logger.error("Error while fetching user data = ", null);
+            const responseData = {
+                status: 0,
+                message: "Something went wrong! please try again.",
+                error: ["Something went wrong! please try again."]
+            };
+            res.status(config.BAD_REQUEST).json(responseData);
+        }
+    } catch (error) {
+        logger.error("Error occured while fetching user workout = ", error);
         const responseData = {
             status: 0,
             message: "Something went wrong! please try again.",
