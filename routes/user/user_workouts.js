@@ -660,6 +660,29 @@ router.post("/copy", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/user_workouts/cut Cut paste User Workouts
+ * @apiName Cut paste User Workouts
+ * @apiGroup  User Workouts
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} exerciseId exerciseId of workout
+ * @apiParam {String} date date of workout
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/cut", async (req, res) => {
+    var exerciseId = mongoose.Types.ObjectId(req.body.exerciseId);
+    var date = req.body.date;
+    var workout_day = await user_workout_helper.cut_exercise_by_id(exerciseId, date);
+    if (workout_day.status === 1) {
+        workout_day = await user_workout_helper.get_all_workouts_group_by({_id: mongoose.Types.ObjectId(exerciseId)}, true);
+        workout_day.message = "Workout Pasted";
+        res.status(config.OK_STATUS).json(workout_day);
+    } else {
+        res.status(config.BAD_REQUEST).json(workout_day);
+    }
+});
+
+/**
  * @api {post} /user/user_workouts/assign_program Assign user's program
  * @apiName Assign user's program
  * @apiGroup  User Workouts

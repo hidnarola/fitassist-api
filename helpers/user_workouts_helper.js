@@ -959,7 +959,7 @@ user_workouts_helper.insert_user_workouts_day = async masterCollectionObject => 
             return {
                 status: 2,
                 message: "Error occured while inserting User workout day",
-                error: err
+                error: null
             };
         }
     } catch (err) {
@@ -1173,6 +1173,32 @@ user_workouts_helper.copy_exercise_by_id = async (
                 error: err
             };
         }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while copying User workout day",
+            error: err
+        };
+    }
+};
+
+/*
+ * cut_exercise_by_id is used to insert into user_workouts master collection
+ * @param   masterCollectionObject     JSON object consist of all property that need to insert in collection
+ * @return  status  0 - If any error occur in inserting User workout, with error
+ *          status  1 - If User workout inserted, with inserted User workout document and appropriate message
+ * @developed by "amc"
+ */
+user_workouts_helper.cut_exercise_by_id = async (workoutId, date) => {
+    try {
+        const workoutData = {date};
+        const cond = {_id: mongoose.Types.ObjectId(workoutId)};
+        const resource = await UserWorkouts.findOneAndUpdate(cond, workoutData);
+        return {
+            status: 1,
+            message: "Workout is pasted",
+            data: resource
+        };
     } catch (err) {
         return {
             status: 0,
