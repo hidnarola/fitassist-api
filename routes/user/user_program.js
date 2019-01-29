@@ -906,6 +906,29 @@ router.post("/workout", async (req, res) => {
 });
 
 /**
+ * @api {post} /user/user_program/cut Cut User Program
+ * @apiName Cut User Program
+ * @apiGroup  User Program
+ * @apiHeader {String}  Content-Type application/json
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiParam {String} workoutId workoutId of workout
+ * @apiParam {String} day day of workout
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.post("/cut", async (req, res) => {
+    var workoutId = mongoose.Types.ObjectId(req.body.exerciseId);
+    var day = req.body.day;
+    var workout_day = await user_program_helper.cut_exercise_by_id(workoutId, day);
+    if (workout_day.status == 1) {
+        workout_day = await user_program_helper.get_all_program_workouts_group_by({_id: mongoose.Types.ObjectId(workoutId)});
+        workout_day.message = "Workout cut.";
+        res.status(config.OK_STATUS).json(workout_day);
+    } else {
+        res.status(config.BAD_REQUEST).json(workout_day);
+    }
+});
+
+/**
  * @api {post} /user/user_program/copy Copy User Program
  * @apiName Copy User Program
  * @apiGroup  User Program

@@ -792,6 +792,26 @@ user_program_helper.delete_user_program_exercise = async exercise_ids => {
         };
     }
 };
+
+user_program_helper.cut_exercise_by_id = async (exerciseId, day) => {
+    try {
+        const workoutData = {day};
+        const cond = {_id: mongoose.Types.ObjectId(exerciseId)};
+        const resource = await userWorkoutsProgram.findOneAndUpdate(cond, workoutData);
+        return {
+            status: 1,
+            message: "Workout is pasted",
+            data: resource
+        };
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while copying User workout day",
+            error: err
+        };
+    }
+};
+
 /*
  * copy_exercise_by_id is used to insert into user_workouts master collection
  * 
@@ -802,11 +822,7 @@ user_program_helper.delete_user_program_exercise = async exercise_ids => {
  * 
  * @developed by "amc"
  */
-user_program_helper.copy_exercise_by_id = async (
-        exerciseId,
-        day,
-        authUserId
-        ) => {
+user_program_helper.copy_exercise_by_id = async (exerciseId, day, authUserId) => {
     var workoutLogsObj = {};
     var insertWorkoutLogArray = [];
     try {
