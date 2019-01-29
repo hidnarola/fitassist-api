@@ -1101,7 +1101,7 @@ user_workouts_helper.copy_exercise_by_id = async (
                             var restTime = (time = distance = effort = weight = repTime = speed = setTime = reps = 0);
                             if (i < childExercises.sets - 1) {
                                 // restTime += childDetail.restTime ? childDetail.restTime : 0;
-                                restTime += childDetail.baseRestTime;
+                                restTime += typeof childDetail.baseRestTime !== 'undefined' ? childDetail.baseRestTime : 0;
                             }
                             if (childDetail.field1) {
                                 if (childDetail.field1.baseUnit === "second") {
