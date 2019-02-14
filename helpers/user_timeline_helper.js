@@ -67,14 +67,9 @@ user_timeline_helper.insert_timeline_data = async user_timeline_object => {
  *          status  2 - If timeline not updated, with appropriate message
  * @developed by "amc"
  */
-user_timeline_helper.update_user_timeline_by_id = async (
-        condition,
-        user_timeline_object
-        ) => {
+user_timeline_helper.update_user_timeline_by_id = async (condition, user_timeline_object) => {
     try {
-        let user_timeline = await UserTimeline.findOneAndUpdate(condition, user_timeline_object, {
-            new : true
-        });
+        let user_timeline = await UserTimeline.findOneAndUpdate(condition, user_timeline_object, {new : true});
         if (!user_timeline) {
             return {
                 status: 2,

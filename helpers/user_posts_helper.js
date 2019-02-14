@@ -383,7 +383,7 @@ user_post_helper.get_user_timeline_by_id = async (condition, userId) => {
                         }
                     },
                     privacy: {
-                        $first: "$user_posts.privacy"
+                        $first: "$privacy"
                     },
                     createdAt: {
                         $first: "$createdAt"
