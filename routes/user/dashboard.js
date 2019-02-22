@@ -38,8 +38,7 @@ router.post("/muscle", async (req, res) => {
         message: "Success",
         data: {
             widgets: null,
-            bodypart: null,
-            muscle: []
+            muscle: null
         }
     };
     var schema = {
@@ -50,10 +49,6 @@ router.post("/muscle", async (req, res) => {
         end: {
             notEmpty: true,
             errorMessage: "End date required"
-        },
-        bodypart: {
-            notEmpty: true,
-            errorMessage: "Muscle type required"
         }
     };
 
@@ -73,14 +68,11 @@ router.post("/muscle", async (req, res) => {
         if (widgets_data.status === 1) {
             var muscle = widgets_data.widgets.muscle;
             _.map(muscle, function (o) {
-                if (o.name === req.body.bodypart) {
-                    o.start = req.body.start;
-                    o.end = req.body.end;
-                }
+                o.start = req.body.start;
+                o.end = req.body.end;
             });
 
             widgets_settings_object.muscle = muscle;
-
             var widgets_data = await widgets_settings_helper.save_widgets(
                     widgets_settings_object,
                     {
@@ -90,29 +82,27 @@ router.post("/muscle", async (req, res) => {
             );
 
             if (widgets_data && widgets_data.status === 1) {
-                returnObj.data.bodypart = req.body.bodypart;
                 returnObj.data.widgets = widgets_data.widgets;
                 logger.trace("User muscle widget saved   = ", returnObj);
-                let bodyMeasurment;
-                bodyMeasurment = await workout_progress_helper.user_body_progress({
-                    userId: authUserId,
-                    logDate: {
-                        $gte: new Date(req.body.start),
-                        $lte: new Date(req.body.end)
+                var muscle = {};
+                var bodyMeasurment;
+                for (let x of widgets_data.widgets.muscle) {
+                    x.start = req.body.start;
+                    x.end = req.body.end;
+                    bodyMeasurment = await workout_progress_helper.user_body_progress({
+                        userId: authUserId,
+                        logDate: {
+                            $gte: new Date(req.body.start),
+                            $lte: new Date(req.body.end)
+                        }
+                    });
+                    if (bodyMeasurment.status === 1) {
+                        muscle[x.name] = bodyMeasurment.progress.data[x.name];
+                    } else {
+                        muscle[x.name] = null;
                     }
-                });
-
-                if (bodyMeasurment.status === 1) {
-                    try {
-                        returnObj.data.muscle =
-                                bodyMeasurment.progress.data[req.body.bodypart];
-                    } catch (error) {
-                        returnObj.data.muscle = null;
-                    }
-                } else {
-                    returnObj.data.muscle = null;
                 }
-                // returnObj.data.muscle = muscleObject;
+                returnObj.data.muscle = muscle;
                 res.status(config.OK_STATUS).json(returnObj);
             } else {
                 logger.error(
