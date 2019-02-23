@@ -6,6 +6,7 @@ var config = require("../../config");
 var jwtDecode = require("jwt-decode");
 var logger = config.logger;
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
+var user_helper = require("../../helpers/user_helper");
 var user_timeline_helper = require("../../helpers/user_timeline_helper");
 const base64Img = require('base64-img');
 const constant = require("../../constant");
@@ -67,9 +68,17 @@ router.get("/:username/:start?/:limit?/:sort_by?", async (req, res) => {
         }
     });
     if (resp_data.status === 1) {
-        resp_data.total_records = await user_progress_photos_helper.countTotalUsersProgresPhotos(authUserId);
-        logger.trace("user progress photos got successfully = ", resp_data);
-        res.status(config.OK_STATUS).json(resp_data);
+        var user = await user_helper.get_user_by({
+            username: req.params.username
+        });
+        if (user && user.user && user.user.authUserId) {
+            resp_data.total_records = await user_progress_photos_helper.countTotalUsersProgresPhotos(user.user.authUserId);
+            logger.trace("user progress photos got successfully = ", resp_data);
+            res.status(config.OK_STATUS).json(resp_data);
+        } else {
+            logger.error("Error occured while fetching get all user progress photos = ", resp_data);
+            res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+        }
     } else {
         logger.error("Error occured while fetching get all user progress photos = ", resp_data);
         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
