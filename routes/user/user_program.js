@@ -50,7 +50,22 @@ router.get("/names", async (req, res) => {
     var decoded = jwtDecode(req.headers["authorization"]);
     var authUserId = decoded.sub;
     logger.trace("Get all user programs API called");
-    var resp_data = await user_program_helper.get_user_programs({}, true);
+    const cond = {
+        $or: [
+            {
+                privacy: 0
+            },
+            {
+                $and: [
+                    {
+                        privacy: 1,
+                        userId: authUserId
+                    }
+                ]
+            }
+        ]
+    };
+    var resp_data = await user_program_helper.get_user_programs(cond, true);
 
 
     if (resp_data.status == 0) {

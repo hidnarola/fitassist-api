@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
-	"start-nodemon": "nodemon app"
+    "start-nodemon": "nodemon app"
   },
   "dependencies": {
     "async": "^2.6.0",

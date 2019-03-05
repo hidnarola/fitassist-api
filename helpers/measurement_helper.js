@@ -9,27 +9,27 @@ var measurement_helper = {};
  *          status 2 - If measurement not found, with appropriate message
  */
 measurement_helper.get_all_measurement = async () => {
-  try {
-    var measurement = await Measurement.find();
-    if (measurement) {
-      return {
-        status: 1,
-        message: "Measurement found",
-        measurements: measurement
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No measurement available"
-      };
+    try {
+        var measurement = await Measurement.find();
+        if (measurement) {
+            return {
+                status: 1,
+                message: "Measurement found",
+                measurements: measurement
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No measurement available"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while finding measurement",
+            error: err
+        };
     }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding measurement",
-      error: err
-    };
-  }
 };
 
 /*
@@ -40,48 +40,48 @@ measurement_helper.get_all_measurement = async () => {
  *          status 2 - If bodymeasurement not found, with appropriate message
  */
 measurement_helper.heart_rate_data = async (
-  id,
-) => {
-  try {
-    var heart_rate = await Measurement.aggregate([{
-      $match: id
-    }, {
-      $group: {
-        _id: null,
-        heart_rate_total: {
-          $sum: "$heartRate"
-        },
-        heart_rate_average: {
-          $avg: "$heartRate"
-        },
-        heart_rate_most: {
-          $max: "$heartRate"
-        },
-        heart_rate_least: {
-          $min: "$heartRate"
-        },
-      }
-    }])
-    if (heart_rate && heart_rate.length > 0) {
-      return {
-        status: 1,
-        message: "heart_rate found",
-        heart_rate: heart_rate[0]
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No measurement available",
-        measurement: null
-      };
+        id,
+        ) => {
+    try {
+        var heart_rate = await Measurement.aggregate([{
+                $match: id
+            }, {
+                $group: {
+                    _id: null,
+                    heart_rate_total: {
+                        $sum: "$heartRate"
+                    },
+                    heart_rate_average: {
+                        $avg: "$heartRate"
+                    },
+                    heart_rate_most: {
+                        $max: "$heartRate"
+                    },
+                    heart_rate_least: {
+                        $min: "$heartRate"
+                    },
+                }
+            }])
+        if (heart_rate && heart_rate.length > 0) {
+            return {
+                status: 1,
+                message: "heart_rate found",
+                heart_rate: heart_rate[0]
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No measurement available",
+                measurement: null
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while finding measurement",
+            error: err
+        };
     }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding measurement",
-      error: err
-    };
-  }
 };
 /*
  * get_body_measurement_id is used to fetch bodymeasurement by ID
@@ -91,32 +91,32 @@ measurement_helper.heart_rate_data = async (
  *          status 2 - If bodymeasurement not found, with appropriate message
  */
 measurement_helper.get_body_measurement_id = async (
-  id,
-  sort = {},
-) => {
-  try {
-    var measurement = await Measurement.findOne(id)
-      .sort(sort)
-    if (measurement) {
-      return {
-        status: 1,
-        message: "measurement found",
-        measurement: measurement
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No measurement available",
-        measurement: null
-      };
-    }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding measurement",
-      error: err
-    };
-  }
+        id,
+        sort = {},
+        ) => {
+    try {
+        var measurement = await Measurement.findOne(id)
+                .sort(sort)
+        if (measurement) {
+            return {
+                status: 1,
+                message: "measurement found",
+                measurement: measurement
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No measurement available",
+                measurement: null
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while finding measurement",
+            error: err
+        };
+}
 };
 
 /*
@@ -127,27 +127,27 @@ measurement_helper.get_body_measurement_id = async (
  *          status 2 - If bodymeasurement not found, with appropriate message
  */
 measurement_helper.get_body_measurement_by_userid = async id => {
-  try {
-    var measurement = await Measurement.find(id);
-    if (measurement) {
-      return {
-        status: 1,
-        message: "measurement found",
-        measurements: measurement
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No measurement available"
-      };
+    try {
+        var measurement = await Measurement.find(id);
+        if (measurement) {
+            return {
+                status: 1,
+                message: "measurement found",
+                measurements: measurement
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No measurement available"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while finding measurement",
+            error: err
+        };
     }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding measurement",
-      error: err
-    };
-  }
 };
 
 /*
@@ -158,28 +158,28 @@ measurement_helper.get_body_measurement_by_userid = async id => {
  *          status 2 - If logdata not found, with appropriate message
  */
 measurement_helper.get_logdata_by_userid = async id => {
-  try {
-    var logdata = await Measurement.find(id);
-    //        var logdata = await Measurement.aggregate(id);
-    if (logdata) {
-      return {
-        status: 1,
-        message: "logdata found",
-        logdates: logdata
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No logdata available"
-      };
+    try {
+        var logdata = await Measurement.find(id);
+        //        var logdata = await Measurement.aggregate(id);
+        if (logdata) {
+            return {
+                status: 1,
+                message: "logdata found",
+                logdates: logdata
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No logdata available"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while finding logdata",
+            error: err
+        };
     }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while finding logdata",
-      error: err
-    };
-  }
 };
 
 /*
@@ -192,21 +192,21 @@ measurement_helper.get_logdata_by_userid = async id => {
  * @developed by "amc"
  */
 measurement_helper.insert_body_measurement = async measurement_object => {
-  let measurement = new Measurement(measurement_object);
-  try {
-    let measurement_data = await measurement.save();
-    return {
-      status: 1,
-      message: "measurement inserted",
-      measurement: measurement_data
-    };
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while inserting measurement",
-      error: err
-    };
-  }
+    let measurement = new Measurement(measurement_object);
+    try {
+        let measurement_data = await measurement.save();
+        return {
+            status: 1,
+            message: "measurement inserted",
+            measurement: measurement_data
+        };
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while inserting measurement",
+            error: err
+        };
+    }
 };
 
 /*
@@ -222,36 +222,36 @@ measurement_helper.insert_body_measurement = async measurement_object => {
  * @developed by "amc"
  */
 measurement_helper.update_body_measurement = async (
-  body_measurement_id,
-  measurement_obj
-) => {
-  try {
-    let measurement = await Measurement.findOneAndUpdate({
-      _id: body_measurement_id
-    },
-      measurement_obj, {
-        new: true
-      }
-    );
-    if (!measurement) {
-      return {
-        status: 2,
-        message: "Record has not updated"
-      };
-    } else {
-      return {
-        status: 1,
-        message: "Record has been updated",
-        measurement: measurement
-      };
+        body_measurement_id,
+        measurement_obj
+        ) => {
+    try {
+        let measurement = await Measurement.findOneAndUpdate({
+            _id: body_measurement_id
+        },
+                measurement_obj, {
+                    new : true
+                }
+        );
+        if (!measurement) {
+            return {
+                status: 2,
+                message: "Record has not updated"
+            };
+        } else {
+            return {
+                status: 1,
+                message: "Record has been updated",
+                measurement: measurement
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while updating Exercise Types",
+            error: err
+        };
     }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while updating Exercise Types",
-      error: err
-    };
-  }
 };
 
 /*
@@ -266,28 +266,28 @@ measurement_helper.update_body_measurement = async (
  * @developed by "amc"
  */
 measurement_helper.delete_measurement_by_id = async body_measurement_id => {
-  try {
-    let resp = await Measurement.findOneAndRemove({
-      _id: body_measurement_id
-    });
-    if (!resp) {
-      return {
-        status: 2,
-        message: "Measurement not found"
-      };
-    } else {
-      return {
-        status: 1,
-        message: "Measurement deleted"
-      };
+    try {
+        let resp = await Measurement.findOneAndRemove({
+            _id: body_measurement_id
+        });
+        if (!resp) {
+            return {
+                status: 2,
+                message: "Measurement not found"
+            };
+        } else {
+            return {
+                status: 1,
+                message: "Measurement deleted"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while deleting Measurement",
+            error: err
+        };
     }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while deleting Measurement",
-      error: err
-    };
-  }
 };
 
 /*
@@ -297,50 +297,58 @@ measurement_helper.delete_measurement_by_id = async body_measurement_id => {
  *          status 2 - If filtered not found, with appropriate message
  */
 measurement_helper.get_filtered_records = async filter_obj => {
-  skip = filter_obj.pageSize * filter_obj.page;
-  try {
-    var searched_record_count = await Measurement.aggregate([{
-      $match: filter_object.columnFilter
-    }]);
+    skip = filter_obj.pageSize * filter_obj.page;
+    try {
+        var searched_record_count = await Measurement.aggregate([{
+                $match: filter_object.columnFilter
+            }]);
 
-    var filtered_data = await Measurement.aggregate([{
-      $match: filter_object.columnFilter
-    },
-    {
-      $sort: filter_obj.columnSort
-    },
-    {
-      $skip: skip
-    },
-    {
-      $limit: filter_object.pageSize
-    },
+        var filtered_data = await Measurement.aggregate([{
+                $match: filter_object.columnFilter
+            },
+            {
+                $sort: filter_obj.columnSort
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: filter_object.pageSize
+            },
+        ]);
 
-    ]);
-
-    if (filtered_data) {
-      return {
-        status: 1,
-        message: "filtered data is found",
-        count: searched_record_count.length,
-        filtered_total_pages: Math.ceil(
-          searched_record_count.length / filter_obj.pageSize
-        ),
-        filtered_measurements: filtered_data
-      };
-    } else {
-      return {
-        status: 2,
-        message: "No filtered data available"
-      };
+        if (filtered_data) {
+            return {
+                status: 1,
+                message: "filtered data is found",
+                count: searched_record_count.length,
+                filtered_total_pages: Math.ceil(
+                        searched_record_count.length / filter_obj.pageSize
+                        ),
+                filtered_measurements: filtered_data
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No filtered data available"
+            };
+        }
+    } catch (err) {
+        return {
+            status: 0,
+            message: "Error occured while filtering data",
+            error: err
+        };
     }
-  } catch (err) {
-    return {
-      status: 0,
-      message: "Error occured while filtering data",
-      error: err
-    };
-  }
+};
+
+measurement_helper.countByUser = async (cond) => {
+    try {
+        const resource = await Measurement.find(cond).count();
+        return resource;
+    } catch (e) {
+        return -1;
+    }
 };
 
 module.exports = measurement_helper;
