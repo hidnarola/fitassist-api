@@ -404,6 +404,62 @@ router.put("/update_aboutme", async (req, res) => {
 });
 
 /**
+ * @api {delete} /user/profile/photo Profile Picture - Delete
+ * @apiName Profile Picture - Delete
+ * @apiGroup User
+ * @apiHeader {String}  authorization User's unique access-key
+ * @apiSuccess (Success 200) {String} message
+ * @apiError (Error 4xx) {String} message Validation or error message.
+ */
+router.delete("/photo", async (req, res) => {
+    try {
+        var decoded = jwtDecode(req.headers["authorization"]);
+        var authUserId = decoded.sub;
+        const resp_data = await user_helper.get_user_by_id(authUserId);
+        if (resp_data.status === 1) {
+            const user_profile_img = resp_data.user.avatar;
+            if (user_profile_img) {
+                fs.unlink(resp_data.user.avatar, function () { });
+                const user_obj = {
+                    avatar: ""
+                };
+                let user_data = await user_helper.update_user_by_id(authUserId, user_obj);
+                if (user_data.status === 1) {
+                    logger.info("Updated user profile", user_data);
+                    res.status(config.OK_STATUS).json(user_data);
+                    common_helper
+                            .sync_user_data_to_auth(authUserId, {
+                                picture: ""
+                            })
+                            .then(function (response) { })
+                            .catch(function (error) { });
+                } else {
+                    logger.error("Error while deleting user avatar = ", user_data);
+                    res.status(config.INTERNAL_SERVER_ERROR).json({
+                        user_data
+                    });
+                }
+            } else {
+                return res.status(config.BAD_REQUEST).json({
+                    status: 0,
+                    message: "no image found"
+                });
+            }
+        } else {
+            return res.status(config.BAD_REQUEST).json({
+                status: 0,
+                message: "no user found"
+            });
+        }
+    } catch (e) {
+        return res.status(config.INTERNAL_SERVER_ERROR).json({
+            status: 0,
+            message: "Something went wrong"
+        });
+    }
+});
+
+/**
  * @api {put} /user/profile/photo Profile Picture - Update
  * @apiName Profile Picture - Update
  * @apiGroup User
