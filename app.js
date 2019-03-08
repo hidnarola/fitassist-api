@@ -120,7 +120,7 @@ app.use(function (req, res, next) {
 
 var serverpath = "http://localhost:3300/";
 if (app.get("env") != "development") {
-  serverpath = "http://167.99.90.169:3300/";
+  serverpath = "https://167.99.90.169:3300/";
 }
 
 
@@ -148,6 +148,7 @@ var server = app.listen(config.node_port || 3000, function () {
   console.log('Server is running on :', (config.node_port || 3300));
 
 });
+
 socket.init(server);
 
 module.exports = app;

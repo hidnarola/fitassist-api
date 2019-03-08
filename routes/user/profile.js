@@ -428,9 +428,7 @@ router.delete("/photo", async (req, res) => {
                     logger.info("Updated user profile", user_data);
                     res.status(config.OK_STATUS).json(user_data);
                     common_helper
-                            .sync_user_data_to_auth(authUserId, {
-                                picture: ""
-                            })
+                            .sync_user_data_to_auth(authUserId, {picture: ""})
                             .then(function (response) { })
                             .catch(function (error) { });
                 } else {
