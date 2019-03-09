@@ -21,6 +21,8 @@
     "express-jwt-authz": "^1.0.0",
     "express-validator": "^5.0.3",
     "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "https": "^1.0.0",
     "jsonwebtoken": "^8.0.1",
     "jwks-rsa": "^1.2.1",
     "jwt-decode": "^2.2.0",

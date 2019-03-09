@@ -2,4 +2,4 @@ nbproject
 node_modules
 log_file.log
 uploads/
-
+.env
