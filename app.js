@@ -161,7 +161,7 @@ if (config.IS_HTTPS === 'true') {
 }
 
 server.listen(config.node_port || 3000, function () {
-    console.log('Server is running on :', (config.node_port || 3300));
+    console.log('Server is running on :',serverpath, (config.node_port || 3300));
 });
 
 socket.init(server);
