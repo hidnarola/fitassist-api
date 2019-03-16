@@ -3,3 +3,4 @@ node_modules
 log_file.log
 uploads/
 .env
+command.sh
