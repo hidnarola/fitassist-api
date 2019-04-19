@@ -77,7 +77,7 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {
           $first: "$badges.task"
         },
         createdAt: {
-          $first: "$badges.createdAt"
+          $first: "$createdAt"
         }
       }
     },
@@ -88,7 +88,7 @@ badges_assign_helper.get_all_badges = async (condition = {}, sort = {
     if (limit) {
       aggregate.push(limit);
     }
-
+    
     var badges = await BadgesAssign.aggregate(aggregate);
     if (badges) {
       return {
