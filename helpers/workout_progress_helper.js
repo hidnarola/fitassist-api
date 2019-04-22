@@ -587,21 +587,21 @@ workout_progress_helper.user_body_progress = async (id) => {
                 })
             }
 
-            var first = _.first(body_progress);
-            var last = _.last(body_progress);
-            var bodypartKeys = ["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "height", "weight", "heartRate"];
-
+            var first = Object.create(_.first(body_progress));
+            var last = Object.create(_.last(body_progress));
+            
+            var bodypartKeys = ["neck", "shoulders", "chest", "upperArm", "waist", "forearm", "hips", "thigh", "calf", "height"];
+            
             for (let key of bodypartKeys) {
                 first[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, first[key]);
                 first[key] = parseFloat(first[key]).toFixed(2);
                 last[key] = await common_helper.convertUnits("cm", bodyMeasurementUnit, last[key]);
                 last[key] = parseFloat(last[key]).toFixed(2);
             }
-
-            first.weight = await common_helper.convertUnits("gram", weightUnit, first.weight);
-            first.weight = first.weight.toFixed(2);
-            last.weight = await common_helper.convertUnits("gram", weightUnit, last.weight);
-            last.weight = last.weight.toFixed(2);
+            
+            first.weight = (await common_helper.convertUnits("gram", weightUnit, first.weight)).toFixed(2);            
+            last.weight = (await common_helper.convertUnits("gram", weightUnit, last.weight)).toFixed(2);
+                  
             var bodyProgress = {
                 "neck": {
                     start: first.neck,

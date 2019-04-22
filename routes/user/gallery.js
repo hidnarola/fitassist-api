@@ -148,7 +148,7 @@ router.post("/", async (req, res) => {
             var files = [].concat(req.files.images);
             var dir = "./uploads/gallery";
             var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-
+            var increment = 1;
             async.eachSeries(
               files,
               function (file, loop_callback) {
@@ -158,7 +158,7 @@ router.post("/", async (req, res) => {
                     fs.mkdirSync(dir);
                   }
                   extention = path.extname(file.name);
-                  filename = "user_post_" + new Date().getTime() + extention;
+                  filename = `user_post_${new Date().getTime()}_${increment}${extention}`;
                   file.mv(dir + "/" + filename, function (err) {
                     if (err) {
                       logger.error("There was an issue in uploading image");
@@ -173,7 +173,7 @@ router.post("/", async (req, res) => {
                       );
                       location = "uploads/gallery/" + filename;
                       file_path_array.push(location);
-
+                      increment++;
                       loop_callback();
                     }
                   });

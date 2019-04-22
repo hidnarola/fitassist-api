@@ -127,7 +127,11 @@ user_post_helper.get_user_post_photos = async (username, sort = {$sort: {created
                     "images.isDeleted": 0
                 }
             },
-            sort,
+            {
+                $sort: {
+                  "images._id": -1
+                }
+              },
             skip,
             limit,
             {

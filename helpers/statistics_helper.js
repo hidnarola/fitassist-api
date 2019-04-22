@@ -724,7 +724,7 @@ statistics_helper.get_overview_single_data = async (condition = {}, date = null)
       }
       w.fields.speed = {
         total: Math.round(await common_helper.convertUnits("kmph", speedUnit, totalSpeed)),
-        unit: ""
+        unit: speedUnit
       }
     }
 
@@ -944,7 +944,7 @@ statistics_helper.get_statistics_single_data = async (condition = {}, date = nul
       }
       w.fields.speed = {
         total: Math.round(await common_helper.convertUnits("kmph", speedUnit, totalSpeed)),
-        unit: ""
+        unit: speedUnit
       }
     }
 
