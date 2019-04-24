@@ -92,7 +92,8 @@ user_post_helper.get_user_post_photos = async (username, sort = {$sort: {created
         var user_post_photos = await UserPost.aggregate([
             {
                 $match: {
-                    "isDeleted": 0
+                    "isDeleted": 0,
+                    "postType": "gallery"
                 }
             },
             {
