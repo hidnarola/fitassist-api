@@ -31,6 +31,7 @@ app.use(fileUpload({
     }
 }));
 
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -106,10 +107,12 @@ app.use(function (req, res, next) {
 var index = require("./routes/index");
 var admin = require("./routes/admin");
 var user = require("./routes/user");
+var nutrition = require("./routes/nutritiondb");
 
 app.use("/", index);
 app.use("/user", user);
 app.use("/admin", admin);
+app.use("/nutritiondb", nutrition);
 
 // error handlers
 
