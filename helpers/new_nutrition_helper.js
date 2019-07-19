@@ -81,6 +81,85 @@ new_nutrition_helper.insert_proximates = async proximates_object => {
 
 
 
+// search food ingredients 
+new_nutrition_helper.search_proximates = async (
+  projectObject,
+  searchObject,
+  start,
+  offset
+) => {
+  try {
+    var proximates = await Proximates.aggregate([
+      projectObject,
+      searchObject,
+      // {
+      //   $lookup: {
+      //     from: "friends",
+      //     localField: "authUserId",
+      //     foreignField: "friendId",
+      //     as: "rightside"
+      //   }
+      // },
+
+      // {
+      //   $lookup: {
+      //     from: "friends",
+      //     localField: "authUserId",
+      //     foreignField: "userId",
+      //     as: "leftside"
+      //   }
+      // },
+      // {
+      //   $project: {
+      //     firstName: 1,
+      //     fullName: 1,
+      //     firstName: 1,
+      //     lastName: 1,
+      //     avatar: 1,
+      //     authUserId: 1,
+      //     username: 1,
+      //     totalFriends: {
+      //       $concatArrays: ["$leftside", "$rightside"]
+      //     }
+      //   }
+      // },
+      start,
+      offset
+    ]);
+    // _.each(proximates, (user, index) => {
+    //   var total_friends = user.totalFriends;
+    //   var cnt = 0;
+    //   _.each(total_friends, (friend, i) => {
+    //     if (friend.status == 2) {
+    //       cnt++;
+    //     }
+    //   });
+    //   user.friendsCount = cnt;
+    //   delete user.totalFriends;
+    // });
+
+    if (proximates) {
+      return {
+        status: 1,
+        message: "proximates found",
+        proximates: proximates
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No proximates available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding proximates",
+      error: err
+    };
+  }
+};
+
+
 /*
  * insert_nutrition is used to insert multiple inorganics data into inorganics collection
  * 
