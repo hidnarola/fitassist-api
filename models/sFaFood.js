@@ -114,6 +114,6 @@ var SfaFoodSchema = new Schema({
     });
 
 // Compile model from schema
-var SfaFaFood = mongoose.model("sfaFood", SfaFoodSchema, "sfaFood");
+var sfaFood = mongoose.model("sfaFood", SfaFoodSchema, "sfaFood");
 
-module.exports = SfaFaFood;
+module.exports = sfaFood;
