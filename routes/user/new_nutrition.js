@@ -48,6 +48,16 @@ router.post("/ingrident/search", async (req, res) => {
     monoFaFood :1,
     polyFaFood :1,
     cholesterol :1,
+    _1tsp: 1,
+  _1tbsp: 1,
+  _1cup: 1,
+  _1leaf: 1,
+  _1large: 1,
+  _1medium: 1,
+  _1root: 1,
+  _1small: 1,
+  _1extra_large:1,
+  _1tip: 1,
     foodName: {
           $ifNull: ["$foodName", ""]
     }

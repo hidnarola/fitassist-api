@@ -40,112 +40,142 @@ var ProximatesSchema = new Schema({
     fat: {
         type: String,
     },
-    carbohydrate:{
+    carbohydrate: {
         type: String
     },
-    energyKcal:{
+    energyKcal: {
         type: String
     },
-    energyKj : {
+    energyKj: {
         type: String
     },
-    starch : {
+    starch: {
         type: String
     },
-    oligosaccharide : {
+    oligosaccharide: {
         type: String
     },
-    totalSugars : {
+    totalSugars: {
         type: String
     },
-    glucose : {
+    glucose: {
         type: String
     },
-    galactose : {
+    galactose: {
         type: String
     },
-    fructose : {
+    fructose: {
         type: String
     },
-    sucrose : {
+    sucrose: {
         type: String
     },
-    maltose : {
+    maltose: {
         type: String
     },
-    lactose : {
+    lactose: {
         type: String
     },
-    alcohol : {
+    alcohol: {
         type: String
     },
-    nsp : {
+    nsp: {
         type: String
     },
-    aoacFibre : {
+    aoacFibre: {
         type: String
     },
-    satdFaFa : {
+    satdFaFa: {
         type: String
     },
-    satdFaFd : {
+    satdFaFd: {
         type: String
     },
-    n6PolyFa : {
+    n6PolyFa: {
         type: String
     },
-    n6PolyFood : {
+    n6PolyFood: {
         type: String
     },
-    n3PolyFa : {
+    n3PolyFa: {
         type: String
     },
-    n3PolyFood : {
+    n3PolyFood: {
         type: String
     },
-    cisMonoFa : {
+    cisMonoFa: {
         type: String
     },
-    cisMonoFaFood : {
+    cisMonoFaFood: {
         type: String
     },
-    monoFaFood : {
+    monoFaFood: {
         type: String
     },
-    cisPolyuFa : {
+    cisPolyuFa: {
         type: String
     },
-    cisPolyFaFood : {
+    cisPolyFaFood: {
         type: String
     },
-    polyFaFood : {
+    polyFaFood: {
         type: String
     },
-    satFaExclBrFa : {
+    satFaExclBrFa: {
         type: String
     },
-    satFaExclBrFood : {
+    satFaExclBrFood: {
         type: String
     },
-    branchedChainFaFa : {
+    branchedChainFaFa: {
         type: String
     },
-    branchedChainFaFood : {
+    branchedChainFaFood: {
         type: String
     },
-    transFasFa : {
+    transFasFa: {
         type: String
     },
-    transFasFood : {
+    transFasFood: {
         type: String
     },
-    cholesterol : {
+    cholesterol: {
         type: String
     },
-    monoFaFa : {
+    monoFaFa: {
         type: String
     },
-    polyFaFa : {
+    polyFaFa: {
+        type: String
+    },
+    _1tsp: {
+        type: String
+    },
+    _1tbsp: {
+        type: String
+    },
+    _1cup: {
+        type: String
+    },
+    _1leaf: {
+        type: String
+    },
+    _1large: {
+        type: String
+    },
+    _1medium: {
+        type: String
+    },
+    _1root: {
+        type: String
+    },
+    _1small: {
+        type: String
+    },
+    _1extra_large:{
+        type: String
+    },
+    _1tip: {
         type: String
     }
 }, {
