@@ -70,9 +70,6 @@ router.post("/ingrident/search", async (req, res) => {
     }
   };
 
-  // var searchObject = {
-  // };
-
   var start = {
     $skip: parseInt(req.body.start ? req.body.start : 0)
   };
