@@ -6,6 +6,7 @@ var config = require("../../config");
 var logger = config.logger;
 var meals_helper = require("../../helpers/meals_helper");
 var common_helper = require("../../helpers/common_helper");
+var jwtDecode = require("jwt-decode");
 
 //  post meal
 router.post("/", async (req, res) => {
@@ -36,31 +37,39 @@ router.post("/", async (req, res) => {
         errorMessage: "ingredients is required"
       }
     };
+
+
+    if(req.body.meals_visibility && req.body.meals_visibility === 'public') {
+        schema.instructions = {
+            notEmpty: true,
+            errorMessage: "Instruction is required"
+        }
+    }
     req.checkBody(schema);
     var errors = req.validationErrors();
-  
+
     if (!errors) {
+        console.log('req.body.ingredientsIncluded => ',req.body.ingredientsIncluded);
       var meals_obj = {
 
         title: req.body.title,
-        notes: req.bosy.notes,
-        meals_type: req.bosy.meals_type,
-        meals_visibility: req.bosy.meals_visibility,
+        notes: req.body.notes,
+        meals_type: req.body.meals_type,
+        meals_visibility: req.body.meals_visibility,
         instructions: req.body.instructions,
         ingredientsIncluded: req.body.ingredientsIncluded,
         userId: authUserId,
-
       };
 
 
-      
+
       //image upload
       var filename;
       if (req.files && req.files["meal_img"]) {
         var file = req.files["meal_img"];
         var dir = "./uploads/meal";
         var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-  
+
         if (mimetype.indexOf(file.mimetype) != -1) {
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
@@ -75,6 +84,7 @@ router.post("/", async (req, res) => {
                 err: "There was an issue in uploading image"
               });
             } else {
+                meals_obj.image = "uploads/meal/" + filename;
               logger.trace("image has been uploaded. Image name = ", filename);
               //return res.send(200, "null");
             }
@@ -90,11 +100,10 @@ router.post("/", async (req, res) => {
         logger.info("Image not available to upload. Executing next instruction");
         //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
       }
-      meals_obj.image = "uploads/meal/" + filename;
-  
 
 
 
+      // insert recent ingredient
       let meal_data = await meals_helper.insert_meal(meals_obj);
       if (meal_data.status === 0) {
         logger.error("Error while inserting meal data = ", meal_data);
@@ -102,11 +111,35 @@ router.post("/", async (req, res) => {
           meal_data
         });
       } else {
+
+        // insert recent ingredient
+
+//         var find_ingredient= await Ingredient.countDocument({"user_id":"enqwfkrte"})
+// if(find_ingredient <10){
+//     var ingredient_id=req.body.ingredientsIncluded
+//     var find_ingredientsf= await Ingredient.find({"user_id":"enqwfkrte","":{$in:{ingredient_id}})
+//     if(find_ingredientsf ==null)
+//     {
+// // insert
+//     }
+// }
+
+
+//   else if{
+//     var find_ingredient= await Ingredient.countDocument({"user_id":"enqwfkrte"})
+//     if(find_ingredient <10){
+//         var ingredient_id=req.body.ingredientsIncluded
+//         var find_ingredientsf= await Ingredient.find({"user_id":"enqwfkrte","":{$in:{ingredient_id}})
+//         if(find_ingredientsf ==null)
+//         {
+//             //delete
+//     //insert
+//         }
+//     }
+//   }
+
         return res.status(config.OK_STATUS).json(meal_data);
       }
-
-
-
 
     } else {
       logger.error("Validation Error = ", errors);
