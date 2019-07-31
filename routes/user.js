@@ -74,7 +74,12 @@ router.use("/user_workouts", isBlockedCheck, auth, user_workouts);
 router.use("/dashboard", isBlockedCheck, auth, dashboard);
 router.use("/user_program", isBlockedCheck, auth, user_program);
 router.use("/statistics", isBlockedCheck, auth, statistics);
-router.use("/exercise_measurements", isBlockedCheck, auth, exercise_measurements);
+router.use(
+  "/exercise_measurements",
+  isBlockedCheck,
+  auth,
+  exercise_measurements
+);
 router.use("/progress", isBlockedCheck, auth, workout_progress);
 router.use("/body_fat_log", isBlockedCheck, auth, body_fat_logs);
 router.use("/widgets", isBlockedCheck, auth, widgets);

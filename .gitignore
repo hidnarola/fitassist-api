@@ -4,3 +4,4 @@ log_file.log
 uploads/
 .env
 command.sh
+.unibeautifyrc.yaml
