@@ -49,59 +49,59 @@ router.post("/", async (req, res) => {
     var errors = req.validationErrors();
   
     if (!errors) {
-        console.log('req.body.ingredientsIncluded => ',req.body.ingredientsIncluded);
-      var meals_obj = {
+      let meals_obj = {
 
         title: req.body.title,
         notes: req.body.notes,
         meals_type: req.body.meals_type,
         meals_visibility: req.body.meals_visibility,
         instructions: req.body.instructions,
-        ingredientsIncluded: req.body.ingredientsIncluded,
+        ingredientsIncluded: (typeof req.body.ingredientsIncluded === 'string') ? JSON.parse(req.body.ingredientsIncluded) : req.body.ingredientsIncluded ,
         userId: authUserId,
       };
 
 
       
       //image upload
-      var filename;
+      let filename;
+      let file;
       if (req.files && req.files["meal_img"]) {
-        var file = req.files["meal_img"];
+        file = req.files["meal_img"];
+        extention = path.extname(file.name);
+        filename = "meal_" + new Date().getTime() + extention;
+        meals_obj.image = "uploads/meal/" + filename;  
+      }
+      if (req.files && req.files["meal_img"]) {
         var dir = "./uploads/meal";
         var mimetype = ["image/png", "image/jpeg", "image/jpg"];
-  
+
         if (mimetype.indexOf(file.mimetype) != -1) {
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
           }
-          extention = path.extname(file.name);
-          filename = "meal_" + new Date().getTime() + extention;
           file.mv(dir + "/" + filename, function (err) {
             if (err) {
               logger.error("There was an issue in uploading image");
-              res.send({
+              return res.send({
                 status: config.MEDIA_ERROR_STATUS,
                 err: "There was an issue in uploading image"
               });
             } else {
-                meals_obj.image = "uploads/meal/" + filename;  
               logger.trace("image has been uploaded. Image name = ", filename);
-              //return res.send(200, "null");
             }
           });
         } else {
           logger.error("Image format is invalid");
-          res.send({
-            status: config.VALIDATION_FAILURE_STATUS,
-            err: "Image format is invalid"
+          return res.send({
+            status: config.MEDIA_ERROR_STATUS,
+            err: "Image format is invalid",
+            message: "Image format is invalid"
           });
         }
       } else {
         logger.info("Image not available to upload. Executing next instruction");
-        //res.send(config.MEDIA_ERROR_STATUS, "No image submitted");
       }
   
-
 
       // insert recent ingredient
       let meal_data = await meals_helper.insert_meal(meals_obj);
@@ -111,39 +111,11 @@ router.post("/", async (req, res) => {
           meal_data
         });
       } else {
-          
-        // insert recent ingredient
-
-//         var find_ingredient= await Ingredient.countDocument({"user_id":"enqwfkrte"})
-// if(find_ingredient <10){
-//     var ingredient_id=req.body.ingredientsIncluded
-//     var find_ingredientsf= await Ingredient.find({"user_id":"enqwfkrte","":{$in:{ingredient_id}})
-//     if(find_ingredientsf ==null)
-//     {
-// // insert
-//     }
-// }
-
-
-//   else if{
-//     var find_ingredient= await Ingredient.countDocument({"user_id":"enqwfkrte"})
-//     if(find_ingredient <10){
-//         var ingredient_id=req.body.ingredientsIncluded
-//         var find_ingredientsf= await Ingredient.find({"user_id":"enqwfkrte","":{$in:{ingredient_id}})
-//         if(find_ingredientsf ==null)
-//         {
-//             //delete
-//     //insert
-//         }
-//     }
-//   }
-
         return res.status(config.OK_STATUS).json(meal_data);
       }
-
     } else {
       logger.error("Validation Error = ", errors);
-      res.status(config.VALIDATION_FAILURE_STATUS).json({
+      return res.status(config.VALIDATION_FAILURE_STATUS).json({
         message: errors
       });
     }

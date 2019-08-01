@@ -25,6 +25,10 @@ module.exports = async function (req, res, next) {
       });
     }
   } catch (error) {
+    console.log('error middleware => ',error);
+    return res.status(config.UNAUTHORIZED).json({
+      message: 'Invalid token'
+    });
   }
 }
 
