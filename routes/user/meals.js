@@ -150,13 +150,12 @@ router.post("/search", async (req, res) => {
   };
   var projectObj = {
     $project: {
-      userId: 1,
-      notes: 1,
       title: 1,
-      image: 1,
       meals_type: 1,
       meals_visibility: 1,
-      instructions: 1
+      ingredientsIncluded: 1,
+      userId: 1,
+      image: 1
     }
   };
   var searchObj = {
