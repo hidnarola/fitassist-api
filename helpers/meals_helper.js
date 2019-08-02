@@ -20,6 +20,33 @@ meals_helper.search_meal = async (projectObj, searchObj, start, offset) => {
     var meal_rep = await Meals.aggregate([
       projectObj,
       searchObj,
+
+      {
+        $unwind: "$ingredientsIncluded"
+      },
+
+      {
+        $lookup: {
+          from: "proximates",
+          localField: "ingredientsIncluded.ingredient_id",
+          foreignField: "_id",
+          as: "mealsIngredient"
+        }
+      },
+      {
+        $unwind: "$mealsIngredient"
+      },
+      {
+        $group: {
+          _id: "$_id",
+          ingredients: { $addToSet: "$mealsIngredient" },
+          title: { $first: "$title" },
+          meals_type: { $first: "$meals_type" },
+          meals_visibility: { $first: "$meals_visibility" },
+          userId: { $first: "$userId" },
+          ingredientsIncluded: { $push: "$ingredientsIncluded" }
+        }
+      },
       start,
       offset
     ]);

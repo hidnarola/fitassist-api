@@ -137,7 +137,7 @@ router.post("/search", async (req, res) => {
   var searchObj = {
     $match: {
       title: value
-    }
+    },
   };
   var start = {
     $skip: parseInt(req.body.start ? req.body.start : 0)
