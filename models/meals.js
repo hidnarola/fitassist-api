@@ -10,7 +10,16 @@ var IngredientsIncludedSchema = new Schema({
     ingredient_id: { type: mongoose.Schema.Types.ObjectId, ref: "proximates" },
     serving_input: { type: Number },
     ingredient_unit: { type: String, default: 'g' },
-    count: { type: Number }
+    count: { type: Number },
+
+    totalKcl: { type: String },
+    totalfat: { type: String },
+    totalProtein: { type: String },
+    totalCarbs: { type: String },
+    totalSugar: { type: String },
+    totalWater: { type: String },
+    totalStarch: { type: String },
+    totalCholesterol: { type: String }
 });
 
 var MealsSchema = new Schema({

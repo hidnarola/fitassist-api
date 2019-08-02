@@ -3,6 +3,8 @@ var router = express.Router();
 var config = require("../../config");
 var user_helper = require("../../helpers/user_helper");
 var new_nutrition_helper = require("../../helpers/new_nutrition_helper");
+var jwtDecode = require("jwt-decode");
+var logger = config.logger;
 
 /**
  * @api {post} user/new_nutrition/ingrident/search Search users
@@ -90,5 +92,33 @@ router.post("/ingrident/search", async (req, res) => {
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
+
+
+// get recent ingredient list
+router.get("/ingrident/recent_ingredient", async (req, res) => {
+  logger.trace("Get all recent ingredient");
+  console.log("get recent ingredient list");
+
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  var resp_data = await new_nutrition_helper.get_recent_ingredient(
+    {
+      userId: authUserId
+    }
+  );
+  if (resp_data.status != 0) {
+    logger.trace("recent ingredient got successfully = ", resp_data);
+
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.error(
+      "Error occured while fetching recent ingredient = ",
+      resp_data
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  }
+});
+
 
 module.exports = router;

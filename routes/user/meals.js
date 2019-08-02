@@ -5,6 +5,7 @@ var router = express.Router();
 var config = require("../../config");
 var logger = config.logger;
 var meals_helper = require("../../helpers/meals_helper");
+var new_nutrition_helper = require("../../helpers/new_nutrition_helper");
 var common_helper = require("../../helpers/common_helper");
 var jwtDecode = require("jwt-decode");
 
@@ -70,6 +71,12 @@ router.post("/", async (req, res) => {
       filename = "meal_" + new Date().getTime() + extention;
       meals_obj.image = "uploads/meal/" + filename;
     }
+
+
+    // insert recent ingredient
+    let recent_ingredient = await new_nutrition_helper.insert_recent_ingredient(meals_obj);
+
+
     if (req.files && req.files["meal_img"]) {
       var dir = "./uploads/meal";
       var mimetype = ["image/png", "image/jpeg", "image/jpg"];

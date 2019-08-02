@@ -11,7 +11,7 @@ var pufa = require("./../models/pufa");
 var pufaFood = require("./../models/pufaFood");
 var phytosterols = require("./../models/phytosterols");
 var organic_acids = require("./../models/organic_acids");
-
+var RecentIngredient = require("./../models/recent_ingredient");
 
 var new_nutrition_helper = {};
 
@@ -463,6 +463,87 @@ new_nutrition_helper.insert_organic_acids = async organic_acids_object => {
     return {
       status: 0,
       message: "Error occured while inserting organic_acids",
+      error: err
+    };
+  }
+};
+
+
+// insert recent ingredient
+new_nutrition_helper.insert_recent_ingredient = async meals_obj => {
+  try {
+
+    var recent_ingredient = await RecentIngredient.find({ userId: meals_obj.userId });
+    console.log('recent_ingredient => ', recent_ingredient);
+    if (recent_ingredient && recent_ingredient.length > 0) {
+      // ingredients available for userId
+      console.log("ingredients available for userId ", meals_obj.userId);
+
+    } else {
+      // ingredients not available for userId
+
+      if(meals_obj.ingredientsIncluded && meals_obj.ingredientsIncluded.length > 0 && meals_obj.ingredientsIncluded.length < 11 ) {
+        // insert all ingredient 
+        var added_ingredient = await RecentIngredient.create({
+          userId: meals_obj.userId,
+          ingredients : meals_obj.ingredientsIncluded
+        })
+      
+        console.log("added_ingredient =>", added_ingredient);
+
+      } else {
+        console.log("no incoming ingredients");
+
+      }
+
+
+    }
+
+  } catch (error) {
+    console.log("error =>", error);
+  }
+
+
+}
+
+//get recent ingredient
+new_nutrition_helper.get_recent_ingredient = async condition => {
+  try {
+    var recent_ingredient = await RecentIngredient.aggregate([
+      {
+        $match: condition
+      },
+      { "$unwind": "$ingredients" },
+      {
+        "$lookup": {
+          "from": "proximates",
+          "localField": "ingredients.ingredient_id",
+          "foreignField": "_id",
+          "as": "ingredients"
+        }
+      },
+      { "$unwind": "$ingredients" },
+      {
+        "$group": {
+          "_id": "$_id",
+          "ingredients": { "$push": "$ingredients" },
+          "userId": { $first: "$userId" }
+        }
+      }
+    ]);
+    if (recent_ingredient) {
+      return {
+        status: 1,
+        message: "user's recent ingredient details found",
+        recent_ingredient: recent_ingredient
+      };
+    } else {
+      return { status: 2, message: "User's recent ingredient are not available" };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user's recent ingredient",
       error: err
     };
   }
