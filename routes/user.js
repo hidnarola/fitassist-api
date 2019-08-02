@@ -43,6 +43,7 @@ var programs_rating = require("./user/programs_rating");
 var follows = require("./user/follows");
 var new_nutrition = require("./user/new_nutrition");
 var meals = require("./user/meals");
+var user_meals = require("./user/user_meals");
 
 router.use("/measurement", isBlockedCheck, auth, body_measurement);
 router.use("/nutrition_preference", isBlockedCheck, auth, nutrition_preference);
@@ -90,5 +91,6 @@ router.use("/programs_rating", isBlockedCheck, auth, programs_rating);
 router.use("/follows", isBlockedCheck, auth, follows);
 router.use("/new_nutrition", isBlockedCheck, auth, new_nutrition);
 router.use("/meals", isBlockedCheck, auth, meals);
+router.use("/user_meals", isBlockedCheck, auth, user_meals);
 
 module.exports = router;
