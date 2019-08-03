@@ -475,23 +475,38 @@ new_nutrition_helper.insert_recent_ingredient = async meals_obj => {
 
     var recent_ingredient = await RecentIngredient.find({ userId: meals_obj.userId });
     console.log('recent_ingredient => ', recent_ingredient);
+    
     if (recent_ingredient && recent_ingredient.length > 0) {
       // ingredients available for userId
       console.log("ingredients available for userId ", meals_obj.userId);
+      
 
     } else {
       // ingredients not available for userId
+      console.log('meals_obj.ingredientsIncluded.length => ', meals_obj.ingredientsIncluded.length);
 
-      if(meals_obj.ingredientsIncluded && meals_obj.ingredientsIncluded.length > 0 && meals_obj.ingredientsIncluded.length < 11 ) {
+      if (meals_obj.ingredientsIncluded && meals_obj.ingredientsIncluded.length > 0 && meals_obj.ingredientsIncluded.length < 11) {
         // insert all ingredient 
         var added_ingredient = await RecentIngredient.create({
           userId: meals_obj.userId,
-          ingredients : meals_obj.ingredientsIncluded
+          ingredients: meals_obj.ingredientsIncluded
         })
-      
+
         console.log("added_ingredient =>", added_ingredient);
 
       } else {
+        
+        console.log('else => ');
+        // insert last 10 ingredient
+        var arr = meals_obj.ingredientsIncluded;
+        var oder_data = arr.slice(-10);
+        console.log('order_data => ', oder_data);
+
+        var added_ingredient = await RecentIngredient.create({
+          userId: meals_obj.userId,
+          ingredients: oder_data
+        })
+
         console.log("no incoming ingredients");
 
       }
@@ -502,7 +517,6 @@ new_nutrition_helper.insert_recent_ingredient = async meals_obj => {
   } catch (error) {
     console.log("error =>", error);
   }
-
 
 }
 

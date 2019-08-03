@@ -8,6 +8,7 @@ var Schema = mongoose.Schema;
 
 var IngredientsIncludedSchema = new Schema({
     ingredient_id: { type: mongoose.Schema.Types.ObjectId, ref: "proximates" },
+    createdAt: { type: Date, default: Date.now() }
 });
 
 var RecentIngredientSchema = new Schema({
