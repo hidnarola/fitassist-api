@@ -12,7 +12,8 @@ var pufaFood = require("./../models/pufaFood");
 var phytosterols = require("./../models/phytosterols");
 var organic_acids = require("./../models/organic_acids");
 var RecentIngredient = require("./../models/recent_ingredient");
-
+var _ = require("underscore");
+var mongoose = require("mongoose");
 var new_nutrition_helper = {};
 
 /*
@@ -473,13 +474,55 @@ new_nutrition_helper.insert_organic_acids = async organic_acids_object => {
 new_nutrition_helper.insert_recent_ingredient = async meals_obj => {
   try {
 
-    var recent_ingredient = await RecentIngredient.find({ userId: meals_obj.userId });
-    console.log('recent_ingredient => ', recent_ingredient);
-    
-    if (recent_ingredient && recent_ingredient.length > 0) {
+    let recent_ingredient = await RecentIngredient.findOne({ userId: meals_obj.userId });
+
+    if (recent_ingredient && recent_ingredient.ingredients && recent_ingredient.ingredients.length > 0) {
       // ingredients available for userId
-      console.log("ingredients available for userId ", meals_obj.userId);
-      
+
+      let _recent_ingredient = [];
+      recent_ingredient.ingredients.forEach(element => {
+        _recent_ingredient.push({
+          ...element,
+          ingredient_id: String(element.ingredient_id)
+        })
+      });
+      var _new_ingredient = meals_obj.ingredientsIncluded;
+
+      _new_ingredient.forEach((element, id) => {
+        let firstEl = _recent_ingredient[0];
+        let firstEl2 = element;
+
+        let _index = _.findIndex(_recent_ingredient, { 'ingredient_id': element.ingredient_id });
+
+        if (_index >= 0) {
+          // update createdAt
+          _recent_ingredient[_index] = {
+            ...element,
+            createdAt: new Date()
+          }
+        } else {
+          if (_recent_ingredient.length >= 10) {
+
+            // pop and push
+            _recent_ingredient = (_.sortBy(_recent_ingredient, ['createdAt'])).reverse();
+            _recent_ingredient.pop();
+            _recent_ingredient.push(element);
+          } else {
+
+            // push
+            _recent_ingredient.push(element);
+          }
+        }
+      });
+
+      // update query
+      var updated_object = await RecentIngredient.update({ "_id": recent_ingredient._id }, {
+        $set: {
+          ingredients: _recent_ingredient
+        }
+      })
+
+
 
     } else {
       // ingredients not available for userId
@@ -494,9 +537,8 @@ new_nutrition_helper.insert_recent_ingredient = async meals_obj => {
 
         console.log("added_ingredient =>", added_ingredient);
 
-      } else {
-        
-        console.log('else => ');
+      } else if (meals_obj.ingredientsIncluded.length > 10) {
+
         // insert last 10 ingredient
         var arr = meals_obj.ingredientsIncluded;
         var oder_data = arr.slice(-10);
@@ -507,8 +549,11 @@ new_nutrition_helper.insert_recent_ingredient = async meals_obj => {
           ingredients: oder_data
         })
 
-        console.log("no incoming ingredients");
 
+      } else {
+        // no incoming ingredients
+        console.log('else => ');
+        console.log("no incoming ingredients");
       }
 
 

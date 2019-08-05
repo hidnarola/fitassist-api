@@ -72,11 +72,6 @@ router.post("/", async (req, res) => {
       meals_obj.image = "uploads/meal/" + filename;
     }
 
-
-    // insert recent ingredient
-    let recent_ingredient = await new_nutrition_helper.insert_recent_ingredient(meals_obj);
-
-
     if (req.files && req.files["meal_img"]) {
       var dir = "./uploads/meal";
       var mimetype = ["image/png", "image/jpeg", "image/jpg"];
@@ -108,7 +103,11 @@ router.post("/", async (req, res) => {
       logger.info("Image not available to upload. Executing next instruction");
     }
 
-    // insert recent ingredient
+
+     // insert recent ingredient
+     let recent_ingredient = await new_nutrition_helper.insert_recent_ingredient(meals_obj);
+
+
     let meal_data = await meals_helper.insert_meal(meals_obj);
     if (meal_data.status === 0) {
       logger.error("Error while inserting meal data = ", meal_data);
