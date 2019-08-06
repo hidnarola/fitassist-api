@@ -13,7 +13,6 @@ var phytosterols = require("./../models/phytosterols");
 var organic_acids = require("./../models/organic_acids");
 var RecentIngredient = require("./../models/recent_ingredient");
 var _ = require("underscore");
-var mongoose = require("mongoose");
 var new_nutrition_helper = {};
 
 /*
