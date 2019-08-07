@@ -103,7 +103,7 @@ meals_helper.insert_favourite_meal = async meals_obj => {
     let recent_meals = await RecentMeal.findOne({ userId: meals_obj.userId });
 
     if (meals_obj.add) {
-      if (recent_meals && recent_meals.meals && recent_meals.meals.length > 0) {
+      if (recent_meals && recent_meals.meals ) {
         // meals available for userId
 
         let _recent_meal = [];
@@ -147,8 +147,33 @@ meals_helper.insert_favourite_meal = async meals_obj => {
           }
         })
 
-
-        return { status: 1, message: "meal added in favourite list", meal: meals_obj.meal_id  };
+        var new_recent_meals = await RecentMeal.aggregate([
+          {
+            $match: { userId: meals_obj.userId },
+          },
+          { "$unwind": "$meals" },
+          {
+            "$lookup": {
+              "from": "meals",
+              "localField": "meals.meal_id",
+              "foreignField": "_id",
+              "as": "meals"
+            }
+          },
+          { "$unwind": "$meals" },
+          {
+            $addFields: { "meals.isfav": true }
+          },
+          {
+            "$group": {
+              "_id": "$_id",
+              "meals": { "$push": "$meals" },
+              "userId": { $first: "$userId" }
+            }
+          }
+        ])
+        
+        return { status: 1, message: "meal added in favourite list", remove: false, meal: new_recent_meals };
 
 
       } else {
@@ -159,10 +184,37 @@ meals_helper.insert_favourite_meal = async meals_obj => {
           // insert all ingredient 
           var added_meals = await RecentMeal.create({
             userId: meals_obj.userId,
-            meals: [meals_obj.meal_id]
+            meals: [{"meal_id" : meals_obj.meal_id}]
           })
 
-          return { status: 1, message: "meal added in favourite list", meal: meals_obj.meal_id };
+          var new_recent_meals = await RecentMeal.aggregate([
+            {
+              $match: { userId: meals_obj.userId },
+            },
+            { "$unwind": "$meals" },
+            {
+              "$lookup": {
+                "from": "meals",
+                "localField": "meals.meal_id",
+                "foreignField": "_id",
+                "as": "meals"
+              }
+            },
+            { "$unwind": "$meals" },
+            {
+              $addFields: { "meals.isfav": true }
+            },
+            {
+              "$group": {
+                "_id": "$_id",
+                "meals": { "$push": "$meals" },
+                "userId": { $first: "$userId" }
+              }
+            }
+          ])
+
+
+          return { status: 1, message: "meal added in favourite list",remove: false, meal: new_recent_meals};
 
           console.log("added_meals =>", added_meals);
 
@@ -181,19 +233,38 @@ meals_helper.insert_favourite_meal = async meals_obj => {
 
       _recent_meal = _recent_meal.filter(element => element.meal_id !== meals_obj.meal_id)
 
-      // console.log('_recent_meal => ', JSON.stringify(_recent_meal));
-      // var _new_meal = meals_obj.meal_id;
-
-      // let _index = _.findIndex(_recent_meal, { 'meal_id': _new_meal });
-
-
       var updated_object = await RecentMeal.update({ "_id": recent_meals._id }, {
         $set: {
           meals: _recent_meal
         }
       })
-      return { status: 1, message: "meal removed from favourite", meal: meals_obj.meal_id  };
 
+      var new_recent_meals = await RecentMeal.aggregate([
+        {
+          $match: { userId: meals_obj.userId },
+        },
+        { "$unwind": "$meals" },
+        {
+          "$lookup": {
+            "from": "meals",
+            "localField": "meals.meal_id",
+            "foreignField": "_id",
+            "as": "meals"
+          }
+        },
+        { "$unwind": "$meals" },
+        {
+          $addFields: { "meals.isfav": true }
+        },
+        {
+          "$group": {
+            "_id": "$_id",
+            "meals": { "$push": "$meals" },
+            "userId": { $first: "$userId" }
+          }
+        }
+      ])
+      return { status: 1, message: "meal removed from favourites", remove: true, meal: new_recent_meals };
     }
 
   } catch (err) {
@@ -256,6 +327,7 @@ meals_helper.get_logdata_by_userid = async id => {
 };
 
 meals_helper.get_user_meal_by_id = async obj => {
+  console.log('obj => ',obj);
   try {
     var user_meal = await UserMeals.find(obj);
     if (user_meal) {
@@ -283,7 +355,7 @@ meals_helper.get_favourite_meals = async obj => {
   try {
     var user_meal = await RecentMeal.aggregate([
       {
-        $match:obj,
+        $match: obj,
       },
       { "$unwind": "$meals" },
       {
@@ -295,6 +367,9 @@ meals_helper.get_favourite_meals = async obj => {
         }
       },
       { "$unwind": "$meals" },
+      {
+        $addFields: { "meals.isfav": true }
+      },
       {
         "$group": {
           "_id": "$_id",
@@ -316,7 +391,7 @@ meals_helper.get_favourite_meals = async obj => {
       };
     }
   } catch (error) {
-    console.log('error => ',error);
+    console.log('error => ', error);
     return {
       status: 0,
       message: "Error occured while finding favurite meal data",
