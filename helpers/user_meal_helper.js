@@ -2,6 +2,7 @@ var UserMeals = require("./../models/user_meals");
 var RecentMeal = require("./../models/recent_meal");
 var _ = require("underscore");
 var meals_helper = {};
+var mongoose = require("mongoose");
 
 // not used
 meals_helper.insert_recent_meal = async meals_obj => {
@@ -235,14 +236,17 @@ meals_helper.insert_favourite_meal = async meals_obj => {
 
       console.log('_recent_meal => ',_recent_meal);
 
-      var updated_object = await RecentMeal.findOneAndUpdate({ "_id": recent_meals._id }, {
+      var updated_object = await RecentMeal.update({     "_id" : recent_meals._id },
+      {$pull : { "meals" : {"meal_id": mongoose.Types.ObjectId(meals_obj.meal_id) } } } )
+
+      // var updated_object = await RecentMeal.findOneAndUpdate({ "_id": recent_meals._id }, {
       
-          meals: _recent_meal
+      //     meals: _recent_meal
          
-      },{new:true})
+      // },{new:true})
 
       console.log('updated_object => ',updated_object);
-      console.log('_recent_meal => ',_recent_meal);
+      // console.log('_recent_meal => ',_recent_meal);
       
       var new_recent_meals = await RecentMeal.aggregate([
         {
