@@ -235,7 +235,7 @@ meals_helper.insert_favourite_meal = async meals_obj => {
 
       console.log('_recent_meal => ',_recent_meal);
 
-      var updated_object = await RecentMeal.updateOne({ "_id": recent_meals._id }, {
+      var updated_object = await RecentMeal.findOneAndUpdate({ "_id": recent_meals._id }, {
       
           meals: _recent_meal
          
@@ -244,32 +244,32 @@ meals_helper.insert_favourite_meal = async meals_obj => {
       console.log('updated_object => ',updated_object);
       console.log('_recent_meal => ',_recent_meal);
       
-      // var new_recent_meals = await RecentMeal.aggregate([
-      //   {
-      //     $match: { userId: meals_obj.userId },
-      //   },
-      //   { "$unwind": "$meals" },
-      //   {
-      //     "$lookup": {
-      //       "from": "meals",
-      //       "localField": "meals.meal_id",
-      //       "foreignField": "_id",
-      //       "as": "meals"
-      //     }
-      //   },
-      //   { "$unwind": "$meals" },
-      //   {
-      //     $addFields: { "meals.isfav": true }
-      //   },
-      //   {
-      //     "$group": {
-      //       "_id": "$_id",
-      //       "meals": { "$push": "$meals" },
-      //       "userId": { $first: "$userId" }
-      //     }
-      //   }
-      // ])
-      return { status: 1, message: "meal removed from favourites", remove: true, meal: null };
+      var new_recent_meals = await RecentMeal.aggregate([
+        {
+          $match: { userId: meals_obj.userId },
+        },
+        { "$unwind": "$meals" },
+        {
+          "$lookup": {
+            "from": "meals",
+            "localField": "meals.meal_id",
+            "foreignField": "_id",
+            "as": "meals"
+          }
+        },
+        { "$unwind": "$meals" },
+        {
+          $addFields: { "meals.isfav": true }
+        },
+        {
+          "$group": {
+            "_id": "$_id",
+            "meals": { "$push": "$meals" },
+            "userId": { $first: "$userId" }
+          }
+        }
+      ])
+      return { status: 1, message: "meal removed from favourites", remove: true, meal: new_recent_meals };
     }
 
   } catch (err) {
