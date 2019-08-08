@@ -107,7 +107,7 @@ router.post("/get_by_id_user_meal", async (req, res) => {
 
     let cond = {
       userId: authUserId,
-      logDate: {
+      date: {
         $gte: startdate,
         $lte: enddate
       }
