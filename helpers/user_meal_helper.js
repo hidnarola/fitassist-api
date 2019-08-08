@@ -242,6 +242,7 @@ meals_helper.insert_favourite_meal = async meals_obj => {
       })
 
       console.log('updated_object => ',updated_object);
+      console.log('_recent_meal => ',_recent_meal);
       
       var new_recent_meals = await RecentMeal.aggregate([
         {
