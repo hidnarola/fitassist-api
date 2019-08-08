@@ -236,9 +236,9 @@ meals_helper.insert_favourite_meal = async meals_obj => {
       console.log('_recent_meal => ',_recent_meal);
 
       var updated_object = await RecentMeal.updateOne({ "_id": recent_meals._id }, {
-        $set: {
+      
           meals: _recent_meal
-        }
+         
       })
 
       console.log('updated_object => ',updated_object);
