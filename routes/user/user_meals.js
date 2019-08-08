@@ -28,6 +28,10 @@ router.post("/", async (req, res) => {
   var errors = req.validationErrors();
   if (!errors) {
     let meal_data = await meals_helper.insert_meal(meals_obj);
+    
+    // insert recent meals
+    // let recent_meal = await meals_helper.insert_recent_meal(meals_obj);
+    
     if (meal_data.status === 0) {
       logger.error("Error while inserting meal data = ", meal_data);
       return res.status(config.BAD_REQUEST).json({
@@ -127,6 +131,62 @@ router.post("/get_by_id_user_meal", async (req, res) => {
       message: errors
     });
   }
+});
+
+router.post("/add_to_favourite", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  console.log('req.body => ',req.body);
+  var schema = {
+    meal_id: {
+      notEmpty: true,
+      errorMessage: "meal is required"
+    }
+  };
+  var meals_obj = {
+    meal_id: req.body.meal_id,
+    add: req.body.add,
+    userId: authUserId
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  if (!errors) {
+    let meal_data = await meals_helper.insert_favourite_meal(meals_obj);
+    
+    // insert recent meals
+    // let recent_meal = await meals_helper.insert_recent_meal(meals_obj);
+    
+    if (meal_data.status === 0) {
+      logger.error("Error while inserting favourite meal data = ", meal_data);
+      return res.status(config.BAD_REQUEST).json({
+        meal_data
+      });
+    } else {
+      return res.status(config.OK_STATUS).json(meal_data);
+    }
+  }
+  console.log(errors)
+});
+
+router.get("/get_favourite_meals", async (req, res) => {
+
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+
+  let cond = {
+    userId: authUserId
+  }
+
+  var resp_data = await meals_helper.get_favourite_meals(cond);
+    if (resp_data.status != 0) {
+      res.status(config.OK_STATUS).json(resp_data);
+    } else {
+      return res.status(config.BAD_REQUEST).json({
+        resp_data
+      });
+    } 
+
 });
 
 module.exports = router;
