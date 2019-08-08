@@ -231,7 +231,7 @@ meals_helper.insert_favourite_meal = async meals_obj => {
         })
       });
 
-      _recent_meal = _recent_meal.filter(element => element.meal_id !== meals_obj.meal_id)
+      _recent_meal = await _recent_meal.filter(element => element.meal_id !== meals_obj.meal_id)
 
       console.log('_recent_meal => ',_recent_meal);
 
