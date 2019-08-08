@@ -28,10 +28,10 @@ router.post("/", async (req, res) => {
   var errors = req.validationErrors();
   if (!errors) {
     let meal_data = await meals_helper.insert_meal(meals_obj);
-    
+
     // insert recent meals
     // let recent_meal = await meals_helper.insert_recent_meal(meals_obj);
-    
+
     if (meal_data.status === 0) {
       logger.error("Error while inserting meal data = ", meal_data);
       return res.status(config.BAD_REQUEST).json({
@@ -109,15 +109,24 @@ router.post("/get_by_id_user_meal", async (req, res) => {
     enddate.toISOString();
     enddate.format();
 
-    let cond = {
-      userId: authUserId,
-      date: {
-        $gte: startdate,
-        $lte: enddate
+    // let cond = {
+    //   userId: authUserId,
+    //   date: {
+    //     $gte: startdate,
+    //     $lte: enddate
+    //   }
+    // };
+    console.log("LOG DATE", logDate);
+    var searchObj = {
+      $match: {
+        userId: authUserId,
+        date: {
+          $eq: new Date(startdate)
+        }
       }
     };
 
-    var resp_data = await meals_helper.get_user_meal_by_id(cond);
+    var resp_data = await meals_helper.get_user_meal_by_id(searchObj);
     if (resp_data.status != 0) {
       res.status(config.OK_STATUS).json(resp_data);
     } else {
@@ -136,7 +145,7 @@ router.post("/get_by_id_user_meal", async (req, res) => {
 router.post("/add_to_favourite", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  console.log('req.body => ',req.body);
+  console.log("req.body => ", req.body);
   var schema = {
     meal_id: {
       notEmpty: true,
@@ -152,10 +161,10 @@ router.post("/add_to_favourite", async (req, res) => {
   var errors = req.validationErrors();
   if (!errors) {
     let meal_data = await meals_helper.insert_favourite_meal(meals_obj);
-    
+
     // insert recent meals
     // let recent_meal = await meals_helper.insert_recent_meal(meals_obj);
-    
+
     if (meal_data.status === 0) {
       logger.error("Error while inserting favourite meal data = ", meal_data);
       return res.status(config.BAD_REQUEST).json({
@@ -165,28 +174,25 @@ router.post("/add_to_favourite", async (req, res) => {
       return res.status(config.OK_STATUS).json(meal_data);
     }
   }
-  console.log(errors)
+  console.log(errors);
 });
 
 router.get("/get_favourite_meals", async (req, res) => {
-
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-
   let cond = {
     userId: authUserId
-  }
+  };
 
   var resp_data = await meals_helper.get_favourite_meals(cond);
-    if (resp_data.status != 0) {
-      res.status(config.OK_STATUS).json(resp_data);
-    } else {
-      return res.status(config.BAD_REQUEST).json({
-        resp_data
-      });
-    } 
-
+  if (resp_data.status != 0) {
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    return res.status(config.BAD_REQUEST).json({
+      resp_data
+    });
+  }
 });
 
 module.exports = router;
