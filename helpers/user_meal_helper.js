@@ -233,11 +233,11 @@ meals_helper.insert_favourite_meal = async meals_obj => {
 
       _recent_meal = await _recent_meal.filter(element => element.meal_id !== meals_obj.meal_id)
 
-      console.log('_recent_meal => ',_recent_meal);
+      console.log('_recent_meal => ',(_recent_meal).toJSON());
 
       var updated_object = await RecentMeal.update({ "_id": recent_meals._id }, {
         $set: {
-          meals: _recent_meal
+          meals: (_recent_meal).toJSON()
         }
       })
 
