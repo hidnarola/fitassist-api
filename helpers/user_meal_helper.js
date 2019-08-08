@@ -100,181 +100,59 @@ meals_helper.insert_recent_meal = async meals_obj => {
 
 meals_helper.insert_favourite_meal = async meals_obj => {
   try {
+    let recent_meals = await RecentMeal.findOne({ userId: meals_obj.userId});
+    // console.log('recent_meals => ',recent_meals);    
+    if(recent_meals!==null){
+      console.log('user is exits => ');
+      let checkMeal = await RecentMeal.findOne({ userId: meals_obj.userId,"meals.meal_id":meals_obj.meal_id});
+      if(checkMeal!==null){
+        console.log('user is exists but meal is exists so remove meal=> ');
+        // remove that meal id
+        var updated_object = await RecentMeal.update({"_id" : recent_meals._id },
+      {$pull : { "meals" : {"meal_id": mongoose.Types.ObjectId(meals_obj.meal_id) } } } )
+      }else{
+        console.log('user is found but meal is not found so add => ');
+        // meal Id add
+        var updated_object = await RecentMeal.update({"_id" : recent_meals._id },
+      {$push : { "meals" : {"meal_id": mongoose.Types.ObjectId(meals_obj.meal_id) } } } )
+      }
 
-    let recent_meals = await RecentMeal.findOne({ userId: meals_obj.userId });
-
-    if (meals_obj.add) {
-      if (recent_meals && recent_meals.meals ) {
-        // meals available for userId
-
-        let _recent_meal = [];
-        recent_meals.meals.forEach(element => {
-          _recent_meal.push({
-            ...element,
-            meal_id: String(element.meal_id)
-          })
-        });
-        console.log('_recent_meal => ', JSON.stringify(_recent_meal));
-        var _new_meal = meals_obj.meal_id;
-
-        let _index = _.findIndex(_recent_meal, { 'meal_id': _new_meal });
-
-        if (_index >= 0) {
-          // update createdAt
-          console.log('update => ');
-          _recent_meal[_index] = {
-            ..._recent_meal[_index],
-            createdAt: new Date()
-          }
-        } else {
-          if (_recent_meal.length >= 10) {
-            console.log('pop and push => ');
-            // pop and push
-            _recent_meal = (_.sortBy(_recent_meal, ['createdAt'])).reverse();
-            _recent_meal.pop();
-            _recent_meal.push(meals_obj);
-          } else {
-            console.log('push => ');
-            // push
-            _recent_meal.push(meals_obj);
-          }
+    }else{
+      var added_meals = await RecentMeal.create({
+        userId: meals_obj.userId,
+        meals: [{"meal_id" : meals_obj.meal_id}]
+      })
+      console.log('user is not found so added user and meal');
+    }
+    var new_recent_meals = await RecentMeal.aggregate([
+      {
+        $match: { userId: meals_obj.userId },
+      },
+      { "$unwind": "$meals" },
+      {
+        "$lookup": {
+          "from": "meals",
+          "localField": "meals.meal_id",
+          "foreignField": "_id",
+          "as": "meals"
         }
-        // });
-
-        // update query
-        var updated_object = await RecentMeal.update({ "_id": recent_meals._id }, {
-          $set: {
-            meals: _recent_meal
-          }
-        })
-
-        var new_recent_meals = await RecentMeal.aggregate([
-          {
-            $match: { userId: meals_obj.userId },
-          },
-          { "$unwind": "$meals" },
-          {
-            "$lookup": {
-              "from": "meals",
-              "localField": "meals.meal_id",
-              "foreignField": "_id",
-              "as": "meals"
-            }
-          },
-          { "$unwind": "$meals" },
-          {
-            $addFields: { "meals.isfav": true }
-          },
-          {
-            "$group": {
-              "_id": "$_id",
-              "meals": { "$push": "$meals" },
-              "userId": { $first: "$userId" }
-            }
-          }
-        ])
-        
-        return { status: 1, message: "meal added in favourite list", remove: false, meal: new_recent_meals };
-
-
-      } else {
-        // meal not available for userId
-        console.log('meals_obj.meal_id => ', meals_obj.meal_id);
-
-        if (meals_obj.meal_id) {
-          // insert all ingredient 
-          var added_meals = await RecentMeal.create({
-            userId: meals_obj.userId,
-            meals: [{"meal_id" : meals_obj.meal_id}]
-          })
-
-          var new_recent_meals = await RecentMeal.aggregate([
-            {
-              $match: { userId: meals_obj.userId },
-            },
-            { "$unwind": "$meals" },
-            {
-              "$lookup": {
-                "from": "meals",
-                "localField": "meals.meal_id",
-                "foreignField": "_id",
-                "as": "meals"
-              }
-            },
-            { "$unwind": "$meals" },
-            {
-              $addFields: { "meals.isfav": true }
-            },
-            {
-              "$group": {
-                "_id": "$_id",
-                "meals": { "$push": "$meals" },
-                "userId": { $first: "$userId" }
-              }
-            }
-          ])
-
-
-          return { status: 1, message: "meal added in favourite list",remove: false, meal: new_recent_meals};
-
-          console.log("added_meals =>", added_meals);
-
+      },
+      { "$unwind": "$meals" },
+      {
+        $addFields: { "meals.isfav": true }
+      },
+      {
+        "$group": {
+          "_id": "$_id",
+          "meals": { "$push": "$meals" },
+          "userId": { $first: "$userId" }
         }
       }
-    } else {
-      console.log(meals_obj.meal_id, meals_obj.add)
-
-      let _recent_meal = [];
-      recent_meals.meals.forEach(element => {
-        _recent_meal.push({
-          ...element,
-          meal_id: String(element.meal_id)
-        })
-      });
-
-      _recent_meal = await _recent_meal.filter(element => element.meal_id !== meals_obj.meal_id)
-
-      console.log('_recent_meal => ',_recent_meal);
-
-      var updated_object = await RecentMeal.update({     "_id" : recent_meals._id },
-      {$pull : { "meals" : {"meal_id": mongoose.Types.ObjectId(meals_obj.meal_id) } } } )
-
-      // var updated_object = await RecentMeal.findOneAndUpdate({ "_id": recent_meals._id }, {
+    ])
+    return { status: 1, message: "meal removed from favourites", remove: true, meal: new_recent_meals };
+    
       
-      //     meals: _recent_meal
-         
-      // },{new:true})
-
-      console.log('updated_object => ',updated_object);
-      // console.log('_recent_meal => ',_recent_meal);
-      
-      var new_recent_meals = await RecentMeal.aggregate([
-        {
-          $match: { userId: meals_obj.userId },
-        },
-        { "$unwind": "$meals" },
-        {
-          "$lookup": {
-            "from": "meals",
-            "localField": "meals.meal_id",
-            "foreignField": "_id",
-            "as": "meals"
-          }
-        },
-        { "$unwind": "$meals" },
-        {
-          $addFields: { "meals.isfav": true }
-        },
-        {
-          "$group": {
-            "_id": "$_id",
-            "meals": { "$push": "$meals" },
-            "userId": { $first: "$userId" }
-          }
-        }
-      ])
-      return { status: 1, message: "meal removed from favourites", remove: true, meal: new_recent_meals };
-    }
+    
 
   } catch (err) {
     console.log(err)
