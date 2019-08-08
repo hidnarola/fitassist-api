@@ -154,7 +154,6 @@ router.post("/add_to_favourite", async (req, res) => {
   };
   var meals_obj = {
     meal_id: req.body.meal_id,
-    add: req.body.add,
     userId: authUserId
   };
   req.checkBody(schema);
