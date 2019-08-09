@@ -81,6 +81,7 @@ new_nutrition_helper.insert_proximates = async proximates_object => {
 
 // search food ingredients 
 new_nutrition_helper.search_proximates = async (
+  value,
   projectObject,
   searchObject,
   start,
@@ -88,12 +89,154 @@ new_nutrition_helper.search_proximates = async (
 ) => {
   try {
     var proximates = await Proximates.aggregate([
-      projectObject,
+      {
+        $project: {
+          foodName1: { $split: ["$foodName", ", "] },
+          foodName: 1,
+          foodCode: 1,
+          description: 1,
+          group: 1,
+          mainDataReference: 1,
+          water: 1,
+          totalNitrogen: 1,
+          protein: 1,
+          fat: 1,
+          carbohydrate: 1,
+          energyKcal: 1,
+          energyKj: 1,
+          starch: 1,
+          totalSugars: 1,
+          glucose: 1,
+          galactose: 1,
+          fructose: 1,
+          sucrose: 1,
+          maltose: 1,
+          lactose: 1,
+          nsp: 1,
+          satdFaFd: 1,
+          monoFaFood: 1,
+          polyFaFood: 1,
+          cholesterol: 1,
+          _1tsp: 1,
+          _1tbsp: 1,
+          _1cup: 1,
+          _1leaf: 1,
+          _1large: 1,
+          _1medium: 1,
+          _1root: 1,
+          _1small: 1,
+          _1extra_large: 1,
+          _1tip: 1,
+        }
+      },
+
+
+      // { $unwind: "$foodName1" },
+      {
+        $group: {
+          _id: "$_id",
+          foodName1: { $first: "$foodName1" },
+          foodName: { $first: "$foodName" },
+
+
+          foodCode: { $first: "$foodCode" },
+          description: { $first: "$description" },
+          group: { $first: "$group" },
+          mainDataReference: { $first: "$mainDataReference" },
+          water: { $first: "$water" },
+          totalNitrogen: { $first: "$totalNitrogen" },
+          protein: { $first: "$protein" },
+          fat: { $first: "$fat" },
+          carbohydrate: { $first: "$carbohydrate" },
+          energyKcal: { $first: "$energyKcal" },
+          energyKj: { $first: "$energyKj" },
+          starch: { $first: "$starch" },
+          totalSugars: { $first: "$totalSugars" },
+          glucose: { $first: "$glucose" },
+          galactose: { $first: "$galactose" },
+          fructose: { $first: "$fructose" },
+          sucrose: { $first: "$sucrose" },
+          maltose: { $first: "$maltose" },
+          lactose: { $first: "$lactose" },
+          nsp: { $first: "$nsp" },
+          satdFaFd: { $first: "$satdFaFd" },
+          monoFaFood: { $first: "$monoFaFood" },
+          polyFaFood: { $first: "$polyFaFood" },
+          cholesterol: { $first: "$cholesterol" },
+          _1tsp: { $first: "$_1tsp" },
+          _1tbsp: { $first: "$_1tbsp" },
+          _1cup: { $first: "$_1cup" },
+          _1leaf: { $first: "$_1leaf" },
+          _1large: { $first: "$_1large" },
+          _1medium: { $first: "$_1medium" },
+          _1root: { $first: "$_1root" },
+          _1small: { $first: "$_1small" },
+          _1extra_large: { $first: "$_1extra_large" },
+          _1tip: { $first: "$_1tip" },
+
+        }
+      },
+      {
+        $project: {
+          foodName: "$foodName",
+          foodName1: "$foodName1",
+          foodName2: {
+            '$reduce': {
+              'input': '$foodName1',
+              'initialValue': '',
+              'in': {
+                '$concat': [
+                  '$$value',
+                  { '$cond': [{ '$eq': ['$$value', ''] }, '', ' '] },
+                  '$$this']
+              }
+            }
+
+          },
+
+          foodCode:"$foodCode",
+          description:"$description",
+          group:"$group",
+          mainDataReference:"$mainDataReference",
+          water:"$water",
+          totalNitrogen:"$totalNitrogen",
+          protein:"$protein",
+          fat:"$fat",
+          carbohydrate:"$carbohydrate",
+          energyKcal:"$energyKcal",
+          energyKj:"$energyKj",
+          starch:"$starch",
+          totalSugars:"$totalSugars",
+          glucose:"$glucose",
+          galactose:"$galactose",
+          fructose:"$fructose",
+          sucrose:"$sucrose",
+          maltose:"$maltose",
+          lactose:"$lactose",
+          nsp:"$nsp",
+          satdFaFd:"$satdFaFd",
+          monoFaFood:"$monoFaFood",
+          polyFaFood:"$polyFaFood",
+          cholesterol:"$cholesterol",
+          _1tsp:"$_1tsp",
+          _1tbsp:"$_1tbsp",
+          _1cup:"$_1cup",
+          _1leaf:"$_1leaf",
+          _1large:"$_1large",
+          _1medium:"$_1medium",
+          _1root:"$_1root",
+          _1small:"$_1small",
+          _1extra_large:"$_1extra_large",
+          _1tip:"$_1tip",
+
+
+        }
+      },
+      // projectObject,
       searchObject,
       start,
       offset
     ]);
-
 
     if (proximates) {
       return {
@@ -108,6 +251,7 @@ new_nutrition_helper.search_proximates = async (
       };
     }
   } catch (err) {
+    console.log(err)
     return {
       status: 0,
       message: "Error occured while finding proximates",
@@ -115,7 +259,6 @@ new_nutrition_helper.search_proximates = async (
     };
   }
 };
-
 
 /*
  * insert_nutrition is used to insert multiple inorganics data into inorganics collection
@@ -225,7 +368,6 @@ new_nutrition_helper.insert_vitamin_fractions = async vitamin_fractions_object =
  * @developed by "kba"
  */
 new_nutrition_helper.insert_sfaFa = async sfaFa_object => {
-  // console.log("sfaFa_object => ", sfaFa_object)
   try {
     let sfaFa_data = await SfaFa.insertMany(
       sfaFa_object
@@ -520,9 +662,6 @@ new_nutrition_helper.insert_recent_ingredient = async meals_obj => {
           ingredients: _recent_ingredient
         }
       })
-
-
-
     } else {
       // ingredients not available for userId
       console.log('meals_obj.ingredientsIncluded.length => ', meals_obj.ingredientsIncluded.length);

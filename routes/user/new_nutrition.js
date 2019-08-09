@@ -19,10 +19,19 @@ var logger = config.logger;
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/ingrident/search", async (req, res) => {
-  var re = new RegExp(req.body.name, "i");
+  var re = new RegExp((req.body.name).replace(/[^a-zA-Z ]/g, "").replace(/ +/g, " "), "i");
+  // var re = new RegExp('^' + req.body.name.replace(/[-/\^$*+?.()|[]{}]/g, '\$&') + '$', 'i')
+  var re1 = new RegExp(((req.body.name).replace(/[^a-zA-Z ]/g, "").replace(/ +/g, " ")).split(' ').reverse().join(' '), "i");
   value = {
     $regex: re
   };
+
+  // value= {
+  //   $or: [
+  //     {foodName1:{$regex:re}},
+  //     {foodName1:{$regex:re1}}
+  // ]
+  // }
 
   var projectObject = {
     $project: {
@@ -62,14 +71,22 @@ router.post("/ingrident/search", async (req, res) => {
       _1tip: 1,
       foodName: {
         $ifNull: ["$foodName", ""]
+      },
+      foodName1: {
+        $ifNull: ["$foodName1", ""]
       }
     }
   };
 
   var searchObject = {
     $match: {
-      foodName: value
-    }
+          
+      $or:[
+          {foodName2:{ "$regex": re }},
+          {foodName2:{ "$regex": re1 }},
+      ]  
+      
+  }
   };
 
   var start = {
@@ -80,6 +97,7 @@ router.post("/ingrident/search", async (req, res) => {
   };
 
   var resp_data = await new_nutrition_helper.search_proximates(
+    req.body.name,
     projectObject,
     searchObject,
     start,
@@ -97,7 +115,6 @@ router.post("/ingrident/search", async (req, res) => {
 // get recent ingredient list
 router.get("/ingrident/recent_ingredient", async (req, res) => {
   logger.trace("Get all recent ingredient");
-  console.log("get recent ingredient list");
 
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
