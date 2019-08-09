@@ -103,10 +103,10 @@ router.post("/", async (req, res) => {
       logger.info("Image not available to upload. Executing next instruction");
     }
 
-
-     // insert recent ingredient
-     let recent_ingredient = await new_nutrition_helper.insert_recent_ingredient(meals_obj);
-
+    // insert recent ingredient
+    let recent_ingredient = await new_nutrition_helper.insert_recent_ingredient(
+      meals_obj
+    );
 
     let meal_data = await meals_helper.insert_meal(meals_obj);
     if (meal_data.status === 0) {
@@ -126,6 +126,8 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/search", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
   var re = new RegExp(req.body.name, "i");
   value = {
     $regex: re
@@ -142,8 +144,9 @@ router.post("/search", async (req, res) => {
   };
   var searchObj = {
     $match: {
-      title: value
-    },
+      title: value,
+      userId: authUserId
+    }
   };
   var start = {
     $skip: parseInt(req.body.start ? req.body.start : 0)

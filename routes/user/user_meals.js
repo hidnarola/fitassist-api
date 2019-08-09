@@ -19,6 +19,13 @@ router.post("/", async (req, res) => {
       errorMessage: "date is required"
     }
   };
+  var startdate = moment(req.body.date).utcOffset(0);
+  startdate.toISOString();
+  startdate.format();
+
+  var User_meals_Details = await meals_helper.check_meal(startdate, authUserId);
+  console.log("STATUS============", User_meals_Details);
+
   var meals_obj = {
     meals: req.body.meals,
     date: req.body.date,
@@ -27,8 +34,22 @@ router.post("/", async (req, res) => {
   req.checkBody(schema);
   var errors = req.validationErrors();
   if (!errors) {
-    let meal_data = await meals_helper.insert_meal(meals_obj);
+    let meal_data = {};
 
+    if (User_meals_Details.status === 0) {
+      console.log("call Meal", meals_obj);
+      meal_data = await meals_helper.insert_meal(
+        meals_obj,
+        User_meals_Details,
+        0
+      );
+    } else {
+      meal_data = await meals_helper.insert_meal(
+        meals_obj.meals,
+        User_meals_Details,
+        1
+      );
+    }
     // insert recent meals
     // let recent_meal = await meals_helper.insert_recent_meal(meals_obj);
 
