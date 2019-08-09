@@ -159,7 +159,7 @@ meals_helper.insert_favourite_meal = async meals_obj => {
     ]);
     return {
       status: 1,
-      message: "meal removed from favourites",
+      message: "meal updated from favourites",
       remove: true,
       meal: new_recent_meals
     };
@@ -174,18 +174,48 @@ meals_helper.insert_favourite_meal = async meals_obj => {
   }
 };
 
-meals_helper.insert_meal = async meal_obj => {
-  let meal = new UserMeals(meal_obj);
+meals_helper.check_meal = async (data, id) => {
+  let meal_data = await UserMeals.find({ date: data, userId: id });
+  console.log("check meal", meal_data);
+  if (meal_data.length > 0) {
+    return { status: 1, message: "meal all ready exists", data: meal_data };
+  } else {
+    return { status: 0, message: "meal all ready not exists", data: meal_data };
+  }
+};
+
+meals_helper.insert_meal = async (meal_obj, oldData, status) => {
   try {
-    let meal_data = await meal.save();
-    if (meal_data) {
-      return { status: 1, message: "meal inserted", meal: meal_data };
+    if (status === 0) {
+      let meal = new UserMeals(meal_obj);
+      let meal_data = await meal.save();
+      if (meal_data) {
+        return { status: 1, message: "meal inserted", meal: meal_data };
+      } else {
+        return {
+          status: 0,
+          message: "Error occured while inserting meal"
+        };
+      }
     } else {
-      return {
-        status: 0,
-        message: "Error occured while inserting meal",
-        error: err
-      };
+      console.log("meal_obj", meal_obj);
+      let newData = meal_obj;
+      const { _id } = oldData.data[0];
+      let meal_data = await UserMeals.findOneAndUpdate(
+        { _id: _id },
+        { $set: { meals: meal_obj } },
+        { new: true }
+      );
+      if (meal_data) {
+        console.log("UPDATED MEAL", meal_data);
+        return { status: 1, message: "meal updated", meal: meal_data };
+      } else {
+        return {
+          status: 0,
+          message: "Error occured while inserting meal",
+          meal: meal_data
+        };
+      }
     }
   } catch (err) {
     return {
