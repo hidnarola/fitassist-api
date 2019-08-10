@@ -111,7 +111,6 @@ router.post("/ingrident/search", async (req, res) => {
   );
 
   if (resp_data.status == 1) {
-    console.log(resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
     res.status(config.OK_STATUS).json(resp_data);
