@@ -19,9 +19,20 @@ var logger = config.logger;
  * @apiError (Error 4xx) {String} message Validation or error message.
  */
 router.post("/ingrident/search", async (req, res) => {
-  var re = new RegExp((req.body.name).replace(/[^a-zA-Z ]/g, "").replace(/ +/g, " "), "i");
+  var re = new RegExp(
+    req.body.name.replace(/[^a-zA-Z ]/g, "").replace(/ +/g, " "),
+    "i"
+  );
   // var re = new RegExp('^' + req.body.name.replace(/[-/\^$*+?.()|[]{}]/g, '\$&') + '$', 'i')
-  var re1 = new RegExp(((req.body.name).replace(/[^a-zA-Z ]/g, "").replace(/ +/g, " ")).split(' ').reverse().join(' '), "i");
+  var re1 = new RegExp(
+    req.body.name
+      .replace(/[^a-zA-Z ]/g, "")
+      .replace(/ +/g, " ")
+      .split(" ")
+      .reverse()
+      .join(" "),
+    "i"
+  );
   value = {
     $regex: re
   };
@@ -80,13 +91,8 @@ router.post("/ingrident/search", async (req, res) => {
 
   var searchObject = {
     $match: {
-          
-      $or:[
-          {foodName2:{ "$regex": re }},
-          {foodName2:{ "$regex": re1 }},
-      ]  
-      
-  }
+      $or: [{ foodName2: { $regex: re } }, { foodName2: { $regex: re1 } }]
+    }
   };
 
   var start = {
@@ -105,12 +111,12 @@ router.post("/ingrident/search", async (req, res) => {
   );
 
   if (resp_data.status == 1) {
+    console.log(resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   } else {
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
-
 
 // get recent ingredient list
 router.get("/ingrident/recent_ingredient", async (req, res) => {
@@ -119,11 +125,9 @@ router.get("/ingrident/recent_ingredient", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
 
-  var resp_data = await new_nutrition_helper.get_recent_ingredient(
-    {
-      userId: authUserId
-    }
-  );
+  var resp_data = await new_nutrition_helper.get_recent_ingredient({
+    userId: authUserId
+  });
   if (resp_data.status != 0) {
     logger.trace("recent ingredient got successfully = ", resp_data);
 
@@ -136,6 +140,5 @@ router.get("/ingrident/recent_ingredient", async (req, res) => {
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
-
 
 module.exports = router;

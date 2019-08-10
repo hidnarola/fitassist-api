@@ -126,9 +126,22 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/search", async (req, res) => {
+  var re = new RegExp(
+    req.body.name.replace(/[^a-zA-Z ]/g, "").replace(/ +/g, " "),
+    "i"
+  );
+  var re1 = new RegExp(
+    req.body.name
+      .replace(/[^a-zA-Z ]/g, "")
+      .replace(/ +/g, " ")
+      .split(" ")
+      .reverse()
+      .join(" "),
+    "i"
+  );
+
   var decoded = jwtDecode(req.headers["authorization"]);
   var authUserId = decoded.sub;
-  var re = new RegExp(req.body.name, "i");
   value = {
     $regex: re
   };
@@ -142,10 +155,12 @@ router.post("/search", async (req, res) => {
       image: 1
     }
   };
-  var searchObj = {
+  var searchObject = {
     $match: {
-      title: value,
-      userId: authUserId
+      $and: [
+        { $or: [{ title2: { $regex: re } }, { title2: { $regex: re1 } }] },
+        { userId: authUserId }
+      ]
     }
   };
   var start = {
@@ -156,7 +171,7 @@ router.post("/search", async (req, res) => {
   };
   let resp_data = await meals_helper.search_meal(
     projectObj,
-    searchObj,
+    searchObject,
     start,
     offset
   );

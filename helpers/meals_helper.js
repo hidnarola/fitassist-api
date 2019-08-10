@@ -18,7 +18,53 @@ meals_helper.insert_meal = async meal_obj => {
 meals_helper.search_meal = async (projectObj, searchObj, start, offset) => {
   try {
     var meal_rep = await Meals.aggregate([
-      projectObj,
+      {
+        $project: {
+          title1: { $split: ["$title", ", "] },
+          title: 1,
+          meals_type: 1,
+          meals_visibility: 1,
+          ingredientsIncluded: 1,
+          userId: 1,
+          image: 1
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          title1: { $first: "$title1" },
+          title: { $first: "$title" },
+          meals_type: { $first: "$meals_type" },
+          meals_visibility: { $first: "$meals_visibility" },
+          ingredientsIncluded: { $first: "$ingredientsIncluded" },
+          userId: { $first: "$userId" },
+          image: { $first: "$image" }
+        }
+      },
+      {
+        $project: {
+          title: "$title",
+          title1: "$title1",
+          title2: {
+            $reduce: {
+              input: "$title1",
+              initialValue: "",
+              in: {
+                $concat: [
+                  "$$value",
+                  { $cond: [{ $eq: ["$$value", ""] }, "", " "] },
+                  "$$this"
+                ]
+              }
+            }
+          },
+          meals_type: "$meals_type",
+          meals_visibility: "$meals_visibility",
+          ingredientsIncluded: "$ingredientsIncluded",
+          userId: "$userId",
+          image: "$image"
+        }
+      },
       searchObj,
       // {
       //   $unwind: "$ingredientsIncluded"
