@@ -1,5 +1,6 @@
 var Meals = require("./../models/meals");
 var meals_helper = {};
+var mongoose = require("mongoose");
 
 meals_helper.insert_meal = async meal_obj => {
   let meal = new Meals(meal_obj);
@@ -66,57 +67,6 @@ meals_helper.search_meal = async (projectObj, searchObj, start, offset) => {
         }
       },
       searchObj,
-      // {
-      //   $unwind: "$ingredientsIncluded"
-      // },
-      // {
-      //   $lookup: {
-      //     from: "proximates",
-      //     localField: "ingredientsIncluded.ingredient_id",
-      //     foreignField: "_id",
-      //     as: "mealsIngredient"
-      //   }
-      // },
-      // {
-      //   $unwind: "$mealsIngredient"
-      // },
-      // {
-      //   $lookup: {
-      //     from: "recent_meal",
-      //     localField: "userId",
-      //     foreignField: "userId",
-      //     as: "recent_meals"
-      //   }
-      // },
-      // {
-      //   $unwind: "$recent_meals"
-      // },
-      // {
-      //   $group: {
-      //     _id: "$_id",
-      //     ingredients: { $addToSet: "$mealsIngredient" },
-      //     title: { $first: "$title" },
-      //     meals_type: { $first: "$meals_type" },
-      //     meals_visibility: { $first: "$meals_visibility" },
-      //     userId: { $first: "$userId" },
-      //     ingredientsIncluded: { $push: "$ingredientsIncluded" },
-      //     recent_meals: { $first: "$recent_meals.meals.meal_id" },
-      //   }
-      // },
-      // {
-      //   $project: {
-      //     _id: 1,
-      //     ingredients: 1,
-      //     title:1,
-      //     meals_type: 1,
-      //     meals_visibility:1,
-      //     userId:1,
-      //     ingredientsIncluded: 1,
-      //     "isfav": {
-      //       $in: ["$_id", "$recent_meals"]
-      //     }
-      //   }
-      // },
       start,
       offset
     ]);
@@ -136,6 +86,104 @@ meals_helper.search_meal = async (projectObj, searchObj, start, offset) => {
     return {
       status: 0,
       message: "Error occured while finding meal",
+      error: err
+    };
+  }
+};
+
+meals_helper.get_meal_id = async id => {
+  try {
+    // var meal = await Meals.findOne({
+    //   _id: id
+    // });
+
+
+    var meal = await Meals.aggregate([
+      {
+        $match: { "_id": mongoose.Types.ObjectId(id) }
+      },
+      {
+        $unwind: "$ingredientsIncluded"
+      },
+      {
+        $lookup: {
+          from: "proximates",
+          localField: "ingredientsIncluded.ingredient_id",
+          foreignField: "_id",
+          as: "ingredient_detail"
+        }
+      },
+      {
+        $unwind: "$ingredient_detail"
+      },
+      {
+        $group: {
+          _id: "$_id",
+          "ingredient_detail": { "$push": "$ingredient_detail" },
+          title: { $first: "$title" },
+          notes: { $first: "$notes" },
+          meals_type: { $first: "$meals_type" },
+          meals_visibility: { $first: "$meals_visibility" },
+          instructions: { $first: "$instructions" },
+          userId: { $first: "$userId" },
+          image: { $first: "$image" },
+          ingredientsIncluded: {
+            $addToSet: "$$ROOT.ingredientsIncluded"
+          }
+        }
+      }
+
+    ])
+
+    if (meal) {
+      return {
+        status: 1,
+        message: "meal found",
+        meal: meal
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No meal available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding meal ",
+      error: err
+    };
+  }
+};
+
+meals_helper.edit_meal_id = async (id, mealObj) => {
+  try {
+    var meal = await Meals.findOneAndUpdate(
+      {
+          _id: id
+      },
+      mealObj,
+      {
+          new : true
+      }
+);
+
+    if (meal) {
+      return {
+        status: 1,
+        message: "meal edited successfully",
+        meal: meal
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No meal available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while editing meal ",
       error: err
     };
   }
