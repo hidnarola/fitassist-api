@@ -157,9 +157,16 @@ router.post("/search", async (req, res) => {
   };
   var searchObject = {
     $match: {
-      $and: [
-        { $or: [{ title2: { $regex: re } }, { title2: { $regex: re1 } }] },
-        { userId: authUserId }
+      $or: [
+        {
+          meals_visibility: "public"
+        },
+        {
+          $and: [
+            { $or: [{ title2: { $regex: re } }, { title2: { $regex: re1 } }] },
+            { userId: authUserId }
+          ]
+        }
       ]
     }
   };
