@@ -189,4 +189,16 @@ router.post("/search", async (req, res) => {
   }
 });
 
+// get meal detail from id
+router.get("/:meal_id", async (req, res) => {
+  var resp_data = await meals_helper.get_meal_id(req.params.meal_id);
+  if (resp_data.status == 0) {
+    console.log("Error occured while fetching meal = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+  } else {
+    console.log("meal got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  }
+});
+
 module.exports = router;
