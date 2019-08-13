@@ -14,6 +14,7 @@ var organic_acids = require("./../models/organic_acids");
 var RecentIngredient = require("./../models/recent_ingredient");
 var _ = require("underscore");
 var new_nutrition_helper = {};
+var autocorrect = require('autocorrect')();
 
 /*
  * insert_nutrition is used to insert multiple nutrion data into nutrition collection
@@ -88,6 +89,7 @@ new_nutrition_helper.search_proximates = async (
   offset
 ) => {
   try {
+    console.log("autocorrect =>", autocorrect(value));
     var proximates = await Proximates.aggregate([
       {
         $project: {

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "async": "^2.6.0",
+    "autocorrect": "^1.2.0",
     "base64-img": "^1.0.4",
     "bcrypt": "^1.0.3",
     "body-parser": "~1.13.2",

@@ -5,6 +5,7 @@ var user_helper = require("../../helpers/user_helper");
 var new_nutrition_helper = require("../../helpers/new_nutrition_helper");
 var jwtDecode = require("jwt-decode");
 var logger = config.logger;
+var autocorrect = require('autocorrect')();
 
 /**
  * @api {post} user/new_nutrition/ingrident/search Search users
@@ -103,7 +104,7 @@ router.post("/ingrident/search", async (req, res) => {
   };
 
   var resp_data = await new_nutrition_helper.search_proximates(
-    (req.body.name).toLowerCase(),
+    autocorrect((req.body.name).toLowerCase()),
     projectObject,
     searchObject,
     start,
