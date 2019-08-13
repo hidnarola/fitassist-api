@@ -160,13 +160,13 @@ meals_helper.edit_meal_id = async (id, mealObj) => {
   try {
     var meal = await Meals.findOneAndUpdate(
       {
-          _id: id
+      _id: id
       },
       mealObj,
       {
-          new : true
+      new: true    
       }
-);
+      );
 
     if (meal) {
       return {

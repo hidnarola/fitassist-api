@@ -103,7 +103,7 @@ router.post("/ingrident/search", async (req, res) => {
   };
 
   var resp_data = await new_nutrition_helper.search_proximates(
-    req.body.name,
+    (req.body.name).toLowerCase(),
     projectObject,
     searchObject,
     start,

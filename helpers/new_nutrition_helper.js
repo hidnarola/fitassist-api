@@ -91,7 +91,7 @@ new_nutrition_helper.search_proximates = async (
     var proximates = await Proximates.aggregate([
       {
         $project: {
-          foodName1: { $split: ["$foodName", ", "] },
+          foodName1: { $split: [{ $toLower: "$foodName" }, ", "] },
           foodName: 1,
           foodCode: 1,
           description: 1,
@@ -127,6 +127,7 @@ new_nutrition_helper.search_proximates = async (
           _1small: 1,
           _1extra_large: 1,
           _1tip: 1,
+          food3 : value.split(" "),
         }
       },
 
@@ -173,13 +174,13 @@ new_nutrition_helper.search_proximates = async (
           _1small: { $first: "$_1small" },
           _1extra_large: { $first: "$_1extra_large" },
           _1tip: { $first: "$_1tip" },
-
+          food3: { $first: "$food3" }
         }
       },
       {
         $project: {
-          foodName: "$foodName",
-          foodName1: "$foodName1",
+          foodName: 1,
+          foodName1: 1,
           foodName2: {
             '$reduce': {
               'input': '$foodName1',
@@ -228,12 +229,17 @@ new_nutrition_helper.search_proximates = async (
           _1small:"$_1small",
           _1extra_large:"$_1extra_large",
           _1tip:"$_1tip",
-
-
+          food3:"$food3",
+          food4: { $setIntersection: ["$food3" , "$foodName1" ]},
+          moreThanFive: { $gte: [ {$size: { $setIntersection: ["$food3" , "$foodName1" ]} }, {$size:"$food3"} ] }
         }
       },
-      // projectObject,
-      searchObject,
+      // {
+      //   $match: { food4 : {  }
+
+      //   }
+      // },
+      { $match: { moreThanFive : true }} ,
       start,
       offset
     ]);
