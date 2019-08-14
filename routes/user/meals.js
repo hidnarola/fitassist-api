@@ -203,7 +203,52 @@ router.get("/:meal_id", async (req, res) => {
 
 //edit meal API
 router.post("/:meal_id", async (req,res) => {
-  var resp_data = await meals_helper.edit_meal_id(req.params.meal_id, req.body);
+
+  let body = req.body
+
+  //image upload
+  let filename;
+  let file;
+  if (req.files && req.files["meal_img"]) {
+    file = req.files["meal_img"];
+    extention = path.extname(file.name);
+    filename = "meal_" + new Date().getTime() + extention;
+    body.image = "uploads/meal/" + filename;
+  }
+
+  if (req.files && req.files["meal_img"]) {
+    var dir = "./uploads/meal";
+    var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+
+    if (mimetype.indexOf(file.mimetype) != -1) {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+      }
+      file.mv(dir + "/" + filename, function(err) {
+        if (err) {
+          logger.error("There was an issue in uploading image");
+          return res.send({
+            status: config.MEDIA_ERROR_STATUS,
+            err: "There was an issue in uploading image"
+          });
+        } else {
+          logger.trace("image has been uploaded. Image name = ", filename);
+        }
+      });
+    } else {
+      logger.error("Image format is invalid");
+      return res.send({
+        status: config.MEDIA_ERROR_STATUS,
+        err: "Image format is invalid",
+        message: "Image format is invalid"
+      });
+    }
+  } else {
+    logger.info("Image not available to upload. Executing next instruction");
+  }
+
+
+  var resp_data = await meals_helper.edit_meal_id(req.params.meal_id, body);
   if (resp_data.status == 0) {
     console.log("Error occured while updating meal = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
