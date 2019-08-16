@@ -158,7 +158,7 @@ meals_helper.get_meal_id = async id => {
 
 meals_helper.edit_meal_id = async (id, mealObj) => {
   try {
-    var meal = await Meals.findOneAndUpdate(
+    var meal = await Meals.findByIdAndUpdate(
       {
       _id: id
       },

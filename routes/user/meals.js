@@ -80,7 +80,7 @@ router.post("/", async (req, res) => {
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
         }
-        file.mv(dir + "/" + filename, function(err) {
+        file.mv(dir + "/" + filename, function (err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             return res.send({
@@ -202,18 +202,19 @@ router.get("/:meal_id", async (req, res) => {
 });
 
 //edit meal API
-router.post("/:meal_id", async (req,res) => {
+router.post("/:meal_id", async (req, res) => {
 
-  let body = req.body
-
+  let _body = req.body
+  _body.ingredientsIncluded = JSON.parse(_body.ingredientsIncluded);
   //image upload
   let filename;
   let file;
+
   if (req.files && req.files["meal_img"]) {
     file = req.files["meal_img"];
     extention = path.extname(file.name);
     filename = "meal_" + new Date().getTime() + extention;
-    body.image = "uploads/meal/" + filename;
+    _body.image = "uploads/meal/" + filename;
   }
 
   if (req.files && req.files["meal_img"]) {
@@ -224,7 +225,7 @@ router.post("/:meal_id", async (req,res) => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
       }
-      file.mv(dir + "/" + filename, function(err) {
+      file.mv(dir + "/" + filename, async function (err) {
         if (err) {
           logger.error("There was an issue in uploading image");
           return res.send({
@@ -232,7 +233,25 @@ router.post("/:meal_id", async (req,res) => {
             err: "There was an issue in uploading image"
           });
         } else {
+
           logger.trace("image has been uploaded. Image name = ", filename);
+          console.log("image has been uploaded. Image name = ", filename);
+          // delete existing image
+          var resp_data = await meals_helper.get_meal_id(
+            req.params.meal_id
+          );
+          try {
+            if(resp_data && resp_data.meal && resp_data.meal[0] && resp_data.meal[0].image)  {
+              console.log('resp_data => ',resp_data.meal[0].image);
+              fs.unlink(resp_data.meal[0].image, function (err, Success) {
+                if (err) {
+                  console.log("Image could not deleted => ", resp_data.meal.image, err);
+                }
+              });
+            }
+          } catch (error) {
+            console.log("error==>", error)
+           }
         }
       });
     } else {
@@ -246,9 +265,7 @@ router.post("/:meal_id", async (req,res) => {
   } else {
     logger.info("Image not available to upload. Executing next instruction");
   }
-
-
-  var resp_data = await meals_helper.edit_meal_id(req.params.meal_id, body);
+  var resp_data = await meals_helper.edit_meal_id(req.params.meal_id, _body);
   if (resp_data.status == 0) {
     console.log("Error occured while updating meal = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
