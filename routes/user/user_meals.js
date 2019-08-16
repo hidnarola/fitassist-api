@@ -64,6 +64,8 @@ router.post("/", async (req, res) => {
   }
 });
 
+//
+
 router.post("/get_log_dates_by_date", async (req, res) => {
   var decoded = jwtDecode(req.headers["authorization"]);
   var schema = {
@@ -78,16 +80,20 @@ router.post("/get_log_dates_by_date", async (req, res) => {
   if (!errors) {
     var authUserId = decoded.sub;
     var check = await moment(req.body.logDate).utc(0);
-    var startCheck = await moment(check).subtract(2, "month");
-    var endCheck = await moment(check).add(2, "month");
+    var startCheck = await moment(check).subtract(1, "month");
+    var endCheck = await moment(check).add(1, "month");
 
-    var log_data = await meals_helper.get_logdata_by_userid({
-      userId: authUserId,
-      date: {
-        $gte: startCheck,
-        $lte: endCheck
+    var searchObj = {
+      $match: {
+        userId: authUserId,
+        date: {
+          $gte: new Date(startCheck),
+          $lte: new Date(endCheck)
+        }
       }
-    });
+    };
+
+    var log_data = await meals_helper.get_logdata_by_userid(searchObj);
 
     if (log_data.status != 0) {
       res.status(config.OK_STATUS).json(log_data);
@@ -212,6 +218,34 @@ router.get("/get_favourite_meals", async (req, res) => {
     return res.status(config.BAD_REQUEST).json({
       resp_data
     });
+  }
+});
+
+// UPDATE USER MEAL
+router.post("/:meal_id", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+
+  if (req.params.meal_id) {
+    var startdate = moment(req.body.date).utcOffset(0);
+    startdate.toISOString();
+    startdate.format();
+    var body = req.body;
+    var resp_data = await meals_helper.update_meal(req.params.meal_id, body);
+
+    if (resp_data.status == 0) {
+      console.log("Error occured while updating meal = ", resp_data);
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      console.log("meal updated successfully = ", resp_data);
+      res.status(config.OK_STATUS).json(resp_data);
+    }
+  } else {
+    let resp_data = {
+      status: 0,
+      message: "Meal ID is required"
+    };
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 

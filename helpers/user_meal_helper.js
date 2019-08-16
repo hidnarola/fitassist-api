@@ -226,9 +226,64 @@ meals_helper.insert_meal = async (meal_obj, oldData, status) => {
   }
 };
 
-meals_helper.get_logdata_by_userid = async id => {
+meals_helper.update_meal = async (id, body) => {
   try {
-    var logdata = await UserMeals.find(id);
+    var data = {
+      date: new Date(body.date)
+    };
+    var meal_data = await UserMeals.findOneAndUpdate({ _id: id }, data, {
+      new: true
+    });
+    if (meal_data) {
+      return {
+        status: 1,
+        message: "meal edited successfully",
+        meal: meal_data
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No meal available"
+      };
+    }
+  } catch (error) {
+    return {
+      status: 0,
+      message: "Error occured while editing meal ",
+      error: error
+    };
+  }
+};
+
+meals_helper.get_logdata_by_userid = async match => {
+  try {
+    var search = [
+      match,
+      {
+        $unwind: "$meals"
+      },
+      {
+        $lookup: {
+          from: "meals",
+          localField: "meals.meal_id",
+          foreignField: "_id",
+          as: "user_meals"
+        }
+      },
+      {
+        $unwind: "$user_meals"
+      },
+      {
+        $group: {
+          _id: "$_id",
+          meals: { $push: "$user_meals" },
+          date: { $first: "$date" },
+          userId: { $first: "$userId" }
+        }
+      }
+    ];
+    console.log("SEARCH==>", JSON.stringify(search));
+    var logdata = await UserMeals.aggregate(search);
     //        var logdata = await Measurement.aggregate(id);
     if (logdata) {
       return {
