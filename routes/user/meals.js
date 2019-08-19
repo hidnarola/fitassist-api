@@ -108,6 +108,7 @@ router.post("/", async (req, res) => {
       meals_obj
     );
 
+    // insert meal
     let meal_data = await meals_helper.insert_meal(meals_obj);
     if (meal_data.status === 0) {
       logger.error("Error while inserting meal data = ", meal_data);
@@ -115,7 +116,24 @@ router.post("/", async (req, res) => {
         meal_data
       });
     } else {
-      return res.status(config.OK_STATUS).json(meal_data);
+      // insert private meal of public meal
+      meals_obj['meals_visibility'] = "private";
+
+      if (req.body.meals_visibility && req.body.meals_visibility === "public") {
+
+        let public_meal_data = await meals_helper.insert_meal(meals_obj);
+        if (public_meal_data.status === 0) {
+          logger.error("Error while inserting meal data = ", meal_data);
+          return res.status(config.BAD_REQUEST).json({
+            public_meal_data
+          });
+        } else {
+          return res.status(config.OK_STATUS).json(public_meal_data);
+        }
+
+      } else {
+        return res.status(config.OK_STATUS).json(meal_data);
+      }
     }
   } else {
     logger.error("Validation Error = ", errors);
@@ -125,6 +143,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+// search meal
 router.post("/search", async (req, res) => {
   var re = new RegExp(
     req.body.name.replace(/[^a-zA-Z ]/g, "").replace(/ +/g, " "),
@@ -163,12 +182,59 @@ router.post("/search", async (req, res) => {
         },
         {
           $and: [
-            { $or: [{ title2: { $regex: re } }, { title2: { $regex: re1 } }] },
+            { $or: [{ title2: { $regex: re } }, { title2: { $regex: re1 } }] }
+            ,
             { userId: authUserId }
           ]
-        }
+        },
+      ],
+      $or: [
+        { meals_visibility: { $ne: "public" } },
+        { userId: { $ne: authUserId } }
       ]
     }
+  };
+
+  var filterObj = {
+    $addFields: {
+      flag: {
+        $cond: {
+          if: {
+            $and: [{
+              $eq: ["$userId", authUserId]
+            },
+            {
+              $eq: ["$meals_visibility", "public"]
+            },
+
+            ]
+          },
+          then: "null",
+          else: {
+            $cond: {
+              if: {
+                $and: [{
+                  $ne: ["$userId", authUserId]
+                },
+                {
+                  $eq: ["$meals_visibility", "private"]
+                },
+
+                ]
+              },
+              then: "null",
+              else: "yes"
+
+            }
+          }
+
+        }
+      }
+    }
+  };
+
+  var matchObj = {
+    $match: { flag: "yes" }
   };
   var start = {
     $skip: parseInt(req.body.start ? req.body.start : 0)
@@ -179,6 +245,8 @@ router.post("/search", async (req, res) => {
   let resp_data = await meals_helper.search_meal(
     projectObj,
     searchObject,
+    filterObj,
+    matchObj,
     start,
     offset
   );
@@ -241,8 +309,8 @@ router.post("/:meal_id", async (req, res) => {
             req.params.meal_id
           );
           try {
-            if(resp_data && resp_data.meal && resp_data.meal[0] && resp_data.meal[0].image)  {
-              console.log('resp_data => ',resp_data.meal[0].image);
+            if (resp_data && resp_data.meal && resp_data.meal[0] && resp_data.meal[0].image) {
+              console.log('resp_data => ', resp_data.meal[0].image);
               fs.unlink(resp_data.meal[0].image, function (err, Success) {
                 if (err) {
                   console.log("Image could not deleted => ", resp_data.meal.image, err);
@@ -251,7 +319,7 @@ router.post("/:meal_id", async (req, res) => {
             }
           } catch (error) {
             console.log("error==>", error)
-           }
+          }
         }
       });
     } else {

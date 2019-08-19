@@ -16,7 +16,7 @@ meals_helper.insert_meal = async meal_obj => {
   }
 };
 
-meals_helper.search_meal = async (projectObj, searchObj, start, offset) => {
+meals_helper.search_meal = async (projectObj, searchObj,filterObj,matchObj, start, offset) => {
   try {
     var meal_rep = await Meals.aggregate([
       {
@@ -66,7 +66,8 @@ meals_helper.search_meal = async (projectObj, searchObj, start, offset) => {
           image: "$image"
         }
       },
-      searchObj,
+      filterObj,
+      matchObj,
       start,
       offset
     ]);
@@ -160,13 +161,13 @@ meals_helper.edit_meal_id = async (id, mealObj) => {
   try {
     var meal = await Meals.findByIdAndUpdate(
       {
-      _id: id
+        _id: id
       },
       mealObj,
       {
-      new: true    
+        new: true
       }
-      );
+    );
 
     if (meal) {
       return {
