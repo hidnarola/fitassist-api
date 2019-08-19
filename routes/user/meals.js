@@ -116,10 +116,25 @@ router.post("/", async (req, res) => {
         meal_data
       });
     } else {
-      // insert private meal of public meal
+      // insert private meal copy of public meal
       meals_obj['meals_visibility'] = "private";
 
       if (req.body.meals_visibility && req.body.meals_visibility === "public") {
+        
+        // insert image for public meal 
+  
+          filename = "meal_" + new Date().getTime() + Math.floor(Math.random() * 10000000) + extention;
+          meals_obj.image = "uploads/meal/" + filename;
+          console.log('filename => ',filename);
+          file.mv(dir + "/" + filename, function (err) {
+            if (err) {
+              logger.error("There was an issue in uploading image");
+              return res.send({
+                status: config.MEDIA_ERROR_STATUS,
+                err: "There was an issue in uploading image"
+              });
+            }
+          });
 
         let public_meal_data = await meals_helper.insert_meal(meals_obj);
         if (public_meal_data.status === 0) {
