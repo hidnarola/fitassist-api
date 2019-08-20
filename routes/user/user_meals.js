@@ -230,8 +230,15 @@ router.post("/:meal_id", async (req, res) => {
     var startdate = moment(req.body.date).utcOffset(0);
     startdate.toISOString();
     startdate.format();
-    var body = req.body;
-    var resp_data = await meals_helper.update_meal(req.params.meal_id, body);
+
+    var data = {
+      date: req.body.date,
+      userMealID: req.body.meal_id,
+      userId: authUserId,
+      status: req.body.status ? req.body.status : null
+    };
+
+    var resp_data = await meals_helper.update_meal(req.params.meal_id, data);
 
     if (resp_data.status == 0) {
       console.log("Error occured while updating meal = ", resp_data);

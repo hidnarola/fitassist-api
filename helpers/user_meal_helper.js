@@ -228,24 +228,92 @@ meals_helper.insert_meal = async (meal_obj, oldData, status) => {
 
 meals_helper.update_meal = async (id, body) => {
   try {
-    var data = {
-      date: new Date(body.date)
-    };
-    var meal_data = await UserMeals.findOneAndUpdate({ _id: id }, data, {
-      new: true
-    });
-    if (meal_data) {
-      return {
-        status: 1,
-        message: "meal edited successfully",
-        meal: meal_data
-      };
+    var meal_data = await UserMeals.findOne({ _id: body.userMealID });
+    if (meal_data != null) {
+      let checkMeal = await UserMeals.findOne({
+        "meals.meal_id": id,
+        userId: body.userId
+      });
+      console.log("CALL CODE=====", body);
+      if (checkMeal != null) {
+        console.log("FIND MEAL", checkMeal);
+        var updated_object = null;
+        if (body.status === null) {
+          updated_object = await UserMeals.findByIdAndUpdate(
+            { _id: meal_data._id },
+            {
+              $pull: {
+                meals: { meal_id: mongoose.Types.ObjectId(id) }
+              }
+            },
+            {
+              new: true
+            }
+          );
+        }
+
+        var add_meal = await meals_helper.check_meal(body.date, body.userId);
+        var meal_detail = null;
+        let meals_obj = {
+          meals: [{ meal_id: id }],
+          date: body.date,
+          userId: body.userId
+        };
+        console.log("Check Status", add_meal);
+        if (add_meal.status === 0) {
+          let meal = new UserMeals(meals_obj);
+          meal_detail = await meal.save();
+          console.log("CAll ===== 0", meal_detail);
+        } else {
+          meal_detail = await UserMeals.findOneAndUpdate(
+            { date: body.date, userId: body.userId },
+            {
+              $push: {
+                meals: { meal_id: mongoose.Types.ObjectId(id) }
+              }
+            },
+            {
+              new: true
+            }
+          );
+          console.log("call Meal 1====", meal_detail);
+        }
+        if (meal_detail) {
+          console.log("UPDATED MEAL", meal_detail);
+          return { status: 1, message: "meal updated", meal: meal_detail };
+        } else {
+          return {
+            status: 0,
+            message: "Error occured while inserting meal",
+            meal: meal_detail
+          };
+        }
+      }
     } else {
       return {
-        status: 2,
-        message: "No meal available"
+        status: 0,
+        message: "Error occured while inserting meal",
+        meal: meal_data
       };
     }
+    // var data = {
+    //   date: new Date(body.date)
+    // };
+    // var meal_data = await UserMeals.findOneAndUpdate({ _id: id }, data, {
+    //   new: true
+    // });
+    // if (meal_data) {
+    //   return {
+    //     status: 1,
+    //     message: "meal edited successfully",
+    //     meal: meal_data
+    //   };
+    // } else {
+    //   return {
+    //     status: 2,
+    //     message: "No meal available"
+    //   };
+    // }
   } catch (error) {
     return {
       status: 0,
@@ -282,7 +350,7 @@ meals_helper.get_logdata_by_userid = async match => {
         }
       }
     ];
-    console.log("SEARCH==>", JSON.stringify(search));
+
     var logdata = await UserMeals.aggregate(search);
     //        var logdata = await Measurement.aggregate(id);
     if (logdata) {
