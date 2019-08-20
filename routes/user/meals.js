@@ -116,10 +116,24 @@ router.post("/", async (req, res) => {
         meal_data
       });
     } else {
-      // insert private meal of public meal
+      // insert private meal copy of public meal
       meals_obj['meals_visibility'] = "private";
 
       if (req.body.meals_visibility && req.body.meals_visibility === "public") {
+        
+        // insert image for public meal 
+  
+          filename = "meal_" + new Date().getTime() + Math.floor(Math.random() * 10000000) + extention;
+          meals_obj.image = "uploads/meal/" + filename;
+          file.mv(dir + "/" + filename, function (err) {
+            if (err) {
+              logger.error("There was an issue in uploading image");
+              return res.send({
+                status: config.MEDIA_ERROR_STATUS,
+                err: "There was an issue in uploading image"
+              });
+            }
+          });
 
         let public_meal_data = await meals_helper.insert_meal(meals_obj);
         if (public_meal_data.status === 0) {
@@ -261,10 +275,8 @@ router.post("/search", async (req, res) => {
 router.get("/:meal_id", async (req, res) => {
   var resp_data = await meals_helper.get_meal_id(req.params.meal_id);
   if (resp_data.status == 0) {
-    console.log("Error occured while fetching meal = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    console.log("meal got successfully = ", resp_data);
     res.status(config.OK_STATUS).json(resp_data);
   }
 });
@@ -274,72 +286,71 @@ router.post("/:meal_id", async (req, res) => {
 
   let _body = req.body
   _body.ingredientsIncluded = JSON.parse(_body.ingredientsIncluded);
-  //image upload
-  let filename;
-  let file;
+ 
+     if (req.files && req.files["meal_img"]) {
 
-  if (req.files && req.files["meal_img"]) {
-    file = req.files["meal_img"];
-    extention = path.extname(file.name);
-    filename = "meal_" + new Date().getTime() + extention;
-    _body.image = "uploads/meal/" + filename;
-  }
+      let filename;
+      let file;
 
-  if (req.files && req.files["meal_img"]) {
-    var dir = "./uploads/meal";
-    var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+      file = req.files["meal_img"];
+      extention = path.extname(file.name);
+      filename = "meal_" + new Date().getTime() + extention;
 
-    if (mimetype.indexOf(file.mimetype) != -1) {
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-      }
-      file.mv(dir + "/" + filename, async function (err) {
-        if (err) {
-          logger.error("There was an issue in uploading image");
-          return res.send({
-            status: config.MEDIA_ERROR_STATUS,
-            err: "There was an issue in uploading image"
-          });
-        } else {
 
-          logger.trace("image has been uploaded. Image name = ", filename);
-          console.log("image has been uploaded. Image name = ", filename);
-          // delete existing image
-          var resp_data = await meals_helper.get_meal_id(
-            req.params.meal_id
-          );
-          try {
-            if (resp_data && resp_data.meal && resp_data.meal[0] && resp_data.meal[0].image) {
-              console.log('resp_data => ', resp_data.meal[0].image);
-              fs.unlink(resp_data.meal[0].image, function (err, Success) {
-                if (err) {
-                  console.log("Image could not deleted => ", resp_data.meal.image, err);
-                }
-              });
-            }
-          } catch (error) {
-            console.log("error==>", error)
+       var dir = "./uploads/meal";
+       var mimetype = ["image/png", "image/jpeg", "image/jpg"];
+ 
+       if (mimetype.indexOf(file.mimetype) != -1) {
+         if (!fs.existsSync(dir)) {
+           fs.mkdirSync(dir);
+         }
+
+         // delete old image
+
+         var resp_old_data = await meals_helper.get_meal_id(
+          req.params.meal_id
+        );
+
+        fs.unlink(resp_old_data.meal[0].image, async function (err, Success) {
+          if (err) {
           }
-        }
-      });
-    } else {
-      logger.error("Image format is invalid");
-      return res.send({
-        status: config.MEDIA_ERROR_STATUS,
-        err: "Image format is invalid",
-        message: "Image format is invalid"
-      });
-    }
-  } else {
-    logger.info("Image not available to upload. Executing next instruction");
-  }
-  var resp_data = await meals_helper.edit_meal_id(req.params.meal_id, _body);
-  if (resp_data.status == 0) {
-    console.log("Error occured while updating meal = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    console.log("meal updated successfully = ", resp_data);
-    res.status(config.OK_STATUS).json(resp_data);
-  }
+        });
+
+         file.mv(dir + "/" + filename, async function (err) {
+           if (err) {
+             logger.error("There was an issue in uploading image");
+             return res.send({
+               status: config.MEDIA_ERROR_STATUS,
+               err: "There was an issue in uploading image"
+             });
+           } else {
+             logger.trace("image has been uploaded. Image name = ", filename);
+             _body.image = "uploads/meal/" + filename;
+             executeSave(_body)
+           }
+         });
+       } else {
+         logger.error("Image format is invalid");
+         return res.send({
+           status: config.MEDIA_ERROR_STATUS,
+           err: "Image format is invalid",
+           message: "Image format is invalid"
+         });
+       }
+     } else {
+       logger.info("Image not available to upload. Executing next instruction");
+       executeSave(_body);
+     }
+
+     async function executeSave (_body) {
+       var resp_data = await meals_helper.edit_meal_id(req.params.meal_id, _body);
+       if (resp_data.status == 0) {
+         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+       } else {
+         res.status(config.OK_STATUS).json(resp_data);
+       }
+
+     }
+
 });
 module.exports = router;
