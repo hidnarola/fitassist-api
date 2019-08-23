@@ -80,8 +80,8 @@ router.post("/get_log_dates_by_date", async (req, res) => {
   if (!errors) {
     var authUserId = decoded.sub;
     var check = await moment(req.body.logDate).utc(0);
-    var startCheck = await moment(check).subtract(1, "month");
-    var endCheck = await moment(check).add(1, "month");
+    var startCheck = await moment(check).subtract(2, "month");
+    var endCheck = await moment(check).add(2, "month");
 
     var searchObj = {
       $match: {
