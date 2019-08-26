@@ -474,6 +474,65 @@ router.post("/update_body_measurement", async (req, res) => {
   }
 });
 
+router.post("/paste_body_measurement", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var schema = {
+    logDate: {
+      notEmpty: true,
+      errorMessage: "log Date is required"
+    },
+    measurementId: {
+      notEmpty: true,
+      errorMessage: "Body Measurement ID is required"
+    }
+  };
+  req.checkBody(schema);
+  var errors = req.validationErrors();
+  var copyId = req.body.measurementId;
+  var mesurementObj = {
+    logDate: req.body.logDate,
+    userId: authUserId
+  };
+  var searchObj = {
+    _id: req.body.measurementId,
+    userId: authUserId
+  };
+  if (!errors) {
+    let check_data = await measurement_helper.checkBodyMeasurement(
+      mesurementObj
+    );
+    if (check_data.measurement.length === 0) {
+      var copydata = await measurement_helper.copyBodyMeasurement(searchObj);
+      let data = copydata.measurement[0];
+      data.logDate = req.body.logDate;
+      let measurement_data = await measurement_helper.insert_body_measurement(
+        data
+      );
+      if (measurement_data.status === 0) {
+        logger.error(
+          "Error while inserting measurement data = ",
+          measurement_data
+        );
+        return res.status(config.BAD_REQUEST).json(measurement_data);
+      } else {
+        logger.trace(
+          "Successfully inserted measurement data = ",
+          measurement_data
+        );
+        return res.status(config.OK_STATUS).json(measurement_data);
+      }
+    } else {
+      let error = {
+        status: 0,
+        message: "Error occured while finding Exercise Types",
+        error: "Body Measurement is already exits"
+      };
+      return res.status(config.BAD_REQUEST).json(error);
+    }
+  }
+});
+
 async function badgesAssign(authUserId) {
   // badge_assign start;
   var resp_data = await measurement_helper.get_body_measurement_id(

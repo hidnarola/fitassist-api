@@ -1,5 +1,6 @@
 var Measurement = require("./../models/body_measurements");
 var measurement_helper = {};
+var mongoose = require("mongoose");
 
 /*
  * get_all_measurement is used to fetch all measurement data
@@ -256,6 +257,53 @@ measurement_helper.update_body_measurement = async (
 measurement_helper.checkBodyMeasurement = async searchObject => {
   try {
     let measurement = await Measurement.find(searchObject);
+    return {
+      status: 1,
+      measurement: measurement
+    };
+  } catch (error) {
+    return {
+      status: 0,
+      message: "Error occured while finding Exercise Types",
+      error: error
+    };
+  }
+};
+
+measurement_helper.copyBodyMeasurement = async searchObject => {
+  try {
+    var measurement = await Measurement.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(searchObject._id)
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          neck: { $first: "$neck" },
+          shoulders: { $first: "$shoulders" },
+          chest: { $first: "$chest" },
+          upperArm: { $first: "$upperArm" },
+          waist: { $first: "$waist" },
+          forearm: { $first: "$forearm" },
+          hips: { $first: "$hips" },
+          thigh: { $first: "$thigh" },
+          calf: { $first: "$calf" },
+          weight: { $first: "$weight" },
+          height: { $first: "$height" },
+          heartRate: { $first: "$heartRate" },
+          userId: { $first: "$userId" },
+          logDate: { $first: "$logDate" },
+          bodyFat: { $first: "$bodyFat" }
+        }
+      },
+      {
+        $project: {
+          _id: 0
+        }
+      }
+    ]);
     return {
       status: 1,
       measurement: measurement

@@ -37,10 +37,10 @@ router.post("/today", async (req, res) => {
   end.toISOString();
   end.format();
 
-
   logger.trace("Get all test exercises API called");
   var resp_data = await test_exercise_helper.get_all_test_exercises({
-    $and: [{
+    $and: [
+      {
         isDeleted: 0
       },
       {
@@ -53,13 +53,15 @@ router.post("/today", async (req, res) => {
     logger.error("Error occured while fetching  test exercises = ", resp_data);
     res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   } else {
-    var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id({
-      userId: authUserId,
-      createdAt: {
-        $gte: start,
-        $lte: end
+    var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id(
+      {
+        userId: authUserId,
+        createdAt: {
+          $gte: start,
+          $lte: end
+        }
       }
-    });
+    );
 
     if (resp_data2.status === 1) {
       resp_data.user_test_exercises = resp_data2.user_test_exercises;
@@ -71,6 +73,49 @@ router.post("/today", async (req, res) => {
       logger.trace("test exercies failed to find = ", resp_data);
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
     }
+  }
+});
+
+router.post("/logdates", async (req, res) => {
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var date = req.body.date;
+
+  var start = moment(date)
+    .utcOffset(0)
+    .subtract(2, "month")
+    .startOf("day");
+  start.toISOString();
+  start.format();
+
+  var end = moment(date)
+    .utcOffset(0)
+    .endOf("day")
+    .add(2, "month");
+  end.toISOString();
+  end.format();
+
+  console.log("START", start);
+  console.log("END", end);
+
+  var searchObj = {
+    modifiedAt: {
+      $gte: new Date(start),
+      $lte: new Date(end)
+    },
+    userId: authUserId
+  };
+
+  var resp_data = await user_test_exercies_helper.get_user_test_exercies_by_user_id_logDates(
+    searchObj
+  );
+  console.log(resp_data);
+  if (resp_data.status === 1) {
+    logger.trace("test exercies got successfully = ", resp_data);
+    res.status(config.OK_STATUS).json(resp_data);
+  } else {
+    logger.trace("test exercies failed to find = ", resp_data);
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
   }
 });
 
@@ -111,7 +156,7 @@ router.post("/", async (req, res) => {
   var temp = req.body.user_test_exercises;
   var createdAt = req.body.date;
 
-  Object.keys(temp).forEach(function (key) {
+  Object.keys(temp).forEach(function(key) {
     var val = temp[key];
     test_exercise_array.push({
       userId: authUserId,
@@ -166,13 +211,15 @@ router.post("/reset", async (req, res) => {
   end.toISOString();
   end.format();
   logger.trace("reset user test exercies API called : ", authUserId);
-  let test_exercise_data = await user_test_exercies_helper.delete_user_test_exercies({
-    userId: authUserId,
-    createdAt: {
-      $gte: start,
-      $lte: end
+  let test_exercise_data = await user_test_exercies_helper.delete_user_test_exercies(
+    {
+      userId: authUserId,
+      createdAt: {
+        $gte: start,
+        $lte: end
+      }
     }
-  });
+  );
   if (test_exercise_data.status === 1) {
     test_exercise_data.message = "delete Exercise preference";
     res.status(config.OK_STATUS).json(test_exercise_data);
