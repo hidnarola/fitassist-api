@@ -1872,4 +1872,38 @@ router.post("/calendar_list/:username", async (req, res) => {
     }
 });
 
+router.post("/overview", async (req, res) => {
+    try {
+        var decoded = jwtDecode(req.headers["authorization"]);
+        var authUserId = decoded.sub;
+        var date = req.body.date
+        var start = moment(date).startOf('day').utc(0);
+        var end = moment(date).endOf('day').utc(0);
+        var searchObj = {
+            date : {
+                $gte: new Date(start),
+                $lte: new Date(end)
+            },
+            userId : authUserId
+        }
+        var resp_data = await user_workout_helper.get_workoutsDetails_by_date(searchObj)
+        if (resp_data.status === 1) {
+            logger.trace("user workouts got successfully = ", resp_data);
+            res.status(config.OK_STATUS).json(resp_data);
+        } else {
+            logger.error("Error occured while fetching user workouts = ", resp_data);
+            res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+        }
+    }catch(error)
+    {
+        logger.error("Error occured while fetching user workout = ", error);
+        const responseData = {
+            status: 0,
+            message: "Something went wrong! please try again.",
+            error: ["Something went wrong! please try again."]
+        };
+        res.status(config.INTERNAL_SERVER_ERROR).json(responseData);
+    }
+})
+
 module.exports = router;

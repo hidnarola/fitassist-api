@@ -785,7 +785,7 @@ user_workouts_helper.get_user_workouts_by_id = async id => {
  * @param   childCollectionObject     JSON object consist of all property that need to insert in collection
  * @return  status  0 - If any error occur in inserting User workout exercise, with error
  *          status  1 - If User workout inserted, with inserted User workout exercise document and appropriate message
- * 
+ *
  * @developed by "amc"
  */
 user_workouts_helper.insert_user_workouts_exercises = async (
@@ -1435,7 +1435,7 @@ user_workouts_helper.update_user_workouts_by_id = async (
  * @param   condition         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
- *          status  2 - If user_workouts not completed, with appropriate message 
+ *          status  2 - If user_workouts not completed, with appropriate message
  * @developed by "amc"
  */
 user_workouts_helper.complete_master_event = async (id, updateObject) => {
@@ -1468,7 +1468,7 @@ user_workouts_helper.complete_master_event = async (id, updateObject) => {
  * @param   condition         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
- *          status  2 - If user_workouts not completed, with appropriate message 
+ *          status  2 - If user_workouts not completed, with appropriate message
  * @developed by "amc"
  */
 user_workouts_helper.complete_all_workout = async (id, updateObject) => {
@@ -1530,11 +1530,11 @@ user_workouts_helper.complete_all_workout = async (id, updateObject) => {
 
 /*
  * complete_workout is used to complete user workouts data based on user workouts date
- * 
+ *
  * @param   condition         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
- *          status  2 - If user_workouts not completed, with appropriate message 
+ *          status  2 - If user_workouts not completed, with appropriate message
  * @developed by "amc"
  */
 user_workouts_helper.complete_workout = async (id, updateObject) => {
@@ -1743,7 +1743,7 @@ user_workouts_helper.delete_user_workouts_by_id = async workoutIds => {
  * @param   updateObject         Object  condition of user_workouts that need to be complete
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
- *          status  2 - If user_workouts not completed, with appropriate message 
+ *          status  2 - If user_workouts not completed, with appropriate message
  * @developed by "amc"
  */
 user_workouts_helper.complete_workout_by_days = async (
@@ -1827,7 +1827,7 @@ user_workouts_helper.complete_workout_by_days = async (
  * @param   condition         Object  condition of user_workouts that need to be order
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts updated successfully, with appropriate message
- *          status  2 - If user_workouts not updated, with appropriate message 
+ *          status  2 - If user_workouts not updated, with appropriate message
  * @developed by "amc"
  */
 user_workouts_helper.reorder_exercises = async reorderArray => {
@@ -1868,7 +1868,7 @@ user_workouts_helper.reorder_exercises = async reorderArray => {
  * @param   condition         Object  condition of count user
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
- *          status  2 - If user_workouts not completed, with appropriate message 
+ *          status  2 - If user_workouts not completed, with appropriate message
  * @developed by "amc"
  */
 user_workouts_helper.totalGlobalUserWhoHaveCompletedExercises = async () => {
@@ -1902,5 +1902,120 @@ user_workouts_helper.totalGlobalUserWhoHaveCompletedExercises = async () => {
         };
     }
 };
+
+user_workouts_helper.get_workoutsDetails_by_date = async(searchObj) => {
+    try {
+        var user_workouts = await UserWorkouts.aggregate([
+            {
+                $match: searchObj
+            },
+            {
+                $lookup: {
+                    from: "user_workout_exercises",
+                    foreignField: "userWorkoutsId",
+                    localField: "_id",
+                    as: "exercises"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$exercises",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    userWorkoutsId: {
+                        $first: "$_id"
+                    },
+                    exercises: {
+                        $addToSet: "$exercises"
+                    },
+                    isCompleted: {
+                        $first: "$isCompleted"
+                    },
+                    dayType: {
+                        $first: "$type"
+                    },
+                    title: {
+                        $first: "$title"
+                    },
+                    description: {
+                        $first: "$description"
+                    },
+                    userId: {
+                        $first: "$userId"
+                    },
+                    date: {
+                        $first: "$date"
+                    },
+                    sequence: {
+                        $first: "$sequence"
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    userWorkoutsId: 1,
+                    type: 1,
+                    exercises: 1,
+                    isCompleted: 1,
+                    dayType: 1,
+                    title: 1,
+                    description: 1,
+                    userId: 1,
+                    date: 1,
+                    sequence: 1
+                }
+            }
+        ])
+        if (user_workouts && user_workouts.length > 0) {
+            _.each(user_workouts, workout => {
+                var warmup = [];
+                var exercise = [];
+                var cooldown = [];
+                _.each(workout.exercises, ex => {
+                    if (ex.type == "warmup") {
+                        warmup.push(ex);
+                    } else if (ex.type == "cooldown") {
+                        cooldown.push(ex);
+                    } else if (ex.type == "exercise") {
+                        exercise.push(ex);
+                    }
+                });
+                workout.warmup = _.sortBy(warmup, function (w) {
+                    return w.sequence;
+                });
+                workout.exercise = _.sortBy(exercise, function (w) {
+                    return w.sequence;
+                });
+                workout.cooldown = _.sortBy(cooldown, function (w) {
+                    return w.sequence;
+                });
+                delete workout.exercises;
+            });
+
+            return {
+                status: 1,
+                message: "User workouts found",
+                workouts: user_workouts
+            };
+        } else {
+            return {
+                status: 2,
+                message: "No user workouts available"
+            };
+        }
+
+    }catch (error){
+        return {
+            status: 0,
+            message: "Error occured while finding user",
+            error: error
+        };
+    }
+}
 
 module.exports = user_workouts_helper;
