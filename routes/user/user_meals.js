@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
 
   var meals_obj = {
     meals: req.body.meals,
-    date: req.body.date,
+    date: new Date(startdate),
     userId: authUserId
   };
   req.checkBody(schema);
@@ -44,6 +44,8 @@ router.post("/", async (req, res) => {
         0
       );
     } else {
+      console.log("===========Call Status 1===========");
+      console.log("==========================");
       meal_data = await meals_helper.insert_meal(
         meals_obj.meals,
         User_meals_Details,
@@ -148,12 +150,15 @@ router.post("/get_by_id_user_meal", async (req, res) => {
       $match: {
         userId: authUserId,
         date: {
-          $eq: new Date(startdate)
+          $gte: new Date(startdate),
+          $lte: new Date(enddate)
         }
       }
     };
 
     var resp_data = await meals_helper.get_user_meal_by_id(searchObj);
+    console.log(resp_data);
+
     if (resp_data.status != 0) {
       res.status(config.OK_STATUS).json(resp_data);
     } else {

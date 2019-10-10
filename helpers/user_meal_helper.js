@@ -203,7 +203,7 @@ meals_helper.insert_meal = async (meal_obj, oldData, status) => {
       const { _id } = oldData.data[0];
       let meal_data = await UserMeals.findOneAndUpdate(
         { _id: _id },
-        { $set: { meals: meal_obj } },
+        { $push: { meals: meal_obj[0] } },
         { new: true }
       );
       if (meal_data) {

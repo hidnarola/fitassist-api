@@ -45,12 +45,26 @@ router.post("/", async (req, res) => {
       errorMessage: "Instruction is required"
     };
   }
+  if (req.body.description && req.body.meals_visibility === "public") {
+    schema.description = {
+      notEmpty: true,
+      errorMessage: "Description is required"
+    };
+  }
   req.checkBody(schema);
   var errors = req.validationErrors();
 
   if (!errors) {
+    console.log("===========categories===========");
+    console.log(req.body);
+    console.log("==========================");
     let meals_obj = {
       title: req.body.title,
+      description: req.body.description,
+      serves: req.body.serves,
+      serving_difficulty: req.body.serving_difficulty,
+      categories: JSON.parse(req.body.categories),
+      cooking_time: JSON.parse(req.body.cooking_time),
       notes: req.body.notes,
       meals_type: req.body.meals_type,
       meals_visibility: req.body.meals_visibility,
@@ -80,7 +94,7 @@ router.post("/", async (req, res) => {
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
         }
-        file.mv(dir + "/" + filename, function (err) {
+        file.mv(dir + "/" + filename, function(err) {
           if (err) {
             logger.error("There was an issue in uploading image");
             return res.send({
@@ -117,23 +131,26 @@ router.post("/", async (req, res) => {
       });
     } else {
       // insert private meal copy of public meal
-      meals_obj['meals_visibility'] = "private";
+      meals_obj["meals_visibility"] = "private";
 
       if (req.body.meals_visibility && req.body.meals_visibility === "public") {
-        
-        // insert image for public meal 
-  
-          filename = "meal_" + new Date().getTime() + Math.floor(Math.random() * 10000000) + extention;
-          meals_obj.image = "uploads/meal/" + filename;
-          file.mv(dir + "/" + filename, function (err) {
-            if (err) {
-              logger.error("There was an issue in uploading image");
-              return res.send({
-                status: config.MEDIA_ERROR_STATUS,
-                err: "There was an issue in uploading image"
-              });
-            }
-          });
+        // insert image for public meal
+
+        filename =
+          "meal_" +
+          new Date().getTime() +
+          Math.floor(Math.random() * 10000000) +
+          extention;
+        meals_obj.image = "uploads/meal/" + filename;
+        file.mv(dir + "/" + filename, function(err) {
+          if (err) {
+            logger.error("There was an issue in uploading image");
+            return res.send({
+              status: config.MEDIA_ERROR_STATUS,
+              err: "There was an issue in uploading image"
+            });
+          }
+        });
 
         let public_meal_data = await meals_helper.insert_meal(meals_obj);
         if (public_meal_data.status === 0) {
@@ -144,7 +161,6 @@ router.post("/", async (req, res) => {
         } else {
           return res.status(config.OK_STATUS).json(public_meal_data);
         }
-
       } else {
         return res.status(config.OK_STATUS).json(meal_data);
       }
@@ -196,11 +212,10 @@ router.post("/search", async (req, res) => {
         },
         {
           $and: [
-            { $or: [{ title2: { $regex: re } }, { title2: { $regex: re1 } }] }
-            ,
+            { $or: [{ title2: { $regex: re } }, { title2: { $regex: re1 } }] },
             { userId: authUserId }
           ]
-        },
+        }
       ],
       $or: [
         { meals_visibility: { $ne: "public" } },
@@ -214,34 +229,32 @@ router.post("/search", async (req, res) => {
       flag: {
         $cond: {
           if: {
-            $and: [{
-              $eq: ["$userId", authUserId]
-            },
-            {
-              $eq: ["$meals_visibility", "public"]
-            },
-
+            $and: [
+              {
+                $eq: ["$userId", authUserId]
+              },
+              {
+                $eq: ["$meals_visibility", "public"]
+              }
             ]
           },
           then: "null",
           else: {
             $cond: {
               if: {
-                $and: [{
-                  $ne: ["$userId", authUserId]
-                },
-                {
-                  $eq: ["$meals_visibility", "private"]
-                },
-
+                $and: [
+                  {
+                    $ne: ["$userId", authUserId]
+                  },
+                  {
+                    $eq: ["$meals_visibility", "private"]
+                  }
                 ]
               },
               then: "null",
               else: "yes"
-
             }
           }
-
         }
       }
     }
@@ -283,74 +296,67 @@ router.get("/:meal_id", async (req, res) => {
 
 //edit meal API
 router.post("/:meal_id", async (req, res) => {
-
-  let _body = req.body
+  let _body = req.body;
   _body.ingredientsIncluded = JSON.parse(_body.ingredientsIncluded);
- 
-     if (req.files && req.files["meal_img"]) {
 
-      let filename;
-      let file;
+  if (req.files && req.files["meal_img"]) {
+    let filename;
+    let file;
 
-      file = req.files["meal_img"];
-      extention = path.extname(file.name);
-      filename = "meal_" + new Date().getTime() + extention;
+    file = req.files["meal_img"];
+    extention = path.extname(file.name);
+    filename = "meal_" + new Date().getTime() + extention;
 
+    var dir = "./uploads/meal";
+    var mimetype = ["image/png", "image/jpeg", "image/jpg"];
 
-       var dir = "./uploads/meal";
-       var mimetype = ["image/png", "image/jpeg", "image/jpg"];
- 
-       if (mimetype.indexOf(file.mimetype) != -1) {
-         if (!fs.existsSync(dir)) {
-           fs.mkdirSync(dir);
-         }
+    if (mimetype.indexOf(file.mimetype) != -1) {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+      }
 
-         // delete old image
+      // delete old image
 
-         var resp_old_data = await meals_helper.get_meal_id(
-          req.params.meal_id
-        );
+      var resp_old_data = await meals_helper.get_meal_id(req.params.meal_id);
 
-        fs.unlink(resp_old_data.meal[0].image, async function (err, Success) {
-          if (err) {
-          }
-        });
+      fs.unlink(resp_old_data.meal[0].image, async function(err, Success) {
+        if (err) {
+        }
+      });
 
-         file.mv(dir + "/" + filename, async function (err) {
-           if (err) {
-             logger.error("There was an issue in uploading image");
-             return res.send({
-               status: config.MEDIA_ERROR_STATUS,
-               err: "There was an issue in uploading image"
-             });
-           } else {
-             logger.trace("image has been uploaded. Image name = ", filename);
-             _body.image = "uploads/meal/" + filename;
-             executeSave(_body)
-           }
-         });
-       } else {
-         logger.error("Image format is invalid");
-         return res.send({
-           status: config.MEDIA_ERROR_STATUS,
-           err: "Image format is invalid",
-           message: "Image format is invalid"
-         });
-       }
-     } else {
-       logger.info("Image not available to upload. Executing next instruction");
-       executeSave(_body);
-     }
+      file.mv(dir + "/" + filename, async function(err) {
+        if (err) {
+          logger.error("There was an issue in uploading image");
+          return res.send({
+            status: config.MEDIA_ERROR_STATUS,
+            err: "There was an issue in uploading image"
+          });
+        } else {
+          logger.trace("image has been uploaded. Image name = ", filename);
+          _body.image = "uploads/meal/" + filename;
+          executeSave(_body);
+        }
+      });
+    } else {
+      logger.error("Image format is invalid");
+      return res.send({
+        status: config.MEDIA_ERROR_STATUS,
+        err: "Image format is invalid",
+        message: "Image format is invalid"
+      });
+    }
+  } else {
+    logger.info("Image not available to upload. Executing next instruction");
+    executeSave(_body);
+  }
 
-     async function executeSave (_body) {
-       var resp_data = await meals_helper.edit_meal_id(req.params.meal_id, _body);
-       if (resp_data.status == 0) {
-         res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-       } else {
-         res.status(config.OK_STATUS).json(resp_data);
-       }
-
-     }
-
+  async function executeSave(_body) {
+    var resp_data = await meals_helper.edit_meal_id(req.params.meal_id, _body);
+    if (resp_data.status == 0) {
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      res.status(config.OK_STATUS).json(resp_data);
+    }
+  }
 });
 module.exports = router;
