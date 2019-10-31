@@ -18,6 +18,13 @@ user_personal_goals_helper.get_personal_goals = async (
 
     personal_goals = await PersonalGoal.aggregate([
       { $match: id },
+      {
+        $group: {
+          _id: "$category",
+          category: { $first: "$category" },
+          goals: { $push: "$$ROOT" }
+        }
+      },
       sort,
       skip,
       limit
@@ -159,7 +166,7 @@ user_personal_goals_helper.update_personal_goal_by_id = async (
 /*
  * delete_personal_goal is used to delete personal_goal data based on personal_goal ID
  * @param   personal_goal_id String  _id of personal_goal that need to be delete
- * @param   personal_goal_obj JSON object consist of all property that need to delete 
+ * @param   personal_goal_obj JSON object consist of all property that need to delete
  * @return  status  0 - If any error occur in updating personal goal, with error
  *          status  1 - If personal goal deleted successfully, with appropriate message
  *          status  2 - If personal goal not deleted, with appropriate message

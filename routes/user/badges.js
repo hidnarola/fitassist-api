@@ -25,7 +25,6 @@ router.get("/:type", async (req, res) => {
   var type = req.params.type;
   if (type === "tracking") {
     resp_data = await badge_helper.get_badges_group_by(authUserId);
-
   } else if (type === "complete") {
     resp_data = await badge_assign_helper.get_all_badges({
       userId: authUserId
@@ -45,12 +44,13 @@ router.get("/:type", async (req, res) => {
         },
         // status: 1,
         // isDeleted: 0
-        $and: [{
-          isDeleted: 0
-        },
-        {
-          status: 1
-        }
+        $and: [
+          {
+            isDeleted: 0
+          },
+          {
+            status: 1
+          }
         ]
       });
     }

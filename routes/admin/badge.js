@@ -6,6 +6,7 @@ var constant = require("../../constant");
 var logger = config.logger;
 var badge_helper = require("../../helpers/badge_helper");
 var common_helper = require("../../helpers/common_helper");
+var jwtDecode = require("jwt-decode");
 
 /**
  * @api {post} /admin/badge/filter Filter
@@ -116,11 +117,18 @@ router.get("/:badge_id", async (req, res) => {
  */
 
 router.post("/", async (req, res) => {
+  var decoded = jwtDecode(req.headers["x-access-token"]);
+  var role = "admin";
+  var userID = decoded.id;
+  console.log("===========authUserId===========");
+  console.log(decoded);
+  console.log(role);
+  console.log("==========================");
   var schema = {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 100 chars long',
+        errorMessage: "Name should be between 3 to 100 chars long",
         options: {
           min: 3,
           max: 100
@@ -163,7 +171,7 @@ router.post("/", async (req, res) => {
     value: {
       notEmpty: true,
       isInt: {
-        errorMessage: 'Target should be greater than 0',
+        errorMessage: "Target should be greater than 0",
         options: {
           gt: 0
         }
@@ -173,7 +181,7 @@ router.post("/", async (req, res) => {
     point: {
       notEmpty: true,
       isInt: {
-        errorMessage: 'Point should be greater than 0',
+        errorMessage: "Point should be greater than 0",
         options: {
           gt: 0
         }
@@ -183,9 +191,7 @@ router.post("/", async (req, res) => {
     timeType: {
       notEmpty: true,
       isIn: {
-        options: [
-          ["standard", "time_window"]
-        ],
+        options: [["standard", "time_window"]],
         errorMessage: "Time Type is invalid"
       },
       errorMessage: "Time Type is required"
@@ -200,7 +206,6 @@ router.post("/", async (req, res) => {
 
   req.checkBody(schema);
   var errors = req.validationErrors();
-
 
   if (!errors) {
     var category = await find_badges_category(req.body.task);
@@ -290,7 +295,7 @@ router.put("/:badge_id", async (req, res) => {
     name: {
       notEmpty: true,
       isLength: {
-        errorMessage: 'Name should be between 3 to 100 chars long',
+        errorMessage: "Name should be between 3 to 100 chars long",
         options: {
           min: 3,
           max: 100
@@ -333,7 +338,7 @@ router.put("/:badge_id", async (req, res) => {
     value: {
       notEmpty: true,
       isInt: {
-        errorMessage: 'Target should be greater than 0',
+        errorMessage: "Target should be greater than 0",
         options: {
           gt: 0
         }
@@ -347,9 +352,7 @@ router.put("/:badge_id", async (req, res) => {
     timeType: {
       notEmpty: true,
       isIn: {
-        options: [
-          ["standard", "time_window"]
-        ],
+        options: [["standard", "time_window"]],
         errorMessage: "Time Type is invalid"
       },
       errorMessage: "Time Type is required"
@@ -471,7 +474,7 @@ router.get("/undo/:badge_id", async (req, res) => {
 async function find_badges_category(badgestask) {
   var categoryName = "";
   var badges_keys = Object.keys(constant.BADGES_TYPE);
-  _.each(badges_keys, function (key) {
+  _.each(badges_keys, function(key) {
     var arr = constant.BADGES_TYPE[key];
     if (arr.indexOf(badgestask) >= 0) {
       categoryName = key;
