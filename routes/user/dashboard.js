@@ -16,7 +16,39 @@ var user_helper = require("../../helpers/user_helper");
 var friend_helper = require("../../helpers/friend_helper");
 var follow_helper = require("../../helpers/follow_helper");
 var common_helper = require("../../helpers/common_helper");
+var user_timeline_helper = require("../../helpers/user_timeline_helper");
 var user_progress_photos_helper = require("../../helpers/user_progress_photos_helper");
+
+router.get("/following/:start/:offset", async (req, res) => {
+  logger.trace("Following Users Activity API called");
+  var decoded = jwtDecode(req.headers["authorization"]);
+  var authUserId = decoded.sub;
+  var skip = req.params.start ? req.params.start : 0;
+  var limit = req.params.offset ? req.params.offset : 10;
+  var privacyArray = [2, 3, 4];
+
+  const followingUserIds = await follow_helper.following_users_Ids(authUserId);
+  if (followingUserIds.status === 1) {
+    var resp_data = await user_timeline_helper.following_activity_data(
+      followingUserIds.followingIds,
+      privacyArray
+    );
+    if (resp_data.status === 1) {
+      res.status(config.OK_STATUS).json(resp_data);
+    } else {
+      res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    }
+  } else if (followingUserIds.status === 2) {
+    var respoData = {
+      status: 1,
+      message: "No records found",
+      user_timeline: []
+    };
+    res.status(config.OK_STATUS).json(respoData);
+  } else if (followingUserIds.status === 0) {
+    res.status(config.INTERNAL_SERVER_ERROR).json(followingUserIds);
+  }
+});
 
 /**
  * @api {post} /user/dashboard/muscle Save

@@ -238,6 +238,37 @@ router.get("/:post_id", async (req, res) => {
     }
 });
 
+router.get("/discover/:start?/:offset?", async (req, res) => {
+    logger.trace("Get discover user's timeline API called");
+    var decoded = jwtDecode(req.headers["authorization"]);
+    var authUserId = decoded.sub;
+    var skip = req.params.start ? req.params.start : 0;
+    var limit = req.params.offset ? req.params.offset : 10;
+    var privacyArray = [3];
+    var resp_data = await user_posts_helper.get_user_timeline(
+        {
+            privacy: {
+                $in: privacyArray
+            },
+            isDeleted: 0
+        },
+        {
+            $skip: parseInt(skip)
+        },
+        {
+            $limit: parseInt(limit)
+        },
+        {
+            $orderby: { createdAt : -1 }
+        }
+    );
+    if (resp_data.status === 1) {
+        res.status(config.OK_STATUS).json(resp_data);
+    }else {
+        res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    }
+})
+
 /**
  * @api {get} /user/timeline/:username/:start?/:offset? Get all
  * @apiName Get all
@@ -305,6 +336,9 @@ router.get("/:username/:start?/:offset?", async (req, res) => {
                 },
                 {
                     $limit: parseInt(limit)
+                },
+                {
+                    $orderby: { createdAt : -1 }
                 }
         );
 

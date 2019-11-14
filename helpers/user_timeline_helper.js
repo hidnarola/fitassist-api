@@ -8,29 +8,31 @@ var user_timeline_helper = {};
  *          status 2 - If user_timeline data not found, with appropriate message
  */
 user_timeline_helper.get_user_timeline_by_user_id = async id => {
-    try {
-        var user_timeline = await UserTimeline.aggregate([{
-                $match: id
-            }]);
-        if (user_timeline && user_timeline.length > 0) {
-            return {
-                status: 1,
-                message: "user timeline found",
-                user_timeline: user_timeline[0]
-            };
-        } else {
-            return {
-                status: 2,
-                message: "user timeline not available"
-            };
-        }
-    } catch (err) {
-        return {
-            status: 0,
-            message: "Error occured while finding user timeline ",
-            error: err
-        };
+  try {
+    var user_timeline = await UserTimeline.aggregate([
+      {
+        $match: id
+      }
+    ]);
+    if (user_timeline && user_timeline.length > 0) {
+      return {
+        status: 1,
+        message: "user timeline found",
+        user_timeline: user_timeline[0]
+      };
+    } else {
+      return {
+        status: 2,
+        message: "user timeline not available"
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding user timeline ",
+      error: err
+    };
+  }
 };
 
 /*
@@ -41,21 +43,21 @@ user_timeline_helper.get_user_timeline_by_user_id = async id => {
  * @developed by "amc"
  */
 user_timeline_helper.insert_timeline_data = async user_timeline_object => {
-    let user_timeline = new UserTimeline(user_timeline_object);
-    try {
-        let preference_data = await user_timeline.save();
-        return {
-            status: 1,
-            message: "User's user timeline inserted",
-            user_timeline: preference_data
-        };
-    } catch (err) {
-        return {
-            status: 0,
-            message: "Error occured while inserting user's timeline",
-            error: err
-        };
-    }
+  let user_timeline = new UserTimeline(user_timeline_object);
+  try {
+    let preference_data = await user_timeline.save();
+    return {
+      status: 1,
+      message: "User's user timeline inserted",
+      user_timeline: preference_data
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while inserting user's timeline",
+      error: err
+    };
+  }
 };
 
 /*
@@ -67,28 +69,35 @@ user_timeline_helper.insert_timeline_data = async user_timeline_object => {
  *          status  2 - If timeline not updated, with appropriate message
  * @developed by "amc"
  */
-user_timeline_helper.update_user_timeline_by_id = async (condition, user_timeline_object) => {
-    try {
-        let user_timeline = await UserTimeline.findOneAndUpdate(condition, user_timeline_object, {new : true});
-        if (!user_timeline) {
-            return {
-                status: 2,
-                message: "timeline has not updated"
-            };
-        } else {
-            return {
-                status: 1,
-                message: "timeline has been updated",
-                user_timeline: user_timeline
-            };
-        }
-    } catch (err) {
-        return {
-            status: 0,
-            message: "Error occured while updating user timeline",
-            error: err
-        };
+user_timeline_helper.update_user_timeline_by_id = async (
+  condition,
+  user_timeline_object
+) => {
+  try {
+    let user_timeline = await UserTimeline.findOneAndUpdate(
+      condition,
+      user_timeline_object,
+      { new: true }
+    );
+    if (!user_timeline) {
+      return {
+        status: 2,
+        message: "timeline has not updated"
+      };
+    } else {
+      return {
+        status: 1,
+        message: "timeline has been updated",
+        user_timeline: user_timeline
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user timeline",
+      error: err
+    };
+  }
 };
 
 /*
@@ -99,27 +108,53 @@ user_timeline_helper.update_user_timeline_by_id = async (condition, user_timelin
  *          status  2 - If timeline not deleted, with appropriate message
  * @developed by "amc"
  */
-user_timeline_helper.delete_timeline_by_cond = async (condition) => {
-    try {
-        let user_timeline = await UserTimeline.remove(condition);
-        if (!user_timeline) {
-            return {
-                status: 2,
-                message: "timeline has not deleted"
-            };
-        } else {
-            return {
-                status: 1,
-                message: "timeline has been deleted"
-            };
-        }
-    } catch (err) {
-        return {
-            status: 0,
-            message: "Error occured while updating user timeline",
-            error: err
-        };
+user_timeline_helper.delete_timeline_by_cond = async condition => {
+  try {
+    let user_timeline = await UserTimeline.remove(condition);
+    if (!user_timeline) {
+      return {
+        status: 2,
+        message: "timeline has not deleted"
+      };
+    } else {
+      return {
+        status: 1,
+        message: "timeline has been deleted"
+      };
     }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while updating user timeline",
+      error: err
+    };
+  }
 };
 
+user_timeline_helper.following_activity_data = async (
+  userIds,
+  privacyArray
+) => {
+  try {
+    let user_timeline = await UserTimeline.aggregate([
+      {
+        $match: {
+          userId: { $in: userIds },
+          privacy: { $in: privacyArray }
+        }
+      }
+    ]);
+    return {
+      status: 1,
+      message: "Following user activity data found",
+      user_timeline: user_timeline
+    };
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while following user data",
+      error: err
+    };
+  }
+};
 module.exports = user_timeline_helper;

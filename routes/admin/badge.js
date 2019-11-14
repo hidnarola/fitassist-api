@@ -210,6 +210,8 @@ router.post("/", async (req, res) => {
   if (!errors) {
     var category = await find_badges_category(req.body.task);
     var badge_obj = {
+      userId: userID,
+      role: "admin",
       name: req.body.name,
       task: req.body.task,
       category: category,

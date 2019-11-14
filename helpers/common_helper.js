@@ -76,7 +76,7 @@ common_helper.changeObject = function (data, callback) {
 
 /*
  * get_nutritional_labels is used to fetch all health_label data
- * 
+ *
  * @return  status 0 - If any internal error occured while fetching get_nutritional_labels data, with error
  *          status 1 - If get_nutritional_labels data found, with get_nutritional_labels object
  *          status 2 - If get_nutritional_labels not found, with appropriate message
@@ -107,7 +107,7 @@ common_helper.get_nutritional_labels = async type => {
 
 /*
  * get_nutritions is used to fetch all nutrition
- * 
+ *
  * @return  status 0 - If any internal error occured while fetching nutrition data, with error
  *          status 1 - If nutrition data found, with nutrition object
  *          status 2 - If nutrition not found, with appropriate message
@@ -139,7 +139,7 @@ common_helper.get_nutritions = async () => {
 
 /*
  * unit_converter is used to convert  all unit
- * 
+ *
  * @return  status 0 - If any internal error occured while converting unit data, with error
  *          status 1 - If unit data found, with unit object
  *          status 2 - If unit not found, with appropriate message
@@ -239,7 +239,7 @@ common_helper.unit_converter = async (data, unit) => {
 
 /*
  * send_notification is used to send notification  to user
- * 
+ *
  * @return  status 0 - If any internal error occured while sending notification data, with error
  *          status 1 - If notification inserted, with unit object
  *          status 2 - If notification not inserted, with appropriate message
