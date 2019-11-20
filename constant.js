@@ -358,7 +358,8 @@ module.exports = {
     PROGRESS_PHOTO_CATEGORY: {
         basic: 'basic',
         isolation: 'isolation',
-        posed: 'posed'
+        posed: 'posed',
+        lifestyle: 'lifestyle'
     },
     PROGRESS_PHOTO_POSED: {
         front_lat_spread: 'front_lat_spread',
