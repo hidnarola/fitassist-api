@@ -157,13 +157,29 @@ router.post("/get_by_id_user_meal", async (req, res) => {
     };
 
     var resp_data = await meals_helper.get_user_meal_by_id(searchObj);
+    console.log("----------------");
     console.log(resp_data);
+    var ingredients = [];
+    var resp_new_data = resp_data;
 
-    if (resp_data.status != 0) {
-      res.status(config.OK_STATUS).json(resp_data);
+    resp_new_data.userMeals.length > 0 &&
+      resp_new_data.userMeals.forEach(async (userMeal, userIndex) => {
+        userMeal.meals.forEach(async (meal, mealIndex) => {
+          meal.ingredientsIncluded.forEach(ing => {
+            ingredients.push(ing.ingredient_id);
+          });
+        });
+      });
+
+    if (resp_new_data.status != 0) {
+      var resp_proxi = await meals_helper.get_proximates_by_id(ingredients);
+      var proxi = resp_proxi.proximates ? resp_proxi.proximates : [];
+      resp_new_data.proximatesIncluded = proxi;
+
+      res.status(config.OK_STATUS).json(resp_new_data);
     } else {
       return res.status(config.BAD_REQUEST).json({
-        resp_data
+        resp_new_data
       });
     }
   } else {

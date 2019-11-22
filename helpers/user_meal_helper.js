@@ -1,5 +1,6 @@
 var UserMeals = require("./../models/user_meals");
 var RecentMeal = require("./../models/recent_meal");
+var Proximates = require("./../models/proximates");
 var _ = require("underscore");
 var meals_helper = {};
 var mongoose = require("mongoose");
@@ -470,6 +471,44 @@ meals_helper.get_favourite_meals = async obj => {
       status: 0,
       message: "Error occured while finding favurite meal data",
       error: error
+    };
+  }
+};
+meals_helper.get_proximates_by_id = async obj => {
+  try {
+    var resp_data = await Proximates.aggregate([
+      {
+        $match: {
+          _id: { $in: obj }
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          foodCode: { $first: "$foodCode" },
+          foodName: { $first: "$foodName" },
+          description: { $first: "$description" },
+          group: { $first: "$group" }
+        }
+      }
+    ]);
+    if (resp_data) {
+      return {
+        status: 1,
+        message: "proximates found",
+        proximates: resp_data
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No proximates available"
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding proximates data",
+      error: err
     };
   }
 };
