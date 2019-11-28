@@ -598,7 +598,7 @@ user_program_helper.update_program_workouts = async (
     }
 };
 /*
- * assign_program is used to assign program 
+ * assign_program is used to assign program
  * @param   user_program_obj     JSON object consist of all property that need to insert in collection
  * @return  status  0 - If any error occur in assigning User program, with error
  *          status  1 - If User program assigned, with inserted User program document and appropriate message
@@ -814,12 +814,12 @@ user_program_helper.cut_exercise_by_id = async (exerciseId, day) => {
 
 /*
  * copy_exercise_by_id is used to insert into user_workouts master collection
- * 
+ *
  * @param   masterCollectionObject     JSON object consist of all property that need to insert in collection
- * 
+ *
  * @return  status  0 - If any error occur in inserting User workout, with error
  *          status  1 - If User workout inserted, with inserted User workout document and appropriate message
- * 
+ *
  * @developed by "amc"
  */
 user_program_helper.copy_exercise_by_id = async (exerciseId, day, authUserId) => {
@@ -980,7 +980,7 @@ user_program_helper.delete_user_workouts_exercise = async (
  * @param   condition         Object  condition of user_workouts that need to be order
  * @return  status  0 - If any error occur in updating user_workouts, with error
  *          status  1 - If user_workouts completed successfully, with appropriate message
- *          status  2 - If user_workouts not completed, with appropriate message 
+ *          status  2 - If user_workouts not completed, with appropriate message
  * @developed by "amc"
  */
 user_program_helper.reorder_exercises = async reorderArray => {
@@ -1148,7 +1148,8 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                     programsRating: {
                         $addToSet: "$programRatings"
                     },
-                    avgRating: {$avg: "$programRatings.rating"}
+                    avgRating: {$avg: "$programRatings.rating"},
+                    privacy: {$first : "$privacy"}
                 }
             },
             {
@@ -1160,6 +1161,7 @@ user_program_helper.get_user_programs_filter = async (filterData) => {
                     type: 1,
                     goal: 1,
                     level: 1,
+                    privacy:1,
                     workouts: '$totalWorkouts',
                     rating: '$avgRating',
                     programsRating: {
