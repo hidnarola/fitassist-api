@@ -45,6 +45,9 @@ var new_nutrition = require("./user/new_nutrition");
 var meals = require("./user/meals");
 var user_meals = require("./user/user_meals");
 var user_progress_activity_photos = require("./user/user_progress_activity_photos");
+var user_nutrition_programs = require("./user/user_nutrition_programs");
+var user_nutrition_programs_meals = require("./user/user_nutrition_programs_meals");
+var user_nutrition_programs_rating = require("./user/user_nutrition_programs_rating");
 
 router.use("/measurement", isBlockedCheck, auth, body_measurement);
 router.use("/nutrition_preference", isBlockedCheck, auth, nutrition_preference);
@@ -98,6 +101,24 @@ router.use(
   isBlockedCheck,
   auth,
   user_progress_activity_photos
+);
+router.use(
+  "/user_nutrition_program",
+  isBlockedCheck,
+  auth,
+  user_nutrition_programs
+);
+router.use(
+  "/user_nutrition_program_meals",
+  isBlockedCheck,
+  auth,
+  user_nutrition_programs_meals
+);
+router.use(
+  "/user_nutrition_programs_rating",
+  isBlockedCheck,
+  auth,
+  user_nutrition_programs_rating
 );
 
 module.exports = router;

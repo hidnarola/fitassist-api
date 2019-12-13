@@ -97,7 +97,9 @@ router.get("/:program_id", async (req, res) => {
             },
             true
             );
-
+    console.log("==========================");
+    console.log(resp_data)
+    console.log("==========================")
     if (resp_data.status == 1) {
         var returnObject = {
             status: resp_data.status,
@@ -108,8 +110,9 @@ router.get("/:program_id", async (req, res) => {
                     name: resp_data.program[0].name,
                     description: resp_data.program[0].description,
                     userId: resp_data.program[0].userId,
-                    type: resp_data.program[0].type
+                    type: resp_data.program[0].type,
                 },
+                workouts_exercise: resp_data.program[0].workouts,
                 workouts: []
             }
         };
@@ -118,6 +121,13 @@ router.get("/:program_id", async (req, res) => {
         programDetails = _.sortBy(programDetails, function (pd) {
             return pd.day;
         });
+        programDetails.forEach(item => {
+            let exercise = _.filter(
+                resp_data.program[0].workouts,
+                (i) => i.userWorkoutsProgramId.toString() === item._id.toString()
+            )
+            item.exercise = exercise
+        })
         returnObject.program.workouts = programDetails;
 
         logger.trace("user program got successfully = ", resp_data);

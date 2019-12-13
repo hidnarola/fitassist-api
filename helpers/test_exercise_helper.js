@@ -97,6 +97,31 @@ test_exercise_helper.get_all_test_exercises = async (condition = {}) => {
   }
 };
 
+test_exercise_helper.get_all_test_exercises_list = async (condition = {}) => {
+  try {
+    var test_exercises = await TestExercies.find(condition);
+    if (test_exercises) {
+      return {
+        status: 1,
+        message: "test exercises found",
+        all_test: test_exercises
+      };
+    } else {
+      return {
+        status: 2,
+        message: "No test exercises available",
+        all_test: []
+      };
+    }
+  } catch (err) {
+    return {
+      status: 0,
+      message: "Error occured while finding test exercises",
+      error: err
+    };
+  }
+};
+
 /*
  * get_test_exerice_id is used to fetch test_exercise by ID
  * @return  status 0 - If any internal error occured while fetching test_exercise data, with error
@@ -166,10 +191,12 @@ test_exercise_helper.update_test_exercise_by_id = async (
   test_exercise_obj
 ) => {
   try {
-    let test_exercise = await TestExercies.findOneAndUpdate({
+    let test_exercise = await TestExercies.findOneAndUpdate(
+      {
         _id: test_exercise_id
       },
-      test_exercise_obj, {
+      test_exercise_obj,
+      {
         new: true
       }
     );
@@ -203,10 +230,13 @@ test_exercise_helper.update_test_exercise_by_id = async (
 test_exercise_helper.get_filtered_records = async filter_obj => {
   skip = filter_obj.pageSize * filter_obj.page;
   try {
-    var searched_record_count = await TestExercies.aggregate([{
-      $match: filter_object.columnFilter
-    }]);
-    var filtered_data = await TestExercies.aggregate([{
+    var searched_record_count = await TestExercies.aggregate([
+      {
+        $match: filter_object.columnFilter
+      }
+    ]);
+    var filtered_data = await TestExercies.aggregate([
+      {
         $match: filter_object.columnFilter
       },
       {
@@ -217,7 +247,7 @@ test_exercise_helper.get_filtered_records = async filter_obj => {
       },
       {
         $limit: filter_object.pageSize
-      },
+      }
     ]);
 
     if (filtered_data) {

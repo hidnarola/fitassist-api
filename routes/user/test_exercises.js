@@ -38,40 +38,66 @@ router.post("/today", async (req, res) => {
   end.format();
 
   logger.trace("Get all test exercises API called");
-  var resp_data = await test_exercise_helper.get_all_test_exercises({
-    $and: [
-      {
-        isDeleted: 0
-      },
-      {
-        status: 1
-      }
-    ]
-  });
-
-  if (resp_data.status == 0) {
-    logger.error("Error occured while fetching  test exercises = ", resp_data);
-    res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
-  } else {
-    var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id(
-      {
-        userId: authUserId,
-        createdAt: {
-          $gte: start,
-          $lte: end
+  var resp_exercise_all_test = await test_exercise_helper.get_all_test_exercises_list(
+    {
+      $and: [
+        {
+          isDeleted: 0
+        },
+        {
+          status: 1
         }
-      }
-    );
-
-    if (resp_data2.status === 1) {
-      resp_data.user_test_exercises = resp_data2.user_test_exercises;
+      ]
     }
-    if (resp_data.status === 1) {
-      logger.trace("test exercies got successfully = ", resp_data);
-      res.status(config.OK_STATUS).json(resp_data);
-    } else {
-      logger.trace("test exercies failed to find = ", resp_data);
+  );
+  console.log("resp_exercise_all_test", resp_exercise_all_test);
+  if (resp_exercise_all_test.status === 0) {
+    logger.error(
+      "Error occured while fetching  test exercises = ",
+      resp_exercise_all_test
+    );
+    res.status(config.INTERNAL_SERVER_ERROR).json(resp_exercise_all_test);
+  } else {
+    var resp_data = await test_exercise_helper.get_all_test_exercises({
+      $and: [
+        {
+          isDeleted: 0
+        },
+        {
+          status: 1
+        }
+      ]
+    });
+
+    if (resp_data.status == 0) {
+      logger.error(
+        "Error occured while fetching  test exercises = ",
+        resp_data
+      );
       res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+    } else {
+      var resp_data2 = await user_test_exercies_helper.get_user_test_exercies_by_user_id(
+        {
+          userId: authUserId,
+          createdAt: {
+            $gte: start,
+            $lte: end
+          }
+        }
+      );
+      if (resp_exercise_all_test.status === 1) {
+        resp_data.all_test = resp_exercise_all_test.all_test;
+      }
+      if (resp_data2.status === 1) {
+        resp_data.user_test_exercises = resp_data2.user_test_exercises;
+      }
+      if (resp_data.status === 1) {
+        logger.trace("test exercies got successfully = ", resp_data);
+        res.status(config.OK_STATUS).json(resp_data);
+      } else {
+        logger.trace("test exercies failed to find = ", resp_data);
+        res.status(config.INTERNAL_SERVER_ERROR).json(resp_data);
+      }
     }
   }
 });
